@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'dist/wfprev')));
 app.use('/assets', express.static(path.join(__dirname, 'dist/wfprev/assets')));
 
 // Send all requests to Angular app
-app.all('/assets/data/checktoken-user.json', (req, res) => {
+app.all(['/assets/data/checktoken-user.json', '/pub/wfprev/assets/data/checktoken-user.json'], (req, res) => {
     res.sendFile(path.join(__dirname, 'dist/wfprev/assets/data/checktoken-user.json'));
 });
 

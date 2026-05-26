@@ -9,24 +9,24 @@ import ca.bc.gov.nrs.wfprev.controllers.ProjectFiscalController;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ForecastAmountsModel;
-import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateResponse;
 import ca.bc.gov.nrs.wfprev.services.ForecastAmountCalculatorService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class PerformanceUpdateResourceAssembler extends RepresentationModelAssemblerSupport<ProjectPlanFiscalPerfEntity, PerformanceUpdateModel> {
+public class PerformanceUpdateResourceAssembler extends RepresentationModelAssemblerSupport<ProjectPlanFiscalPerfEntity, PerformanceUpdateResponse> {
     
     private final ForecastAmountCalculatorService forecastAmountCalculator;
 
     public PerformanceUpdateResourceAssembler(ForecastAmountCalculatorService forecastAmountCalculator) {
-        super(ProjectFiscalController.class, PerformanceUpdateModel.class);
+        super(ProjectFiscalController.class, PerformanceUpdateResponse.class);
         this.forecastAmountCalculator = forecastAmountCalculator;
     }
     
     @Override
-    public PerformanceUpdateModel toModel(ProjectPlanFiscalPerfEntity entity) {
-        PerformanceUpdateModel model = new PerformanceUpdateModel();
+    public PerformanceUpdateResponse toModel(ProjectPlanFiscalPerfEntity entity) {
+        PerformanceUpdateResponse model = new PerformanceUpdateResponse();
 
         model.setSubmittedTimestamp(entity.getSubmittedTimestamp());
         model.setReportingPeriod(entity.getReportingPeriodCode());
@@ -61,7 +61,7 @@ public class PerformanceUpdateResourceAssembler extends RepresentationModelAssem
         return model;
     }
 
-    public ProjectPlanFiscalPerfEntity toEntity(PerformanceUpdateModel resource, ProjectFiscalEntity projectFiscalEntity) {
+    public ProjectPlanFiscalPerfEntity toEntity(PerformanceUpdateResponse resource, ProjectFiscalEntity projectFiscalEntity) {
         ProjectPlanFiscalPerfEntity entity = new ProjectPlanFiscalPerfEntity();
         
         entity.setProjectPlanFiscalPerfGuid(UUID.randomUUID());

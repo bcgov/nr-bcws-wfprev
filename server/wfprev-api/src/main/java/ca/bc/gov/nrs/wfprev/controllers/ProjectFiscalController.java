@@ -1,13 +1,28 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
-import ca.bc.gov.nrs.wfprev.data.models.NewPerformanceUpdateModel;
-import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutRequest;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateRequest;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateResponse;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
 import ca.bc.gov.nrs.wfprev.services.ProjectFiscalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,19 +38,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
@@ -49,15 +51,23 @@ public class ProjectFiscalController extends CommonController {
     }
 
     @GetMapping
-    @Operation(summary = "Fetch all Project Fiscal Resources",
-            description = "Fetch all Project Fiscal Resources",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}),
-            extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
+    @Operation(summary = "Fetch all Project Fiscal Resources", description = "Fetch all Project Fiscal Resources", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }), extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "409", description = "Conflict"),
+            @ApiResponse(responseCode = "412", description = "Precondition Failed"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
-    public ResponseEntity<CollectionModel<ProjectFiscalModel>> getAllProjectFiscals(@PathVariable("projectId") String projectId) {
+    public ResponseEntity<CollectionModel<ProjectFiscalModel>> getAllProjectFiscals(
+            @PathVariable("projectId") String projectId) {
         log.debug(" >> getAllProjectFiscals");
         ResponseEntity<CollectionModel<ProjectFiscalModel>> response;
 
@@ -76,10 +86,8 @@ public class ProjectFiscalController extends CommonController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a Project Fiscal Resource",
-            description = "Create a new Project Fiscal Resource",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}))
+    @Operation(summary = "Create a Project Fiscal Resource", description = "Create a new Project Fiscal Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
@@ -110,16 +118,25 @@ public class ProjectFiscalController extends CommonController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update Project Fiscal Resource",
-            description = "Update Project Fiscal Resource",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}),
-            extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class)), headers = {@Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class))}), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
+    @Operation(summary = "Update Project Fiscal Resource", description = "Update Project Fiscal Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }), extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class)), headers = {
+                    @Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "409", description = "Conflict"),
+            @ApiResponse(responseCode = "412", description = "Precondition Failed"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
     @PreAuthorize("hasAuthority('WFPREV.UPDATE_PREVENTION_FISCAL')")
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
-    public ResponseEntity<ProjectFiscalModel> updateProjectFiscal(@RequestBody ProjectFiscalModel resource, @PathVariable("id") String id) {
+    public ResponseEntity<ProjectFiscalModel> updateProjectFiscal(@RequestBody ProjectFiscalModel resource,
+            @PathVariable("id") String id) {
         log.debug(" >> updateProject");
         ResponseEntity<ProjectFiscalModel> response;
 
@@ -141,12 +158,19 @@ public class ProjectFiscalController extends CommonController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Fetch a Project Fiscal Resource",
-            description = "Fetch a Project Fiscal Resource",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}),
-            extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
+    @Operation(summary = "Fetch a Project Fiscal Resource", description = "Fetch a Project Fiscal Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }), extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "409", description = "Conflict"),
+            @ApiResponse(responseCode = "412", description = "Precondition Failed"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
     public ResponseEntity<ProjectFiscalModel> getProjectFiscal(@PathVariable("id") String id) {
@@ -166,11 +190,9 @@ public class ProjectFiscalController extends CommonController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a Project Fiscal Resource",
-            description = "Delete a specific Project Fiscal Resource by its ID",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}))
-    @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_FISCAL')")                
+    @Operation(summary = "Delete a Project Fiscal Resource", description = "Delete a specific Project Fiscal Resource by its ID", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_FISCAL')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
@@ -178,7 +200,7 @@ public class ProjectFiscalController extends CommonController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
     public ResponseEntity<Void> deleteProjectFiscal(@PathVariable("id") String id,
-                                                    @RequestParam(name = "deleteFiles", required = false, defaultValue = "false") boolean deleteFiles) {
+            @RequestParam(name = "deleteFiles", required = false, defaultValue = "false") boolean deleteFiles) {
         log.debug(" >> deleteProjectFiscal with id: {}", id);
 
         try {
@@ -204,7 +226,7 @@ public class ProjectFiscalController extends CommonController {
                             @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
                             @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = PerformanceUpdateModel.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
@@ -214,11 +236,11 @@ public class ProjectFiscalController extends CommonController {
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
 
-    public ResponseEntity<CollectionModel<PerformanceUpdateModel>> getAllPerformanceUpdates(
+    public ResponseEntity<CollectionModel<PerformanceUpdateResponse>> getAllPerformanceUpdates(
             @PathVariable("projectId") String projectId,
             @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid) {
         log.debug(" >> getAllPerformanceUpdates");
-        ResponseEntity<CollectionModel<PerformanceUpdateModel>> response;
+        ResponseEntity<CollectionModel<PerformanceUpdateResponse>> response;
 
         try {
             response = ok(projectFiscalService.getAllPerformanceUpdates(projectPlanFiscalGuid));
@@ -232,24 +254,23 @@ public class ProjectFiscalController extends CommonController {
     }
 
     @PostMapping("/{id}/savePerformanceUpdate")
-    @Operation(summary = "Create a Performance Update Resource",
-            description = "Create a Performance Update Resource",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}))
+    @Operation(summary = "Create a Performance Update Resource", description = "Create a Performance Update Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.CREATE_PERFORMANCE_UPDATE')")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ProjectFiscalModel.class))),
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = PerformanceUpdateResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
-    public ResponseEntity<PerformanceUpdateModel> createPerformanceUpdate(
+    public ResponseEntity<PerformanceUpdateResponse> createPerformanceUpdate(
             @PathVariable("id") String projectPlanFiscalGuid,
-            @Valid @RequestBody NewPerformanceUpdateModel performanceUpdateModel) {
+            @Valid @RequestBody PerformanceUpdateRequest performanceUpdateModel) {
         log.debug(" >> createPerformanceUpdate");
-        ResponseEntity<PerformanceUpdateModel> response;
+        ResponseEntity<PerformanceUpdateResponse> response;
 
         try {
-            PerformanceUpdateModel createdModel = projectFiscalService.createPerformanceUpdate(projectPlanFiscalGuid, initializeNewPerformanceUpdateAttachment(performanceUpdateModel));
+            PerformanceUpdateResponse createdModel = projectFiscalService.createPerformanceUpdate(projectPlanFiscalGuid,
+                    initializeNewPerformanceUpdateAttachment(performanceUpdateModel));
             response = ResponseEntity.status(201).body(createdModel);
         } catch (DataIntegrityViolationException e) {
             response = badRequest();
@@ -266,15 +287,16 @@ public class ProjectFiscalController extends CommonController {
         return response;
     }
 
-    private PerformanceUpdateModel initializeNewPerformanceUpdateAttachment(NewPerformanceUpdateModel resource) {
-        PerformanceUpdateModel model = new PerformanceUpdateModel(); 
+    private PerformanceUpdateResponse initializeNewPerformanceUpdateAttachment(PerformanceUpdateRequest resource) {
+        PerformanceUpdateResponse model = new PerformanceUpdateResponse();
         model.setCreateUser(getWebAdeAuthentication().getUserId());
         model.setUpdateUser(getWebAdeAuthentication().getUserId());
         model.setSubmittedByUserid(getWebAdeAuthentication().getUserId());
         model.setSubmittedByGuid(getWebAdeAuthentication().getUserGuid());
         model.setRevisionCount(0);
-        
-        model.setSubmittedBy(String.format("%s, %s", getWebAdeAuthentication().getFamilyName(), getWebAdeAuthentication().getGivenName()));
+
+        model.setSubmittedBy(String.format("%s, %s", getWebAdeAuthentication().getFamilyName(),
+                getWebAdeAuthentication().getGivenName()));
 
         model.setReportingPeriod(resource.getReportingPeriod());
         model.setProgressStatusCode(resource.getProgressStatusCode());
@@ -293,74 +315,104 @@ public class ProjectFiscalController extends CommonController {
         return model;
     }
 
-    @GetMapping("/{projectPlanFiscalGuid}/closeout")
-    @Operation(summary = "Fetch Close Out for Project Fiscal Plan", description = "Fetch Close Out for Project Fiscal Plan", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+    @GetMapping("/{projectPlanFiscalGuid}/closeouts")
+    @Operation(summary = "Fetch Closeouts for Project Fiscal Plan", description = "Fetch Closeouts for Project Fiscal Plan", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
             "WFPREV" }), extensions = {
                     @Extension(properties = {
                             @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
                             @ExtensionProperty(name = "throttling-tier", value = "Unlimited") }) })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = FiscalCloseoutModel.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))) })
-    public ResponseEntity<FiscalCloseoutModel> getFiscalCloseout(
+    public ResponseEntity<CollectionModel<FiscalCloseoutResponse>> getAllFiscalCloseouts(
             @PathVariable("projectId") String projectId,
             @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid) {
-        log.debug(" >> getFiscalCloseout");
-        ResponseEntity<FiscalCloseoutModel> response;
+        log.debug(" >> getAllFiscalCloseouts");
+        ResponseEntity<CollectionModel<FiscalCloseoutResponse>> response;
 
         try {
-            FiscalCloseoutModel model = projectFiscalService.getFiscalCloseout(projectPlanFiscalGuid);
-            response = model == null ? notFound() : ok(model);
+            response = ok(projectFiscalService.getAllFiscalCloseouts(projectPlanFiscalGuid));
         } catch (Exception e) {
             response = internalServerError();
-            log.error(" ### Error while fetching Close Out", e);
+            log.error(" ### Error while fetching Closeouts", e);
         }
 
-        log.debug(" << getFiscalCloseout");
+        log.debug(" << getAllFiscalCloseouts");
         return response;
     }
 
-    @PostMapping("/{projectPlanFiscalGuid}/closeout")
-    @Operation(summary = "Save Close Out Resource",
-            description = "Save a Close Out Resource",
-            security = @SecurityRequirement(name = "Webade-OAUTH2",
-                    scopes = {"WFPREV"}))
+    @PostMapping("/{id}/saveCloseout")
+    @Operation(summary = "Create a Closeout Resource", description = "Create a Closeout Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.CREATE_PERFORMANCE_UPDATE')")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = FiscalCloseoutModel.class))),
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = FiscalCloseoutResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
-    public ResponseEntity<FiscalCloseoutModel> saveFiscalCloseout(
-            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid,
-            @Valid @RequestBody FiscalCloseoutModel closeoutModel) {
-        log.debug(" >> saveFiscalCloseout");
-        ResponseEntity<FiscalCloseoutModel> response;
+    public ResponseEntity<FiscalCloseoutResponse> createFiscalCloseout(
+            @PathVariable("id") String projectPlanFiscalGuid,
+            @Valid @RequestBody FiscalCloseoutRequest closeoutModel) {
+        log.debug(" >> createFiscalCloseout");
+        ResponseEntity<FiscalCloseoutResponse> response;
 
         try {
-            FiscalCloseoutModel savedModel = projectFiscalService.saveFiscalCloseout(projectPlanFiscalGuid, initializeCloseoutModel(closeoutModel));
+            FiscalCloseoutResponse savedModel = projectFiscalService.createFiscalCloseout(projectPlanFiscalGuid,
+                    initializeNewFiscalCloseout(closeoutModel));
             response = ResponseEntity.status(201).body(savedModel);
         } catch (DataIntegrityViolationException e) {
             response = badRequest();
-            log.error(" ### DataIntegrityViolationException while saving Close Out", e);
+            log.error(" ### DataIntegrityViolationException while saving Closeout", e);
         } catch (Exception e) {
             response = internalServerError();
-            log.error(" ### Error while saving Close Out", e);
+            log.error(" ### Error while saving Closeout", e);
         }
 
-        log.debug(" << saveFiscalCloseout");
+        log.debug(" << createFiscalCloseout");
         return response;
     }
 
-    private FiscalCloseoutModel initializeCloseoutModel(FiscalCloseoutModel resource) {
-        if (resource.getCreateUser() == null) {
-            resource.setCreateUser(getWebAdeAuthentication().getUserId());
-            resource.setRevisionCount(0);
+    private FiscalCloseoutResponse initializeNewFiscalCloseout(FiscalCloseoutRequest resource) {
+        FiscalCloseoutResponse model = new FiscalCloseoutResponse();
+        model.setCreateUser(getWebAdeAuthentication().getUserId());
+        model.setRevisionCount(0);
+        model.setUpdateUser(getWebAdeAuthentication().getUserId());
+        model.setOutcomeComment(resource.getOutcomeComment());
+        return model;
+    }
+
+    @DeleteMapping("/{projectPlanFiscalGuid}/closeouts/{closeoutGuid}")
+    @Operation(summary = "Delete a Fiscal Closeout Resource", description = "Delete a specific Fiscal Closeout Resource by its ID", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_FISCAL')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<Void> deleteFiscalCloseout(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid,
+            @PathVariable("closeoutGuid") String closeoutGuid) {
+        log.debug(" >> deleteFiscalCloseout with id: {}", closeoutGuid);
+
+        try {
+            projectFiscalService.deleteFiscalCloseout(closeoutGuid);
+            log.debug(" << deleteFiscalCloseout success");
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            log.warn(" ### Fiscal Closeout not found with id: {}", closeoutGuid, e);
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            log.warn(" ### Invalid ID provided: {}", closeoutGuid, e);
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error(" ### Error while deleting Fiscal Closeout with id: {}", closeoutGuid, e);
+            return internalServerError();
         }
-        resource.setUpdateUser(getWebAdeAuthentication().getUserId());
-        return resource;
     }
 }

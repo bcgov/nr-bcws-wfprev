@@ -11,8 +11,8 @@ import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
-import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse;
+import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateResponse;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FiscalCloseoutRepository;
@@ -255,7 +255,7 @@ public class ProjectFiscalService implements CommonService {
         }
     }
 
-    public CollectionModel<PerformanceUpdateModel> getAllPerformanceUpdates(String uuid) {
+    public CollectionModel<PerformanceUpdateResponse> getAllPerformanceUpdates(String uuid) {
         List<ProjectPlanFiscalPerfEntity> performanceUpdates = projectPlanFiscalPerfRepository
                 .findAllByProjectFiscal_ProjectPlanFiscalGuid(UUID.fromString(uuid),
                         Sort.by(Sort.Direction.DESC, "submittedTimestamp"));
@@ -263,7 +263,7 @@ public class ProjectFiscalService implements CommonService {
     }
 
     @Transactional
-    public PerformanceUpdateModel createPerformanceUpdate(String id, PerformanceUpdateModel resource) {
+    public PerformanceUpdateResponse createPerformanceUpdate(String id, PerformanceUpdateResponse resource) {
         UUID projectPlanFiscalGuid = UUID.fromString(id);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
                 .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + projectPlanFiscalGuid));
@@ -297,31 +297,31 @@ public class ProjectFiscalService implements CommonService {
 
     }
 
-    public FiscalCloseoutModel getFiscalCloseout(String projectPlanFiscalGuid) {
+    public CollectionModel<FiscalCloseoutResponse> getAllFiscalCloseouts(String projectPlanFiscalGuid) {
         UUID guid = UUID.fromString(projectPlanFiscalGuid);
-        return fiscalCloseoutRepository.findByProjectFiscal_ProjectPlanFiscalGuid(guid)
-                .map(fiscalCloseoutResourceAssembler::toModel)
-                .orElse(null);
+        List<FiscalCloseoutEntity> closeouts = fiscalCloseoutRepository.findAllByProjectFiscal_ProjectPlanFiscalGuid(guid, Sort.by(Sort.Direction.DESC, "createDate"));
+        return fiscalCloseoutResourceAssembler.toCollectionModel(closeouts);
     }
 
     @Transactional
-    public FiscalCloseoutModel saveFiscalCloseout(String id, FiscalCloseoutModel resource) {
+    public FiscalCloseoutResponse createFiscalCloseout(String id, FiscalCloseoutResponse resource) {
         UUID projectPlanFiscalGuid = UUID.fromString(id);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
                 .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + projectPlanFiscalGuid));
 
-        FiscalCloseoutEntity entity;
-        if (resource.getProjectPlanFiscalCloseoutGuid() != null) {
-            UUID guid = UUID.fromString(resource.getProjectPlanFiscalCloseoutGuid());
-            FiscalCloseoutEntity existing = fiscalCloseoutRepository.findById(guid)
-                    .orElseThrow(() -> new EntityNotFoundException("Close out not found: " + guid));
-            entity = fiscalCloseoutResourceAssembler.updateEntity(resource, existing);
-        } else {
-            entity = fiscalCloseoutResourceAssembler.toEntity(resource, projectFiscalEntity);
-            entity.setProjectPlanFiscalCloseoutGuid(UUID.randomUUID());
-        }
+        FiscalCloseoutEntity entity = fiscalCloseoutResourceAssembler.toEntity(resource, projectFiscalEntity);
+        entity.setProjectPlanFiscalCloseoutGuid(UUID.randomUUID());
 
         FiscalCloseoutEntity savedEntity = fiscalCloseoutRepository.save(entity);
         return fiscalCloseoutResourceAssembler.toModel(savedEntity);
+    }
+
+    @Transactional
+    public void deleteFiscalCloseout(String closeoutGuid) {
+        UUID guid = UUID.fromString(closeoutGuid);
+        if (!fiscalCloseoutRepository.existsById(guid)) {
+            throw new EntityNotFoundException("Fiscal Closeout not found: " + closeoutGuid);
+        }
+        fiscalCloseoutRepository.deleteById(guid);
     }
 }
