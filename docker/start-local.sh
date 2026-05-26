@@ -7,12 +7,14 @@ cd "$SCRIPT_DIR/.."
 
 CLEAN=false
 RESTORE_DATA=false
+WATCH=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -c|--clean) CLEAN=true ;;
         -r|--restore-data) RESTORE_DATA=true ;;
+        -w|--watch) WATCH=true ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -42,7 +44,13 @@ fi
 cd "$SCRIPT_DIR/.."
 
 # Remove orphans to clean up potential old service states
-docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile dev up -d --build --remove-orphans
+if [ "$WATCH" = true ]; then
+    echo "Starting environment with Client in WATCH (live reload) mode..."
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile dev-watch up -d --build --remove-orphans
+else
+    echo "Starting environment with Client in standard static runner mode..."
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile dev up -d --build --remove-orphans
+fi
 
 if [ "$RESTORE_DATA" = true ]; then
     echo "Data restore requested. Waiting for Liquibase to complete migrations..."
@@ -59,7 +67,7 @@ if [ "$RESTORE_DATA" = true ]; then
     echo "Liquibase finished (0). Restoring data from dump..."
     # Run pg_restore in data-only mode (temporarily disable set -e as pg_restore returns 1 on warnings)
     set +e
-    docker exec -i wfprev-postgres pg_restore -U wfprev -d wfprev --data-only --disable-triggers /dump/wfprev.dump/wfprev.dump
+    MSYS_NO_PATHCONV=1 docker exec -i wfprev-postgres pg_restore -U wfprev -d wfprev --data-only --disable-triggers /dump/wfprev.dump/wfprev.dump
     RESTORE_STATUS=$?
     set -e
 

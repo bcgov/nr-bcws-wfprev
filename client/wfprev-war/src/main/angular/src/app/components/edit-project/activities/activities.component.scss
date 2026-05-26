@@ -316,9 +316,6 @@
   padding: 0 !important;     /* remove inner padding */
 }
 
-:host ::ng-deep .mat-mdc-checkbox-disabled .mdc-label {
-  margin-left: 12px !important;
-}
 
 ::ng-deep .mat-form-field-disabled .mdc-text-field {
     margin-top: 6px;

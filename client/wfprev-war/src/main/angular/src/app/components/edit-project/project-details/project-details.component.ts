@@ -863,7 +863,9 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       this.bcParksSectionCode = this.allBcParksSections.filter(d => d.parentOrgUnitId == regionId);
 
       if (regionId) {
-        this.detailsForm.get('bcParksSectionOrgUnitId')?.enable();
+        if (!this.isViewMod) {
+          this.detailsForm.get('bcParksSectionOrgUnitId')?.enable();
+        }
       } else {
         this.detailsForm.get('bcParksSectionOrgUnitId')?.reset();
         this.detailsForm.get('bcParksSectionOrgUnitId')?.disable();

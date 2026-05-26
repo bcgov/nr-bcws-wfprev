@@ -13,8 +13,26 @@ RUN npm install
 RUN npm run build -- --configuration local --base-href / --output-path=dist/wfprev
 
 
+# Dev Stage for Hot Reload / Watch Mode
+FROM node:20-alpine AS dev
+
+WORKDIR /app
+
+# Copy Angular project source
+COPY src/main/angular .
+
+# Install dependencies
+RUN npm install
+
+# Expose port
+EXPOSE 8080
+
+# Start angular dev server
+CMD ["npx", "ng", "serve", "--configuration", "local", "--host", "0.0.0.0", "--port", "8080", "--disable-host-check", "--poll", "2000"]
+
+
 # Runner Stage
-FROM node:20-alpine
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
