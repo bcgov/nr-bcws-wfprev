@@ -16,11 +16,10 @@ import { EvaluationCriteriaSectionCodes, ProjectTypes } from 'src/app/utils/cons
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 @Component({
-  selector: 'wfprev-evaluation-criteria',
-  standalone: true,
-  imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule, DetailButtonComponent, IconButtonComponent],
-  templateUrl: './evaluation-criteria.component.html',
-  styleUrl: './evaluation-criteria.component.scss'
+    selector: 'wfprev-evaluation-criteria',
+    imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule, DetailButtonComponent, IconButtonComponent],
+    templateUrl: './evaluation-criteria.component.html',
+    styleUrl: './evaluation-criteria.component.scss'
 })
 export class EvaluationCriteriaComponent implements OnChanges, OnInit {
   @Input() project!: Project;

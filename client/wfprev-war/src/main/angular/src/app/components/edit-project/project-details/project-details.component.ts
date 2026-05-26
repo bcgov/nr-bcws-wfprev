@@ -33,13 +33,12 @@ import { TokenService } from 'src/app/services/token.service';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 @Component({
-  selector: 'wfprev-project-details',
-  standalone: true,
-  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
-    ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
-    EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
-  templateUrl: './project-details.component.html',
-  styleUrl: './project-details.component.scss'
+    selector: 'wfprev-project-details',
+    imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
+        ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
+        EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
+    templateUrl: './project-details.component.html',
+    styleUrl: './project-details.component.scss'
 })
 export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;

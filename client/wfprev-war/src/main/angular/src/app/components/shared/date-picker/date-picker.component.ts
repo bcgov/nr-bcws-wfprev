@@ -8,21 +8,20 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { CUSTOM_DATE_FORMATS } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-date-picker',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule
-  ],
-  templateUrl: './date-picker.component.html',
-  styleUrl: './date-picker.component.scss',
-  providers: [
-    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'en-CA' },
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
-  ]
+    selector: 'wfprev-date-picker',
+    imports: [
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDatepickerModule
+    ],
+    templateUrl: './date-picker.component.html',
+    styleUrl: './date-picker.component.scss',
+    providers: [
+        { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+        { provide: MAT_DATE_LOCALE, useValue: 'en-CA' },
+        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
+    ]
 })
 export class DatePickerComponent {
   @Input() control!: FormControl;

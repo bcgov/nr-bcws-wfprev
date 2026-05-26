@@ -15,17 +15,16 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
-  selector: 'wfprev-create-new-project-dialog',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    TextFieldModule,
-    MatTooltipModule,
-    TextareaComponent
-  ],
-  templateUrl: './create-new-project-dialog.component.html',
-  styleUrls: ['./create-new-project-dialog.component.scss']
+    selector: 'wfprev-create-new-project-dialog',
+    imports: [
+        ReactiveFormsModule,
+        CommonModule,
+        TextFieldModule,
+        MatTooltipModule,
+        TextareaComponent
+    ],
+    templateUrl: './create-new-project-dialog.component.html',
+    styleUrls: ['./create-new-project-dialog.component.scss']
 })
 export class CreateNewProjectDialogComponent implements OnInit {
   Validators = Validators;

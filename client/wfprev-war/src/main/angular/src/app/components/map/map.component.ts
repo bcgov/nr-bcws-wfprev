@@ -14,11 +14,10 @@ import { BC_BOUNDS } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 
 @Component({
-  selector: 'app-map',
-  standalone: true,
-  imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
-  templateUrl: './map.component.html',
-  styleUrl: './map.component.scss'
+    selector: 'app-map',
+    imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
+    templateUrl: './map.component.html',
+    styleUrl: './map.component.scss'
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;

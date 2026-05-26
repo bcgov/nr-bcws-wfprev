@@ -37,35 +37,34 @@ import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-si
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
-  selector: 'wfprev-project-fiscals',
-  templateUrl: './project-fiscals.component.html',
-  styleUrls: ['./project-fiscals.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatTabsModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    MatExpansionModule,
-    CurrencyPipe,
-    MatMenuModule,
-    ActivitiesComponent,
-    FiscalMapComponent,
-    MatTooltipModule,
-    ExpansionIndicatorComponent,
-    IconButtonComponent,
-    SelectFieldComponent,
-    MatTooltip,
-    InputFieldComponent,
-    DropdownButtonComponent,
-    StatusBadgeComponent,
-    EndorsementApprovalComponent,
-    TimestampComponent,
-    TextareaComponent,
-    PerformanceUpdatesComponent,
-    MatProgressSpinnerModule
-]
+    selector: 'wfprev-project-fiscals',
+    templateUrl: './project-fiscals.component.html',
+    styleUrls: ['./project-fiscals.component.scss'],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatTabsModule,
+        MatButtonModule,
+        MatSlideToggleModule,
+        MatExpansionModule,
+        CurrencyPipe,
+        MatMenuModule,
+        ActivitiesComponent,
+        FiscalMapComponent,
+        MatTooltipModule,
+        ExpansionIndicatorComponent,
+        IconButtonComponent,
+        SelectFieldComponent,
+        MatTooltip,
+        InputFieldComponent,
+        DropdownButtonComponent,
+        StatusBadgeComponent,
+        EndorsementApprovalComponent,
+        TimestampComponent,
+        TextareaComponent,
+        PerformanceUpdatesComponent,
+        MatProgressSpinnerModule
+    ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @Input() focusedFiscalId: string | null = null;

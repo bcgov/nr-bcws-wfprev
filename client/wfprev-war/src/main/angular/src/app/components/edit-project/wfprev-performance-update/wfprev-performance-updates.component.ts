@@ -18,11 +18,10 @@ import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.com
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
-  selector: 'wfprev-performance-updates',
-  standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
-  templateUrl: './wfprev-performance-updates.component.html',
-  styleUrl: './wfprev-performance-updates.component.scss'
+    selector: 'wfprev-performance-updates',
+    imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
+    templateUrl: './wfprev-performance-updates.component.html',
+    styleUrl: './wfprev-performance-updates.component.scss'
 })
 export class PerformanceUpdatesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';

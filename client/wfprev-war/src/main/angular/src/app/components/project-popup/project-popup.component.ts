@@ -10,11 +10,10 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
-  selector: 'wfprev-project-popup',
-  standalone: true,
-  imports: [CommonModule, FiscalCardComponent, IconButtonComponent, MatTooltip],
-  templateUrl: './project-popup.component.html',
-  styleUrls: ['./project-popup.component.scss']
+    selector: 'wfprev-project-popup',
+    imports: [CommonModule, FiscalCardComponent, IconButtonComponent, MatTooltip],
+    templateUrl: './project-popup.component.html',
+    styleUrls: ['./project-popup.component.scss']
 })
 export class ProjectPopupComponent implements OnInit {
   @Input() project: any;

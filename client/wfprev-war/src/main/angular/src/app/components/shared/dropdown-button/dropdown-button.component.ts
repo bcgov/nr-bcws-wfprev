@@ -6,15 +6,14 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-dropdown-button',
-  templateUrl: './dropdown-button.component.html',
-  styleUrls: ['./dropdown-button.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatMenuModule,
-    MatButtonModule
-  ]
+    selector: 'wfprev-dropdown-button',
+    templateUrl: './dropdown-button.component.html',
+    styleUrls: ['./dropdown-button.component.scss'],
+    imports: [
+        CommonModule,
+        MatMenuModule,
+        MatButtonModule
+    ]
 })
 export class DropdownButtonComponent {
   @Input() status!: string;

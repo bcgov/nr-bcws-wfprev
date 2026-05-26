@@ -8,11 +8,10 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { EditProjectTabIndexes, ResourcesRoutes } from 'src/app/utils';
 
 @Component({
-  selector: 'wfprev-edit-project',
-  standalone: true,
-  imports: [MatTabsModule, ProjectDetailsComponent],
-  templateUrl: './edit-project.component.html',
-  styleUrl: './edit-project.component.scss'
+    selector: 'wfprev-edit-project',
+    imports: [MatTabsModule, ProjectDetailsComponent],
+    templateUrl: './edit-project.component.html',
+    styleUrl: './edit-project.component.scss'
 })
 export class EditProjectComponent implements CanComponentDeactivate, OnInit {
   @ViewChild('fiscalsContainer', { read: ViewContainerRef }) fiscalsContainer!: ViewContainerRef;

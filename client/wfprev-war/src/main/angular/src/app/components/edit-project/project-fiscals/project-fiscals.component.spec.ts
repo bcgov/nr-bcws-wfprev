@@ -50,8 +50,9 @@ describe('ProjectFiscalsComponent', () => {
 
   @Component({
     selector: 'wfprev-fiscal-map',
-    template: '<div></div>'
-  })
+    template: '<div></div>',
+    standalone: false
+})
   class MockFiscalMapComponent {
     ngOnInit() { }
     ngAfterViewInit() { }
@@ -59,8 +60,9 @@ describe('ProjectFiscalsComponent', () => {
   }
   @Component({
     selector: 'wfprev-activities',
-    template: ''
-  })
+    template: '',
+    standalone: false
+})
   class MockActivitiesComponent {
     isFormDirty = () => false;
   }

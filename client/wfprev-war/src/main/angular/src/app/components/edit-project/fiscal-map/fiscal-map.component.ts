@@ -8,11 +8,10 @@ import { ResourcesRoutes } from 'src/app/utils';
 import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src/app/utils/tools';
 
 @Component({
-  selector: 'wfprev-fiscal-map',
-  standalone: true,
-  imports: [],
-  templateUrl: './fiscal-map.component.html',
-  styleUrl: './fiscal-map.component.scss'
+    selector: 'wfprev-fiscal-map',
+    imports: [],
+    templateUrl: './fiscal-map.component.html',
+    styleUrl: './fiscal-map.component.scss'
 })
 export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     @Input() fiscalGuid: any = '';

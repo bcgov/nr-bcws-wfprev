@@ -10,16 +10,15 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { EnvironmentIndicators } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-app-header',
-  standalone: true,
-  imports: [
-    CommonModule, // Replace BrowserModule with CommonModule
-    MatMenuModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
-  templateUrl: './app-header.component.html',
-  styleUrls: ['./app-header.component.scss']
+    selector: 'wfprev-app-header',
+    imports: [
+        CommonModule, // Replace BrowserModule with CommonModule
+        MatMenuModule,
+        MatButtonModule,
+        MatIconModule,
+    ],
+    templateUrl: './app-header.component.html',
+    styleUrls: ['./app-header.component.scss']
 })
 export class AppHeaderComponent implements OnInit {
 

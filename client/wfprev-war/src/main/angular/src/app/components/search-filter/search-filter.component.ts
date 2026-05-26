@@ -31,21 +31,20 @@ type MultiSelectConfig = {
 };
 
 @Component({
-  selector: 'wfprev-search-filter',
-  standalone: true,
-  imports: [
-    FormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-    CommonModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './search-filter.component.html',
-  styleUrl: './search-filter.component.scss'
+    selector: 'wfprev-search-filter',
+    imports: [
+        FormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatCheckboxModule,
+        MatInputModule,
+        MatIconModule,
+        MatButtonModule,
+        CommonModule,
+        ReactiveFormsModule
+    ],
+    templateUrl: './search-filter.component.html',
+    styleUrl: './search-filter.component.scss'
 })
 export class SearchFilterComponent implements OnInit {
 
