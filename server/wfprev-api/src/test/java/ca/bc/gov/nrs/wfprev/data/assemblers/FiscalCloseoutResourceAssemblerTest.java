@@ -1,0 +1,54 @@
+package ca.bc.gov.nrs.wfprev.data.assemblers;
+
+import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseoutEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
+import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+
+class FiscalCloseoutResourceAssemblerTest {
+
+    FiscalCloseoutResourceAssembler assembler = new FiscalCloseoutResourceAssembler();
+
+    @Test
+    void testToModel_MapsEntityToModel() {
+        UUID projectPlanFiscalGuid = UUID.randomUUID();
+        ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
+        projectFiscalEntity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
+        
+        UUID projectPlanFiscalCloseoutGuid = UUID.randomUUID();
+        FiscalCloseoutEntity entity = new FiscalCloseoutEntity();
+        entity.setProjectPlanFiscalCloseoutGuid(projectPlanFiscalCloseoutGuid);
+        entity.setProjectFiscal(projectFiscalEntity);
+        entity.setOutcomeComment("Test comment");
+
+        FiscalCloseoutModel model = assembler.toModel(entity);
+
+        assertNotNull(model);
+        assertEquals(projectPlanFiscalCloseoutGuid.toString(), model.getProjectPlanFiscalCloseoutGuid());
+        assertEquals(projectPlanFiscalGuid.toString(), model.getProjectPlanFiscalGuid());
+        assertEquals("Test comment", model.getOutcomeComment());
+    }
+
+    @Test
+    void testToEntity_MapsModelToEntity() {
+        UUID projectPlanFiscalGuid = UUID.randomUUID();
+        FiscalCloseoutModel model = new FiscalCloseoutModel();
+        model.setProjectPlanFiscalGuid(projectPlanFiscalGuid.toString());
+        model.setOutcomeComment("Test comment");
+
+        ProjectFiscalEntity projectFiscalEntity = new ProjectFiscalEntity();
+        projectFiscalEntity.setProjectPlanFiscalGuid(projectPlanFiscalGuid);
+
+        FiscalCloseoutEntity entity = assembler.toEntity(model, projectFiscalEntity);
+
+        assertNotNull(entity);
+        assertEquals(projectPlanFiscalGuid, entity.getProjectFiscal().getProjectPlanFiscalGuid());
+        assertEquals("Test comment", entity.getOutcomeComment());
+    }
+}
