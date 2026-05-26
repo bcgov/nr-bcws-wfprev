@@ -5,15 +5,32 @@ mat-selection-list .mat-mdc-list-option {
     font-family: $font-family-main;
     font-size: $font-size;
 
+    .mdc-form-field {
+        gap: 12px;
+        font-size: 14px;
+        color: #282828;
+    }
+
     .mdc-checkbox {
         padding-left: 0;
         padding-right: 0;
+
+        .mdc-checkbox__background {
+            left: 0 !important;
+        }
+
+        .mdc-checkbox__native-control {
+            width: 18px !important;
+            height: 18px !important;
+            opacity: 0 !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+        }
 
         .mdc-checkbox__native-control:enabled {
             &:checked, 
             &:not(:checked) {
                 &~.mdc-checkbox__background {
-                    left: 0;
                     background-color: $colour-white;
                     border: 1px solid $colour-light-grey;
                 } 

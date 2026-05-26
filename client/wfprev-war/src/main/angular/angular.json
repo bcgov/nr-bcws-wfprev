@@ -54,6 +54,16 @@
                   "with": "src/environments/environment.local.ts"
                 }
               ],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                "src/assets/data",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/@qqnluaq/smk/dist/assets",
+                  "output": "assets/smk/assets"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
@@ -95,6 +105,9 @@
           "configurations": {
             "production": {
               "buildTarget": "wfprev:build:production"
+            },
+            "local": {
+              "buildTarget": "wfprev:build:local"
             },
             "development": {
               "buildTarget": "wfprev:build:development"
