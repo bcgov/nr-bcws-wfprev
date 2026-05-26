@@ -125,10 +125,10 @@ describe('ProjectDetailsComponent', () => {
     });
 
     it('should mark detailsForm as invalid if required fields are missing', () => {
+      component.detailsForm.enable();
       component.detailsForm.controls['projectTypeCode'].setValue('');
       expect(component.detailsForm.invalid).toBeTrue();
     });
-
 
     it('should mark latLongForm as invalid if latitude or longitude is empty', () => {
       component.latLongForm.controls['latitude'].setValue('');
@@ -145,6 +145,7 @@ describe('ProjectDetailsComponent', () => {
     it('should include wildfireOrgUnitId as required in the form', () => {
       const control = component.detailsForm.get('wildfireOrgUnitId');
       expect(control).toBeTruthy();
+      control?.enable();
       control?.setValue('');
       control?.markAsTouched();
       expect(control?.hasError('required')).toBeTrue();
@@ -976,16 +977,31 @@ describe('ProjectDetailsComponent', () => {
       expect(component.detailsForm.get('forestDistrictOrgUnitId')?.value).toBe('');
     });
 
-    it('should filter bcParksSectionCode based on selected bcParksRegionOrgUnitId and enable the section control', () => {
+    it('should filter bcParksSectionCode based on selected bcParksRegionOrgUnitId and enable the section control if not in view mod', () => {
+      component.isViewMod = false;
       const bcParksSectionControl = component.detailsForm.get('bcParksSectionOrgUnitId');
-      expect(bcParksSectionControl?.disabled).toBeFalse();
+      
+      // Act
+      component.detailsForm.get('bcParksRegionOrgUnitId')?.setValue(600);
+
+      // Assert
+      expect(component.bcParksSectionCode).toEqual([
+        { orgUnitId: 11, orgUnitName: 'Section Y', parentOrgUnitId: '600' }
+      ]);
+      expect(bcParksSectionControl?.enabled).toBeTrue();
+    });
+
+    it('should filter bcParksSectionCode but keep section control disabled if in view mod', () => {
+      component.isViewMod = true;
+      const bcParksSectionControl = component.detailsForm.get('bcParksSectionOrgUnitId');
+      bcParksSectionControl?.disable();
 
       component.detailsForm.get('bcParksRegionOrgUnitId')?.setValue(600);
 
       expect(component.bcParksSectionCode).toEqual([
         { orgUnitId: 11, orgUnitName: 'Section Y', parentOrgUnitId: '600' }
       ]);
-      expect(bcParksSectionControl?.enabled).toBeTrue();
+      expect(bcParksSectionControl?.disabled).toBeTrue();
     });
 
     it('should reset and disable bcParksSectionOrgUnitId when region is unset', () => {

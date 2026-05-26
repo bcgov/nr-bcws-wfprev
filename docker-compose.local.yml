@@ -3,6 +3,9 @@ services:
     build:
       context: server/wfprev-api
       dockerfile: Dockerfile.local
+    profiles:
+      - dev
+      - dev-watch
     environment:
       SPRING_PROFILES_ACTIVE: dev
       REPORT_GENERATOR_LAMBDA_URL: https://mock-lambda-url
@@ -26,6 +29,7 @@ services:
     build:
       context: client/wfprev-war
       dockerfile: Dockerfile.local
+      target: runner
     profiles:
       - dev
     ports:
@@ -34,6 +38,29 @@ services:
       - wfprev-network
     volumes:
       - ./docker/login-mock.html:/app/dist/wfprev/login-mock.html
+    depends_on:
+      api-dev:
+        condition: service_started
+      db:
+        condition: service_healthy
+
+  client-watch:
+    build:
+      context: client/wfprev-war
+      dockerfile: Dockerfile.local
+      target: dev
+    profiles:
+      - dev-watch
+    ports:
+      - "4200:8080"
+    networks:
+      wfprev-network:
+        aliases:
+          - client
+    volumes:
+      - ./client/wfprev-war/src/main/angular:/app
+      - /app/node_modules
+      - ./docker/login-mock.html:/app/src/login-mock.html
     depends_on:
       api-dev:
         condition: service_started
