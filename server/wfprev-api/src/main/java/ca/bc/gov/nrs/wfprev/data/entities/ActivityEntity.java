@@ -119,6 +119,14 @@ public class ActivityEntity implements Serializable {
     private Boolean isSpatialAddedInd;
 
     @NotNull
+    @Builder.Default
+    @Column(name = "carry_forward_ind", nullable = false)
+    private Boolean isCarryForwardInd = false;
+
+    @Column(name = "final_outcome_comments", length = 4000)
+    private String finalOutcomeComments;
+
+    @NotNull
     @Column(name = "revision_count", columnDefinition = "Decimal(10) default '0'")
     @Version
     private Integer revisionCount;

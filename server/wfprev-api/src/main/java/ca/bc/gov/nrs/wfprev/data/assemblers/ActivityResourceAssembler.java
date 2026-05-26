@@ -64,6 +64,8 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setOutstandingObligationsInd(resource.getOutstandingObligationsInd());
         entity.setActivityComment(resource.getActivityComment());
         entity.setIsSpatialAddedInd(resource.getIsSpatialAddedInd());
+        entity.setIsCarryForwardInd(resource.getIsCarryForwardInd());
+        entity.setFinalOutcomeComments(resource.getFinalOutcomeComments());
         entity.setRevisionCount(resource.getRevisionCount());
         entity.setCreateUser(resource.getCreateUser());
         entity.setCreateDate(resource.getCreateDate());
@@ -109,6 +111,8 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         resource.setOutstandingObligationsInd(entity.getOutstandingObligationsInd());
         resource.setActivityComment(entity.getActivityComment());
         resource.setIsSpatialAddedInd(entity.getIsSpatialAddedInd());
+        resource.setIsCarryForwardInd(entity.getIsCarryForwardInd());
+        resource.setFinalOutcomeComments(entity.getFinalOutcomeComments());
         resource.setRevisionCount(entity.getRevisionCount());
         resource.setCreateUser(entity.getCreateUser());
         resource.setCreateDate(entity.getCreateDate());
@@ -197,6 +201,8 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
         entity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
         entity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
+        entity.setIsCarryForwardInd(nonNullOrDefault(model.getIsCarryForwardInd(), existingEntity.getIsCarryForwardInd()));
+        entity.setFinalOutcomeComments(nonNullOrDefault(model.getFinalOutcomeComments(), existingEntity.getFinalOutcomeComments()));
         entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
         entity.setCreateUser(existingEntity.getCreateUser());
         entity.setCreateDate(existingEntity.getCreateDate());

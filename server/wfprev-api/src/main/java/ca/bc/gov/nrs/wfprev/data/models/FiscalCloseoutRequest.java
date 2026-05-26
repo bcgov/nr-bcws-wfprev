@@ -20,10 +20,8 @@ import org.springframework.hateoas.server.core.Relation;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FiscalCloseoutModel extends CommonModel<FiscalCloseoutModel> {
-    private String projectPlanFiscalCloseoutGuid;
-    private String projectPlanFiscalGuid;
-    
+public class FiscalCloseoutRequest extends CommonModel<FiscalCloseoutRequest> {
+
     @NotBlank
     private String outcomeComment;
 }

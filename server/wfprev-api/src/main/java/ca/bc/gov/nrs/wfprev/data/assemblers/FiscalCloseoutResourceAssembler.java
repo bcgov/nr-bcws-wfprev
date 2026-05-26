@@ -3,7 +3,7 @@ package ca.bc.gov.nrs.wfprev.data.assemblers;
 import ca.bc.gov.nrs.wfprev.controllers.ProjectFiscalController;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseoutEntity;
-import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -12,15 +12,15 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemblerSupport<FiscalCloseoutEntity, FiscalCloseoutModel> {
+public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemblerSupport<FiscalCloseoutEntity, FiscalCloseoutResponse> {
 
     public FiscalCloseoutResourceAssembler() {
-        super(ProjectFiscalController.class, FiscalCloseoutModel.class);
+        super(ProjectFiscalController.class, FiscalCloseoutResponse.class);
     }
 
     @Override
-    public FiscalCloseoutModel toModel(FiscalCloseoutEntity entity) {
-        FiscalCloseoutModel model = instantiateModel(entity);
+    public FiscalCloseoutResponse toModel(FiscalCloseoutEntity entity) {
+        FiscalCloseoutResponse model = instantiateModel(entity);
 
         model.setProjectPlanFiscalCloseoutGuid(entity.getProjectPlanFiscalCloseoutGuid() != null ?
                 entity.getProjectPlanFiscalCloseoutGuid().toString() : null);
@@ -37,7 +37,7 @@ public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemble
         return model;
     }
 
-    public FiscalCloseoutEntity toEntity(FiscalCloseoutModel model, ProjectFiscalEntity projectFiscalEntity) {
+    public FiscalCloseoutEntity toEntity(FiscalCloseoutResponse model, ProjectFiscalEntity projectFiscalEntity) {
         FiscalCloseoutEntity entity = new FiscalCloseoutEntity();
 
         if (model.getProjectPlanFiscalCloseoutGuid() != null) {
@@ -55,7 +55,7 @@ public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemble
         return entity;
     }
 
-    public FiscalCloseoutEntity updateEntity(FiscalCloseoutModel model, FiscalCloseoutEntity existingEntity) {
+    public FiscalCloseoutEntity updateEntity(FiscalCloseoutResponse model, FiscalCloseoutEntity existingEntity) {
         existingEntity.setOutcomeComment(model.getOutcomeComment());
         existingEntity.setRevisionCount(model.getRevisionCount());
         existingEntity.setUpdateUser(model.getUpdateUser());
