@@ -418,6 +418,7 @@ class ActivityControllerTest {
                 .isResultsReportableInd(true)
                 .outstandingObligationsInd(false)
                 .isSpatialAddedInd(true)
+                .isCarryForwardInd(false)
                 .build();
     }
 }
