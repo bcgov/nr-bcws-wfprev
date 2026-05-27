@@ -526,8 +526,8 @@ class ProjectFiscalControllerTest {
                 when(projectFiscalService.createFiscalCloseout(eq(projectPlanFiscalGuid),
                                 any(FiscalCloseoutResponse.class))).thenReturn(outputModel);
 
-                mockMvc.perform(MockMvcRequestBuilders
-                                .post("/projects/1234/projectFiscals/{id}/saveCloseout", projectPlanFiscalGuid)
+                 mockMvc.perform(MockMvcRequestBuilders
+                                .post("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts", projectPlanFiscalGuid)
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                                 .content(gson.toJson(inputModel))
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -544,7 +544,7 @@ class ProjectFiscalControllerTest {
                                 .build();
 
                 mockMvc.perform(MockMvcRequestBuilders
-                                .post("/projects/1234/projectFiscals/{id}/saveCloseout", projectPlanFiscalGuid)
+                                .post("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts", projectPlanFiscalGuid)
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
                                 .content(gson.toJson(inputModel))
                                 .contentType(MediaType.APPLICATION_JSON))
