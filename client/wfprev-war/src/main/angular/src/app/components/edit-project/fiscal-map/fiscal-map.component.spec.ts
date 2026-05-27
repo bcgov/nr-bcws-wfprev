@@ -4,6 +4,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import * as L from 'leaflet';
+import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 class MockProjectService {
   getProjectFiscalsByProjectGuid = jasmine.createSpy().and.returnValue(of({
@@ -40,7 +41,6 @@ describe('FiscalMapComponent', () => {
   let component: FiscalMapComponent;
   let fixture: ComponentFixture<FiscalMapComponent>;
   let mockMapInstance: any;
-  let originalLControl: any;
 
   let geoJsonAddToSpy: jasmine.Spy;
 
@@ -49,8 +49,6 @@ describe('FiscalMapComponent', () => {
     const container = document.createElement('div');
     container.setAttribute('id', 'fiscalMap');
     document.body.appendChild(container);
-  
-    originalLControl = L.control;
   
     geoJsonAddToSpy = jasmine.createSpy('addTo').and.returnValue({}); // shared spy
   
@@ -71,21 +69,12 @@ describe('FiscalMapComponent', () => {
       }
     };
   
-    spyOn(L, 'map').and.returnValue(mockMapInstance);
-    spyOn(L, 'marker').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
-    spyOn(L, 'tileLayer').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
-    spyOn(L, 'geoJSON').and.returnValue({ addTo: geoJsonAddToSpy } as any); // single spy
-    spyOn(L, 'featureGroup').and.returnValue({
-      getBounds: () => ({})
-    } as any);
-    spyOn(L as any, 'control').and.returnValue({
-      addTo: jasmine.createSpy('addTo'),
-      getPosition: jasmine.createSpy('getPosition'),
-      setPosition: jasmine.createSpy('setPosition'),
-      getContainer: jasmine.createSpy('getContainer'),
-      remove: jasmine.createSpy('remove'),
-      options: {}
-    });
+    spyOn(leafletProxy, 'map').and.returnValue(mockMapInstance);
+    spyOn(leafletProxy, 'marker').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
+    spyOn(leafletProxy, 'tileLayer').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
+    spyOn(leafletProxy, 'geoJSON').and.returnValue({ addTo: geoJsonAddToSpy } as any);
+    spyOn(leafletProxy, 'featureGroup').and.returnValue({ getBounds: () => ({}) } as any);
+    spyOn(L.Control.prototype, 'addTo').and.callFake(function(this: any) { return this; });
   
     const mockProjectService = new MockProjectService();
   
@@ -105,7 +94,6 @@ describe('FiscalMapComponent', () => {
   afterEach(() => {
     const container = document.getElementById('fiscalMap');
     if (container) container.remove();
-    (L as any).control = originalLControl;
     fixture.destroy();
   });
 
@@ -239,7 +227,7 @@ describe('FiscalMapComponent', () => {
       }
     ]);
   
-    expect(L.geoJSON).toHaveBeenCalledTimes(3);
+    expect(leafletProxy.geoJSON).toHaveBeenCalledTimes(3);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
     expect(mockFitBounds).toHaveBeenCalled();
   });
@@ -266,7 +254,7 @@ describe('FiscalMapComponent', () => {
   
     component.plotActivityBoundariesOnMap(mockBoundaries);
   
-    expect(L.geoJSON).toHaveBeenCalledTimes(2);
+    expect(leafletProxy.geoJSON).toHaveBeenCalledTimes(2);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(2);
   });
   
@@ -281,7 +269,7 @@ describe('FiscalMapComponent', () => {
       }
     ]);
   
-    expect(L.geoJSON).not.toHaveBeenCalled();
+    expect(leafletProxy.geoJSON).not.toHaveBeenCalled();
   });
 
   it('should plot project boundary with normal and GeometryCollection', () => {
@@ -302,7 +290,7 @@ describe('FiscalMapComponent', () => {
     ];
   
     component.plotProjectBoundary(boundary);
-    expect(L.geoJSON).toHaveBeenCalledTimes(3);
+    expect(leafletProxy.geoJSON).toHaveBeenCalledTimes(3);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
   });
   
@@ -480,7 +468,7 @@ describe('FiscalMapComponent', () => {
         L.latLngBounds([[48, -125], [49, -123]])
       );
   
-      (L.geoJSON as jasmine.Spy).and.callFake(() => ({
+     (leafletProxy.geoJSON as jasmine.Spy).and.callFake(() => ({
         getBounds: mockGetBounds
       }) as any);
   
@@ -575,7 +563,7 @@ describe('FiscalMapComponent', () => {
   
     component.plotProjectBoundary(boundaries);
   
-    expect(L.geoJSON).not.toHaveBeenCalled();
+    expect(leafletProxy.geoJSON).not.toHaveBeenCalled();
   });
   
   it('should plot project boundaries inside plotActivityBoundariesOnMap', () => {
@@ -599,7 +587,7 @@ describe('FiscalMapComponent', () => {
   
     component.plotActivityBoundariesOnMap(activityBoundaries);
   
-    expect(L.geoJSON).toHaveBeenCalledWith(
+    expect(leafletProxy.geoJSON).toHaveBeenCalledWith(
       jasmine.objectContaining({ type: 'Polygon' }),
       jasmine.objectContaining({
         style: jasmine.objectContaining({ color: '#3f3f3f' })

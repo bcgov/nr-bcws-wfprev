@@ -17,6 +17,7 @@ import { Project } from 'src/app/components/models';
 import { BC_BOUNDS } from 'src/app/utils/constants';
 import { TokenService } from 'src/app/services/token.service';
 import { PermissionsService } from 'src/app/services/permissions.service'
+import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 class MockAppConfigService {
   getConfig() {
@@ -167,11 +168,11 @@ describe('MapComponent', () => {
 
 
   beforeEach(() => {
-    (L as any).markerClusterGroup = () => ({
+    spyOn(leafletProxy as any, 'markerClusterGroup').and.returnValue({
       addLayer: jasmine.createSpy('addLayer'),
       clearLayers: jasmine.createSpy('clearLayers'),
       getLayers: jasmine.createSpy('getLayers').and.returnValue([]),
-    });
+    }as any);
     spyOn(L.Control.prototype, 'addTo').and.callFake(function (this: any) {
       return this;
     });

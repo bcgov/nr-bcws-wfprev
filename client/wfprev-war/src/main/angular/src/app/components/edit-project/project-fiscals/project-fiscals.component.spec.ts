@@ -917,15 +917,15 @@ describe('ProjectFiscalsComponent', () => {
       afterClosed: () => of(true) // Simulates user clicking "Confirm"
     } as any);
 
-    // ✅ Provide activities that match the fiscalGuid
-    (component as any).activitiesComponent = {
-      activities: [{ projectPlanFiscalGuid: 'test-guid' }]
-    };
-
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
     component.selectedTabIndex = 0;
 
     fixture.detectChanges();
+
+    // ✅ Provide activities that match the fiscalGuid
+    (component as any).activitiesComponent = {
+      activities: [{ projectPlanFiscalGuid: 'test-guid' }]
+    };
 
     component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
 

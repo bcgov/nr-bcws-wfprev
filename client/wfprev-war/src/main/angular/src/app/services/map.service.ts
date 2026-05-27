@@ -5,6 +5,7 @@ import { TokenService } from './token.service';
 import { StyleSpecification } from 'maplibre-gl';
 import * as L from 'leaflet';
 import { AppConfigService } from './app-config.service';
+import { leafletProxy } from './leaflet-proxy';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
@@ -478,7 +479,7 @@ export class MapService {
     };
 
     const token = this.tokenService.getOauthToken?.();
-    return (L as any).maplibreGL({
+    return leafletProxy.maplibreGL({
       style,
       pane: 'pane-project-boundary-gl',
       transformRequest: (url: string) =>
@@ -520,7 +521,7 @@ export class MapService {
     };
 
     const token = this.tokenService.getOauthToken?.();
-    return (L as any).maplibreGL({
+    return leafletProxy.maplibreGL({
       style,
       pane: 'pane-activity-boundary-gl',
       transformRequest: (url: string) =>

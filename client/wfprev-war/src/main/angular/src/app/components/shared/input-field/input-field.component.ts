@@ -19,7 +19,7 @@ export class InputFieldComponent {
   @Input() tooltip: string | null = null;
   @Input() type: 'text' | 'number' | 'email' = 'text';  
   @Input() errorMessages: { [key: string]: string } = {};
-  @Input() prefix: string | null = null;
+  @Input() inputPrefix: string | null = null;
   @Input() img: string | null = null;
   @Input() enableAmountFormat: boolean = false;
 

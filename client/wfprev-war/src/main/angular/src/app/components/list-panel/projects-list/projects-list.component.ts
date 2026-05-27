@@ -769,4 +769,8 @@ export class ProjectsListComponent implements OnInit {
     this.totalItems = updated.length;
     this.cdr.detectChanges();
   }
+
+  trackByProjectGuid(index: number, project: any): string {
+    return project.projectGuid;
+  }
 }

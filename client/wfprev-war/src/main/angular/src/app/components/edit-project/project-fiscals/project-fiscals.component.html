@@ -151,7 +151,7 @@
                                         <div class="form-item quarter-width-max">
                                           <wfprev-input-field [id]="'totalCostEstimateAmount'" [label]="'Original Cost Estimate'"
                                             [placeholder]="'0.00'" [control]="getFiscalControl(i, 'totalCostEstimateAmount')"
-                                            [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount').value" [prefix]="'$'"
+                                            [tooltip]="getFiscalControl(i, 'totalCostEstimateAmount').value" [inputPrefix]="'$'"
                                             [enableAmountFormat]="true"
                                             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }" />
                                           </div>
@@ -172,7 +172,7 @@
                                                 <wfprev-input-field [id]="'fiscalAncillaryFundAmount'" [label]="'Ancillary Funding Amount'"
                                                   [placeholder]="'0.00'" [control]="getFiscalControl(i, 'fiscalAncillaryFundAmount')"
                                                   [tooltip]="getFiscalControl(i, 'fiscalAncillaryFundAmount').value" [enableAmountFormat]="true"
-                                                  [prefix]="'$'"
+                                                  [inputPrefix]="'$'"
                                                   [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }" />
                                                 </div>
                                                 <div class="form-item quarter-width-max">
@@ -180,21 +180,21 @@
                                                     [control]="getFiscalControl(i, 'fiscalForecastAmount')"
                                                     [tooltip]="getFiscalControl(i, 'fiscalForecastAmount').value" [enableAmountFormat]="true"
                                                     [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                                                    [prefix]="'$'" />
+                                                    [inputPrefix]="'$'" />
                                                   </div>
                                                   <div class="form-item quarter-width-max">
                                                     <wfprev-input-field [id]="'fiscalReportedSpendAmount'" [label]="'Final Reported Spend'"
                                                       [placeholder]="'0.00'" [control]="getFiscalControl(i, 'fiscalReportedSpendAmount')"
                                                       [tooltip]="getFiscalControl(i, 'fiscalReportedSpendAmount').value" [enableAmountFormat]="true"
                                                       [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                                                      [prefix]="'$'" />
+                                                      [inputPrefix]="'$'" />
                                                     </div>
                                                     <div class="form-item quarter-width-max">
                                                       <wfprev-input-field [id]="'fiscalActualAmount'" [label]="'CFS Actual Spend'" [placeholder]="'0.00'"
                                                         [control]="getFiscalControl(i, 'fiscalActualAmount')"
                                                         [tooltip]="getFiscalControl(i, 'fiscalActualAmount').value" [enableAmountFormat]="true"
                                                         [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-                                                        [prefix]="'$'" />
+                                                        [inputPrefix]="'$'" />
                                                       </div>
                                                     </form>
                                                   }

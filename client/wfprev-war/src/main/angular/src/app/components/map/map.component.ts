@@ -12,6 +12,7 @@ import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { BC_BOUNDS } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
+import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 @Component({
     selector: 'app-map',
@@ -131,9 +132,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const legendHelper = new LeafletLegendService();
     this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
 
-    this.markersClusterGroup = L.markerClusterGroup({
+    this.markersClusterGroup = leafletProxy.markerClusterGroup({
       showCoverageOnHover: false,
-      iconCreateFunction: (cluster) =>
+      iconCreateFunction: (cluster: L.MarkerCluster) =>
         L.divIcon({
           html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
           className: 'custom-marker-cluster',

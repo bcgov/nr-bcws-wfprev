@@ -6,6 +6,7 @@ import { FileAttachment } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
 import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src/app/utils/tools';
+import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 @Component({
     selector: 'wfprev-fiscal-map',
@@ -85,7 +86,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             const lng = Number.parseFloat(this.projectLongitude);
     
             const teardropIcon = getBluePinIcon()
-            L.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
+            leafletProxy.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
     
             this.map.setView([lat, lng], 14); 
           }
@@ -253,7 +254,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         };
   
         const addToMap = (geom: any) => {
-          const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup);
+          const layer = leafletProxy.geoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup);
           allFiscalPolygons.push(layer); //  Track all layers
         };
       
@@ -273,7 +274,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       const geometry = item.boundaryGeometry;
       if (!geometry) return;
     
-      const layer = L.geoJSON(geometry, {
+      const layer = leafletProxy.geoJSON(geometry, {
         style: {
           color: '#3f3f3f',
           weight: 2,
@@ -284,7 +285,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     };
     
     if (allLayers.length > 0) {
-      const group = L.featureGroup(allLayers);
+      const group = leafletProxy.featureGroup(allLayers);
       this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
@@ -306,7 +307,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       };
   
       const addToMap = (geom: any) => {
-        const layer = L.geoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup);
+        const layer = leafletProxy.geoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup);
         layers.push(layer);
       };
   
@@ -320,7 +321,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     };
   
     if (layers.length > 0 && this.map) {
-      const group = L.featureGroup(layers);
+      const group = leafletProxy.featureGroup(layers);
       this.map.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
@@ -332,7 +333,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       (mapContainer as any)._leaflet_id = null;
     }
 
-    this.map = L.map('fiscalMap', {
+    this.map = leafletProxy.map('fiscalMap', {
       center: [49.00005, -124.0001], // Center of the boundary
       zoom: 14,
       zoomControl: true,
@@ -340,7 +341,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
     (this.map.zoomControl).setPosition('topright');
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    leafletProxy.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
@@ -364,7 +365,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
         for (const item of entry.boundary) {
           const geometry = item.geometry;
-          const layer = L.geoJSON(geometry);
+          const layer = leafletProxy.geoJSON(geometry);
           const layerBounds = layer.getBounds();
           latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
         }
@@ -375,7 +376,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     if (this.projectBoundary) {
       for (const item of this.projectBoundary) {
         const geometry = item.boundaryGeometry;
-        const layer = L.geoJSON(geometry);
+        const layer = leafletProxy.geoJSON(geometry);
         const layerBounds = layer.getBounds();
         latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
       }

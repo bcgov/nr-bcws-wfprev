@@ -6,7 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { OAuthService } from 'angular-oauth2-oidc';
-import * as L from 'leaflet';
 import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
 import { EvaluationCriteriaSummaryModel, ProjectFiscal } from 'src/app/components/models';
 import { AppConfigService } from 'src/app/services/app-config.service';
@@ -15,6 +14,9 @@ import { BC_BOUNDS, CodeTableKeys } from 'src/app/utils/constants';
 import * as toolUtils from 'src/app/utils/tools';
 import { formatLatLong } from 'src/app/utils/tools';
 import { ProjectDetailsComponent } from './project-details.component';
+import * as L from 'leaflet';
+import { leafletProxy } from 'src/app/services/leaflet-proxy';
+
 const mockApplicationConfig = {
   application: {
     baseUrl: 'http://test.com',
@@ -166,9 +168,9 @@ describe('ProjectDetailsComponent', () => {
 
       // Provide the service to the component
       component['projectService'] = projectServiceSpy;
-      spyOn(L, 'map').and.returnValue(mapSpy as unknown as L.Map);
-      spyOn(L, 'marker').and.returnValue(markerSpy);
-      spyOn(L, 'geoJSON').and.returnValue(geoJsonLayerSpy);
+      spyOn(leafletProxy, 'map').and.returnValue(mapSpy as unknown as L.Map);
+      spyOn(leafletProxy, 'marker').and.returnValue(markerSpy);
+      spyOn(leafletProxy, 'geoJSON').and.returnValue(geoJsonLayerSpy);
 
       // Return a valid bounds object from getBounds
       geoJsonLayerSpy.getBounds.and.returnValue({
@@ -206,7 +208,7 @@ describe('ProjectDetailsComponent', () => {
       };
 
       expect(projectServiceSpy.getProjectBoundaries).toHaveBeenCalledWith('some-guid');
-      expect(L.geoJSON).toHaveBeenCalledWith(mockBound.boundaryGeometry, jasmine.any(Object));
+      expect(leafletProxy.geoJSON).toHaveBeenCalledWith(mockBound.boundaryGeometry, jasmine.any(Object));
       expect(geoJsonLayerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     }));
 
@@ -258,20 +260,20 @@ describe('ProjectDetailsComponent', () => {
       component['map'] = mapSpy;
       component.initMap();
 
-      expect(L.map).not.toHaveBeenCalled();
+      expect(leafletProxy.map).not.toHaveBeenCalled();
     });
 
     it('should not reinitialize the map if it already exists', () => {
       component['map'] = mapSpy;
       component.ngAfterViewInit();
-      expect(L.map).toHaveBeenCalledTimes(0);
+      expect(leafletProxy.map).toHaveBeenCalledTimes(0);
     });
 
 
 
     it('should initialize map with default BC bounds if map is not defined', () => {
       component.initMap();
-      expect(L.map).toHaveBeenCalled();
+      expect(leafletProxy.map).toHaveBeenCalled();
       expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
     });
 
@@ -279,7 +281,7 @@ describe('ProjectDetailsComponent', () => {
       component['map'] = undefined;
       component.initMap();
 
-      expect(L.map).toHaveBeenCalled();
+      expect(leafletProxy.map).toHaveBeenCalled();
       expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
     });
 
@@ -292,7 +294,7 @@ describe('ProjectDetailsComponent', () => {
     it('should add a marker when updating the map view', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
-      expect(L.marker).toHaveBeenCalledWith(
+      expect(leafletProxy.marker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
         jasmine.objectContaining({
           icon: jasmine.any(Object),
@@ -308,7 +310,7 @@ describe('ProjectDetailsComponent', () => {
       component.updateMap(49.553209, -119.965887);
 
       expect(mapSpy.removeLayer).toHaveBeenCalledWith(markerSpy); // Ensure the old marker is removed
-      expect(L.marker).toHaveBeenCalledWith(
+      expect(leafletProxy.marker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
         jasmine.objectContaining({
           icon: jasmine.any(Object),
