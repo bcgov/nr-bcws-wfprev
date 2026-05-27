@@ -136,14 +136,14 @@
                                     [placeholder]="isViewMod ? '' : 'Describe the project purpose, location, and key activities involved in wildfire risk reduction.'"
                                     (ngModelChange)="onProjectDescriptionChange($event)" (input)="onProjectInput($event)"
                                     (paste)="onProjectPaste($event)"
-                                  [ngClass]="{ 'over-limit': (projectDescription?.length ?? 0) >= 4000 }"></textarea>
+                                  [ngClass]="{ 'over-limit': projectDescription.length >= 4000 }"></textarea>
 
                                   <div class="feedback-row">
-                                    <div class="error" [class.invisible]="!((projectDescription?.length ?? 0) >= 4000)">
+                                    <div class="error" [class.invisible]="!(projectDescription.length >= 4000)">
                                       {{ messages.maxLengthExceeded }}
                                     </div>
-                                    <div class="counter" [ngClass]="{ 'over': (projectDescription?.length ?? 0) >= 4000 }">
-                                      {{ projectDescription?.length || 0 }} / 4000
+                                    <div class="counter" [ngClass]="{ 'over': projectDescription.length >= 4000 }">
+                                      {{ projectDescription.length || 0 }} / 4000
                                     </div>
                                   </div>
 
@@ -152,7 +152,7 @@
                                       <button class="secondary" (click)="onCancelProjectDescription()"
                                       [disabled]="!isProjectDescriptionDirty">Cancel</button>
                                       <button class="primary"
-                                        [disabled]="isSaving || !isProjectDescriptionDirty || ((projectDescription?.length ?? 0) > 4000)"
+                                        [disabled]="isSaving || !isProjectDescriptionDirty || (projectDescription.length > 4000)"
                                         (click)="onSaveProjectDescription()">
                                         Save
                                       </button>

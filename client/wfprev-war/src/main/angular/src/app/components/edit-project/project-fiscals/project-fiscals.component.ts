@@ -1,4 +1,4 @@
-import { CurrencyPipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +24,7 @@ import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/ex
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
-import { getUtcIsoTimestamp, PlanFiscalStatusIcons } from 'src/app/utils/tools';
+import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
@@ -46,7 +46,6 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
     MatButtonModule,
     MatSlideToggleModule,
     MatExpansionModule,
-    CurrencyPipe,
     MatMenuModule,
     ActivitiesComponent,
     FiscalMapComponent,

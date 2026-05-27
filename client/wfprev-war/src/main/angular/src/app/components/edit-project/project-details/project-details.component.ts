@@ -5,7 +5,6 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
 import { forkJoin, map, Observable } from 'rxjs';
@@ -14,7 +13,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames, BC_BOUNDS } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, BC_BOUNDS } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -36,7 +35,7 @@ import { leafletProxy } from 'src/app/services/leaflet-proxy';
 @Component({
     selector: 'wfprev-project-details',
     imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
-        ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
+        ProjectFilesComponent, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
         EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
     templateUrl: './project-details.component.html',
     styleUrl: './project-details.component.scss'

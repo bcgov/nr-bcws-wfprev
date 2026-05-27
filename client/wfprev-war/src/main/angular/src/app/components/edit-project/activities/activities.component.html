@@ -22,7 +22,7 @@
         <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
       </div>
     }
-    @if (!isLoading && activities?.length) {
+    @if (!isLoading && activities.length) {
       <div>
         @for (activity of activities; track activity; let i = $index) {
           <div [id]="'activity-' + i">
@@ -54,13 +54,13 @@
                     <div class="form-item narrow-width">
                       <label>Completed Hectares (Ha)</label>
                       <input type="number" id="completedAreaHa" formControlName="completedAreaHa" onfocus="this.select()"/>
-                      @if (getControl(i, 'completedAreaHa')?.errors && (getControl(i, 'completedAreaHa')?.dirty || getControl(i, 'completedAreaHa')?.touched)) {
+                      @if (getControl(i, 'completedAreaHa').errors && (getControl(i, 'completedAreaHa').dirty || getControl(i, 'completedAreaHa').touched)) {
                         <div class="error"
                           >
-                          @if (getControl(i, 'completedAreaHa')?.hasError('min')) {
+                          @if (getControl(i, 'completedAreaHa').hasError('min')) {
                             <span>{{ messages.positiveNumber }}</span>
                           }
-                          @if (getControl(i, 'completedAreaHa')?.hasError('max')) {
+                          @if (getControl(i, 'completedAreaHa').hasError('max')) {
                             <span>{{ messages.maxLengthExceeded }}</span>
                           }
                         </div>
@@ -72,13 +72,13 @@
                         <span class="currency-symbol">$</span>
                         <input id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}" onfocus="this.select()"/>
                       </div>
-                      @if (getControl(i, 'reportedSpendAmount')?.errors && (getControl(i, 'reportedSpendAmount')?.dirty || getControl(i, 'reportedSpendAmount')?.touched)) {
+                      @if (getControl(i, 'reportedSpendAmount').errors && (getControl(i, 'reportedSpendAmount').dirty || getControl(i, 'reportedSpendAmount').touched)) {
                         <div class="error"
                           >
-                          @if (getControl(i, 'reportedSpendAmount')?.hasError('min')) {
+                          @if (getControl(i, 'reportedSpendAmount').hasError('min')) {
                             <span>{{ messages.positiveNumber }}</span>
                           }
-                          @if (getControl(i, 'reportedSpendAmount')?.hasError('max')) {
+                          @if (getControl(i, 'reportedSpendAmount').hasError('max')) {
                             <span>{{ messages.maxLengthExceeded }}</span>
                           }
                         </div>
@@ -166,10 +166,10 @@
                       [readonly]="activityForms[i]?.value?.isResultsReportableInd"
                       [placeholder]="!activityForms[i]?.value?.isResultsReportableInd ? 'Provide a name for non-RESULTS reportable activities' : ''"
                       />
-                      @if (getControl(i, 'activityName')?.errors && (getControl(i, 'activityName')?.dirty || getControl(i, 'activityName')?.touched)) {
+                      @if (getControl(i, 'activityName').errors && (getControl(i, 'activityName').dirty || getControl(i, 'activityName').touched)) {
                         <div class="error"
                           >
-                          @if (getControl(i, 'activityName')?.hasError('maxlength')) {
+                          @if (getControl(i, 'activityName').hasError('maxlength')) {
                             <span>{{ messages.maxLengthExceeded }}</span>
                           }
                         </div>
@@ -202,13 +202,13 @@
                     <div class="form-item">
                       <label>Planned Hectares (Ha)<span class="required">*</span></label>
                       <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0" onfocus="this.select()"/>
-                      @if (getControl(i, 'plannedTreatmentAreaHa')?.errors && (getControl(i, 'plannedTreatmentAreaHa')?.dirty || getControl(i, 'plannedTreatmentAreaHa')?.touched)) {
+                      @if (getControl(i, 'plannedTreatmentAreaHa').errors && (getControl(i, 'plannedTreatmentAreaHa').dirty || getControl(i, 'plannedTreatmentAreaHa').touched)) {
                         <div class="error"
                           >
-                          @if (getControl(i, 'plannedTreatmentAreaHa')?.hasError('max')) {
+                          @if (getControl(i, 'plannedTreatmentAreaHa').hasError('max')) {
                             <span>{{ messages.maxLengthExceeded }}</span>
                           }
-                          @if (getControl(i, 'plannedTreatmentAreaHa')?.hasError('min')) {
+                          @if (getControl(i, 'plannedTreatmentAreaHa').hasError('min')) {
                             <span>{{ messages.positiveNumber }}</span>
                           }
                         </div>
@@ -220,13 +220,13 @@
                         <span class="currency-symbol">$</span>
                         <input id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}" onfocus="this.select()"/>
                       </div>
-                      @if (getControl(i, 'plannedSpendAmount')?.errors && (getControl(i, 'plannedSpendAmount')?.dirty || getControl(i, 'plannedSpendAmount')?.touched)) {
+                      @if (getControl(i, 'plannedSpendAmount').errors && (getControl(i, 'plannedSpendAmount').dirty || getControl(i, 'plannedSpendAmount').touched)) {
                         <div class="error"
                           >
-                          @if (getControl(i, 'plannedSpendAmount')?.hasError('max')) {
+                          @if (getControl(i, 'plannedSpendAmount').hasError('max')) {
                             <span>{{ messages.maxLengthExceeded }}</span>
                           }
-                          @if (getControl(i, 'plannedSpendAmount')?.hasError('min')) {
+                          @if (getControl(i, 'plannedSpendAmount').hasError('min')) {
                             <span>{{ messages.positiveNumber }}</span>
                           }
                         </div>
@@ -309,7 +309,7 @@
           }
         </div>
       }
-      @if (!isLoading && !activities?.length) {
+      @if (!isLoading && !activities.length) {
         <div class="wf-empty-state">
           <p class="empty-state-text">No Activities have been added.</p>
         </div>

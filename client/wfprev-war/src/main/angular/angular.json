@@ -48,7 +48,21 @@
             "scripts": [
               "node_modules/@qqnluaq/smk/dist/smk.js"
             ],
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "@maplibre/maplibre-gl-leaflet",
+              "moment",
+              "angular2-uuid",
+              "leaflet.markercluster",
+              "@xmldom/xmldom",
+              "@turf/jsts",
+              "rbush",
+              "skmeans",
+              "concaveman",
+              "fast-deep-equal",
+              "earcut"
+            ]
           },
           "configurations": {
             "local": {
@@ -85,7 +99,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumError": "32kb",
-                  "maximumWarning": "16kb"
+                  "maximumWarning": "20kb"
                 }
               ],
               "fileReplacements": [

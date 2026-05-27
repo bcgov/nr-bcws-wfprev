@@ -13,7 +13,7 @@
         <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
       </div>
     }
-    @if (!isLoading && projectFiscals?.length) {
+    @if (!isLoading && projectFiscals.length) {
       <div class="fiscals-content">
         @for (fiscal of projectFiscals; track fiscal) {
           <div class="fiscal-item">
