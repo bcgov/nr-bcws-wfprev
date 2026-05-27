@@ -115,7 +115,6 @@ describe('CreateNewProjectDialogComponent', () => {
 
     // Trigger the loadCodeTables method
     component.loadCodeTables();
-    fixture.detectChanges();
 
     // Verify that the service methods were called
     expect(mockCodeTableService.getProgramAreaCodes).toHaveBeenCalled();
@@ -655,7 +654,6 @@ describe('CreateNewProjectDialogComponent', () => {
     mockCodeTableService.getFireCentres.and.returnValue(of(mockFireCentres));
 
     component.loadCodeTables();
-    fixture.detectChanges();
 
     expect(component.fireCentres.length).toBe(1);
     expect(component.fireCentres[0].orgUnitName).toBe('Kamloops Fire Centre');

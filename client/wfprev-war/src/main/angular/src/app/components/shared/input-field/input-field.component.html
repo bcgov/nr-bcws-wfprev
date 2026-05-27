@@ -18,9 +18,9 @@
         }
       </label>
     }
-    @if (prefix) {
+    @if (inputPrefix) {
       <div class="currency-input">
-        <span class="currency-symbol">{{ prefix }}</span>
+        <span class="currency-symbol">{{ inputPrefix }}</span>
         @if (!enableAmountFormat) {
           <input
             [id]="id"

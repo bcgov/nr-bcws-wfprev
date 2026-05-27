@@ -920,8 +920,6 @@ describe('ProjectFiscalsComponent', () => {
     component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
     component.selectedTabIndex = 0;
 
-    fixture.detectChanges();
-
     // ✅ Provide activities that match the fiscalGuid
     (component as any).activitiesComponent = {
       activities: [{ projectPlanFiscalGuid: 'test-guid' }]

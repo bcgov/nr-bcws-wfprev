@@ -17,7 +17,6 @@ describe('TextareaComponent', () => {
     component.control = new FormControl();
     component.label = 'Test Label';
     component.placeholder = 'Enter text';
-    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -25,11 +24,13 @@ describe('TextareaComponent', () => {
   });
 
   it('should render label', () => {
+    fixture.detectChanges();
     const labelEl = fixture.debugElement.query(By.css('label'));
     expect(labelEl.nativeElement.textContent).toContain('Test Label');
   });
 
   it('should set textarea placeholder', () => {
+    fixture.detectChanges();
     const textarea = fixture.debugElement.query(By.css('textarea'));
     expect(textarea.attributes['placeholder']).toBe('Enter text');
   });
