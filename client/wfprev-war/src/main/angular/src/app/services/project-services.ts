@@ -709,7 +709,7 @@ export class ProjectService {
 
     savePerformanceUpdates (projectGuid: string, projectPlanFiscalGuid: string, performanceUpdate: NewPerformanceUpdate): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
-        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/savePerformanceUpdate`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/performanceUpdates`;
         return this.httpClient.post<EvaluationCriteriaSummaryModel>(
             url,
             performanceUpdate,
