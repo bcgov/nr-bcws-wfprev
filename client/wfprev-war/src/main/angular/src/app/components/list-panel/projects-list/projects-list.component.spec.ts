@@ -1,4 +1,4 @@
-import { DebugElement, ElementRef, QueryList } from '@angular/core';
+import { DebugElement, ElementRef, QueryList, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -142,7 +142,14 @@ describe('ProjectsListComponent', () => {
     };
 
     mockProjectFilterStateService = {
-      filters: jasmine.createSpy('filters').and.returnValue({ searchText: 'value' })
+      filters: signal<any>(null),
+      set: jasmine.createSpy('set').and.callFake((val: any) => {
+        mockProjectFilterStateService.filters.set(val);
+      }),
+      update: jasmine.createSpy('update'),
+      clear: jasmine.createSpy('clear').and.callFake(() => {
+        mockProjectFilterStateService.filters.set(null);
+      })
     };
 
     await TestBed.configureTestingModule({
@@ -932,7 +939,7 @@ describe('ProjectsListComponent', () => {
     });
 
     it('should download projects successfully when filters are applied', fakeAsync(() => {
-      projectFilterStateService.filters.set({ searchText: 'value' });
+      projectFilterStateService.set({ searchText: 'value' } as any);
       // displayedProjects state is irrelevant for the current implementation, but we set it to empty for clarity
       component.displayedProjects = [];
 
@@ -962,7 +969,7 @@ describe('ProjectsListComponent', () => {
 
     it('should show failure message when download service fails', fakeAsync(() => {
       spyOn(console, 'error');
-      projectFilterStateService.filters.set({ searchText: 'value' });
+      projectFilterStateService.set({ searchText: 'value' } as any);
       component.displayedProjects = [] as any;
 
       mockProjectService.downloadProjects.and.returnValue(
