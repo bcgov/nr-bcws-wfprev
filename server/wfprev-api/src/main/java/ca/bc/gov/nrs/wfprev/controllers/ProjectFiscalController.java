@@ -253,7 +253,7 @@ public class ProjectFiscalController extends CommonController {
         return response;
     }
 
-    @PostMapping("/{id}/savePerformanceUpdate")
+    @PostMapping("/{projectPlanFiscalGuid}/performanceUpdates")
     @Operation(summary = "Create a Performance Update Resource", description = "Create a Performance Update Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
             "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.CREATE_PERFORMANCE_UPDATE')")
@@ -263,7 +263,7 @@ public class ProjectFiscalController extends CommonController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
     public ResponseEntity<PerformanceUpdateResponse> createPerformanceUpdate(
-            @PathVariable("id") String projectPlanFiscalGuid,
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid,
             @Valid @RequestBody PerformanceUpdateRequest performanceUpdateModel) {
         log.debug(" >> createPerformanceUpdate");
         ResponseEntity<PerformanceUpdateResponse> response;
@@ -344,7 +344,7 @@ public class ProjectFiscalController extends CommonController {
         return response;
     }
 
-    @PostMapping("/{id}/saveCloseout")
+    @PostMapping("/{projectPlanFiscalGuid}/closeouts")
     @Operation(summary = "Create a Closeout Resource", description = "Create a Closeout Resource", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
             "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.CREATE_PERFORMANCE_UPDATE')")
@@ -354,7 +354,7 @@ public class ProjectFiscalController extends CommonController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
     public ResponseEntity<FiscalCloseoutResponse> createFiscalCloseout(
-            @PathVariable("id") String projectPlanFiscalGuid,
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid,
             @Valid @RequestBody FiscalCloseoutRequest closeoutModel) {
         log.debug(" >> createFiscalCloseout");
         ResponseEntity<FiscalCloseoutResponse> response;

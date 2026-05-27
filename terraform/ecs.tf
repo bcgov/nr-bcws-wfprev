@@ -232,11 +232,30 @@ resource "aws_ecs_task_definition" "wfprev-liquibase" {
   }
   provisioner "local-exec" {
     command = <<-EOF
-    aws ecs run-task \
+    set -e
+    TASK_ARN=$(aws ecs run-task \
       --task-definition wfprev-liquibase-${var.SHORTENED_ENV} \
       --cluster ${aws_ecs_cluster.wfprev_main.id} \
       --count 1 \
-      --network-configuration awsvpcConfiguration={securityGroups=[${module.networking.security_groups.app.id}],subnets=${module.networking.subnets.app.ids[0]},assignPublicIp=DISABLED}
+      --network-configuration awsvpcConfiguration={securityGroups=[${module.networking.security_groups.app.id}],subnets=${module.networking.subnets.app.ids[0]},assignPublicIp=DISABLED} \
+      --query 'tasks[0].taskArn' \
+      --output text)
+    
+    echo "Started liquibase task: $TASK_ARN"
+    echo "Waiting for task to complete..."
+    aws ecs wait tasks-stopped --cluster ${aws_ecs_cluster.wfprev_main.id} --tasks $TASK_ARN
+    
+    EXIT_CODE=$(aws ecs describe-tasks \
+      --cluster ${aws_ecs_cluster.wfprev_main.id} \
+      --tasks $TASK_ARN \
+      --query 'tasks[0].containers[0].exitCode' \
+      --output text)
+    
+    if [ "$EXIT_CODE" != "0" ]; then
+      echo "Liquibase task failed with exit code $EXIT_CODE"
+      exit 1
+    fi
+    echo "Liquibase task completed successfully."
 EOF
   }
 }
