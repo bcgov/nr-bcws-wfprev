@@ -25,15 +25,8 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
-    "lib": [
-      "es2022",
-      "dom"
-    ],
     "useDefineForClassFields": false,
     "resolveJsonModule": true,
-    "types": [
-      "leaflet",
-      "leaflet.markercluster"
-    ]
+    "types": ["leaflet", "leaflet.markercluster"]
   }
 }
