@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnInit } from '@angular/core';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableKeys } from 'src/app/utils/constants';
@@ -11,7 +11,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
     selector: 'wfprev-project-popup',
-    imports: [CommonModule, FiscalCardComponent, IconButtonComponent, MatTooltip],
+    imports: [FiscalCardComponent, IconButtonComponent, MatTooltip],
     templateUrl: './project-popup.component.html',
     styleUrls: ['./project-popup.component.scss']
 })

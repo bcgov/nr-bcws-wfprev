@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProjectsListComponent } from 'src/app/components/list-panel/projects-list/projects-list.component';
 
 @Component({
     selector: 'wfprev-resizable-panel',
-    imports: [CommonModule, MatTabsModule, ProjectsListComponent],
+    imports: [MatTabsModule, ProjectsListComponent],
     templateUrl: './resizable-panel.component.html',
     styleUrls: ['./resizable-panel.component.scss']
 })

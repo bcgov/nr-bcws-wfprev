@@ -1,4 +1,4 @@
-import { CommonModule, CurrencyPipe, Location } from '@angular/common';
+import { CurrencyPipe, Location } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -41,30 +41,29 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
     templateUrl: './project-fiscals.component.html',
     styleUrls: ['./project-fiscals.component.scss'],
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatTabsModule,
-        MatButtonModule,
-        MatSlideToggleModule,
-        MatExpansionModule,
-        CurrencyPipe,
-        MatMenuModule,
-        ActivitiesComponent,
-        FiscalMapComponent,
-        MatTooltipModule,
-        ExpansionIndicatorComponent,
-        IconButtonComponent,
-        SelectFieldComponent,
-        MatTooltip,
-        InputFieldComponent,
-        DropdownButtonComponent,
-        StatusBadgeComponent,
-        EndorsementApprovalComponent,
-        TimestampComponent,
-        TextareaComponent,
-        PerformanceUpdatesComponent,
-        MatProgressSpinnerModule
-    ]
+    ReactiveFormsModule,
+    MatTabsModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    MatExpansionModule,
+    CurrencyPipe,
+    MatMenuModule,
+    ActivitiesComponent,
+    FiscalMapComponent,
+    MatTooltipModule,
+    ExpansionIndicatorComponent,
+    IconButtonComponent,
+    SelectFieldComponent,
+    MatTooltip,
+    InputFieldComponent,
+    DropdownButtonComponent,
+    StatusBadgeComponent,
+    EndorsementApprovalComponent,
+    TimestampComponent,
+    TextareaComponent,
+    PerformanceUpdatesComponent,
+    MatProgressSpinnerModule
+]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @Input() focusedFiscalId: string | null = null;

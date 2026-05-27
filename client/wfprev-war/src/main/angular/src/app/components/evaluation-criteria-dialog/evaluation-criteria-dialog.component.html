@@ -5,161 +5,174 @@
 
   <div class="dialog-content">
     <form [formGroup]="criteriaForm">
-      <div *ngIf="evaluationCriteriaCode.length">
-        <section class="filter-section">
-          <div class="section-header">
-            <span class="section-header-title">{{ sectionTitles.section1 }}</span>
-            <span class="section-total-label">Total</span>
-          </div>
-          <div *ngIf="isCulturalPrescribedFire" class="form-row">
-            <wfprev-slide-toggle
-              [disabled]="isViewMod"
-              [label]="'Outside of WUI'"
-              [checked]="isOutsideOfWuiOn"
-              (checkedChange)="toggleOutsideOfWui($event)"
-            ></wfprev-slide-toggle>
-          </div>
-          <div class="form-row first-row">
-            <div class="form-field project-type">
-              <label>WUI Risk Class</label>
-              <select formControlName="wuiRiskClassCode" [disabled]="isOutsideOfWuiOn">
-                <option value="">Select</option>
-                <option *ngFor="let code of wuiRiskClassCode" [value]="code.weightedRank">{{ formatCodeLabel(code.wuiRiskClassCode) }}</option>
-              </select>
+      @if (evaluationCriteriaCode.length) {
+        <div>
+          <section class="filter-section">
+            <div class="section-header">
+              <span class="section-header-title">{{ sectionTitles.section1 }}</span>
+              <span class="section-total-label">Total</span>
             </div>
-            <div class="form-field project-type">
-              <label>Local WUI Risk Class</label>
-              <select formControlName="localWuiRiskClassCode" [disabled]="isOutsideOfWuiOn">
-                <option value="">Select</option>
-                <option *ngFor="let code of wuiRiskClassCode" [value]="code.weightedRank">{{ formatCodeLabel(code.wuiRiskClassCode) }}</option>
-              </select>
-            </div>
-            <div class="form-field coarse-total">
-              <div class="coarse-total-value" [ngClass]="{ 'disabled-total': isOutsideOfWuiOn }">
-                <span>{{ isOutsideOfWuiOn ? 0 : coarseTotal }}</span>
+            @if (isCulturalPrescribedFire) {
+              <div class="form-row">
+                <wfprev-slide-toggle
+                  [disabled]="isViewMod"
+                  [label]="'Outside of WUI'"
+                  [checked]="isOutsideOfWuiOn"
+                  (checkedChange)="toggleOutsideOfWui($event)"
+                ></wfprev-slide-toggle>
+              </div>
+            }
+            <div class="form-row first-row">
+              <div class="form-field project-type">
+                <label>WUI Risk Class</label>
+                <select formControlName="wuiRiskClassCode" [disabled]="isOutsideOfWuiOn">
+                  <option value="">Select</option>
+                  @for (code of wuiRiskClassCode; track code) {
+                    <option [value]="code.weightedRank">{{ formatCodeLabel(code.wuiRiskClassCode) }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-field project-type">
+                <label>Local WUI Risk Class</label>
+                <select formControlName="localWuiRiskClassCode" [disabled]="isOutsideOfWuiOn">
+                  <option value="">Select</option>
+                  @for (code of wuiRiskClassCode; track code) {
+                    <option [value]="code.weightedRank">{{ formatCodeLabel(code.wuiRiskClassCode) }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-field coarse-total">
+                <div class="coarse-total-value" [ngClass]="{ 'disabled-total': isOutsideOfWuiOn }">
+                  <span>{{ isOutsideOfWuiOn ? 0 : coarseTotal }}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div *ngIf="isCulturalPrescribedFire">
-            <div
-              *ngFor="let filter of riskClassLocationFilters"
-              class="filter-row"
+            @if (isCulturalPrescribedFire) {
+              <div>
+                @for (filter of riskClassLocationFilters; track filter) {
+                  <div
+                    class="filter-row"
               [ngClass]="{
                 'selected': selectedCoarse.has(filter.evaluationCriteriaGuid!),
                 'disabled-row': !isOutsideOfWuiOn
               }"
-            >
-              <div class="filter-checkbox">
-                <input
-                  type="checkbox"
-                  [checked]="selectedCoarse.has(filter.evaluationCriteriaGuid!)"
-                  [disabled]="!isOutsideOfWuiOn"
-                  (change)="toggleCoarse(filter.evaluationCriteriaGuid!, $event)" />
+                    >
+                    <div class="filter-checkbox">
+                      <input
+                        type="checkbox"
+                        [checked]="selectedCoarse.has(filter.evaluationCriteriaGuid!)"
+                        [disabled]="!isOutsideOfWuiOn"
+                        (change)="toggleCoarse(filter.evaluationCriteriaGuid!, $event)" />
+                      </div>
+                      <div class="filter-label">{{ filter.criteriaLabel }}</div>
+                      <div class="filter-weight">{{ filter.weightedRank }}</div>
+                    </div>
+                  }
+                </div>
+              }
+              <div class="total-row">
+                <label>{{ sectionTitles.totalLabel('section1') }}</label>
+                <span
+                  class="total-value"
+                  [ngClass]="{ 'disabled-total': isOutsideOfWuiOn && !selectedCoarse.size }">
+                  {{ coarseTotal }}
+                </span>
               </div>
-              <div class="filter-label">{{ filter.criteriaLabel }}</div>
-              <div class="filter-weight">{{ filter.weightedRank }}</div>
-            </div>
+              <div class="notes-row">
+                <wfprev-textarea
+                  [label]="sectionTitles.commentLabel('section1')"
+                  [rows]="2"
+                  placeholder="Begin Typing"
+                  [control]="getControl('localWuiRiskClassRationale')">
+                </wfprev-textarea>
+              </div>
+              <div class="section-divider"></div>
+            </section>
           </div>
-          <div class="total-row">
-            <label>{{ sectionTitles.totalLabel('section1') }}</label>
-            <span
-              class="total-value"
-              [ngClass]="{ 'disabled-total': isOutsideOfWuiOn && !selectedCoarse.size }">
-              {{ coarseTotal }}
-            </span>
-          </div>
+        }
+        @if (mediumFilters.length || fineFilters.length) {
+          <div>
+            <!-- Medium Filters -->
+            <section class="filter-section">
+              <div class="section-header">
+                <span class="section-header-title">{{ sectionTitles.section2 }}</span>
+                <span class="section-total-label">Total</span>
+              </div>
+              @for (filter of mediumFilters; track filter) {
+                <div class="filter-row selected" [ngClass]="{'selected': selectedMedium.has(filter.evaluationCriteriaGuid!)}">
+                  <div class="filter-checkbox">
+                    <input
+                      [disabled]="isViewMod"
+                      type="checkbox"
+                      [checked]="selectedMedium.has(filter.evaluationCriteriaGuid!)"
+                      (change)="toggleMedium(filter.evaluationCriteriaGuid!, $event)"
+                      />
+                    </div>
+                    <div class="filter-label">{{ filter.criteriaLabel }}</div>
+                    <div class="filter-weight">{{ isCulturalPrescribedFire ? (filter.weightedRank | number:'1.2-2') : filter.weightedRank }}</div>
+                  </div>
+                }
+                <div class="total-row">
+                  <label>{{ sectionTitles.totalLabel('section2') }}</label>
+                  <span class="total-value">{{ isCulturalPrescribedFire ? (mediumTotal | number:'1.2-2') : mediumTotal }}</span>
+                </div>
+                <div class="notes-row">
+                  <wfprev-textarea
+                    [label]="sectionTitles.commentLabel('section2')"
+                    [rows]="2"
+                    placeholder="Begin Typing"
+                    [control]="getControl('mediumFilterComments')">
+                  </wfprev-textarea>
+                </div>
+                <div class="section-divider"></div>
+              </section>
+              <!-- Fine Filters -->
+              <section class="filter-section">
+                <div class="section-header">
+                  <span class="section-header-title">{{ sectionTitles.section3 }}</span>
+                  <span class="section-total-label">Total</span>
+                </div>
+                @for (filter of fineFilters; track filter) {
+                  <div class="filter-row selected" [ngClass]="{'selected': selectedFine.has(filter.evaluationCriteriaGuid!)}">
+                    <div class="filter-checkbox">
+                      <input
+                        [disabled]="isViewMod"
+                        type="checkbox"
+                        [checked]="selectedFine.has(filter.evaluationCriteriaGuid!)"
+                        (change)="toggleFine(filter.evaluationCriteriaGuid!, $event)"
+                        />
+                      </div>
+                      <div class="filter-label">{{ filter.criteriaLabel }}</div>
+                      <div class="filter-weight">{{ filter.weightedRank | number:'1.2-2' }}</div>
+                    </div>
+                  }
+                  <div class="total-row">
+                    <label>{{ sectionTitles.totalLabel('section3') }}</label>
+                    <span class="total-value">{{ fineTotal | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="notes-row">
+                    <wfprev-textarea
+                      [label]="sectionTitles.commentLabel('section3')"
+                      [rows]="2"
+                      placeholder="Begin Typing"
+                      [control]="getControl('fineFilterComments')">
+                    </wfprev-textarea>
+                  </div>
+                </section>
+              </div>
+            }
+          </form>
+        </div>
 
-          <div class="notes-row">
-            <wfprev-textarea
-              [label]="sectionTitles.commentLabel('section1')"
-              [rows]="2"
-              placeholder="Begin Typing"
-              [control]="getControl('localWuiRiskClassRationale')">
-            </wfprev-textarea>
+        <div class="footer">
+          <div class="button-row">
+            <button class="secondary" (click)="onCancel()">Cancel</button>
+            <button
+              class="primary"
+              (click)="onSave()"
+              [disabled]="isViewMod || !criteriaForm.valid || criteriaForm.pristine || isSaving">
+              Save
+            </button>
           </div>
-
-          <div class="section-divider"></div>
-        </section>
+        </div>
       </div>
-      <div *ngIf="mediumFilters.length || fineFilters.length">
-        <!-- Medium Filters -->
-        <section class="filter-section">
-          <div class="section-header">
-            <span class="section-header-title">{{ sectionTitles.section2 }}</span>
-            <span class="section-total-label">Total</span>
-          </div>
-          <div *ngFor="let filter of mediumFilters" class="filter-row selected" [ngClass]="{'selected': selectedMedium.has(filter.evaluationCriteriaGuid!)}">
-            <div class="filter-checkbox">
-              <input
-                [disabled]="isViewMod"
-                type="checkbox"
-                [checked]="selectedMedium.has(filter.evaluationCriteriaGuid!)"
-                (change)="toggleMedium(filter.evaluationCriteriaGuid!, $event)"
-              />
-            </div>
-            <div class="filter-label">{{ filter.criteriaLabel }}</div>
-            <div class="filter-weight">{{ isCulturalPrescribedFire ? (filter.weightedRank | number:'1.2-2') : filter.weightedRank }}</div>
-          </div>
-          <div class="total-row">
-            <label>{{ sectionTitles.totalLabel('section2') }}</label>
-            <span class="total-value">{{ isCulturalPrescribedFire ? (mediumTotal | number:'1.2-2') : mediumTotal }}</span>
-          </div>
-          <div class="notes-row">
-            <wfprev-textarea
-              [label]="sectionTitles.commentLabel('section2')"
-              [rows]="2"
-              placeholder="Begin Typing"
-              [control]="getControl('mediumFilterComments')">
-            </wfprev-textarea>
-          </div>
-          <div class="section-divider"></div>
-        </section>
-
-        <!-- Fine Filters -->
-        <section class="filter-section">
-          <div class="section-header">
-            <span class="section-header-title">{{ sectionTitles.section3 }}</span>
-            <span class="section-total-label">Total</span>
-          </div>
-          <div *ngFor="let filter of fineFilters" class="filter-row selected" [ngClass]="{'selected': selectedFine.has(filter.evaluationCriteriaGuid!)}">
-            <div class="filter-checkbox">
-              <input
-                [disabled]="isViewMod"
-                type="checkbox"
-                [checked]="selectedFine.has(filter.evaluationCriteriaGuid!)"
-                (change)="toggleFine(filter.evaluationCriteriaGuid!, $event)"
-              />
-            </div>
-            <div class="filter-label">{{ filter.criteriaLabel }}</div>
-            <div class="filter-weight">{{ filter.weightedRank | number:'1.2-2' }}</div>
-          </div>
-          <div class="total-row">
-            <label>{{ sectionTitles.totalLabel('section3') }}</label>
-            <span class="total-value">{{ fineTotal | number:'1.2-2' }}</span>
-          </div>
-          <div class="notes-row">
-            <wfprev-textarea
-              [label]="sectionTitles.commentLabel('section3')"
-              [rows]="2"
-              placeholder="Begin Typing"
-              [control]="getControl('fineFilterComments')">
-            </wfprev-textarea>
-          </div>
-        </section>
-              
-      </div>
-    </form>
-  </div>
-
-  <div class="footer">
-    <div class="button-row">
-      <button class="secondary" (click)="onCancel()">Cancel</button>
-      <button
-        class="primary"
-        (click)="onSave()"
-        [disabled]="isViewMod || !criteriaForm.valid || criteriaForm.pristine || isSaving">
-        Save
-      </button>
-    </div>
-  </div>
-</div>

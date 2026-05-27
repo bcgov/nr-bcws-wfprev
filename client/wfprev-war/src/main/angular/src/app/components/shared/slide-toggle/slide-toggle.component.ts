@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'wfprev-slide-toggle',
-    imports: [CommonModule, MatSlideToggleModule],
+    imports: [MatSlideToggleModule],
     templateUrl: './slide-toggle.component.html',
     styleUrl: './slide-toggle.component.scss'
 })

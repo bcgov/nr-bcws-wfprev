@@ -4,7 +4,7 @@ import { ResourcesRoutes } from 'src/app/utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+
 import { TokenService } from 'src/app/services/token.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { EnvironmentIndicators } from 'src/app/utils/constants';
@@ -12,11 +12,10 @@ import { EnvironmentIndicators } from 'src/app/utils/constants';
 @Component({
     selector: 'wfprev-app-header',
     imports: [
-        CommonModule, // Replace BrowserModule with CommonModule
-        MatMenuModule,
-        MatButtonModule,
-        MatIconModule,
-    ],
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule
+],
     templateUrl: './app-header.component.html',
     styleUrls: ['./app-header.component.scss']
 })

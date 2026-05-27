@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { CodeTableKeys, PlanFiscalStatus } from 'src/app/utils/constants';
@@ -6,7 +6,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 
 @Component({
     selector: 'wfprev-fiscal-card',
-    imports: [CommonModule, StatusBadgeComponent],
+    imports: [StatusBadgeComponent],
     templateUrl: './fiscal-card.component.html',
     styleUrls: ['./fiscal-card.component.scss']
 })

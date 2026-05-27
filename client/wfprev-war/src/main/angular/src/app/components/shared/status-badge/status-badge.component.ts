@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'wfprev-status-badge',
     templateUrl: './status-badge.component.html',
     styleUrls: ['./status-badge.component.scss'],
-    imports: [CommonModule]
+    imports: []
 })
 export class StatusBadgeComponent {
   @Input() type?: string;

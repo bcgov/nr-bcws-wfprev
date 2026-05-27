@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -17,12 +17,11 @@ import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.c
 @Component({
     selector: 'wfprev-create-new-project-dialog',
     imports: [
-        ReactiveFormsModule,
-        CommonModule,
-        TextFieldModule,
-        MatTooltipModule,
-        TextareaComponent
-    ],
+    ReactiveFormsModule,
+    TextFieldModule,
+    MatTooltipModule,
+    TextareaComponent
+],
     templateUrl: './create-new-project-dialog.component.html',
     styleUrls: ['./create-new-project-dialog.component.scss']
 })

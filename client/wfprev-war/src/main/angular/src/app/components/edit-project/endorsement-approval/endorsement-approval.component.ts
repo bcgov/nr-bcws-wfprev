@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,22 +24,21 @@ import { capitalizeFirstLetter } from 'src/app/utils';
 @Component({
     selector: 'wfprev-endorsement-approval',
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatCheckboxModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatDatepickerModule,
-        MatButtonModule,
-        DetailsContainerComponent,
-        CheckboxComponent,
-        DatePickerComponent,
-        ReadOnlyFieldComponent,
-        TextareaComponent,
-        TimestampComponent,
-        MatTooltipModule,
-    ],
+    ReactiveFormsModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatButtonModule,
+    DetailsContainerComponent,
+    CheckboxComponent,
+    DatePickerComponent,
+    ReadOnlyFieldComponent,
+    TextareaComponent,
+    TimestampComponent,
+    MatTooltipModule
+],
     templateUrl: './endorsement-approval.component.html',
     styleUrl: './endorsement-approval.component.scss'
 })

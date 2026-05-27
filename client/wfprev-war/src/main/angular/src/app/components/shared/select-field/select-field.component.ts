@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -7,7 +7,7 @@ import { MatTooltip } from '@angular/material/tooltip';
     selector: 'wfprev-select-field',
     templateUrl: './select-field.component.html',
     styleUrls: ['./select-field.component.scss'],
-    imports: [MatTooltip, ReactiveFormsModule, CommonModule]
+    imports: [MatTooltip, ReactiveFormsModule]
 })
 export class SelectFieldComponent {
   @Input() disabled = false;

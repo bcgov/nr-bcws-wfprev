@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -10,10 +10,9 @@ import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
     templateUrl: './dropdown-button.component.html',
     styleUrls: ['./dropdown-button.component.scss'],
     imports: [
-        CommonModule,
-        MatMenuModule,
-        MatButtonModule
-    ]
+    MatMenuModule,
+    MatButtonModule
+]
 })
 export class DropdownButtonComponent {
   @Input() status!: string;

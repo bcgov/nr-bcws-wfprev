@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'wfprev-detail-button',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './detail-button.component.html',
     styleUrls: ['./detail-button.component.scss']
 })
