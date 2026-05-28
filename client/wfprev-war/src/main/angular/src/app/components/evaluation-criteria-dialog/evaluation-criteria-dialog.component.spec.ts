@@ -110,7 +110,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
   });
 
   it('should call onSave and create evaluation criteria summary', () => {
-    component.isViewMod = false;        // 👈 allow saves
+    component.isViewMod = false;     
     component.initializeForm();
     component.criteriaForm.patchValue({ wuiRiskClassCode: 1 });
     component.data.evaluationCriteriaSummary = undefined;
