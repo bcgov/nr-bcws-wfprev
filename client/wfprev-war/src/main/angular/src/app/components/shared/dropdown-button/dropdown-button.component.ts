@@ -9,6 +9,7 @@ import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
     selector: 'wfprev-dropdown-button',
     templateUrl: './dropdown-button.component.html',
     styleUrls: ['./dropdown-button.component.scss'],
+    standalone: true,
     imports: [
     MatMenuModule,
     MatButtonModule

@@ -20,6 +20,7 @@ import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 @Component({
     selector: 'wfprev-project-files',
+    standalone: true,
     imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent, MatProgressSpinnerModule],
     templateUrl: './project-files.component.html',
     styleUrls: ['./project-files.component.scss']

@@ -9,6 +9,7 @@ import { CUSTOM_DATE_FORMATS } from 'src/app/utils/constants';
 
 @Component({
     selector: 'wfprev-date-picker',
+    standalone: true,
     imports: [
         ReactiveFormsModule,
         MatFormFieldModule,

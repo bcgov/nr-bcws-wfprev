@@ -1,11 +1,11 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxCurrency } from '@dintecom/ngx-currency';
 
 @Component({
     selector: 'wfprev-input-field',
+    standalone: true,
     imports: [ReactiveFormsModule, MatTooltipModule, NgxCurrency],
     templateUrl: './input-field.component.html',
     styleUrls: ['./input-field.component.scss']

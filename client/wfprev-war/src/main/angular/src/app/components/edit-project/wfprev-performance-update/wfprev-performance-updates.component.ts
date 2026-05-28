@@ -19,6 +19,7 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
 
 @Component({
     selector: 'wfprev-performance-updates',
+    standalone: true,
     imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
     templateUrl: './wfprev-performance-updates.component.html',
     styleUrl: './wfprev-performance-updates.component.scss'

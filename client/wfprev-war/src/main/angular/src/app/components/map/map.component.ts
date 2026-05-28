@@ -16,6 +16,7 @@ import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 @Component({
     selector: 'app-map',
+    standalone: true,
     imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss'

@@ -5,6 +5,7 @@ import { Component, Input } from '@angular/core';
     selector: 'wfprev-status-badge',
     templateUrl: './status-badge.component.html',
     styleUrls: ['./status-badge.component.scss'],
+    standalone: true,
     imports: []
 })
 export class StatusBadgeComponent {

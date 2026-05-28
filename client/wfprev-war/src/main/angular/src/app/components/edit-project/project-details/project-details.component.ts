@@ -34,6 +34,7 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
 import { leafletProxy } from 'src/app/services/leaflet-proxy';
 @Component({
     selector: 'wfprev-project-details',
+    standalone: true,
     imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
         ProjectFilesComponent, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
         EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],

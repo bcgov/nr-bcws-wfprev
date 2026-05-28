@@ -4,6 +4,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'wfprev-slide-toggle',
+    standalone: true,
     imports: [MatSlideToggleModule],
     templateUrl: './slide-toggle.component.html',
     styleUrl: './slide-toggle.component.scss'

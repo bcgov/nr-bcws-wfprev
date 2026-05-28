@@ -30,6 +30,7 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
 
 @Component({
     selector: 'wfprev-projects-list',
+    standalone: true,
     imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
     templateUrl: './projects-list.component.html',
     styleUrls: ['./projects-list.component.scss']

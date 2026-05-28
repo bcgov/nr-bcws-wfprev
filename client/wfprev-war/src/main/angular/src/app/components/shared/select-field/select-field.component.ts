@@ -5,6 +5,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
     selector: 'wfprev-select-field',
+    standalone: true,
     templateUrl: './select-field.component.html',
     styleUrls: ['./select-field.component.scss'],
     imports: [MatTooltip, ReactiveFormsModule]

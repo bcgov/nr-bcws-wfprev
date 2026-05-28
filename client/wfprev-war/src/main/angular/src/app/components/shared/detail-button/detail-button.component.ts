@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'wfprev-detail-button',
+    standalone: true,
     imports: [],
     templateUrl: './detail-button.component.html',
     styleUrls: ['./detail-button.component.scss']

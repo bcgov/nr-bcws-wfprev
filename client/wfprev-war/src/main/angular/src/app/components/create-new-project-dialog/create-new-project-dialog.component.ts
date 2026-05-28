@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
     selector: 'wfprev-create-new-project-dialog',
+    standalone: true,
     imports: [
     ReactiveFormsModule,
     TextFieldModule,

@@ -40,6 +40,7 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
     selector: 'wfprev-project-fiscals',
     templateUrl: './project-fiscals.component.html',
     styleUrls: ['./project-fiscals.component.scss'],
+    standalone: true,
     imports: [
     ReactiveFormsModule,
     MatTabsModule,

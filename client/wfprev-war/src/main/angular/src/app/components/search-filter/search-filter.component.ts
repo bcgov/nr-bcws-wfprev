@@ -32,6 +32,7 @@ type MultiSelectConfig = {
 
 @Component({
     selector: 'wfprev-search-filter',
+    standalone: true,
     imports: [
     FormsModule,
     MatFormFieldModule,

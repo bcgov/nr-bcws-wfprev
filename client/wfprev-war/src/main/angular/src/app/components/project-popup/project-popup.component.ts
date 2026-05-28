@@ -10,6 +10,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 
 @Component({
     selector: 'wfprev-project-popup',
+    standalone: true,
     imports: [FiscalCardComponent, IconButtonComponent],
     templateUrl: './project-popup.component.html',
     styleUrls: ['./project-popup.component.scss']

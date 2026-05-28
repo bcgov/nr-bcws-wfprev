@@ -8,7 +8,8 @@ import { MatMenuModule } from '@angular/material/menu';
     selector: 'wfprev-download-button',
     templateUrl: './download-button.component.html',
     styleUrls: ['./download-button.component.scss'],
-    imports: [MatMenuModule, MatButtonModule, MatIconModule]
+    imports: [MatMenuModule, MatButtonModule, MatIconModule],
+    standalone: true,
 })
 export class DownloadButtonComponent {
   @Input() disabled = false;

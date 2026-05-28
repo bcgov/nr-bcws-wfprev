@@ -5,6 +5,7 @@ import { ResourcesRoutes } from 'src/app/utils';
 
 @Component({
     selector: 'app-list',
+    standalone: true,
     imports: [CommonModule],
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss'

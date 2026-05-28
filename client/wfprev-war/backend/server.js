@@ -29,7 +29,7 @@ app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist/wfprev/browser/index.html'));
 });
 
-const server = http.createServer({ maxHeaderSize: 65536 }, app);
+const server = http.createServer(app);
 
 // Listen on {port} and {hostname} to be accessible from public IP address
 server.listen(port, hostname, () => {

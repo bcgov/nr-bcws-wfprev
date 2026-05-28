@@ -17,6 +17,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 
 @Component({
     selector: 'wfprev-evaluation-criteria',
+    standalone: true,
     imports: [ExpansionIndicatorComponent, MatExpansionModule, MatIconModule, CommonModule, TimestampComponent, MatProgressSpinnerModule, DetailButtonComponent, IconButtonComponent],
     templateUrl: './evaluation-criteria.component.html',
     styleUrl: './evaluation-criteria.component.scss'

@@ -10,6 +10,7 @@ import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 @Component({
     selector: 'wfprev-fiscal-map',
+    standalone: true,
     imports: [],
     templateUrl: './fiscal-map.component.html',
     styleUrl: './fiscal-map.component.scss'

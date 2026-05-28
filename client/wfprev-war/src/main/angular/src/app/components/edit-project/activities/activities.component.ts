@@ -42,6 +42,7 @@ export const CUSTOM_DATE_FORMATS = {
 
 @Component({
     selector: 'wfprev-activities',
+    standalone: true,
     imports: [MatExpansionModule,
         ReactiveFormsModule,
         CommonModule,

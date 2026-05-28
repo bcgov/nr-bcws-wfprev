@@ -97,9 +97,8 @@ describe('FiscalMapComponent', () => {
     component = fixture.componentInstance;
   });
 
-  // KEY FIX: fakeAsync + tick() flushes the setTimeout before teardown
   afterEach(fakeAsync(() => {
-    tick(); // flush pending setTimeout from ngAfterViewInit
+    tick(); 
     discardPeriodicTasks();
     const container = document.getElementById('fiscalMap');
     if (container) container.remove();

@@ -11,6 +11,7 @@ import { EnvironmentIndicators } from 'src/app/utils/constants';
 
 @Component({
     selector: 'wfprev-app-header',
+    standalone: true,
     imports: [
     MatMenuModule,
     MatButtonModule,

@@ -9,6 +9,7 @@ import { Messages } from 'src/app/utils/constants';
     selector: 'wfprev-textarea',
     templateUrl: './textarea.component.html',
     styleUrls: ['./textarea.component.scss'],
+    standalone: true,
     imports: [CommonModule, FormsModule, ReactiveFormsModule, TextFieldModule, MatTooltipModule],
     providers: [
         {

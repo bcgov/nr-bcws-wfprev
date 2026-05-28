@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'wfprev-icon-button',
+    standalone: true,
     imports: [CommonModule],
     templateUrl: './icon-button.component.html',
     styleUrls: ['./icon-button.component.scss']

@@ -23,6 +23,7 @@ import { capitalizeFirstLetter } from 'src/app/utils';
 
 @Component({
     selector: 'wfprev-endorsement-approval',
+    standalone: true,
     imports: [
     ReactiveFormsModule,
     FormsModule,

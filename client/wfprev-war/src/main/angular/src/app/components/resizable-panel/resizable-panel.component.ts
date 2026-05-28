@@ -5,6 +5,7 @@ import { ProjectsListComponent } from 'src/app/components/list-panel/projects-li
 
 @Component({
     selector: 'wfprev-resizable-panel',
+    standalone: true,
     imports: [MatTabsModule, ProjectsListComponent],
     templateUrl: './resizable-panel.component.html',
     styleUrls: ['./resizable-panel.component.scss']

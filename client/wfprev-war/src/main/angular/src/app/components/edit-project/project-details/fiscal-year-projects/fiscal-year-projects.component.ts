@@ -11,6 +11,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 
 @Component({
     selector: 'wfprev-fiscal-year-projects',
+    standalone: true,
     imports: [MatExpansionModule, CommonModule, MatTableModule, ExpansionIndicatorComponent, StatusBadgeComponent, MatProgressSpinnerModule],
     templateUrl: './fiscal-year-projects.component.html',
     styleUrl: './fiscal-year-projects.component.scss'

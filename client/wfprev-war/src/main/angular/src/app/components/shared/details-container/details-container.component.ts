@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'wfprev-details-container',
+    standalone: true,
     imports: [],
     templateUrl: './details-container.component.html',
     styleUrls: ['./details-container.component.scss']

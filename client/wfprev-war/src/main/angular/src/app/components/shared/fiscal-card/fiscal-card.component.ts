@@ -6,6 +6,7 @@ import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/sta
 
 @Component({
     selector: 'wfprev-fiscal-card',
+    standalone: true, 
     imports: [StatusBadgeComponent],
     templateUrl: './fiscal-card.component.html',
     styleUrls: ['./fiscal-card.component.scss']
