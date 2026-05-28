@@ -1,6 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 import { ResourcesRoutes } from 'src/app/utils';
 import { ErrorPageComponent } from './components/error-page/error-page/error-page.component';
+import { YearEndPerformanceUpdateComponent } from './components/year-end-performance-update/year-end-performance-update.component';
 import { PrevAuthGuard } from './services/util/prev-auth-guard';
 import { ROLES_UI } from './shared/scopes';
 
@@ -30,6 +31,12 @@ const PANEL_ROUTES: Routes = [
     path: ResourcesRoutes.EDIT_PROJECT,
     loadChildren: () =>
       import('src/app/components/edit-project-routing.module').then(m => m.EditProjectRoutingModule),
+    canActivate: [PrevAuthGuard],
+    data: { scopes: PROFILE_SCOPES }
+  },
+  {
+    path: ResourcesRoutes.YEAR_END,
+    component: YearEndPerformanceUpdateComponent,
     canActivate: [PrevAuthGuard],
     data: { scopes: PROFILE_SCOPES }
   },
