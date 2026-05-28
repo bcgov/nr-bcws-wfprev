@@ -279,6 +279,8 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       isResultsReportableInd: [activity?.isResultsReportableInd || false],
       outstandingObligationsInd: [activity?.outstandingObligationsInd || false],
       activityComment: [activity?.activityComment || '', [Validators.maxLength(500)]],
+      isCarryForwardInd: [activity?.isCarryForwardInd || false],
+      finalOutcomeComments: [activity?.finalOutcomeComments || '', [Validators.maxLength(500)]],
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
       createDate: [activity?.createDate || ''], // ISO 8601 date format
       filteredTechniqueCode: [[]], //  Store technique options inside form

@@ -100,7 +100,7 @@
 
     .comment-container {
         display: flex;
-        gap: 10px;
+        gap: 24px;
         align-items: flex-start;
     }
     
@@ -108,9 +108,15 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        flex: 0 0 300px;
         .checkbox-label {
             padding: 0 !important;
             white-space: nowrap;
+            color: #282828;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
         }
     }
     
@@ -131,16 +137,18 @@
         position: relative;
         display: flex;
         align-items: center;
+        margin-bottom: 8px;
     
         .currency-symbol {
             position: absolute;
-            left: 10px;
+            left: 4px;
             font-size: 16px;
             color: #282828;
         }
     
         input {
-            padding-left: 20px;
+            padding-left: 16px;
+            margin-bottom: 0px !important;
         }
     }
 
