@@ -1,4 +1,6 @@
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
+import '@maplibre/maplibre-gl-leaflet';
 
 export const leafletProxy = {
   maplibreGL: (opts: any): any => (L as any).maplibreGL(opts),

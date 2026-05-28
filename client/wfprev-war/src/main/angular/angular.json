@@ -24,7 +24,8 @@
           "options": {
             "baseHref": "/",
             "outputPath": {
-              "base": "dist/wfprev"
+              "base": "dist/wfprev",
+              "browser": ""
             },
             "index": "src/index.html",
             "polyfills": ["src/polyfills.ts"],

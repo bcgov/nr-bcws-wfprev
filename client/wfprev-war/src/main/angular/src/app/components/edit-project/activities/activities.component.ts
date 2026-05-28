@@ -26,7 +26,7 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
-import { NgxCurrencyDirective } from 'ngx-currency';
+import { NgxCurrency } from '@dintecom/ngx-currency';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 
@@ -56,7 +56,7 @@ export const CUSTOM_DATE_FORMATS = {
         IconButtonComponent,
         TimestampComponent,
         TextareaComponent,
-        NgxCurrencyDirective,
+        NgxCurrency,
         StatusBadgeComponent,
         MatProgressSpinnerModule],
     templateUrl: './activities.component.html',
