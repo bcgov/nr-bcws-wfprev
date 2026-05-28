@@ -128,6 +128,8 @@ describe('ActivitiesComponent', () => {
       activityGuid: 'test-guid',
       activityName: 'Test Activity',
       activityStartDate: '2025-03-10T00:00:00.000+00:00',
+      isCarryForwardInd: true,
+      finalOutcomeComments: 'Outcome comments test'
     };
 
     const form = component.createActivityForm(testActivity);
@@ -135,6 +137,8 @@ describe('ActivitiesComponent', () => {
     expect(form.get('activityName')?.value).toBe('Test Activity');
     expect(form.get('activityDateRange.activityStartDate')?.value).toBe('2025-03-10');
     expect(form.get('activityDateRange.activityEndDate')?.value).toBe('2025-03-20');
+    expect(form.get('isCarryForwardInd')?.value).toBeTrue();
+    expect(form.get('finalOutcomeComments')?.value).toBe('Outcome comments test');
   });
 
   it('should add a new activity', () => {
