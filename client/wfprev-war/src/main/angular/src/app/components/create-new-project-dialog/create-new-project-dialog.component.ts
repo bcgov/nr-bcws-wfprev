@@ -84,7 +84,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       const bcParksRegionControl = this.projectForm.get('bcParksRegion');
 
       const isBcParks = this.businessAreas.find(
-        area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks (BCP)'
+        area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks'
       );
 
       if (isBcParks) {

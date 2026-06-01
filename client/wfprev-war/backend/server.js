@@ -15,18 +15,18 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Serve static files from the Angular app at the root
-app.use(express.static(path.join(__dirname, 'dist/wfprev/browser')));
+app.use(express.static(path.join(__dirname, 'dist/wfprev')));
 
 // Fallback for absolute asset paths used in code (e.g., /assets/logo.png)
-app.use('/assets', express.static(path.join(__dirname, 'dist/wfprev/browser/assets')));
+app.use('/assets', express.static(path.join(__dirname, 'dist/wfprev/assets')));
 
 // Send all requests to Angular app
 app.all(['/assets/data/checktoken-user.json', '/pub/wfprev/assets/data/checktoken-user.json'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/wfprev/browser/assets/data/checktoken-user.json'));
+    res.sendFile(path.join(__dirname, 'dist/wfprev/assets/data/checktoken-user.json'));
 });
 
 app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/wfprev/browser/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/wfprev/index.html'));
 });
 
 const server = http.createServer(app);

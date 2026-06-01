@@ -272,7 +272,7 @@
                 <div class="activity-files">
                   <!-- empty project files for new activity-->
                   @if (i === 0 && !(activityForms[i]?.value?.activityGuid && fiscalGuid)) {
-                    <wfprev-project-files [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="true" [isTooltipDisabled]="false" fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
+                    <wfprev-project-files [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="true" [isTooltipDisabled]="false" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
                       {{activityForms[i]?.value?.activityGuid}}
                     </wfprev-project-files>
                   }
