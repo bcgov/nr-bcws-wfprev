@@ -7,7 +7,6 @@ import { LeafletLegendService, getBluePinIcon, getActivePinIcon } from 'src/app/
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
 import '@maplibre/maplibre-gl-leaflet';
-import 'leaflet.markercluster';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
