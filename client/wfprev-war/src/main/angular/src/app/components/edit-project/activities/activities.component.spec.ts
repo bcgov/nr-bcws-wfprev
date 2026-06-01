@@ -88,7 +88,6 @@ describe('ActivitiesComponent', () => {
 
     fixture = TestBed.createComponent(ActivitiesComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create the component', () => {

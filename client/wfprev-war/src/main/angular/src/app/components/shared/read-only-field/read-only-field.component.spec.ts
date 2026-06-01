@@ -13,7 +13,6 @@ describe('ReadOnlyFieldComponent', () => {
 
     fixture = TestBed.createComponent(ReadOnlyFieldComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -36,7 +35,6 @@ describe('ReadOnlyFieldComponent', () => {
   it('should update value dynamically', () => {
     component.label = 'Dynamic Label';
     component.value = 'Initial Value';
-    fixture.detectChanges();
 
     component.value = 'Updated Value';
     fixture.detectChanges();

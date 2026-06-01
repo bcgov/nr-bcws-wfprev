@@ -1,4 +1,4 @@
-@import "../project-fiscals/project-fiscals.component.scss";
+@use "../project-fiscals/project-fiscals.component.scss" as *;
 
 .performance-update-container {
   padding-top: 12px;

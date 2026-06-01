@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -15,17 +15,16 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 @Component({
-  selector: 'wfprev-create-new-project-dialog',
-  standalone: true,
-  imports: [
+    selector: 'wfprev-create-new-project-dialog',
+    standalone: true,
+    imports: [
     ReactiveFormsModule,
-    CommonModule,
     TextFieldModule,
     MatTooltipModule,
     TextareaComponent
-  ],
-  templateUrl: './create-new-project-dialog.component.html',
-  styleUrls: ['./create-new-project-dialog.component.scss']
+],
+    templateUrl: './create-new-project-dialog.component.html',
+    styleUrls: ['./create-new-project-dialog.component.scss']
 })
 export class CreateNewProjectDialogComponent implements OnInit {
   Validators = Validators;
@@ -85,7 +84,7 @@ export class CreateNewProjectDialogComponent implements OnInit {
       const bcParksRegionControl = this.projectForm.get('bcParksRegion');
 
       const isBcParks = this.businessAreas.find(
-        area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks (BCP)'
+        area => area.programAreaGuid === businessAreaId && area.programAreaName === 'BC Parks'
       );
 
       if (isBcParks) {

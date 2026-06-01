@@ -1,17 +1,17 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 
 
 @Component({
-  selector: 'add-attachment',
-  templateUrl: './add-attachment.component.html',
-  styleUrls: ['./add-attachment.component.scss'],
-  standalone: true,
-  imports: [CommonModule, MatInputModule, FormsModule, IconButtonComponent]
+    selector: 'add-attachment',
+    templateUrl: './add-attachment.component.html',
+    styleUrls: ['./add-attachment.component.scss'],
+    standalone: true,
+    imports: [MatInputModule, FormsModule, IconButtonComponent]
 })
 export class AddAttachmentComponent {
   selectedFile: File | null = null;

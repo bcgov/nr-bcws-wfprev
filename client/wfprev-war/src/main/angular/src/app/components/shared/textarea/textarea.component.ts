@@ -6,18 +6,18 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Messages } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-textarea',
-  templateUrl: './textarea.component.html',
-  styleUrls: ['./textarea.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TextFieldModule, MatTooltipModule],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TextareaComponent),
-      multi: true,
-    },
-  ],
+    selector: 'wfprev-textarea',
+    templateUrl: './textarea.component.html',
+    styleUrls: ['./textarea.component.scss'],
+    standalone: true,
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, TextFieldModule, MatTooltipModule],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TextareaComponent),
+            multi: true,
+        },
+    ]
 })
 export class TextareaComponent {
   @Input() label: string = '';

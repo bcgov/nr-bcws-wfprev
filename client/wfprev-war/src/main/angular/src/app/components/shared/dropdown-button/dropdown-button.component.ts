@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -6,15 +6,14 @@ import { ProjectFiscal } from 'src/app/components/models';
 import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
 
 @Component({
-  selector: 'wfprev-dropdown-button',
-  templateUrl: './dropdown-button.component.html',
-  styleUrls: ['./dropdown-button.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'wfprev-dropdown-button',
+    templateUrl: './dropdown-button.component.html',
+    styleUrls: ['./dropdown-button.component.scss'],
+    standalone: true,
+    imports: [
     MatMenuModule,
     MatButtonModule
-  ]
+]
 })
 export class DropdownButtonComponent {
   @Input() status!: string;

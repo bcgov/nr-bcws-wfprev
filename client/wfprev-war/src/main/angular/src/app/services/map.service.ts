@@ -37,6 +37,10 @@ export class MapService {
     this.mapContainer = document.getElementById(id);
   }
 
+  createMaplibreGLLayer(options: any): any {
+    return (L as any).maplibreGL(options);
+  }
+
   async createSMK(option: any): Promise<any> {
     const SMK = (globalThis as any)['SMK'];
 
@@ -478,7 +482,7 @@ export class MapService {
     };
 
     const token = this.tokenService.getOauthToken?.();
-    return (L as any).maplibreGL({
+    return this.createMaplibreGLLayer({
       style,
       pane: 'pane-project-boundary-gl',
       transformRequest: (url: string) =>
@@ -520,7 +524,7 @@ export class MapService {
     };
 
     const token = this.tokenService.getOauthToken?.();
-    return (L as any).maplibreGL({
+    return this.createMaplibreGLLayer({
       style,
       pane: 'pane-activity-boundary-gl',
       transformRequest: (url: string) =>

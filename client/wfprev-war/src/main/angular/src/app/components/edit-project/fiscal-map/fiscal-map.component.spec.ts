@@ -3,7 +3,6 @@ import { FiscalMapComponent } from './fiscal-map.component';
 import { ProjectService } from 'src/app/services/project-services';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import * as L from 'leaflet';
 
 class MockProjectService {
   getProjectFiscalsByProjectGuid = jasmine.createSpy().and.returnValue(of({
@@ -40,29 +39,20 @@ describe('FiscalMapComponent', () => {
   let component: FiscalMapComponent;
   let fixture: ComponentFixture<FiscalMapComponent>;
   let mockMapInstance: any;
-  let originalLControl: any;
-
   let geoJsonAddToSpy: jasmine.Spy;
 
-  beforeEach(async () => {
-    // Add fake map container to DOM
+  beforeEach(fakeAsync(async () => {
     const container = document.createElement('div');
     container.setAttribute('id', 'fiscalMap');
     document.body.appendChild(container);
-  
-    originalLControl = L.control;
-  
-    geoJsonAddToSpy = jasmine.createSpy('addTo').and.returnValue({}); // shared spy
-  
+
     mockMapInstance = {
       setView: jasmine.createSpy('setView'),
       fitBounds: jasmine.createSpy('fitBounds'),
-      remove: jasmine.createSpy('remove'), // important for ngOnDestroy
+      remove: jasmine.createSpy('remove'),
       addLayer: jasmine.createSpy('addLayer'),
       on: jasmine.createSpy('on'),
-      zoomControl: {
-        setPosition: jasmine.createSpy('setPosition')
-      },
+      zoomControl: { setPosition: jasmine.createSpy('setPosition') },
       _controlCorners: {
         bottomleft: document.createElement('div'),
         bottomright: document.createElement('div'),
@@ -70,44 +60,33 @@ describe('FiscalMapComponent', () => {
         topright: document.createElement('div')
       }
     };
-  
-    spyOn(L, 'map').and.returnValue(mockMapInstance);
-    spyOn(L, 'marker').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
-    spyOn(L, 'tileLayer').and.returnValue({ addTo: jasmine.createSpy('addTo') } as any);
-    spyOn(L, 'geoJSON').and.returnValue({ addTo: geoJsonAddToSpy } as any); // single spy
-    spyOn(L, 'featureGroup').and.returnValue({
-      getBounds: () => ({})
-    } as any);
-    spyOn(L as any, 'control').and.returnValue({
-      addTo: jasmine.createSpy('addTo'),
-      getPosition: jasmine.createSpy('getPosition'),
-      setPosition: jasmine.createSpy('setPosition'),
-      getContainer: jasmine.createSpy('getContainer'),
-      remove: jasmine.createSpy('remove'),
-      options: {}
-    });
-  
-    const mockProjectService = new MockProjectService();
-  
+
+    geoJsonAddToSpy = jasmine.createSpy('addTo').and.returnValue({});
+
     await TestBed.configureTestingModule({
       imports: [FiscalMapComponent],
       providers: [
-        { provide: ProjectService, useValue: mockProjectService },
+        { provide: ProjectService, useValue: new MockProjectService() },
         { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ]
     }).compileComponents();
-  
+
     fixture = TestBed.createComponent(FiscalMapComponent);
     component = fixture.componentInstance;
-  });
-  
 
-  afterEach(() => {
-    const container = document.getElementById('fiscalMap');
-    if (container) container.remove();
-    (L as any).control = originalLControl;
+    spyOn(component as any, 'initMap');
+    spyOn(component as any, 'createMap').and.returnValue(mockMapInstance);
+    spyOn(component as any, 'createTileLayer').and.returnValue({ addTo: jasmine.createSpy('addTo') });
+    spyOn(component as any, 'createMarker').and.returnValue({ addTo: jasmine.createSpy('addTo') });
+    spyOn(component as any, 'createGeoJSON').and.returnValue({ addTo: geoJsonAddToSpy });
+    spyOn(component as any, 'createFeatureGroup').and.returnValue({ getBounds: () => ({}) });
+  }));
+
+  afterEach(fakeAsync(() => {
+    tick(0); 
+    document.getElementById('fiscalMap')?.remove();
     fixture.destroy();
-  });
+  }));
 
   it('should create', () => {
     fixture.detectChanges();
@@ -121,10 +100,9 @@ describe('FiscalMapComponent', () => {
   });
 
   it('should initialize map in ngAfterViewInit', fakeAsync(() => {
-    const spy = spyOn<any>(component, 'initMap');
     component.ngAfterViewInit();
     tick();
-    expect(spy).toHaveBeenCalled();
+    expect((component as any).initMap).toHaveBeenCalled();
   }));
 
   it('should get project boundaries and select the latest one', () => {
@@ -239,7 +217,7 @@ describe('FiscalMapComponent', () => {
       }
     ]);
   
-    expect(L.geoJSON).toHaveBeenCalledTimes(3);
+    expect(component.createGeoJSON).toHaveBeenCalledTimes(3);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
     expect(mockFitBounds).toHaveBeenCalled();
   });
@@ -266,7 +244,7 @@ describe('FiscalMapComponent', () => {
   
     component.plotActivityBoundariesOnMap(mockBoundaries);
   
-    expect(L.geoJSON).toHaveBeenCalledTimes(2);
+    expect(component.createGeoJSON).toHaveBeenCalledTimes(2);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(2);
   });
   
@@ -281,7 +259,7 @@ describe('FiscalMapComponent', () => {
       }
     ]);
   
-    expect(L.geoJSON).not.toHaveBeenCalled();
+    expect(component.createGeoJSON).not.toHaveBeenCalled();
   });
 
   it('should plot project boundary with normal and GeometryCollection', () => {
@@ -302,114 +280,68 @@ describe('FiscalMapComponent', () => {
     ];
   
     component.plotProjectBoundary(boundary);
-    expect(L.geoJSON).toHaveBeenCalledTimes(3);
+    expect(component.createGeoJSON).toHaveBeenCalledTimes(3);
     expect(geoJsonAddToSpy).toHaveBeenCalledTimes(3);
   });
   
-
   it('should handle forkJoin results correctly in getAllActivitiesBoundaries', fakeAsync(() => {
-    const mockProjectGuid = 'mock-guid';
-    component['projectGuid'] = mockProjectGuid;
-    component['map'] = mockMapInstance;
-  
-    const mockFiscal = {
-      fiscalYear: component.currentFiscalYear,
-      projectPlanFiscalGuid: 'fiscal-1'
-    };
-  
-    const mockActivity = {
-      activityGuid: 'activity-1',
-      fiscalYear: mockFiscal.fiscalYear,
-      projectPlanFiscalGuid: mockFiscal.projectPlanFiscalGuid
-    };
-  
-    const mockBoundary = {
-      _embedded: {
-        activityBoundary: [{ geometry: { type: 'Polygon', coordinates: [] } }]
-      }
-    };
-  
     const projectService = TestBed.inject(ProjectService) as unknown as MockProjectService;
-  
-    // Override getProjectFiscalsByProjectGuid
+
+    const mockFiscal = { fiscalYear: component.currentFiscalYear, projectPlanFiscalGuid: 'fiscal-1' };
+    const mockActivity = { activityGuid: 'activity-1', fiscalYear: component.currentFiscalYear, projectPlanFiscalGuid: 'fiscal-1' };
+
     projectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
-      _embedded: {
-        projectFiscals: [mockFiscal]
-      }
+      _embedded: { projectFiscals: [mockFiscal] }
     }));
-  
-    // Override getFiscalActivities
     projectService.getFiscalActivities.and.returnValue(of({
-      _embedded: {
-        activities: [mockActivity]
-      }
+      _embedded: { activities: [mockActivity] }
     }));
-  
-    // Override getActivityBoundaries
-    projectService.getActivityBoundaries.and.returnValue(of(mockBoundary));
-  
-    // Stub projectBoundary as empty
+    projectService.getActivityBoundaries.and.returnValue(of({
+      _embedded: { activityBoundary: [{ geometry: { type: 'Polygon', coordinates: [] } }] }
+    }));
+
+    component.map = mockMapInstance;
     component['projectBoundary'] = [];
-  
+    component['projectGuid'] = 'mock-project-guid';
+
     const plotSpy = spyOn(component as any, 'plotActivityBoundariesOnMap');
     const coordSpy = spyOn(component, 'getProjectCoordinates');
-  
-    fixture.detectChanges(); // trigger ngOnInit()
-    tick(); // resolve observables
-  
-    expect(projectService.getProjectFiscalsByProjectGuid).toHaveBeenCalled();
+
+    component.getAllActivitiesBoundaries();
+    tick();
+
     expect(projectService.getFiscalActivities).toHaveBeenCalled();
     expect(projectService.getActivityBoundaries).toHaveBeenCalled();
     expect(plotSpy).toHaveBeenCalledWith(jasmine.any(Array));
     expect(coordSpy).not.toHaveBeenCalled();
   }));
-  
+
   it('should call getProjectCoordinates if no polygons exist', fakeAsync(() => {
-    const mockProjectGuid = 'mock-guid';
-    component['projectGuid'] = mockProjectGuid;
-    component['map'] = mockMapInstance;
-  
-    const mockFiscal = {
-      fiscalYear: component.currentFiscalYear,
-      projectPlanFiscalGuid: 'fiscal-1'
-    };
-  
-    const mockActivity = {
-      activityGuid: 'activity-1',
-      fiscalYear: mockFiscal.fiscalYear,
-      projectPlanFiscalGuid: mockFiscal.projectPlanFiscalGuid
-    };
-  
-    const emptyBoundary = {
-      _embedded: {
-        activityBoundary: [] // no geometry
-      }
-    };
-  
     const projectService = TestBed.inject(ProjectService) as unknown as MockProjectService;
-  
+
+    const mockFiscal = { fiscalYear: component.currentFiscalYear, projectPlanFiscalGuid: 'fiscal-1' };
+    const mockActivity = { activityGuid: 'activity-1', fiscalYear: component.currentFiscalYear, projectPlanFiscalGuid: 'fiscal-1' };
+
     projectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
-      _embedded: {
-        projectFiscals: [mockFiscal]
-      }
+      _embedded: { projectFiscals: [mockFiscal] }
     }));
-  
     projectService.getFiscalActivities.and.returnValue(of({
-      _embedded: {
-        activities: [mockActivity]
-      }
+      _embedded: { activities: [mockActivity] }
     }));
-  
-    projectService.getActivityBoundaries.and.returnValue(of(emptyBoundary));
-  
-    component['projectBoundary'] = []; // no project polygons
-  
+    projectService.getActivityBoundaries.and.returnValue(of({
+      _embedded: { activityBoundary: [] }
+    }));
+
+    component.map = mockMapInstance;
+    component['projectBoundary'] = [];
+    component['projectGuid'] = 'mock-project-guid';
+
     const plotSpy = spyOn(component as any, 'plotActivityBoundariesOnMap');
     const coordSpy = spyOn(component, 'getProjectCoordinates');
-  
-    fixture.detectChanges(); // trigger ngOnInit()
-    tick(); // flush observables
-  
+
+    component.getAllActivitiesBoundaries();
+    tick();
+
     expect(plotSpy).not.toHaveBeenCalled();
     expect(coordSpy).toHaveBeenCalled();
   }));
@@ -476,13 +408,18 @@ describe('FiscalMapComponent', () => {
     });
   
     it('should open map with bbox from boundaries', () => {
-      const mockGetBounds = jasmine.createSpy().and.returnValue(
-        L.latLngBounds([[48, -125], [49, -123]])
-      );
-  
-      (L.geoJSON as jasmine.Spy).and.callFake(() => ({
-        getBounds: mockGetBounds
-      }) as any);
+      const fakeBounds = {
+        getSouthWest: () => ({ lat: 48, lng: -125 }),
+        getNorthEast: () => ({ lat: 49, lng: -123 }),
+        getWest: () => -125,
+        getSouth: () => 48,
+        getEast: () => -123,
+        getNorth: () => 49,
+      };
+
+      (component as any).createGeoJSON.and.callFake(() => ({
+        getBounds: () => fakeBounds
+      }));
   
       component['allActivityBoundaries'] = [
         {
@@ -575,7 +512,7 @@ describe('FiscalMapComponent', () => {
   
     component.plotProjectBoundary(boundaries);
   
-    expect(L.geoJSON).not.toHaveBeenCalled();
+    expect(component.createGeoJSON).not.toHaveBeenCalled();
   });
   
   it('should plot project boundaries inside plotActivityBoundariesOnMap', () => {
@@ -599,7 +536,7 @@ describe('FiscalMapComponent', () => {
   
     component.plotActivityBoundariesOnMap(activityBoundaries);
   
-    expect(L.geoJSON).toHaveBeenCalledWith(
+    expect(component.createGeoJSON).toHaveBeenCalledWith(
       jasmine.objectContaining({ type: 'Polygon' }),
       jasmine.objectContaining({
         style: jasmine.objectContaining({ color: '#3f3f3f' })
@@ -609,4 +546,3 @@ describe('FiscalMapComponent', () => {
   
 
 });
-

@@ -14,11 +14,11 @@ import { BC_BOUNDS } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 
 @Component({
-  selector: 'app-map',
-  standalone: true,
-  imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
-  templateUrl: './map.component.html',
-  styleUrl: './map.component.scss'
+    selector: 'app-map',
+    standalone: true,
+    imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
+    templateUrl: './map.component.html',
+    styleUrl: './map.component.scss'
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
@@ -132,9 +132,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const legendHelper = new LeafletLegendService();
     this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
 
-    this.markersClusterGroup = L.markerClusterGroup({
+    this.markersClusterGroup = this.createMarkerClusterGroup({
       showCoverageOnHover: false,
-      iconCreateFunction: (cluster) =>
+      iconCreateFunction: (cluster: L.MarkerCluster) =>
         L.divIcon({
           html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
           className: 'custom-marker-cluster',
@@ -313,7 +313,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     for (const loc of validLocations) {
       try {
-        const marker = L.marker([loc.latitude, loc.longitude], {
+        const marker = this.createMarker([loc.latitude, loc.longitude], {
           icon: getBluePinIcon(),
         });
 
@@ -482,5 +482,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.activeMarker = null;
     }
   }
+
+  createMarkerClusterGroup(options?: L.MarkerClusterGroupOptions): L.MarkerClusterGroup {
+  return L.markerClusterGroup(options);
+}
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+  
 
 }
