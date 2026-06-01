@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
-  selector: 'wfprev-detail-button',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './detail-button.component.html',
-  styleUrls: ['./detail-button.component.scss']
+    selector: 'wfprev-detail-button',
+    standalone: true,
+    imports: [],
+    templateUrl: './detail-button.component.html',
+    styleUrls: ['./detail-button.component.scss']
 })
 export class DetailButtonComponent {
   @Input() text: string = 'View Details';

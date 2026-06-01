@@ -1,12 +1,11 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { OAuthService } from 'angular-oauth2-oidc';
-import * as L from 'leaflet';
 import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
 import { EvaluationCriteriaSummaryModel, ProjectFiscal } from 'src/app/components/models';
 import { AppConfigService } from 'src/app/services/app-config.service';
@@ -15,6 +14,8 @@ import { BC_BOUNDS, CodeTableKeys } from 'src/app/utils/constants';
 import * as toolUtils from 'src/app/utils/tools';
 import { formatLatLong } from 'src/app/utils/tools';
 import { ProjectDetailsComponent } from './project-details.component';
+import * as L from 'leaflet';
+
 const mockApplicationConfig = {
   application: {
     baseUrl: 'http://test.com',
@@ -78,8 +79,23 @@ describe('ProjectDetailsComponent', () => {
       'getProjectFiscalsByProjectGuid',
       'getFiscalActivities',
       'getActivityBoundaries',
+      'getProjectBoundaries',
       'deleteEvaluationCriteriaSummary'
     ]);
+
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: { projectFiscals: [] }
+    }));
+    mockProjectService.getFiscalActivities.and.returnValue(of({
+      _embedded: { activities: [] }
+    }));
+    mockProjectService.getActivityBoundaries.and.returnValue(of({
+      _embedded: { activityBoundary: [] }
+    }));
+    mockProjectService.getProjectByProjectGuid.and.returnValue(of({}));
+    mockProjectService.getProjectBoundaries.and.returnValue(of({
+      _embedded: { projectBoundary: [] }
+    }));
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
@@ -111,6 +127,13 @@ describe('ProjectDetailsComponent', () => {
 
     fixture.detectChanges();
   });
+
+
+  afterEach(fakeAsync(() => {
+    tick();
+    discardPeriodicTasks();
+    fixture.destroy();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -162,13 +185,18 @@ describe('ProjectDetailsComponent', () => {
       mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize', 'fitBounds', 'removeLayer']);
       markerSpy = jasmine.createSpyObj('L.Marker', ['addTo']);
       geoJsonLayerSpy = jasmine.createSpyObj('L.GeoJSON', ['addTo', 'getBounds']);
-      projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectBoundaries']);
+      projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectBoundaries', 'getProjectFiscalsByProjectGuid', 'getFiscalActivities', 'getActivityBoundaries']);
+
+      projectServiceSpy.getProjectBoundaries.and.returnValue(of({ _embedded: { projectBoundary: [] } }));
+      projectServiceSpy.getProjectFiscalsByProjectGuid.and.returnValue(of({ _embedded: { projectFiscals: [] } }));
+      projectServiceSpy.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
+      projectServiceSpy.getActivityBoundaries.and.returnValue(of({ _embedded: { activityBoundary: [] } }));
 
       // Provide the service to the component
       component['projectService'] = projectServiceSpy;
-      spyOn(L, 'map').and.returnValue(mapSpy as unknown as L.Map);
-      spyOn(L, 'marker').and.returnValue(markerSpy);
-      spyOn(L, 'geoJSON').and.returnValue(geoJsonLayerSpy);
+      spyOn(component, 'createMap').and.returnValue(mapSpy as unknown as L.Map);
+      spyOn(component, 'createMarker').and.returnValue(markerSpy);
+      spyOn(component, 'createGeoJSON').and.returnValue(geoJsonLayerSpy);
 
       // Return a valid bounds object from getBounds
       geoJsonLayerSpy.getBounds.and.returnValue({
@@ -206,7 +234,7 @@ describe('ProjectDetailsComponent', () => {
       };
 
       expect(projectServiceSpy.getProjectBoundaries).toHaveBeenCalledWith('some-guid');
-      expect(L.geoJSON).toHaveBeenCalledWith(mockBound.boundaryGeometry, jasmine.any(Object));
+      expect(component.createGeoJSON).toHaveBeenCalledWith(mockBound.boundaryGeometry, jasmine.any(Object));
       expect(geoJsonLayerSpy.addTo).toHaveBeenCalledWith(mapSpy);
     }));
 
@@ -254,34 +282,36 @@ describe('ProjectDetailsComponent', () => {
       expect(component['boundaryLayer']).not.toBe(mockOldLayer);
     }));
 
-    it('should not reinitialize the map if initMap is called and map already exists', () => {
+    it('should not reinitialize the map if initMap is called and map already exists', fakeAsync(() => {
       component['map'] = mapSpy;
       component.initMap();
+      tick();
+      expect(component.createMap).not.toHaveBeenCalled();
+    }));
 
-      expect(L.map).not.toHaveBeenCalled();
-    });
-
-    it('should not reinitialize the map if it already exists', () => {
+    it('should not reinitialize the map if it already exists', fakeAsync(() => {
       component['map'] = mapSpy;
       component.ngAfterViewInit();
-      expect(L.map).toHaveBeenCalledTimes(0);
-    });
+      tick();
+      expect(component.createMap).toHaveBeenCalledTimes(0);
+    }));
 
 
 
-    it('should initialize map with default BC bounds if map is not defined', () => {
+    it('should initialize map with default BC bounds if map is not defined', fakeAsync(() => {
       component.initMap();
-      expect(L.map).toHaveBeenCalled();
+      tick();
+      expect(component.createMap).toHaveBeenCalled();
       expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
-    });
+    }));
 
-    it('should initialize the map when initMap is called and map does not exist', () => {
+    it('should initialize the map when initMap is called and map does not exist', fakeAsync(() => {
       component['map'] = undefined;
       component.initMap();
-
-      expect(L.map).toHaveBeenCalled();
+      tick();
+      expect(component.createMap).toHaveBeenCalled();
       expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
-    });
+    }));
 
     it('should update the map view with the new latitude and longitude', () => {
       component['map'] = mapSpy;
@@ -292,7 +322,7 @@ describe('ProjectDetailsComponent', () => {
     it('should add a marker when updating the map view', () => {
       component['map'] = mapSpy;
       component.updateMap(49.553209, -119.965887);
-      expect(L.marker).toHaveBeenCalledWith(
+      expect(component.createMarker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
         jasmine.objectContaining({
           icon: jasmine.any(Object),
@@ -308,7 +338,7 @@ describe('ProjectDetailsComponent', () => {
       component.updateMap(49.553209, -119.965887);
 
       expect(mapSpy.removeLayer).toHaveBeenCalledWith(markerSpy); // Ensure the old marker is removed
-      expect(L.marker).toHaveBeenCalledWith(
+      expect(component.createMarker).toHaveBeenCalledWith(
         [49.553209, -119.965887],
         jasmine.objectContaining({
           icon: jasmine.any(Object),
@@ -378,9 +408,6 @@ describe('ProjectDetailsComponent', () => {
     it('should update form values when inputs are changed', () => {
       const projectLeadControl = component.detailsForm.controls['projectLead'];
       projectLeadControl.setValue('New Lead');
-
-      // Trigger change detection to reflect the updated value in the DOM
-      fixture.detectChanges();
 
       expect(component.detailsForm.controls['projectLead'].value).toBe('New Lead');
     });
@@ -1351,6 +1378,11 @@ describe('ProjectDetailsComponent', () => {
   });
 
   describe('hasGeometry getter', () => {
+      afterEach(fakeAsync(() => {
+      component['allActivityBoundaries'] = [];
+      tick();
+    }));
+
     it('should return false when no boundaryLayer and no activity polygons', () => {
       component['boundaryLayer'] = null;
       component['allActivityBoundaries'] = [];

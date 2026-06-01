@@ -5,30 +5,34 @@
       <mat-label class="label">Search</mat-label>
       <input class="search-input" aria-label="Search" type="text" [formControl]="searchControl" />
       @if (searchControl.value.length) {
-      <button mat-icon-button class="input-search-button" aria-label="Search" matTooltip="Search"
-        (click)="clearSearch(); $event.stopPropagation()">
-        <mat-icon>close</mat-icon>
-      </button>
+        <button mat-icon-button class="input-search-button" aria-label="Search" matTooltip="Search"
+          (click)="clearSearch(); $event.stopPropagation()">
+          <mat-icon>close</mat-icon>
+        </button>
       }
     </div>
 
 
     <!-- Filters -->
 
-    <div class="field search-input filter-search-input" *ngFor="let select of selects">
-      <mat-label class="label">{{select.name}}</mat-label>
-      <mat-form-field appearance="fill" class="filter-item">
-        <mat-select multiple placeholder="Select" [panelClass]="'filter-dropdown'"
-          (selectionChange)="onMultiSelectChange(select.model)" [(ngModel)]="this[select.model]">
-          <mat-option [value]="select.allValue">
+    @for (select of selects; track select) {
+      <div class="field search-input filter-search-input">
+        <mat-label class="label">{{select.name}}</mat-label>
+        <mat-form-field appearance="fill" class="filter-item">
+          <mat-select multiple placeholder="Select" [panelClass]="'filter-dropdown'"
+            (selectionChange)="onMultiSelectChange(select.model)" [(ngModel)]="this[select.model]">
+            <mat-option [value]="select.allValue">
               All
-          </mat-option>
-          <mat-option *ngFor="let option of select.options" [value]="option.value">
-              {{ option.label }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+            </mat-option>
+            @for (option of select.options; track option) {
+              <mat-option [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    }
 
     <!-- Reset button -->
     <button mat-stroked-button class="filter-item reset-button" (click)="onReset()">Reset</button>

@@ -1,6 +1,8 @@
 <div class="status-badge" [title]="displayLabel">
-  <div class="badge-icon" *ngIf="displayIcon">
-    <img [src]="displayIcon" [alt]="displayLabel" />
-  </div>
+  @if (displayIcon) {
+    <div class="badge-icon">
+      <img [src]="displayIcon" [alt]="displayLabel" />
+    </div>
+  }
   <div class="badge-label">{{ displayLabel }}</div>
 </div>

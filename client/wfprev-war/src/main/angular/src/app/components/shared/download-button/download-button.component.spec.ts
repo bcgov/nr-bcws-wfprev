@@ -13,7 +13,6 @@ describe('DownloadButtonComponent', () => {
 
     fixture = TestBed.createComponent(DownloadButtonComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

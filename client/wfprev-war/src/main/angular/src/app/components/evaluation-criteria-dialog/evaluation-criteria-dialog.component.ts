@@ -14,11 +14,11 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
 import { ProjectService } from 'src/app/services/project-services';
 import { EvaluationCriteriaSectionCodes, Messages, ModalMessages, ModalTitles, ProjectTypes } from 'src/app/utils/constants';
 @Component({
-  selector: 'wfprev-evaluation-criteria-dialog',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TextFieldModule, SlideToggleComponent, TextareaComponent],
-  templateUrl: './evaluation-criteria-dialog.component.html',
-  styleUrl: './evaluation-criteria-dialog.component.scss'
+    selector: 'wfprev-evaluation-criteria-dialog',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, TextFieldModule, SlideToggleComponent, TextareaComponent],
+    templateUrl: './evaluation-criteria-dialog.component.html',
+    styleUrl: './evaluation-criteria-dialog.component.scss'
 })
 export class EvaluationCriteriaDialogComponent implements OnInit {
   codeTables = [

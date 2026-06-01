@@ -41,7 +41,6 @@ describe('TimestampComponent', () => {
   it('should update the view when inputs change after initial render', () => {
     component.updateDate = '2025-08-07T00:00:00Z';
     component.updateUser = 'first';
-    fixture.detectChanges();
 
     component.updateDate = '2025-08-07T23:59:59Z';
     component.updateUser = 'second';

@@ -57,7 +57,7 @@
           <wfprev-input-field [id]="'revisedForecast'" [label]="'Revised Forecast'" [placeholder]="'0.00'"
             [control]="revisedForecastControl" [tooltip]="'Revised Forecast'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [enableAmountFormat]="true" />
+            [inputPrefix]="'$'" [enableAmountFormat]="true" />
         </div>
         <div class="forecast-rationale">
           <wfprev-textarea [label]="'Revised Forecast Rationale'"
@@ -81,7 +81,7 @@
           <wfprev-input-field [id]="'highRisk'" [label]="'High Risk'" [placeholder]="'0.00'" [control]="highRiskControl"
             [tooltip]="'High Risk'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/high-risk.svg'" [enableAmountFormat]="true" />
+            [inputPrefix]="'$'" [img]="'/assets/high-risk.svg'" [enableAmountFormat]="true" />
         </div>
         <div class="forecast-rationale">
           <wfprev-textarea [label]="'Description'"
@@ -95,7 +95,7 @@
           <wfprev-input-field [id]="'mediumRisk'" [label]="'Medium Risk'" [placeholder]="'0.00'"
             [control]="mediumRiskControl" [tooltip]="'Medium Risk'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/medium-risk.svg'" [enableAmountFormat]="true" />
+            [inputPrefix]="'$'" [img]="'/assets/medium-risk.svg'" [enableAmountFormat]="true" />
         </div>
         <div class="forecast-rationale">
           <wfprev-textarea [label]="'Description'"
@@ -109,7 +109,7 @@
           <wfprev-input-field [id]="'lowRisk'" [label]="'Low Risk'" [placeholder]="'0.00'" [control]="lowRiskControl"
             [tooltip]="'Low Risk'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/low-risk.svg'" [enableAmountFormat]="true" />
+            [inputPrefix]="'$'" [img]="'/assets/low-risk.svg'" [enableAmountFormat]="true" />
         </div>
         <div class="forecast-rationale">
           <wfprev-textarea [label]="'Description'"
@@ -123,7 +123,7 @@
           <wfprev-input-field [id]="'complete'" [label]="'Complete'" [placeholder]="'0.00'" [control]="completeControl"
             [tooltip]="'Complete'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
-            [prefix]="'$'" [img]="'/assets/none-risk.svg'" [enableAmountFormat]="true" />
+            [inputPrefix]="'$'" [img]="'/assets/none-risk.svg'" [enableAmountFormat]="true" />
         </div>
         <div class="forecast-rationale">
           <wfprev-textarea [label]="'Description'"

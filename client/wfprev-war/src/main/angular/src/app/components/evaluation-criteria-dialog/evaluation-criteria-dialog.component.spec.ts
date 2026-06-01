@@ -7,6 +7,7 @@ import { EvaluationCriteriaDialogComponent } from './evaluation-criteria-dialog.
 import { ProjectService } from 'src/app/services/project-services';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { Messages } from 'src/app/utils/constants';
+import { PermissionsService } from 'src/app/services/permissions.service';
 
 describe('EvaluationCriteriaDialogComponent', () => {
   let component: EvaluationCriteriaDialogComponent;
@@ -16,6 +17,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<EvaluationCriteriaDialogComponent>>;
   let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
+  let mockPermissionsService: jasmine.SpyObj<PermissionsService>;
 
   const mockData = {
     project: {
@@ -34,6 +36,8 @@ describe('EvaluationCriteriaDialogComponent', () => {
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
     mockSnackbar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    mockPermissionsService = jasmine.createSpyObj('PermissionsService', ['hasAction']);
+    mockPermissionsService.hasAction.and.returnValue(false);
 
     await TestBed.configureTestingModule({
       imports: [EvaluationCriteriaDialogComponent, ReactiveFormsModule],
@@ -43,7 +47,8 @@ describe('EvaluationCriteriaDialogComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MatSnackBar, useValue: mockSnackbar },
-        { provide: MAT_DIALOG_DATA, useValue: mockData }
+        { provide: MAT_DIALOG_DATA, useValue: mockData },
+        { provide: PermissionsService, useValue: mockPermissionsService },
       ]
     }).compileComponents();
 
@@ -105,6 +110,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
   });
 
   it('should call onSave and create evaluation criteria summary', () => {
+    component.isViewMod = false;     
     component.initializeForm();
     component.criteriaForm.patchValue({ wuiRiskClassCode: 1 });
     component.data.evaluationCriteriaSummary = undefined;
@@ -115,6 +121,7 @@ describe('EvaluationCriteriaDialogComponent', () => {
   });
 
   it('should call onSave and update evaluation criteria summary', () => {
+    component.isViewMod = false; 
     component.initializeForm();
     component.criteriaForm.patchValue({ wuiRiskClassCode: 1 });
     component.data.evaluationCriteriaSummary = { evaluationCriteriaSummaryGuid: 'guid' } as any;

@@ -1,6 +1,12 @@
 <div class="header-row">
-    <div class="timestamp" *ngIf="updateDate || updateUser">
-        <span *ngIf="updateDate">Last Updated: {{ updateDate | date:'yyyy-MM-dd HH:mm' }}</span>
-        <span *ngIf="updateUser">{{ updateUser }}</span>
+  @if (updateDate || updateUser) {
+    <div class="timestamp">
+      @if (updateDate) {
+        <span>Last Updated: {{ updateDate | date:'yyyy-MM-dd HH:mm' }}</span>
+      }
+      @if (updateUser) {
+        <span>{{ updateUser }}</span>
+      }
     </div>
+  }
 </div>

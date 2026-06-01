@@ -43,8 +43,8 @@ class MockProjectService {
 
 // Mock MapComponent that uses ResizablePanelComponent
 @Component({
-  selector: 'app-map',
-  template: `
+    selector: 'app-map',
+    template: `
     <div class="map-container">
       <wfprev-resizable-panel (panelResized)="onPanelResized()">
         <div [innerHTML]="panelContent"></div>
@@ -55,6 +55,7 @@ class MockProjectService {
       </div>
     </div>
   `,
+    standalone: false
 })
 class MockMapComponent {
   panelContent: string = `<p>Mock Panel Content</p>`;
