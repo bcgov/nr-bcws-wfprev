@@ -47,7 +47,8 @@
               "node_modules/maplibre-gl/dist/maplibre-gl.css"
             ],
             "scripts": [
-              "node_modules/@qqnluaq/smk/dist/smk.js"
+              "node_modules/@qqnluaq/smk/dist/smk.js",
+              "node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"
             ],
             "browser": "src/main.ts",
             "allowedCommonJsDependencies": [
