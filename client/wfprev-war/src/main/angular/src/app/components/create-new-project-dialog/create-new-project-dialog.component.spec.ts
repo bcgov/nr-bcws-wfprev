@@ -522,7 +522,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should set bcParksRegion as required when BC Parks business area is selected', () => {
     component.businessAreas = [
-      { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks (BCP)' },
+      { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks' },
       { programAreaGuid: 'other-guid', programAreaName: 'Other Area' }
     ];
 
@@ -541,7 +541,7 @@ describe('CreateNewProjectDialogComponent', () => {
 
   it('should clear bcParksRegion required validator when a non-BC Parks business area is selected', () => {
     component.businessAreas = [
-      { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks (BCP)' },
+      { programAreaGuid: 'bcp-guid', programAreaName: 'BC Parks' },
       { programAreaGuid: 'non-bcp-guid', programAreaName: 'Other Area' }
     ];
 

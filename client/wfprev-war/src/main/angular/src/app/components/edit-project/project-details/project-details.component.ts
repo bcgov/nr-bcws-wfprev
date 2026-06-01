@@ -31,7 +31,6 @@ import { TimestampComponent } from 'src/app/components/shared/timestamp/timestam
 import { TokenService } from 'src/app/services/token.service';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
-import { leafletProxy } from 'src/app/services/leaflet-proxy';
 @Component({
     selector: 'wfprev-project-details',
     standalone: true,
@@ -275,7 +274,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         this.map.removeLayer(this.marker);
       }
       const teardropIcon = getBluePinIcon();
-      this.marker = leafletProxy.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
+      this.marker = this.createMarker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
 
       this.map.setView([latitude, longitude], 13); // Update the map view
     }
@@ -300,7 +299,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (boundaryGeometry && this.map) {
               // Create new GeoJSON layer
-              this.boundaryLayer = leafletProxy.geoJSON(boundaryGeometry, {
+              this.boundaryLayer = this.createGeoJSON(boundaryGeometry, {
                 style: {
                   color: '#000000',
                   weight: 3,
@@ -346,8 +345,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS;
 
     if (!this.map) {
-      this.map = leafletProxy.map(container, { zoomControl: false });
-      leafletProxy.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      this.map = this.createMap(container, { zoomControl: false });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
       this.activityBoundaryGroup.addTo(this.map);
@@ -819,7 +818,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           : [geometry];
 
         for (const geom of geometries) {
-          const layer = leafletProxy.geoJSON(geom, {
+          const layer = this.createGeoJSON(geom, {
             style: {
               color,
               weight: 2,
@@ -959,5 +958,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const hasProjectPolygon = !!this.boundaryLayer; 
     const hasActivityPolygons = this.allActivityBoundaries?.length > 0;
     return hasProjectPolygon || hasActivityPolygons;
+  }
+
+  createMap(element: any, options: L.MapOptions): L.Map {
+    return L.map(element, options);
+  }
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+
+  createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
+    return L.geoJSON(geom, options);
   }
 }

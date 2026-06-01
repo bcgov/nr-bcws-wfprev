@@ -12,7 +12,6 @@ import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
 import { BC_BOUNDS } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
-import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 @Component({
     selector: 'app-map',
@@ -133,7 +132,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const legendHelper = new LeafletLegendService();
     this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
 
-    this.markersClusterGroup = leafletProxy.markerClusterGroup({
+    this.markersClusterGroup = this.createMarkerClusterGroup({
       showCoverageOnHover: false,
       iconCreateFunction: (cluster: L.MarkerCluster) =>
         L.divIcon({
@@ -314,7 +313,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     for (const loc of validLocations) {
       try {
-        const marker = L.marker([loc.latitude, loc.longitude], {
+        const marker = this.createMarker([loc.latitude, loc.longitude], {
           icon: getBluePinIcon(),
         });
 
@@ -483,5 +482,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.activeMarker = null;
     }
   }
+
+  createMarkerClusterGroup(options?: L.MarkerClusterGroupOptions): L.MarkerClusterGroup {
+  return L.markerClusterGroup(options);
+}
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+  
 
 }

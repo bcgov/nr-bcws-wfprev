@@ -3,7 +3,6 @@ import { MapService } from './map.service';
 import { BC_BOUNDS } from 'src/app/utils/constants';
 import { TokenService } from './token.service';
 import { AppConfigService } from './app-config.service';
-import { leafletProxy } from './leaflet-proxy';
 
 describe('MapService', () => {
   let service: MapService;
@@ -61,8 +60,6 @@ describe('MapService', () => {
     // Replace window with mock
     (window as any)['SMK'] = mockSMK;
     (window as any)['L'] = mockL;
-    maplibreSpy = spyOn(leafletProxy, 'maplibreGL')
-      .and.callFake((opts: any) => ({ __opts: opts }));
 
     TestBed.configureTestingModule({
       providers: [
@@ -79,6 +76,8 @@ describe('MapService', () => {
     });
 
     service = TestBed.inject(MapService);
+    maplibreSpy = spyOn(service, 'createMaplibreGLLayer')
+      .and.callFake((opts: any) => ({ __opts: opts }));
   });
 
   it('should be created', () => {

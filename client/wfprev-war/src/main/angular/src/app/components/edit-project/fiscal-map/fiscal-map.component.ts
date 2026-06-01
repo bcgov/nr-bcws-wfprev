@@ -6,7 +6,6 @@ import { FileAttachment } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
 import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src/app/utils/tools';
-import { leafletProxy } from 'src/app/services/leaflet-proxy';
 
 @Component({
     selector: 'wfprev-fiscal-map',
@@ -46,8 +45,8 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       this.map.invalidateSize();
     }
   }
-  private activityBoundaryGroup: L.LayerGroup = L.layerGroup();
-  private projectBoundaryGroup: L.LayerGroup = L.layerGroup();
+  private activityBoundaryGroup: L.LayerGroup = this.createLayerGroup();
+  private projectBoundaryGroup: L.LayerGroup = this.createLayerGroup();
 
   projectGuid = '';
   projectFiscals: any[] = [];
@@ -87,7 +86,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             const lng = Number.parseFloat(this.projectLongitude);
     
             const teardropIcon = getBluePinIcon()
-            leafletProxy.marker([lat, lng], { icon: teardropIcon }).addTo(this.map);
+            this.createMarker([lat, lng], { icon: teardropIcon }).addTo(this.map);
     
             this.map.setView([lat, lng], 14); 
           }
@@ -255,7 +254,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         };
   
         const addToMap = (geom: any) => {
-          const layer = leafletProxy.geoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup);
+          const layer = this.createGeoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup);
           allFiscalPolygons.push(layer); //  Track all layers
         };
       
@@ -275,7 +274,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       const geometry = item.boundaryGeometry;
       if (!geometry) return;
     
-      const layer = leafletProxy.geoJSON(geometry, {
+      const layer = this.createGeoJSON(geometry, {
         style: {
           color: '#3f3f3f',
           weight: 2,
@@ -286,7 +285,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     };
     
     if (allLayers.length > 0) {
-      const group = leafletProxy.featureGroup(allLayers);
+      const group = this.createFeatureGroup(allLayers);
       this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
@@ -308,7 +307,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       };
   
       const addToMap = (geom: any) => {
-        const layer = leafletProxy.geoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup);
+        const layer = this.createGeoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup);
         layers.push(layer);
       };
   
@@ -322,7 +321,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     };
   
     if (layers.length > 0 && this.map) {
-      const group = leafletProxy.featureGroup(layers);
+      const group = this.createFeatureGroup(layers);
       this.map.fitBounds(group.getBounds(), { padding: [20, 20] });
     }
   }
@@ -334,7 +333,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       (mapContainer as any)._leaflet_id = null;
     }
 
-    this.map = leafletProxy.map('fiscalMap', {
+    this.map = this.createMap('fiscalMap', {
       center: [49.00005, -124.0001], // Center of the boundary
       zoom: 14,
       zoomControl: true,
@@ -342,7 +341,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
     (this.map.zoomControl).setPosition('topright');
 
-    leafletProxy.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.createTileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
@@ -366,7 +365,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
 
         for (const item of entry.boundary) {
           const geometry = item.geometry;
-          const layer = leafletProxy.geoJSON(geometry);
+          const layer = this.createGeoJSON(geometry);
           const layerBounds = layer.getBounds();
           latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
         }
@@ -377,7 +376,7 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     if (this.projectBoundary) {
       for (const item of this.projectBoundary) {
         const geometry = item.boundaryGeometry;
-        const layer = leafletProxy.geoJSON(geometry);
+        const layer = this.createGeoJSON(geometry);
         const layerBounds = layer.getBounds();
         latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
       }
@@ -423,6 +422,30 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   
     const fullUrl = window.location.origin + this.router.serializeUrl(urlTree);
     window.open(fullUrl, '_blank');
+  }
+
+  createMap(id: string, options: any): L.Map {
+    return L.map(id, options);
+  }
+
+  createTileLayer(url: string, options?: any): L.TileLayer {
+    return L.tileLayer(url, options);
+  }
+
+  createGeoJSON(geom: any, options?: any): L.GeoJSON {
+    return L.geoJSON(geom, options);
+  }
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+
+  createFeatureGroup(layers?: L.Layer[]): L.FeatureGroup {
+    return L.featureGroup(layers);
+  }
+
+  createLayerGroup(): L.LayerGroup {
+    return L.layerGroup();
   }
   
   
