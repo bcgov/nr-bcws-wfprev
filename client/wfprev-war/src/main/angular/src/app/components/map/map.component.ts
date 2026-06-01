@@ -484,7 +484,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   createMarkerClusterGroup(options?: L.MarkerClusterGroupOptions): L.MarkerClusterGroup {
-  return L.markerClusterGroup(options);
+  return (window as any).L.markerClusterGroup(options);
 }
 
   createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
