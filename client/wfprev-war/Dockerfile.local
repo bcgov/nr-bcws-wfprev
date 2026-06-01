@@ -10,7 +10,7 @@ COPY src/main/angular .
 RUN npm install
 
 # Build the application with production configuration and correct base-href
-RUN npm run build -- --configuration local --base-href / 
+RUN npm run build -- --configuration local --base-href / --output-path=dist/wfprev
 
 
 # Dev Stage for Hot Reload / Watch Mode
