@@ -6,7 +6,7 @@ import { MapService } from 'src/app/services/map.service';
 import { LeafletLegendService, getBluePinIcon, getActivePinIcon } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
-import '@maplibre/maplibre-gl-leaflet';
+import '@maplibre/maplibre-gl-leaflet'; 
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
@@ -484,7 +484,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   createMarkerClusterGroup(options?: L.MarkerClusterGroupOptions): L.MarkerClusterGroup {
-  return L.markerClusterGroup(options);
+  return (window as any).L.markerClusterGroup(options);
 }
 
   createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
