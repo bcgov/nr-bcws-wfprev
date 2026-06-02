@@ -1,14 +1,11 @@
-<mat-expansion-panel class="expansion-panel fiscals-container" hideToggle="true" [expanded]="isExpanded" (expandedChange)="expandedChange.emit($event)">
+<mat-expansion-panel class="expansion-panel fiscals-container" hideToggle="true" [expanded]="isExpanded"
+  (expandedChange)="expandedChange.emit($event)">
   <mat-expansion-panel-header class="activity-header">
-    <wfprev-activity-header
-      [isExpanded]="isExpanded"
-      [title]="activity.activityName"
+    <wfprev-activity-header [isExpanded]="isExpanded" [title]="activity.activityName"
       [isSpatialAdded]="activity.isSpatialAddedInd"
       [hasOutstandingObligations]="form.getRawValue().outstandingObligationsInd"
-      [isCarryForward]="form.getRawValue().isCarryForwardInd"
-      [isResultsReportable]="activity.isResultsReportableInd"
-      [statusCode]="form.getRawValue().activityStatusCode"
-    ></wfprev-activity-header>
+      [isCarryForward]="form.getRawValue().isCarryForwardInd" [isResultsReportable]="activity.isResultsReportableInd"
+      [statusCode]="form.getRawValue().activityStatusCode"></wfprev-activity-header>
   </mat-expansion-panel-header>
 
   <form class="form-grid" [formGroup]="form">
@@ -18,7 +15,7 @@
         <select id="activityStatusCode" formControlName="activityStatusCode">
           <option value="">Select</option>
           @for (opt of statusOptions; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
+          <option [value]="opt.value">{{ opt.label }}</option>
           }
         </select>
       </div>
@@ -44,9 +41,7 @@
     </div>
 
     <div class="row metrics-row">
-      <wfprev-icon-display-field
-        [matIcon]="'attach_money'"
-        [label]="'Original Cost Estimate'"
+      <wfprev-icon-display-field [matIcon]="'attach_money'" [label]="'Original Cost Estimate'"
         [value]="(activity.totalCostEstimateAmount | currency:'USD':'symbol':'1.0-0') || 'N/A'">
       </wfprev-icon-display-field>
 
@@ -57,36 +52,36 @@
           <input type="text" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00"
             [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}" />
         </div>
-        @if (getControl('reportedSpendAmount')?.errors && (getControl('reportedSpendAmount')?.dirty || getControl('reportedSpendAmount')?.touched)) {
-          <div class="error">
-            @if (getControl('reportedSpendAmount')?.hasError('required')) {
-              <span>Required</span>
-            }
-            @if (getControl('reportedSpendAmount')?.hasError('strictlyPositive')) {
-              <span>Must be greater than $0</span>
-            }
-          </div>
+        @if (getControl('reportedSpendAmount')?.errors && (getControl('reportedSpendAmount')?.dirty ||
+        getControl('reportedSpendAmount')?.touched)) {
+        <div class="error">
+          @if (getControl('reportedSpendAmount')?.hasError('required')) {
+          <span>Required</span>
+          }
+          @if (getControl('reportedSpendAmount')?.hasError('strictlyPositive')) {
+          <span>Must be greater than $0</span>
+          }
+        </div>
         }
       </div>
 
-      <wfprev-icon-display-field
-        [matIcon]="'layers'"
-        [label]="'Planned Hectares (Ha)'"
+      <wfprev-icon-display-field [matIcon]="'layers'" [label]="'Planned Hectares (Ha)'"
         [value]="activity.plannedTreatmentAreaHa || '0'">
       </wfprev-icon-display-field>
 
       <div class="form-item number-field">
         <label>Completed Hectares (Ha) <span class="required">*</span></label>
         <input type="number" id="completedAreaHa" formControlName="completedAreaHa" />
-        @if (getControl('completedAreaHa')?.errors && (getControl('completedAreaHa')?.dirty || getControl('completedAreaHa')?.touched)) {
-          <div class="error">
-            @if (getControl('completedAreaHa')?.hasError('required')) {
-              <span>Required</span>
-            }
-            @if (getControl('completedAreaHa')?.hasError('strictlyPositive')) {
-              <span>Must be greater than 0</span>
-            }
-          </div>
+        @if (getControl('completedAreaHa')?.errors && (getControl('completedAreaHa')?.dirty ||
+        getControl('completedAreaHa')?.touched)) {
+        <div class="error">
+          @if (getControl('completedAreaHa')?.hasError('required')) {
+          <span>Required</span>
+          }
+          @if (getControl('completedAreaHa')?.hasError('strictlyPositive')) {
+          <span>Must be greater than 0</span>
+          }
+        </div>
         }
       </div>
     </div>
@@ -97,9 +92,8 @@
         <mat-checkbox formControlName="isCarryForwardInd">Yes</mat-checkbox>
       </div>
       <div class="textarea-container">
-        <wfprev-textarea
-          [label]="'Final Outcome & Comments (Including Reason for Deferred or Cancelled, $0 spent)'"
-          [rows]="2" [maxLength]="500" [control]="getControl('finalOutcomeComments')"
+        <wfprev-textarea [label]="'Final Outcome & Comments (Including Reason for Deferred or Cancelled, $0 spent)'"
+          [rows]="3" [maxLength]="500" [control]="getControl('finalOutcomeComments')"
           [required]="form.value.isCarryForwardInd"
           placeholder="If the activity was Deferred or Cancelled, or $0 spent, explain the reason here.">
         </wfprev-textarea>
@@ -114,9 +108,8 @@
       <div class="textarea-container">
         <wfprev-textarea
           [label]="'Describe your plan for addressing outstanding obligations and work to be carried-forward.'"
-          [rows]="2" [maxLength]="500" [control]="getControl('activityComment')"
-          [required]="form.value.outstandingObligationsInd"
-          placeholder="Explain details for your approach.">
+          [rows]="3" [maxLength]="500" [control]="getControl('activityComment')"
+          [required]="form.value.outstandingObligationsInd" placeholder="Explain details for your approach.">
         </wfprev-textarea>
       </div>
     </div>
@@ -125,17 +118,11 @@
   <div class="activity-files">
     <div class="section-divider"></div>
     @if (activity.activityGuid && fiscalGuid) {
-      <wfprev-project-files
-        [activityGuid]="activity.activityGuid"
-        [isReadonly]="isReadonly"
-        [fiscalGuid]="fiscalGuid"
-        [required]="true"
-        [title]="'Spatial Files'"
-        [showViewButton]="true"
-        [showDeleteButton]="false"
-        (filesUpdated)="filesUpdated.emit()">
-        {{activity.activityGuid}}
-      </wfprev-project-files>
+    <wfprev-project-files [activityGuid]="activity.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid"
+      [required]="true" [title]="'Spatial Files'" [showViewButton]="true" [showDeleteButton]="false"
+      (filesUpdated)="filesUpdated.emit()">
+      {{activity.activityGuid}}
+    </wfprev-project-files>
     }
   </div>
 </mat-expansion-panel>

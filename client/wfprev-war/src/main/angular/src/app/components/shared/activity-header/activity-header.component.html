@@ -15,14 +15,14 @@
       </div>
     }
 
-    <!-- Outstanding Obligations -->
-    @if (hasOutstandingObligations) {
-      <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
-    }
-
     <!-- Carry Forward -->
     @if (isCarryForward) {
       <wfprev-status-badge type="warning" label="Carry Forward"></wfprev-status-badge>
+    }
+
+    <!-- Outstanding Obligations -->
+    @if (hasOutstandingObligations) {
+      <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
     }
 
     <!-- Spatial Added / No Spatial Added -->

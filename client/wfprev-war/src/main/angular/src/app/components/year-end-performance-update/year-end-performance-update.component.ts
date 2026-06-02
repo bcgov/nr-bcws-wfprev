@@ -50,7 +50,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   summaryForm!: FormGroup;
   fiscalData?: ProjectFiscalExtended;
   closeoutData?: FiscalCloseout;
-  activityStatusCodes: any[] = [];
+  planFiscalStatusCodes: any[] = [];
   isSavingSummary = false;
   @ViewChild(YearEndActivitiesComponent) activitiesComponent!: YearEndActivitiesComponent;
 
@@ -108,7 +108,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       fiscal: this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid),
       activities: this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid),
       closeouts: this.projectService.getAllFiscalCloseouts(this.projectGuid, this.fiscalGuid),
-      statuses: this.codeTableService.fetchCodeTable('activityStatusCodes')
+      statuses: this.codeTableService.fetchCodeTable('planFiscalStatusCodes')
     };
 
     const sub = forkJoin(requests).pipe(finalize(() => this.isLoading = false))
@@ -127,8 +127,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
             this.closeoutData = closeouts[0];
           }
 
-          if (responses.statuses && responses.statuses._embedded && responses.statuses._embedded.activityStatusCode) {
-            this.activityStatusCodes = [...responses.statuses._embedded.activityStatusCode].sort((a: any, b: any) => (a.description ?? '').localeCompare(b.description ?? ''));
+          if (responses.statuses && responses.statuses._embedded && responses.statuses._embedded.planFiscalStatusCode) {
+            this.planFiscalStatusCodes = [...responses.statuses._embedded.planFiscalStatusCode].sort((a: any, b: any) => (a.description ?? '').localeCompare(b.description ?? ''));
           }
 
           this.patchForm();

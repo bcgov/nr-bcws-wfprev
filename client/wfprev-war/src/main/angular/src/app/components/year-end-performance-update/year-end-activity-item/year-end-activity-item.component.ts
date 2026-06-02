@@ -6,7 +6,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
-import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { ProjectFilesComponent } from '../../edit-project/project-details/project-files/project-files.component';
 import { TextareaComponent } from '../../shared/textarea/textarea.component';
@@ -15,6 +16,15 @@ import { Messages, NumericLimits } from '../../../utils/constants';
 import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
 import { nonZeroUnlessCancelledValidator } from '../../../utils/validators';
 
+export const CUSTOM_DATE_FORMATS = {
+  display: {
+    dateInput: 'YYYY/MM/DD',
+    monthYearLabel: 'YYYY MMM',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY MMMM',
+  },
+  parse: { dateInput: 'YYYY/MM/DD' },
+};
 
 @Component({
   selector: 'wfprev-year-end-activity-item',
@@ -35,7 +45,12 @@ import { nonZeroUnlessCancelledValidator } from '../../../utils/validators';
     IconDisplayFieldComponent
   ],
   templateUrl: './year-end-activity-item.component.html',
-  styleUrl: './year-end-activity-item.component.scss'
+  styleUrl: './year-end-activity-item.component.scss',
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-CA' },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
+  ]
 })
 export class YearEndActivityItemComponent implements OnChanges {
   @Input() activity: any;
@@ -51,6 +66,7 @@ export class YearEndActivityItemComponent implements OnChanges {
   form!: FormGroup;
   messages = Messages;
   statusOptions = [
+    { value: 'ACTIVE', label: 'Active' },
     { value: 'COMPLETED', label: 'Completed' },
     { value: 'CANCELLED', label: 'Cancelled' },
     { value: 'DEFERRED', label: 'Deferred' },
