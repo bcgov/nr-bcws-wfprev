@@ -1,3 +1,5 @@
+@import 'src/styles/variables';
+
 :host {
   display: block;
   flex: 1;
@@ -6,7 +8,7 @@
 .icon-display-field {
   display: flex;
   align-items: center;
-  background: #f5f6f9;
+  background: $colour-light-blue-grey;
   border-radius: 10px;
   padding: 8px 16px;
   gap: 12px;
@@ -17,7 +19,7 @@
   .icon-circle {
     width: 32px;
     height: 32px;
-    background: #dfe5ee;
+    background: $colour-medium-blue-grey;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -25,7 +27,7 @@
     flex-shrink: 0;
 
     .field-icon {
-      color: #1a5a96;
+      color: $colour-primary-blue;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -45,15 +47,16 @@
     .field-label {
       font-size: 12px;
       font-weight: 400;
-      color: #666666;
+      color: $colour-medium-dark-grey;
       line-height: normal;
     }
     .field-val {
       font-size: 14px;
       font-weight: 700;
-      color: #333333;
+      color: $colour-charcoal;
       line-height: normal;
       margin-top: 2px;
     }
   }
 }
+

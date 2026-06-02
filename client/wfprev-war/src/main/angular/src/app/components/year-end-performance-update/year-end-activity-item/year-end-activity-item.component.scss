@@ -1,3 +1,4 @@
+@import 'src/styles/variables';
 @import "../../edit-project/project-fiscals/project-fiscals.component.scss";
 
 :host {
@@ -25,7 +26,7 @@
 
 
 .expansion-panel {
-  border: 1px solid #D9D9D9;
+  border: 1px solid $colour-border-grey;
   background-color: #fff;
   box-shadow: none !important;
   border-radius: 0 !important;
@@ -72,7 +73,7 @@
       line-height: normal;
 
       .required {
-        color: #ef1616;
+        color: $colour-error-red;
       }
     }
 
@@ -112,11 +113,11 @@
 
       &:focus {
         outline: none;
-        border-bottom: 2px solid #1A5A96;
+        border-bottom: 2px solid $colour-primary-blue;
       }
 
       &[readonly] {
-        border-bottom: 1px dashed #2D2D2D !important;
+        border-bottom: 1px dashed $colour-text-dark !important;
         background-color: #FFF;
         cursor: not-allowed;
       }
@@ -150,7 +151,7 @@
     }
 
     .error {
-      color: #ef1616;
+      color: $colour-error-red;
       font-size: 12px;
       margin-top: 4px;
     }
@@ -159,7 +160,7 @@
   .readonly-text-noborder {
     font-size: 14px;
     font-weight: 400;
-    color: #2D2D2D;
+    color: $colour-text-dark;
     line-height: 21px;
     padding-top: 8px;
   }

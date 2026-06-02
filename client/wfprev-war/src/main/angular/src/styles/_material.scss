@@ -100,33 +100,24 @@ $theme: mat.m2-define-light-theme((
   .mat-date-range-input input {
     padding: 0 !important;
   }
-}
 
-.date-separator {
-  margin: 0 5px;
-}
+  .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: white;
+    padding: 8px 12px;
+  }
 
-.custom-overlay-container .cdk-overlay-pane {
-  left: 190px !important;
-  transform: none !important;
-}
+  .mat-mdc-form-field-flex {
+    height: 20px;
+    margin: 4px;
+  }
 
-.mdc-text-field--filled:not(.mdc-text-field--disabled) {
-  background-color: white;
-  padding: 8px 12px;
-}
+  .mat-mdc-form-field-infix {
+    padding: 0 !important;
+  }
 
-.mat-mdc-form-field-flex {
-  height: 20px;
-  margin: 4px;
-}
-
-.mat-mdc-form-field-infix {
-  padding: 0 !important;
-}
-
-.mat-form-field-disabled .mdc-text-field {
-  margin-top: 6px;
-  height: 38px;
+  .mat-form-field-disabled .mdc-text-field {
+    margin-top: 6px;
+    height: 38px;
+  }
 }
 
