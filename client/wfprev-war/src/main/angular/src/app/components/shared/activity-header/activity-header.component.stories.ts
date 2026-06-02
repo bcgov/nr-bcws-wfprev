@@ -25,6 +25,7 @@ export const Default: Story = {
     isCarryForward: false,
     isSpatialAdded: undefined,
     statusCode: '',
+    backgroundColor: '',
   },
 };
 
@@ -61,5 +62,18 @@ export const DeferredAndCarryForward: Story = {
     isCarryForward: true,
     isSpatialAdded: true,
     statusCode: 'DEFERRED',
+  },
+};
+
+export const YearEndBackground: Story = {
+  args: {
+    title: 'Year End Update Activity',
+    isExpanded: false,
+    isResultsReportable: true,
+    hasOutstandingObligations: true,
+    isCarryForward: true,
+    isSpatialAdded: true,
+    statusCode: 'COMPLETED',
+    backgroundColor: '#FAF9F8',
   },
 };

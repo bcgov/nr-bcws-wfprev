@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, ElementRef, AfterViewInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, ElementRef, AfterViewInit, OnDestroy, NgZone, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { ExpansionIndicatorComponent } from '../expansion-indicator/expansion-indicator.component';
 import { StatusBadgeComponent } from '../status-badge/status-badge.component';
 
@@ -10,7 +10,7 @@ import { StatusBadgeComponent } from '../status-badge/status-badge.component';
   templateUrl: './activity-header.component.html',
   styleUrl: './activity-header.component.scss'
 })
-export class ActivityHeaderComponent implements AfterViewInit, OnDestroy {
+export class ActivityHeaderComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isExpanded: boolean = false;
   @Input() title: string = '';
   @Input() isSpatialAdded?: boolean;
@@ -18,6 +18,7 @@ export class ActivityHeaderComponent implements AfterViewInit, OnDestroy {
   @Input() isCarryForward?: boolean;
   @Input() isResultsReportable?: boolean;
   @Input() statusCode?: string;
+  @Input() backgroundColor?: string;
 
   shouldStack = false;
   private resizeObserver?: ResizeObserver;
@@ -30,6 +31,12 @@ export class ActivityHeaderComponent implements AfterViewInit, OnDestroy {
     private readonly cdr: ChangeDetectorRef
   ) {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['backgroundColor']) {
+      this.applyBackgroundColor();
+    }
+  }
+
   ngAfterViewInit() {
     this.zone.runOutsideAngular(() => {
       this.resizeObserver = new ResizeObserver(() => {
@@ -37,10 +44,20 @@ export class ActivityHeaderComponent implements AfterViewInit, OnDestroy {
       });
       this.resizeObserver.observe(this.el.nativeElement);
     });
+    this.applyBackgroundColor();
   }
 
   ngOnDestroy() {
     this.resizeObserver?.disconnect();
+  }
+
+  private applyBackgroundColor() {
+    if (this.backgroundColor && this.el?.nativeElement) {
+      const parent = this.el.nativeElement.closest('.mat-expansion-panel-header');
+      if (parent) {
+        parent.style.backgroundColor = this.backgroundColor;
+      }
+    }
   }
 
   checkOverlap() {
