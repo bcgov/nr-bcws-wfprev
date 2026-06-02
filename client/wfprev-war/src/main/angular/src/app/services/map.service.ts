@@ -5,6 +5,7 @@ import { TokenService } from './token.service';
 import { StyleSpecification } from 'maplibre-gl';
 import * as L from 'leaflet';
 import { AppConfigService } from './app-config.service';
+import '@maplibre/maplibre-gl-leaflet';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
