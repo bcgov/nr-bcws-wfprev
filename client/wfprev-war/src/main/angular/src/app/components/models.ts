@@ -434,6 +434,12 @@ export interface PerformanceUpdate {
   totalAmount: number;
 }
 
+export interface FiscalCloseout {
+  projectPlanFiscalCloseoutGuid?: string;
+  projectPlanFiscalGuid?: string;
+  outcomeComment?: string;
+}
+
 export enum ForecastStatus {
   ChangedDecreased = "CHANGED_DECREASED",
   ChangedIncreased = "CHANGED_INCREASED",

@@ -24,6 +24,13 @@
     resize: vertical;
     padding: 6px;
     padding-bottom: 16px;
+    box-sizing: border-box;
+
+    &:focus:not(.over-limit) {
+      outline: none;
+      border: 2px solid #1a5a96;
+    }
+
     &.over-limit {
       border-color: var(--wf-colour-error);
       &:focus {

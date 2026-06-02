@@ -33,6 +33,10 @@ export class ProjectFilesComponent implements OnInit {
   @Input() isReadonly: boolean = false;
   @Input() isDisabledButton: boolean = false;
   @Input() isTooltipDisabled: boolean = true;
+  @Input() required: boolean = false;
+  @Input() title: string = 'Files';
+  @Input() showViewButton: boolean = false;
+  @Input() showDeleteButton: boolean = true;
   attachmentDescription: string = '';
   uploadedBy = '';
 
@@ -69,11 +73,17 @@ export class ProjectFilesComponent implements OnInit {
     'uploadedDate',
     'polygonHectares',
     'description',
-    'download',
-    'delete'
+    'download'
   ];
 
   ngOnInit(): void {
+    if (this.showViewButton) {
+      this.displayedColumns.push('view');
+    }
+    if (this.showDeleteButton) {
+      this.displayedColumns.push('delete');
+    }
+
     if (this.activityGuid && this.fiscalGuid) {
       this.loadActivityAttachments();
     } else if (this.projectGuid) {
@@ -715,6 +725,10 @@ export class ProjectFilesComponent implements OnInit {
 
   isDownloading(file: FileAttachment): boolean {
     return this.downloadingFileId === file.fileIdentifier;
+  }
+
+  viewFile(file: ProjectFile): void {
+    console.log('Stub viewing file:', file);
   }
 
   translateAttachmentType(description: string): string {

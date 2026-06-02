@@ -568,7 +568,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
 
-        const hasActivities = this.activitiesComponent?.activities?.some(a => a.projectPlanFiscalGuid === fiscalGuid) ?? false;
+        const hasActivities = this.activitiesComponent?.activityViews?.some(v => v.data?.projectPlanFiscalGuid === fiscalGuid) ?? false;
 
         if (hasActivities) {
           this.snackbarService.open(

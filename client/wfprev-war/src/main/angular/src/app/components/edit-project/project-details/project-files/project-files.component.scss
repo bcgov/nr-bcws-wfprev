@@ -23,7 +23,7 @@
   align-items: center;
   padding-bottom: 16px;
   .title-text {
-    padding-left: 12px;
+    padding-left: 8px;
   }
 }
 button {
@@ -49,6 +49,13 @@ button.primary {
 
 .table-button {
   background-color: transparent;
+
+  svg {
+    color: #1A5A96;
+    display: inline-block;
+    vertical-align: middle;
+    transition: color 0.2s ease;
+  }
 }
 
 .files-table {
@@ -89,7 +96,8 @@ button.primary {
   }
 
   .mat-column-download,
-  .mat-column-delete {
+  .mat-column-delete,
+  .mat-column-view {
     text-align: center;
 
     .table-button {
@@ -169,7 +177,8 @@ button.primary {
 
     .table-button,
     .mat-column-download .table-button,
-    .mat-column-delete .table-button {
+    .mat-column-delete .table-button,
+    .mat-column-view .table-button {
       padding: 0 !important;
       margin: 0 0 0 auto !important;
       height: auto;
@@ -188,6 +197,10 @@ button.primary {
 
 .table-button[disabled]:hover {
   background-color: transparent;
+}
+
+.required {
+  color: #ef1616;
 }
 
 

@@ -1,0 +1,59 @@
+:host {
+  display: block;
+  flex: 1;
+}
+
+.icon-display-field {
+  display: flex;
+  align-items: center;
+  background: #f5f6f9;
+  border-radius: 10px;
+  padding: 8px 16px;
+  gap: 12px;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+
+  .icon-circle {
+    width: 32px;
+    height: 32px;
+    background: #dfe5ee;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+
+    .field-icon {
+      color: #1a5a96;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .field-image-icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .field-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #666666;
+      line-height: normal;
+    }
+    .field-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333333;
+      line-height: normal;
+      margin-top: 2px;
+    }
+  }
+}

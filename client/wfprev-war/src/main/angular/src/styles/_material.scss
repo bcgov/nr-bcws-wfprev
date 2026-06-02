@@ -12,8 +12,33 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
+$my-custom-blue: (
+  50: #e0f2fe,
+  100: #bae6fd,
+  200: #7dd3fc,
+  300: #38bdf8,
+  400: #0ea5e9,
+  500: #1a5a96, // Main product blue shade
+  600: #0369a1,
+  700: #075985,
+  800: #0c4a6e,
+  900: #1a5a96,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
 $theme-primary: mat.m2-define-palette(mat.$m2-blue-gray-palette, A400, 500, 900);
-$theme-accent: mat.m2-define-palette(mat.$m2-orange-palette, A200, A100, A400);
+$theme-accent: mat.m2-define-palette($my-custom-blue, 500, 100, 900);
  
 // The warn palette is optional (defaults to red).
 $theme-warn: mat.m2-define-palette(mat.$m2-red-palette);

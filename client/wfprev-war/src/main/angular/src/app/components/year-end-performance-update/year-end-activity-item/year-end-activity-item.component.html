@@ -1,0 +1,141 @@
+<mat-expansion-panel class="expansion-panel fiscals-container" hideToggle="true" [expanded]="isExpanded" (expandedChange)="expandedChange.emit($event)">
+  <mat-expansion-panel-header class="activity-header">
+    <wfprev-activity-header
+      [isExpanded]="isExpanded"
+      [title]="activity.activityName"
+      [isSpatialAdded]="activity.isSpatialAddedInd"
+      [hasOutstandingObligations]="form.getRawValue().outstandingObligationsInd"
+      [isCarryForward]="form.getRawValue().isCarryForwardInd"
+      [isResultsReportable]="activity.isResultsReportableInd"
+      [statusCode]="form.getRawValue().activityStatusCode"
+    ></wfprev-activity-header>
+  </mat-expansion-panel-header>
+
+  <form class="form-grid" [formGroup]="form">
+    <div class="row info-row">
+      <div class="form-item status-field">
+        <label>Activity Status <span class="required">*</span></label>
+        <select id="activityStatusCode" formControlName="activityStatusCode">
+          <option value="">Select</option>
+          @for (opt of statusOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-item desc-field">
+        <label>Activity Description</label>
+        <div class="readonly-text-noborder">{{ activity.activityDescription || 'N/A' }}</div>
+      </div>
+
+      <div class="form-item date-field">
+        <label>Activity Start-End Date <span class="required">*</span></label>
+        <div class="date-range-container">
+          <mat-form-field>
+            <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
+              <input matStartDate formControlName="activityStartDate" placeholder="YYYY-MM-DD">
+              <input matEndDate formControlName="activityEndDate" placeholder="YYYY-MM-DD">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="row metrics-row">
+      <wfprev-icon-display-field
+        [matIcon]="'attach_money'"
+        [label]="'Original Cost Estimate'"
+        [value]="(activity.totalCostEstimateAmount | currency:'USD':'symbol':'1.0-0') || 'N/A'">
+      </wfprev-icon-display-field>
+
+      <div class="form-item currency-field">
+        <label>Final Reported Spend <span class="required">*</span></label>
+        <div class="currency-input">
+          <span class="currency-symbol">$</span>
+          <input type="text" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00"
+            [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}" />
+        </div>
+        @if (getControl('reportedSpendAmount')?.errors && (getControl('reportedSpendAmount')?.dirty || getControl('reportedSpendAmount')?.touched)) {
+          <div class="error">
+            @if (getControl('reportedSpendAmount')?.hasError('required')) {
+              <span>Required</span>
+            }
+            @if (getControl('reportedSpendAmount')?.hasError('strictlyPositive')) {
+              <span>Must be greater than $0</span>
+            }
+          </div>
+        }
+      </div>
+
+      <wfprev-icon-display-field
+        [matIcon]="'layers'"
+        [label]="'Planned Hectares (Ha)'"
+        [value]="activity.plannedTreatmentAreaHa || '0'">
+      </wfprev-icon-display-field>
+
+      <div class="form-item number-field">
+        <label>Completed Hectares (Ha) <span class="required">*</span></label>
+        <input type="number" id="completedAreaHa" formControlName="completedAreaHa" />
+        @if (getControl('completedAreaHa')?.errors && (getControl('completedAreaHa')?.dirty || getControl('completedAreaHa')?.touched)) {
+          <div class="error">
+            @if (getControl('completedAreaHa')?.hasError('required')) {
+              <span>Required</span>
+            }
+            @if (getControl('completedAreaHa')?.hasError('strictlyPositive')) {
+              <span>Must be greater than 0</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="comment-container">
+      <div class="checkbox-container">
+        <label class="checkbox-label">Carry forward to a future fiscal activity</label>
+        <mat-checkbox formControlName="isCarryForwardInd">Yes</mat-checkbox>
+      </div>
+      <div class="textarea-container">
+        <wfprev-textarea
+          [label]="'Final Outcome & Comments (Including Reason for Deferred or Cancelled, $0 spent)'"
+          [rows]="2" [maxLength]="500" [control]="getControl('finalOutcomeComments')"
+          [required]="form.value.isCarryForwardInd"
+          placeholder="If the activity was Deferred or Cancelled, or $0 spent, explain the reason here.">
+        </wfprev-textarea>
+      </div>
+    </div>
+
+    <div class="comment-container">
+      <div class="checkbox-container">
+        <label class="checkbox-label">Outstanding Obligations</label>
+        <mat-checkbox formControlName="outstandingObligationsInd">Yes</mat-checkbox>
+      </div>
+      <div class="textarea-container">
+        <wfprev-textarea
+          [label]="'Describe your plan for addressing outstanding obligations and work to be carried-forward.'"
+          [rows]="2" [maxLength]="500" [control]="getControl('activityComment')"
+          [required]="form.value.outstandingObligationsInd"
+          placeholder="Explain details for your approach.">
+        </wfprev-textarea>
+      </div>
+    </div>
+  </form>
+
+  <div class="activity-files">
+    <div class="section-divider"></div>
+    @if (activity.activityGuid && fiscalGuid) {
+      <wfprev-project-files
+        [activityGuid]="activity.activityGuid"
+        [isReadonly]="isReadonly"
+        [fiscalGuid]="fiscalGuid"
+        [required]="true"
+        [title]="'Spatial Files'"
+        [showViewButton]="true"
+        [showDeleteButton]="false"
+        (filesUpdated)="filesUpdated.emit()">
+        {{activity.activityGuid}}
+      </wfprev-project-files>
+    }
+  </div>
+</mat-expansion-panel>

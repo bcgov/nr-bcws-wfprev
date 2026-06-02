@@ -1,0 +1,31 @@
+.activities-section {
+  h2 {
+    font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-size: 20px !important;
+    line-height: 100% !important;
+    letter-spacing: -0.01em !important;
+    margin-bottom: 16px;
+    color: #333333;
+  }
+}
+
+.activities-list {
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+
+  wfprev-year-end-activity-item + wfprev-year-end-activity-item {
+    margin-top: -1px;
+  }
+}
+
+.empty-state {
+  padding: 16px;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  text-align: center;
+  color: #666;
+}

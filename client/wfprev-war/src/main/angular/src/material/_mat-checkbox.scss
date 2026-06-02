@@ -28,12 +28,21 @@ mat-selection-list .mat-mdc-list-option {
         }
 
         .mdc-checkbox__native-control:enabled {
-            &:checked, 
+            &:checked {
+                &~.mdc-checkbox__background {
+                    background-color: $colour-white;
+                    border: 1px solid $colour-light-grey;
+
+                    .mdc-checkbox__checkmark-path {
+                        stroke: #1a5a96 !important;
+                    }
+                } 
+            }
             &:not(:checked) {
                 &~.mdc-checkbox__background {
                     background-color: $colour-white;
                     border: 1px solid $colour-light-grey;
-                } 
+                }
             }
         }   
 

@@ -218,3 +218,22 @@ textarea:disabled {
     line-height: 1.5;
   }
 }
+
+/* Align all datepicker/date-range inputs to the left instead of center */
+.mat-date-range-input input,
+.mat-input-element,
+.mat-mdc-input-element {
+  text-align: left !important;
+}
+
+/* Remove/reduce left padding on all date picker text fields to align them with standard inputs */
+.date-range-container .mdc-text-field--filled,
+.date-picker .mdc-text-field--filled {
+  padding-left: 2px !important;
+}
+
+/* Date picker/Form field focus state */
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-line-ripple::after {
+  border-bottom-width: 2px !important;
+  border-bottom-color: #1a5a96 !important;
+}

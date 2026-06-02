@@ -70,6 +70,11 @@
     font-size: 16px;
     background: transparent;
     color: #282828;
+
+    &:focus {
+      outline: none;
+      border-bottom: 2px solid #1a5a96;
+    }
   }
   .custom-input::placeholder {
     color: #9F9D9C;
@@ -86,6 +91,11 @@
     border: none;
     border-bottom: 1px solid #282828;
     outline: none;
+
+    &:focus {
+      outline: none;
+      border-bottom: 2px solid #1a5a96;
+    }
   }
 
   .error-message {

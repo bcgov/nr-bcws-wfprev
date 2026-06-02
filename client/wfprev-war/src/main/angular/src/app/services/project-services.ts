@@ -726,4 +726,41 @@ export class ProjectService {
             })
         );
     }
+
+    getAllFiscalCloseouts(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`;
+
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error) => {
+                console.error("Error fetching closeouts", error);
+                return throwError(() => new Error("Failed to fetch closeouts"));
+            })
+        );
+    }
+
+    createFiscalCloseout(projectGuid: string, projectPlanFiscalGuid: string, closeoutModel: any): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`;
+        return this.httpClient.post<any>(
+            url,
+            closeoutModel,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`
+                }
+            }
+        ).pipe(
+            map(response => response),
+            catchError(error => {
+                console.error("Error creating closeout", error);
+                return throwError(() => new Error("Failed to create closeout"));
+            })
+        );
+    }
 }

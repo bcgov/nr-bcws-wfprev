@@ -109,7 +109,8 @@
     }
 
     &:focus {
-      border-bottom: 1px solid black;
+      outline: none;
+      border-bottom: 2px solid #1a5a96;
     }
   }
 
@@ -218,6 +219,11 @@ select {
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 20px;
+
+  &:focus {
+    outline: none;
+    border-bottom: 2px solid #1a5a96;
+  }
 }
 
 /* Add ellipses support for select options */
@@ -258,6 +264,11 @@ select option {
     height: auto;
     font-family: var(--wf-font-family-main);
     margin-top: 8px;
+
+    &:focus {
+      outline: none;
+      border: 2px solid #1a5a96;
+    }
   }
 }
 

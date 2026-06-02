@@ -1,5 +1,5 @@
 <div class="fiscals-container">
-  <mat-expansion-panel [expanded] = 'true' class="expansion-panel" #activitiesPanel>
+  <mat-expansion-panel [expanded]='true' class="expansion-panel" #activitiesPanel>
     <mat-expansion-panel-header>
       <div class="header-container">
         <wfprev-expansion-indicator [isExpanded]="activitiesPanel.expanded"></wfprev-expansion-indicator>
@@ -17,317 +17,48 @@
         }
       </div>
     </mat-expansion-panel-header>
+
     @if (isLoading) {
       <div class="spinner-container">
         <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
       </div>
     }
-    @if (!isLoading && activities.length) {
+
+    @if (!isLoading && activityViews?.length) {
       <div>
-        @for (activity of activities; track activity; let i = $index) {
-          <div [id]="'activity-' + i">
-            <mat-expansion-panel class="expansion-panel" [(expanded)]="expandedPanels[i]">
-              <mat-expansion-panel-header class="activity-header">
-                <wfprev-expansion-indicator [isExpanded]="expandedPanels[i]"></wfprev-expansion-indicator>
-                <div class="activity-title">
-                  <div>
-                    {{getActivityTitle(i)}}
-                  </div>
-                </div>
-                <div class="activity-indicators">
-                  @if(activity.isSpatialAddedInd) {
-                    <wfprev-status-badge type="spatial-added"></wfprev-status-badge>
-                  } @else {
-                    <wfprev-status-badge type="spatial-not-added"></wfprev-status-badge>
-                  }
-                  @if(activity.outstandingObligationsInd) {
-                    <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
-                  }
-                  @if(activity.activityStatusCode?.activityStatusCode === 'COMPLETED') {
-                    <wfprev-status-badge type="status-complete"></wfprev-status-badge>
-                  }
-                </div>
-              </mat-expansion-panel-header>
-              @if (activityForms[i]) {
-                <form class="form-grid" [formGroup]="activityForms[i]">
-                  <div class="first-section">
-                    <div class="form-item narrow-width">
-                      <label>Completed Hectares (Ha)</label>
-                      <input type="number" id="completedAreaHa" formControlName="completedAreaHa" onfocus="this.select()"/>
-                      @if (getControl(i, 'completedAreaHa').errors && (getControl(i, 'completedAreaHa').dirty || getControl(i, 'completedAreaHa').touched)) {
-                        <div class="error"
-                          >
-                          @if (getControl(i, 'completedAreaHa').hasError('min')) {
-                            <span>{{ messages.positiveNumber }}</span>
-                          }
-                          @if (getControl(i, 'completedAreaHa').hasError('max')) {
-                            <span>{{ messages.maxLengthExceeded }}</span>
-                          }
-                        </div>
-                      }
-                    </div>
-                    <div class="form-item narrow-width">
-                      <label>Reported Spend</label>
-                      <div class="currency-input">
-                        <span class="currency-symbol">$</span>
-                        <input id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00" [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}" onfocus="this.select()"/>
-                      </div>
-                      @if (getControl(i, 'reportedSpendAmount').errors && (getControl(i, 'reportedSpendAmount').dirty || getControl(i, 'reportedSpendAmount').touched)) {
-                        <div class="error"
-                          >
-                          @if (getControl(i, 'reportedSpendAmount').hasError('min')) {
-                            <span>{{ messages.positiveNumber }}</span>
-                          }
-                          @if (getControl(i, 'reportedSpendAmount').hasError('max')) {
-                            <span>{{ messages.maxLengthExceeded }}</span>
-                          }
-                        </div>
-                      }
-                    </div>
-                    <div class="form-item narrow-width">
-                      <label>RESULTS Reportable</label>
-                      <div class="toggle-container">
-                        <mat-slide-toggle
-                          id="isResultsReportableInd"
-                          formControlName="isResultsReportableInd"
-                          (change)="toggleResultsReportableInd(i)"
-                          [disabled]="isReadonly">
-                        </mat-slide-toggle>
-                        <span class="toggle-label">
-                          {{ activityForms[i].getRawValue().isResultsReportableInd ? 'Yes' : 'No' }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="form-item narrow-width">
-                      <label>Activity Status</label>
-                      <div class="toggle-container">
-                        <mat-slide-toggle
-                          [checked]="activityForms[i].getRawValue().activityStatusCode === 'COMPLETED'"
-                          [disabled]="isReadonly"
-                          (change)="!isReadonly && toggleActivityStatus(i)">
-                        </mat-slide-toggle>
-                        <span class="toggle-label">
-                          {{ activityForms[i].getRawValue().activityStatusCode === 'COMPLETED' ? 'Complete' : 'Active' }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-item three-columns">
-                    <label>Activity Base
-                      @if (activityForms[i]?.value?.isResultsReportableInd) {
-                        <span class="required">*</span>
-                      }
-                    </label>
-                    <select id="silvicultureBaseGuid" formControlName="silvicultureBaseGuid">
-                      <option value="">Select</option>
-                      @for (item of silvicultureBaseCode; track item) {
-                        <option [value]="item.silvicultureBaseGuid">
-                          {{ item.description }}
-                        </option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-item three-columns">
-                    <label>Technique</label>
-                    <select id="silvicultureTechniqueGuid"
-                      formControlName="silvicultureTechniqueGuid"
-                      >
-                      <option value="">Select</option>
-                      @for (item of activityForms[i]?.get('filteredTechniqueCode')?.value || []; track item) {
-                        <option
-                          [value]="item.silvicultureTechniqueGuid">
-                          {{ item.description }}
-                        </option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-item three-columns">
-                    <label>Method</label>
-                    <select id="silvicultureMethodGuid"
-                      formControlName="silvicultureMethodGuid"
-                      >
-                      <option value="">Select</option>
-                      @for (item of activityForms[i]?.get('filteredMethodCode')?.value || []; track item) {
-                        <option
-                          [value]="item.silvicultureMethodGuid">
-                          {{ item.description }}
-                        </option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-item two-columns">
-                    <label>Activity Name@if (!activityForms[i]?.value?.isResultsReportableInd) {
-                      <span class="required">*</span>
-                    }</label>
-                    <input
-                      type="text"
-                      id="activityName"
-                      formControlName="activityName"
-                      [readonly]="activityForms[i]?.value?.isResultsReportableInd"
-                      [placeholder]="!activityForms[i]?.value?.isResultsReportableInd ? 'Provide a name for non-RESULTS reportable activities' : ''"
-                      />
-                      @if (getControl(i, 'activityName').errors && (getControl(i, 'activityName').dirty || getControl(i, 'activityName').touched)) {
-                        <div class="error"
-                          >
-                          @if (getControl(i, 'activityName').hasError('maxlength')) {
-                            <span>{{ messages.maxLengthExceeded }}</span>
-                          }
-                        </div>
-                      }
-                    </div>
-                    <div class="form-item two-columns">
-                      <label>Funding Source Code</label>
-                      <select id="activityFundingSourceGuid" formControlName="activityFundingSourceGuid">
-                        <option [value]=null>Select</option>
-                        @for (item of fundingSourceCode; track item) {
-                          <option [value]="item.fundingSourceGuid">
-                            {{ item.fundingSourceName }}
-                          </option>
-                        }
-                      </select>
-                    </div>
-                    <div class="form-item wide">
-                      <label>Activity Start and End <span class="required">*</span></label>
-                      <div class="date-range-container">
-                        <mat-form-field>
-                          <mat-date-range-input [rangePicker]="picker" formGroupName="activityDateRange">
-                            <input matStartDate formControlName="activityStartDate" placeholder="YYYY-MM-DD">
-                            <input matEndDate   formControlName="activityEndDate"   placeholder="YYYY-MM-DD">
-                          </mat-date-range-input>
-                          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                          <mat-date-range-picker #picker panelClass="custom-overlay"></mat-date-range-picker>
-                        </mat-form-field>
-                      </div>
-                    </div>
-                    <div class="form-item">
-                      <label>Planned Hectares (Ha)<span class="required">*</span></label>
-                      <input type="number" id="plannedTreatmentAreaHa" formControlName="plannedTreatmentAreaHa" min="0" onfocus="this.select()"/>
-                      @if (getControl(i, 'plannedTreatmentAreaHa').errors && (getControl(i, 'plannedTreatmentAreaHa').dirty || getControl(i, 'plannedTreatmentAreaHa').touched)) {
-                        <div class="error"
-                          >
-                          @if (getControl(i, 'plannedTreatmentAreaHa').hasError('max')) {
-                            <span>{{ messages.maxLengthExceeded }}</span>
-                          }
-                          @if (getControl(i, 'plannedTreatmentAreaHa').hasError('min')) {
-                            <span>{{ messages.positiveNumber }}</span>
-                          }
-                        </div>
-                      }
-                    </div>
-                    <div class="form-item">
-                      <label>Planned Spend</label>
-                      <div class="currency-input">
-                        <span class="currency-symbol">$</span>
-                        <input id="plannedSpendAmount" formControlName="plannedSpendAmount" placeholder="0.00" [currencyMask]="{align: 'left', prefix: '', inputMode: 1, allowNegative: false}" onfocus="this.select()"/>
-                      </div>
-                      @if (getControl(i, 'plannedSpendAmount').errors && (getControl(i, 'plannedSpendAmount').dirty || getControl(i, 'plannedSpendAmount').touched)) {
-                        <div class="error"
-                          >
-                          @if (getControl(i, 'plannedSpendAmount').hasError('max')) {
-                            <span>{{ messages.maxLengthExceeded }}</span>
-                          }
-                          @if (getControl(i, 'plannedSpendAmount').hasError('min')) {
-                            <span>{{ messages.positiveNumber }}</span>
-                          }
-                        </div>
-                      }
-                    </div>
-                    <div class="form-item">
-                      <label>Contract Phase</label>
-                      <select id="contractPhaseCode" formControlName="contractPhaseCode">
-                        @for (item of contractPhaseCode; track item) {
-                          <option [value]="item.contractPhaseCode">
-                            {{ item.description }}
-                          </option>
-                        }
-                      </select>
-                    </div>
-                    <div class="form-item full-width">
-                      <wfprev-textarea
-                        [label]="'Activity Description'"
-                        [rows]="1"
-                        [control]="getControl(i, 'activityDescription')"
-                        [required]="true"
-                        placeholder="Describe the specific activity being carried out as part of the Fiscal Activity. The information within this activity will be used to support RESULTS at the end of the year.">
-                      </wfprev-textarea>
-                    </div>
-                    <div class="form-item full-width comment-container">
-                      <div class="checkbox-container">
-                        <label class="checkbox-label">Carry forward to a future fiscal activity</label>
-                        <mat-checkbox formControlName="isCarryForwardInd">Yes</mat-checkbox>
-                      </div>
-                      <div class="textarea-container">
-                        <wfprev-textarea
-                          [label]="'Final Outcome & Comments (Including Reason for Deferred or Cancelled, $0 spent)'"
-                          [rows]="2"
-                          [maxLength]="500"
-                          [control]="getControl(i, 'finalOutcomeComments')"
-                          placeholder="If the activity was Deferred or Cancelled, or $0 spent, explain the reason here.">
-                        </wfprev-textarea>
-                      </div>
-                    </div>
-                    <div class="form-item full-width comment-container">
-                      <div class="checkbox-container">
-                        <label class="checkbox-label">Outstanding Obligations</label>
-                        <mat-checkbox formControlName="outstandingObligationsInd">Yes</mat-checkbox>
-                      </div>
-                      <div class="textarea-container">
-                        <wfprev-textarea
-                          [label]="'Describe your plan for addressing outstanding obligations and work to be carried‑forward:'"
-                          [rows]="2"
-                          [maxLength]="500"
-                          [control]="getControl(i, 'activityComment')"
-                          placeholder="List any remaining obligations or deliverables required to complete the activity. (e.g., pile burns, legal obligations, specific remaining tasks)"
-                          >
-                        </wfprev-textarea>
-                      </div>
-                    </div>
-                  </form>
-                }
-                <div class="activity-files">
-                  <!-- empty project files for new activity-->
-                  @if (i === 0 && !(activityForms[i]?.value?.activityGuid && fiscalGuid)) {
-                    <wfprev-project-files [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="true" [isTooltipDisabled]="false" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
-                      {{activityForms[i]?.value?.activityGuid}}
-                    </wfprev-project-files>
-                  }
-                  @if (activityForms[i]?.value?.activityGuid && fiscalGuid) {
-                    <wfprev-project-files [activityGuid]="activityForms[i]?.value?.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid" (filesUpdated)="onFilesChanged()">
-                      {{activityForms[i]?.value?.activityGuid}}
-                    </wfprev-project-files>
-                  }
-                </div>
-                <wfprev-timestamp
-                  [updateDate]="activities[i]?.lastUpdatedTimestamp"
-                  [updateUser]="activities[i]?.updateUser">
-                </wfprev-timestamp>
-                <div class="project-activity-footer">
-                  <div class="button-row">
-                    <div class="delete-container">
-                      <div class="delete"
-                        [ngClass]="{ 'delete-inactive': isReadonly || !canDeleteActivity(i), 'delete-active': !isReadonly && canDeleteActivity(i) }"
-                        (click)="!isReadonly && canDeleteActivity(i) ? onDeleteActivity(i) : null">
-                        <img class="status" alt="Delete" [src]="getDeleteIcon(i)">
-                        <span>Delete</span>
-                      </div>
-                    </div>
-                    <div class="action-buttons">
-                      <button class="secondary" (click)="onCancelActivity(i)" [disabled]="isReadonly || !isActivityDirty[i]">Cancel</button>
-                      <button class="primary" [disabled]="isReadonly || !isActivityDirty[i] || !activityForms[i].valid || isActivitySaving[i]" (click)="onSaveActivity(i)">
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </mat-expansion-panel>
-            </div>
-          }
-        </div>
-      }
-      @if (!isLoading && !activities.length) {
-        <div class="wf-empty-state">
-          <p class="empty-state-text">No Activities have been added.</p>
-        </div>
-      }
-    </mat-expansion-panel>
-  </div>
+        @for (view of activityViews; track view; let i = $index) {
+          <div [id]="'activity-' + i" class="activity-item-wrapper">
+            <wfprev-fiscal-activity-item
+              [activityForm]="view.form"
+              [activity]="view.data"
+              [index]="i"
+              [isExpanded]="view.isExpanded"
+              [isReadonly]="isReadonly"
+              [fiscalGuid]="fiscalGuid"
+              [isActivityDirty]="view.isDirty"
+              [isActivitySaving]="view.isSaving"
+              [canDelete]="canDeleteActivity(view)"
+              [deleteIconUrl]="getDeleteIcon(view)"
+              [silvicultureBaseCode]="silvicultureBaseCode"
+              [contractPhaseCode]="contractPhaseCode"
+              [fundingSourceCode]="fundingSourceCode"
+              (expandedChange)="view.isExpanded = $event"
+              (toggleResultsReportable)="toggleResultsReportableInd(view)"
+              (toggleActivityStatus)="toggleActivityStatus(view)"
+              (delete)="onDeleteActivity(view)"
+              (cancel)="onCancelActivity(view)"
+              (save)="onSaveActivity(view)"
+              (filesUpdated)="onFilesChanged()"
+            ></wfprev-fiscal-activity-item>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!isLoading && !activityViews?.length) {
+      <div class="wf-empty-state">
+        <p class="empty-state-text">No Activities have been added.</p>
+      </div>
+    }
+  </mat-expansion-panel>
+</div>
