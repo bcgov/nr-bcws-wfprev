@@ -41,3 +41,37 @@ $_color-selected-track: #38598A;
         --mdc-switch-unselected-icon-color: #{ $_color-unselected-handle };
     }
 }
+
+.mat-mdc-slide-toggle.mat-accent {
+    // handle color
+    --mat-slide-toggle-selected-handle-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-selected-focus-handle-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-selected-hover-handle-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-selected-pressed-handle-color: #{ $_color-selected-handle };
+
+    --mat-slide-toggle-unselected-handle-color: #{ $_color-unselected-handle };
+    --mat-slide-toggle-unselected-focus-handle-color: #{ $_color-unselected-handle };
+    --mat-slide-toggle-unselected-hover-handle-color: #{ $_color-unselected-handle };
+    --mat-slide-toggle-unselected-pressed-handle-color: #{ $_color-unselected-handle };
+
+    // track color
+    --mat-slide-toggle-selected-track-color: #{ $_color-selected-track };
+    --mat-slide-toggle-selected-focus-track-color: #{ $_color-selected-track };
+    --mat-slide-toggle-selected-hover-track-color: #{ $_color-selected-track };
+    --mat-slide-toggle-selected-pressed-track-color: #{ $_color-selected-track };
+
+    --mat-slide-toggle-unselected-track-color: #{ $_color-unselected-track };
+    --mat-slide-toggle-unselected-focus-track-color: #{ $_color-unselected-track };
+    --mat-slide-toggle-unselected-hover-track-color: #{ $_color-unselected-track };
+    --mat-slide-toggle-unselected-pressed-track-color: #{ $_color-unselected-track };
+
+    // icon colors
+    --mat-slide-toggle-selected-icon-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-selected-focus-state-layer-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-selected-hover-state-layer-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-selected-pressed-state-layer-color: #{ $_color-selected-handle };
+    --mat-slide-toggle-disabled-selected-icon-color: #{ $_color-selected-handle };
+
+    --mat-slide-toggle-unselected-icon-color: #{ $_color-unselected-handle };
+    --mat-slide-toggle-disabled-unselected-icon-color: #{ $_color-unselected-handle };
+}
