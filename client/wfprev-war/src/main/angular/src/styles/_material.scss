@@ -60,7 +60,73 @@ $theme: mat.m2-define-light-theme((
   ),
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 @include mat.all-component-themes($theme);
+
+/* Shared Date Range, Overlay, and Text Field Overrides */
+.mat-date-range-input {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 400;
+  font-size: 16px;
+  color: #282828;
+  flex: 1 1 auto !important;
+}
+
+.mat-date-range-input input {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  margin: 0 !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  display: none !important;
+}
+
+.mat-datepicker-toggle {
+  margin-left: 8px;
+}
+
+.date-range-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  mat-form-field {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .mat-date-range-input input {
+    padding: 0 !important;
+  }
+}
+
+.date-separator {
+  margin: 0 5px;
+}
+
+.custom-overlay-container .cdk-overlay-pane {
+  left: 190px !important;
+  transform: none !important;
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: white;
+  padding: 8px 12px;
+}
+
+.mat-mdc-form-field-flex {
+  height: 20px;
+  margin: 4px;
+}
+
+.mat-mdc-form-field-infix {
+  padding: 0 !important;
+}
+
+.mat-form-field-disabled .mdc-text-field {
+  margin-top: 6px;
+  height: 38px;
+}
+

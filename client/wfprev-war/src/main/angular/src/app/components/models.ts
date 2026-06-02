@@ -494,3 +494,17 @@ export interface DetailedErrorMessage {
   messageAfter: string;
   reasons: string[];
 }
+
+export interface FiscalActivityViewModel {
+  data: any;
+  originalData: any;
+  form: import('@angular/forms').FormGroup;
+  isExpanded: boolean;
+  isDirty: boolean;
+  isSaving: boolean;
+}
+
+export interface YearEndActivityViewModel {
+  data: any;
+  isExpanded: boolean;
+}

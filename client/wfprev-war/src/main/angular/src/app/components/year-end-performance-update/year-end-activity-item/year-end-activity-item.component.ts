@@ -13,25 +13,8 @@ import { TextareaComponent } from '../../shared/textarea/textarea.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
 import { Messages, NumericLimits } from '../../../utils/constants';
 import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
+import { nonZeroUnlessCancelledValidator } from '../../../utils/validators';
 
-// Custom validator for > 0 unless cancelled
-function nonZeroUnlessCancelledValidator(getFormFn: () => FormGroup) {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.parent) return null;
-    const form = getFormFn();
-    const status = form?.get('activityStatusCode')?.value;
-    const val = Number(control.value);
-    
-    // If empty, let Validators.required handle it
-    if (control.value === null || control.value === '') return null;
-    
-    if (status === 'CANCELLED') {
-      return val < 0 ? { min: true } : null; // allow 0
-    } else {
-      return val <= 0 ? { strictlyPositive: true } : null; // must be > 0
-    }
-  };
-}
 
 @Component({
   selector: 'wfprev-year-end-activity-item',

@@ -15,15 +15,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ProjectFiscalExtended, FiscalCloseout } from 'src/app/components/models';
+import { ProjectFiscalExtended, FiscalCloseout, YearEndActivityViewModel } from 'src/app/components/models';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { MatButtonModule } from '@angular/material/button';
 import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
 
-export interface ActivityViewModel {
-  data: any;
-  isExpanded: boolean;
-}
+
 
 @Component({
   selector: 'wfprev-year-end-performance-update',
@@ -49,7 +46,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   projectGuid: string = '';
   fiscalGuid: string = '';
   isLoading: boolean = true;
-  activityViews: ActivityViewModel[] = [];
+  activityViews: YearEndActivityViewModel[] = [];
   summaryForm!: FormGroup;
   fiscalData?: ProjectFiscalExtended;
   closeoutData?: FiscalCloseout;
@@ -212,7 +209,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     this.subscriptions.add(sub);
   }
 
-  onSaveActivity(view: ActivityViewModel, updatedActivity: any): void {
+  onSaveActivity(view: YearEndActivityViewModel, updatedActivity: any): void {
     const originalActivity = view.data;
     const payload = {
       ...originalActivity,

@@ -17,7 +17,7 @@ import { NgxCurrencyDirective } from 'ngx-currency';
 import { finalize, forkJoin, map, Observable, Subscription, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
-import { ActivityModel } from 'src/app/components/models';
+import { ActivityModel, FiscalActivityViewModel } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
@@ -33,14 +33,7 @@ import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.com
 
 import { FiscalActivityItemComponent } from './fiscal-activity-item/fiscal-activity-item.component';
 
-export interface ActivityViewModel {
-  data: any;
-  originalData: any;
-  form: FormGroup;
-  isExpanded: boolean;
-  isDirty: boolean;
-  isSaving: boolean;
-}
+
 
 export const CUSTOM_DATE_FORMATS = {
   display: {
@@ -94,7 +87,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   isNewActivityBeingAdded = false;
 
   projectGuid = '';
-  activityViews: ActivityViewModel[] = [];
+  activityViews: FiscalActivityViewModel[] = [];
 
   // Deprecated properties/methods kept for unit test compatibility
   activities: any[] = [];
@@ -232,7 +225,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
             this.isNewActivityBeingAdded = false;
 
             this.activityViews = (activities || []).map((activity, index) => {
-              const view: ActivityViewModel = {
+              const view: FiscalActivityViewModel = {
                 data: activity,
                 originalData: JSON.parse(JSON.stringify(activity)),
                 form: this.createActivityForm(activity),
@@ -628,7 +621,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       const newActivity: ActivityModel = {};
 
       const form = this.createActivityForm(newActivity);
-      const view: ActivityViewModel = {
+      const view: FiscalActivityViewModel = {
         data: newActivity,
         originalData: {},
         form: form,

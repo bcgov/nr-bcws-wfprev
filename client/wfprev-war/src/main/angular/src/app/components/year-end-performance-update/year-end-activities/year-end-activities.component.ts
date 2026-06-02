@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { YearEndActivityItemComponent } from '../year-end-activity-item/year-end-activity-item.component';
-import { ActivityViewModel } from '../year-end-performance-update.component';
+import { YearEndActivityViewModel } from 'src/app/components/models';
 
 @Component({
   selector: 'wfprev-year-end-activities',
@@ -11,10 +11,10 @@ import { ActivityViewModel } from '../year-end-performance-update.component';
   styleUrl: './year-end-activities.component.scss'
 })
 export class YearEndActivitiesComponent {
-  @Input() activityViews: ActivityViewModel[] = [];
+  @Input() activityViews: YearEndActivityViewModel[] = [];
   @Input() fiscalGuid: string = '';
 
-  @Output() saveActivity = new EventEmitter<{ view: ActivityViewModel, event: any }>();
+  @Output() saveActivity = new EventEmitter<{ view: YearEndActivityViewModel, event: any }>();
   @Output() filesUpdated = new EventEmitter<void>();
 
   @ViewChildren(YearEndActivityItemComponent) activityItems!: QueryList<YearEndActivityItemComponent>;
