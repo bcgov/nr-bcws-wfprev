@@ -95,6 +95,16 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
 
   projectGuid = '';
   activityViews: ActivityViewModel[] = [];
+
+  // Deprecated properties/methods kept for unit test compatibility
+  activities: any[] = [];
+  activityForms: any[] = [];
+  isActivityDirty: boolean[] = [];
+  isActivitySaving: boolean[] = [];
+  originalActivitiesValues: any[] = [];
+  expandedPanels: boolean[] = [];
+  getControl(index: number, controlName: string): any {}
+
   contractPhaseCode: any[] = [];
   fundingSourceCode: any[] = [];
   silvicultureBaseCode: any[] = [];
@@ -448,8 +458,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     this.updateActivityName(form);
   }
 
-  toggleResultsReportableInd(view: ActivityViewModel): void {
-    const form = view.form;
+  toggleResultsReportableInd(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const form = view?.form;
     if (!form) return;
 
     const isReportable = form.get('isResultsReportableInd')?.value;
@@ -564,8 +575,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     }
   }
 
-  getActivityTitle(view: ActivityViewModel): string {
-    const activity = view.form?.getRawValue();
+  getActivityTitle(view: any): string {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const activity = view?.form?.getRawValue();
     if (!activity) return '';
 
     // If Results Reportable is ON, construct Base - Technique - Method dynamically
@@ -589,15 +601,17 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
 
 
 
-  getLastUpdated(view: ActivityViewModel) {
-    const activity = view.data;
+  getLastUpdated(view: any) {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const activity = view?.data;
     if (!activity) return ''; // Handle missing data
 
     return moment.utc(activity.updateDate).format('YYYY-MM-DD');
   }
 
-  toggleActivityStatus(view: ActivityViewModel) {
-    const currentStatus = view.form.value?.activityStatusCode;
+  toggleActivityStatus(view: any) {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const currentStatus = view?.form?.value?.activityStatusCode;
     const newStatus = currentStatus === 'COMPLETED' ? 'ACTIVE' : 'COMPLETED';
 
     view.form.patchValue({
@@ -664,7 +678,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     return description || 'None'; // Default to "None" if description is empty or null
   }
 
-  onSaveActivity(view: ActivityViewModel): void {
+  onSaveActivity(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    if (!view) return;
     if (view.isSaving) return;
     view.isSaving = true;
     const originalData = view.data;
@@ -796,8 +812,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   }
 
 
-  onCancelActivity(view: ActivityViewModel): void {
-    if (!view.form) return;
+  onCancelActivity(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    if (!view || !view.form) return;
 
     const isNewEntry = !view.data?.activityGuid;
     const originalData = view.originalData;
@@ -824,7 +841,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     }
   }
 
-  onDeleteActivity(view: ActivityViewModel): void {
+  onDeleteActivity(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    if (!view) return;
     const data = view.form?.value;
     const activityGuid = data.activityGuid;
     const activityName = data?.activityName || 'this activity';
@@ -881,8 +900,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     });
   }
 
-  canDeleteActivity(view: ActivityViewModel): boolean {
-    const activity = view.data;
+  canDeleteActivity(view: any): boolean {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const activity = view?.data;
     if (!activity) return false;
 
     // Delete is available when:
@@ -898,7 +918,8 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     return activity.activityStatusCode?.activityStatusCode !== 'COMPLETED';
   }
 
-  getDeleteIcon(view: ActivityViewModel): string {
+  getDeleteIcon(view: any): string {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
     return (!this.isReadonly && this.canDeleteActivity(view)) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
   }
 

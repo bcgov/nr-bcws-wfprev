@@ -5,7 +5,7 @@ import { DetailButtonComponent } from './detail-button.component';
 export default {
   argTypes: {
     text: { control: 'text' },
-    disabled: { control: 'boolean' },
+    isDisabled: { control: 'boolean' },
     clicked: { action: 'clicked' },
   },
   component: DetailButtonComponent,
@@ -22,7 +22,7 @@ type Story = StoryObj<DetailButtonComponent>;
 export const Default: Story = {
   args: {
     clicked: action('clicked'),
-    disabled: false,
+    isDisabled: false,
     text: 'View Details',
   },
 };
@@ -30,7 +30,7 @@ export const Default: Story = {
 export const CustomText: Story = {
   args: {
     clicked: action('clicked'),
-    disabled: false,
+    isDisabled: false,
     text: 'Edit Details',
   },
 };
@@ -38,7 +38,7 @@ export const CustomText: Story = {
 export const Disabled: Story = {
   args: {
     clicked: action('clicked'),
-    disabled: true,
+    isDisabled: true,
     text: 'View Details',
   },
 };
