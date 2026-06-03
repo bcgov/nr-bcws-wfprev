@@ -57,13 +57,8 @@ export const CUSTOM_DATE_FORMATS = {
     MatInputModule,
     FormsModule,
     MatCheckboxModule,
-    ProjectFilesComponent,
     ExpansionIndicatorComponent,
     IconButtonComponent,
-    TimestampComponent,
-    TextareaComponent,
-    NgxCurrency,
-    StatusBadgeComponent,
     MatProgressSpinnerModule,
     FiscalActivityItemComponent
   ],

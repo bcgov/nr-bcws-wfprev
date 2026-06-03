@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import "../edit-project/project-fiscals/project-fiscals.component.scss";
+@use 'styles/variables';
+@use "../edit-project/project-fiscals/project-fiscals.component.scss";
 
 :host {
   display: block;
@@ -218,7 +218,7 @@ select {
 
   &:focus {
     outline: none;
-    border-bottom: 2px solid $colour-primary-blue;
+    border-bottom: 2px solid variables.$colour-primary-blue;
   }
 }
 

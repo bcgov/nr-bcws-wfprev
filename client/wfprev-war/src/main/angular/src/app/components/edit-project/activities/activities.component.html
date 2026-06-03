@@ -24,7 +24,7 @@
       </div>
     }
 
-    @if (!isLoading && activityViews?.length) {
+    @if (!isLoading && activityViews.length) {
       <div>
         @for (view of activityViews; track view; let i = $index) {
           <div [id]="'activity-' + i" class="activity-item-wrapper">
@@ -55,7 +55,7 @@
       </div>
     }
 
-    @if (!isLoading && !activityViews?.length) {
+    @if (!isLoading && !activityViews.length) {
       <div class="wf-empty-state">
         <p class="empty-state-text">No Activities have been added.</p>
       </div>

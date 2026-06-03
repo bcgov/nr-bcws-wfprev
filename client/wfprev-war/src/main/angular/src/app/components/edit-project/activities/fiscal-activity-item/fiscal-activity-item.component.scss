@@ -1,5 +1,5 @@
-@import 'src/styles/variables';
-@import "../../project-fiscals/project-fiscals.component.scss";
+@use 'src/styles/variables';
+@use "../../project-fiscals/project-fiscals.component.scss";
 
 :host {
   display: block;
@@ -41,7 +41,7 @@
   padding: 20px;
 }
 .expansion-panel {
-  border: 1px solid $colour-border-grey;
+  border: 1px solid variables.$colour-border-grey;
   background-color: #fff;
   box-shadow: none !important;
   border-radius: 0 !important;
@@ -76,7 +76,7 @@
 .activity-title {
   font-family: var(--wf-font-family-main) !important;
   flex-wrap: wrap;
-  color: $colour-text-dark;
+  color: variables.$colour-text-dark;
   font-family: var(--wf-font-family-main);
   font-size: 20px;
   font-style: normal;
@@ -202,7 +202,7 @@ input#activityComment {
 
 
 input[readonly] {
-  border-bottom: 1px dashed $colour-text-dark !important;
+  border-bottom: 1px dashed variables.$colour-text-dark !important;
   background-color: #fff;
 }
 
@@ -239,7 +239,7 @@ input[readonly] {
 }
 
 .project-activity-footer {
-  border-top: 1px solid $colour-border-grey;
+  border-top: 1px solid variables.$colour-border-grey;
   background: #f2f2f2;
   box-sizing: border-box;
 
@@ -267,7 +267,7 @@ input[readonly] {
     }
 
     &-active span {
-      color: $colour-text-dark;
+      color: variables.$colour-text-dark;
     }
 
     &-inactive {

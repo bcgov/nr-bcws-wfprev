@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables';
 
 .select-field {
   .required {
@@ -40,7 +40,7 @@
 
       &:focus {
         outline: none;
-        border-bottom: 2px solid $colour-primary-blue;
+        border-bottom: 2px solid variables.$colour-primary-blue;
       }
     }
 

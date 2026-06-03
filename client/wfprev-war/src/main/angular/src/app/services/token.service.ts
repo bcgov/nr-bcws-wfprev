@@ -1,4 +1,4 @@
-import { HttpClient, HttpHandler, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHandler, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { Injectable, Injector } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { OAuthService } from "angular-oauth2-oidc";
@@ -248,7 +248,7 @@ export class TokenService {
         observe: 'response'
       }
     ).pipe(
-      map(response => response.body),
+      map((response: HttpResponse<any>) => response.body),
       catchError(() => of(false))
     );
 
