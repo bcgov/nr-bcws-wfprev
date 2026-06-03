@@ -55,6 +55,10 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.LOGGING_LEVEL
       },
       {
+        name  = "LOGGING_PATTERN_CONSOLE"
+        value = "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{40} - %replace(%msg){'[\\r\\n]+', ' '} %replace(%wEx){'[\\r\\n]+', ' | '}%nopex%n"
+      },
+      {
         name  = "AWS_REGION"
         value = var.AWS_REGION
       },

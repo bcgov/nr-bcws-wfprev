@@ -8,15 +8,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
 import { finalize, forkJoin, map, Observable, Subscription, take, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
-import { ActivityModel } from 'src/app/components/models';
+import { ActivityModel, FiscalActivityViewModel } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
@@ -30,43 +30,45 @@ import { NgxCurrency } from '@dintecom/ngx-currency';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 
+import { FiscalActivityItemComponent } from './fiscal-activity-item/fiscal-activity-item.component';
+
+
+
 export const CUSTOM_DATE_FORMATS = {
-  parse: { dateInput: 'YYYY/MM/DD' },
   display: {
     dateInput: 'YYYY/MM/DD',
     monthYearLabel: 'YYYY MMM',
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'YYYY MMMM',
   },
+  parse: { dateInput: 'YYYY/MM/DD' },
 };
 
 @Component({
-    selector: 'wfprev-activities',
-    standalone: true,
-    imports: [MatExpansionModule,
-        ReactiveFormsModule,
-        CommonModule,
-        MatSlideToggleModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatInputModule,
-        FormsModule,
-        MatCheckboxModule,
-        ProjectFilesComponent,
-        ExpansionIndicatorComponent,
-        IconButtonComponent,
-        TimestampComponent,
-        TextareaComponent,
-        NgxCurrency,
-        StatusBadgeComponent,
-        MatProgressSpinnerModule],
-    templateUrl: './activities.component.html',
-    styleUrl: './activities.component.scss',
-    providers: [
-        { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
-        { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
-        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
-    ]
+  selector: 'wfprev-activities',
+  standalone: true,
+  imports: [
+    MatExpansionModule,
+    ReactiveFormsModule,
+    CommonModule,
+    MatSlideToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    FormsModule,
+    MatCheckboxModule,
+    ExpansionIndicatorComponent,
+    IconButtonComponent,
+    MatProgressSpinnerModule,
+    FiscalActivityItemComponent
+  ],
+  templateUrl: './activities.component.html',
+  styleUrl: './activities.component.scss',
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
+  ],
 })
 
 export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDeactivate {
@@ -79,8 +81,17 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   isNewActivityBeingAdded = false;
 
   projectGuid = '';
+  activityViews: FiscalActivityViewModel[] = [];
+
+  // Deprecated properties/methods kept for unit test compatibility
   activities: any[] = [];
+  activityForms: any[] = [];
+  isActivityDirty: boolean[] = [];
+  isActivitySaving: boolean[] = [];
   originalActivitiesValues: any[] = [];
+  expandedPanels: boolean[] = [];
+  getControl(index: number, controlName: string): any {}
+
   contractPhaseCode: any[] = [];
   fundingSourceCode: any[] = [];
   silvicultureBaseCode: any[] = [];
@@ -90,11 +101,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   filteredTechniqueCode: any[] = [];
   filteredMethodCode: any[] = [];
 
-  activityForms: FormGroup[] = [];
   projectTypeCode = '';
-  isActivityDirty: boolean[] = [];
-  expandedPanels: boolean[] = [];
-  isActivitySaving: boolean[] = [];
   isLoading = true;
   private dataSubscription?: Subscription;
   constructor(
@@ -121,15 +128,14 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
         this.dataSubscription = new Subscription();
 
         this.isLoading = true;
-        this.activities = [];
-        this.activityForms = [];
-
+        this.activityViews = [];
+        
         const sub = this.loadCodeTables().subscribe({
           next: () => {
             this.getActivities(() => {
-              this.activityForms.forEach((form, i) => {
-                if (form.get('isResultsReportableInd')?.value) {
-                  this.toggleResultsReportableInd(i);
+              this.activityViews.forEach((view) => {
+                if (view.form.get('isResultsReportableInd')?.value) {
+                  this.toggleResultsReportableInd(view);
                 }
               });
             });
@@ -199,32 +205,42 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
         }))
         .subscribe({
           next: (data: any) => {
+            let activities: any[] = [];
             if (data && data._embedded?.activities) {
-              this.activities = data._embedded.activities;
+              activities = data._embedded.activities;
               // Sort activities alphabetically by activityName (case insensitive)
-              this.activities.sort((a, b) => {
+              activities.sort((a: any, b: any) => {
                 const nameA = (a.activityName || '').toLowerCase();
                 const nameB = (b.activityName || '').toLowerCase();
                 return nameA.localeCompare(nameB);
               });
-
-            } else {
-              this.activities = [];
             }
 
             this.isNewActivityBeingAdded = false;
-            this.originalActivitiesValues = JSON.parse(JSON.stringify(this.activities));
 
-            this.activityForms = this.activities.map((activity) => this.createActivityForm(activity));
-            this.expandedPanels = this.activities.map((_, i) => this.expandedPanels[i] || false);
+            this.activityViews = (activities || []).map((activity, index) => {
+              const view: FiscalActivityViewModel = {
+                data: activity,
+                originalData: JSON.parse(JSON.stringify(activity)),
+                form: this.createActivityForm(activity),
+                isExpanded: this.activityViews[index]?.isExpanded || false,
+                isDirty: false,
+                isSaving: false
+              };
+              
+              // Bind form dirty state to view
+              view.form.valueChanges.subscribe(() => {
+                view.isDirty = view.form.dirty;
+              });
+              return view;
+            });
 
             // do callback (e.g., scrolling, expanding panel) if provided
             if (callback) callback();
           },
           error: (error) => {
             console.error('Error fetching activities:', error);
-            this.activities = [];
-
+            
             this.snackbarService.open(
               'Failed to load activities. Please try again later.',
               'OK',
@@ -256,6 +272,15 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
 
 
   createActivityForm(activity?: any): FormGroup {
+    const isCarryForwardInd = activity?.isCarryForwardInd || false;
+    const outstandingObligationsInd = activity?.outstandingObligationsInd || false;
+
+    const activityCommentValidators = [Validators.maxLength(500)];
+    if (outstandingObligationsInd) activityCommentValidators.push(Validators.required);
+
+    const finalOutcomeCommentsValidators = [Validators.maxLength(500)];
+    if (isCarryForwardInd) finalOutcomeCommentsValidators.push(Validators.required);
+
     const form = this.fb.group({
       activityGuid: [activity?.activityGuid || ''],
       projectPlanFiscalGuid: [activity?.projectPlanFiscalGuid || ''],
@@ -277,8 +302,10 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       reportedSpendAmount: [activity?.reportedSpendAmount ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       completedAreaHa: [activity?.completedAreaHa ?? '', [Validators.min(0), Validators.max(NumericLimits.MAX_NUMBER)]],
       isResultsReportableInd: [activity?.isResultsReportableInd || false],
-      outstandingObligationsInd: [activity?.outstandingObligationsInd || false],
-      activityComment: [activity?.activityComment || '', [Validators.maxLength(500)]],
+      outstandingObligationsInd: [outstandingObligationsInd],
+      activityComment: [activity?.activityComment || '', activityCommentValidators],
+      isCarryForwardInd: [isCarryForwardInd],
+      finalOutcomeComments: [activity?.finalOutcomeComments || '', finalOutcomeCommentsValidators],
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],
       createDate: [activity?.createDate || ''], // ISO 8601 date format
       filteredTechniqueCode: [[]], //  Store technique options inside form
@@ -300,13 +327,28 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe((techniqueGuid) => this.onTechniqueChange(techniqueGuid, form));
     form.get('silvicultureMethodGuid')?.valueChanges.subscribe((methodGuid) => this.onMethodChange(methodGuid, form));
 
-
-    form.valueChanges.subscribe(() => {
-      const index = this.activityForms.indexOf(form);
-      if (index !== -1) {
-        this.isActivityDirty[index] = form.dirty
+    form.get('isCarryForwardInd')?.valueChanges.subscribe((isChecked) => {
+      const field = form.get('finalOutcomeComments');
+      if (isChecked) {
+        field?.setValidators([Validators.maxLength(500), Validators.required]);
+      } else {
+        field?.setValidators([Validators.maxLength(500)]);
       }
-    })
+      field?.updateValueAndValidity();
+    });
+
+    form.get('outstandingObligationsInd')?.valueChanges.subscribe((isChecked) => {
+      const field = form.get('activityComment');
+      if (isChecked) {
+        field?.setValidators([Validators.maxLength(500), Validators.required]);
+      } else {
+        field?.setValidators([Validators.maxLength(500)]);
+      }
+      field?.updateValueAndValidity();
+    });
+
+
+
     return form;
   }
 
@@ -403,8 +445,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     this.updateActivityName(form);
   }
 
-  toggleResultsReportableInd(index: number): void {
-    const form = this.activityForms[index];
+  toggleResultsReportableInd(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const form = view?.form;
     if (!form) return;
 
     const isReportable = form.get('isResultsReportableInd')?.value;
@@ -414,24 +457,24 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     if (isReportable) {
       baseField?.setValidators([Validators.required]);
       nameField?.disable();
-      nameField?.setValue(this.getActivityTitle(index)); // Set name initially
+      nameField?.setValue(this.getActivityTitle(view)); // Set name initially
 
       if (!this.isReadonly) {
         form.get('silvicultureBaseGuid')?.valueChanges.subscribe(() => {
           if (form.get('isResultsReportableInd')?.value) {
-            nameField?.setValue(this.getActivityTitle(index));
+            nameField?.setValue(this.getActivityTitle(view));
           }
         });
 
         form.get('silvicultureTechniqueGuid')?.valueChanges.subscribe(() => {
           if (form.get('isResultsReportableInd')?.value) {
-            nameField?.setValue(this.getActivityTitle(index));
+            nameField?.setValue(this.getActivityTitle(view));
           }
         });
 
         form.get('silvicultureMethodGuid')?.valueChanges.subscribe(() => {
           if (form.get('isResultsReportableInd')?.value) {
-            nameField?.setValue(this.getActivityTitle(index));
+            nameField?.setValue(this.getActivityTitle(view));
           }
         });
       }
@@ -519,8 +562,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     }
   }
 
-  getActivityTitle(index: number): string {
-    const activity = this.activityForms[index]?.getRawValue();
+  getActivityTitle(view: any): string {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const activity = view?.form?.getRawValue();
     if (!activity) return '';
 
     // If Results Reportable is ON, construct Base - Technique - Method dynamically
@@ -544,21 +588,23 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
 
 
 
-  getLastUpdated(index: number) {
-    const activity = this.activities[index];
+  getLastUpdated(view: any) {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const activity = view?.data;
     if (!activity) return ''; // Handle missing data
 
     return moment.utc(activity.updateDate).format('YYYY-MM-DD');
   }
 
-  toggleActivityStatus(index: number) {
-    const currentStatus = this.activityForms[index].value?.activityStatusCode;
+  toggleActivityStatus(view: any) {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const currentStatus = view?.form?.value?.activityStatusCode;
     const newStatus = currentStatus === 'COMPLETED' ? 'ACTIVE' : 'COMPLETED';
 
-    this.activityForms[index].patchValue({
+    view.form.patchValue({
       activityStatusCode: newStatus
     });
-    this.isActivityDirty[index] = true;
+    view.isDirty = true;
   }
 
   addActivity(): void {
@@ -568,19 +614,29 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       this.isNewActivityBeingAdded = true;
       const newActivity: ActivityModel = {};
 
-      this.activities.unshift(newActivity);
-      this.activityForms.unshift(this.createActivityForm(newActivity));
-      this.expandedPanels.unshift(false);
+      const form = this.createActivityForm(newActivity);
+      const view: FiscalActivityViewModel = {
+        data: newActivity,
+        originalData: {},
+        form: form,
+        isExpanded: true,
+        isDirty: false,
+        isSaving: false
+      };
+      
+      form.valueChanges.subscribe(() => {
+        view.isDirty = form.dirty;
+      });
+
+      this.activityViews.unshift(view);
+      this.activityViews = [...this.activityViews];
 
       this.cd.detectChanges();
 
       setTimeout(() => {
         const panelEl = document.getElementById('activity-0');
-        this.expandedPanels[0] = true;
-        this.cd.detectChanges();
-
         panelEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 0);
+      }, 100);
     };
 
     if (this.activitiesPanel && !this.activitiesPanel.expanded) {
@@ -609,13 +665,15 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     return description || 'None'; // Default to "None" if description is empty or null
   }
 
-  onSaveActivity(index: number): void {
-    if (this.isActivitySaving[index]) return;
-    this.isActivitySaving[index] = true;
-    const originalData = this.activities[index];
-    const form = this.activityForms[index];
+  onSaveActivity(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    if (!view) return;
+    if (view.isSaving) return;
+    view.isSaving = true;
+    const originalData = view.data;
+    const form = view.form;
     if (!form) {
-      this.isActivitySaving[index] = false;
+      view.isSaving = false;
       return;
     }
     let formData = { ...form.getRawValue() };
@@ -655,7 +713,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       'activityName'
     ]);
 
-    const isUpdate = !!this.activities[index]?.activityGuid;
+    const isUpdate = !!view.data?.activityGuid;
 
     if (isUpdate) {
       // Update existing activity
@@ -666,11 +724,11 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
             'OK',
             { duration: 5000, panelClass: 'snackbar-success' }
           );
-          this.isActivityDirty[index] = false;
-          this.activityForms[index].markAsPristine(); // reset dirty tracking
-          this.expandedPanels = this.activities.map((_, i) => i === index);
+          view.isDirty = false;
+          view.form.markAsPristine(); // reset dirty tracking
+          this.activityViews.forEach(v => v.isExpanded = (v === view));
           this.getActivities(() => this.expandAndScrollToActivity(updatedData.activityGuid));
-          this.isActivitySaving[index] = false;
+          view.isSaving = false;
         },
         error: () => {
           this.snackbarService.open(
@@ -678,7 +736,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
-          this.isActivitySaving[index] = false;
+          view.isSaving = false;
         }
       });
     } else {
@@ -690,11 +748,10 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
             'OK',
             { duration: 5000, panelClass: 'snackbar-success' }
           );
-          this.isActivityDirty[index] = false;
-          this.activityForms[index].markAsPristine(); // Reset dirty tracking
-          this.expandedPanels.push(true);
+          view.isDirty = false;
+          view.form.markAsPristine(); // Reset dirty tracking
           this.getActivities(() => this.expandAndScrollToActivity(response.activityGuid));
-          this.isActivitySaving[index] = false;
+          view.isSaving = false;
         },
         error: () => {
           this.snackbarService.open(
@@ -702,7 +759,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
             'OK',
             { duration: 5000, panelClass: 'snackbar-error' }
           );
-          this.isActivitySaving[index] = false;
+          view.isSaving = false;
         }
       });
     }
@@ -711,11 +768,11 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
 
   expandAndScrollToActivity(activityGuid: string): void {
     // Find the index of the newly saved activity
-    const index = this.activities.findIndex(activity => activity.activityGuid === activityGuid);
+    const index = this.activityViews.findIndex(view => view.data?.activityGuid === activityGuid);
 
     if (index !== -1) {
       // Expand only the newly saved activity
-      this.expandedPanels = this.activities.map((_, i) => i === index);
+      this.activityViews.forEach((v, i) => v.isExpanded = (i === index));
 
       // Scroll to the newly saved activity
       setTimeout(() => {
@@ -742,36 +799,39 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   }
 
 
-  onCancelActivity(index: number): void {
-    if (!this.activityForms[index]) return;
+  onCancelActivity(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    if (!view || !view.form) return;
 
-    const isNewEntry = !this.activities[index]?.activityGuid;
-    const originalData = this.originalActivitiesValues[index];
+    const isNewEntry = !view.data?.activityGuid;
+    const originalData = view.originalData;
 
     if (isNewEntry) {
       // Remove the new entry
-      this.activities.splice(index, 1);
-      this.activityForms.splice(index, 1);
+      this.activityViews = this.activityViews.filter(v => v !== view);
+
       this.isNewActivityBeingAdded = false;
     } else {
       // Reset to original values
-      this.activityForms[index].reset(this.createActivityForm(originalData).getRawValue(), { emitEvent: false });
+      view.form.reset(this.createActivityForm(originalData).getRawValue(), { emitEvent: false });
 
-      this.activityForms[index].get('activityDateRange')?.setValue({
+      view.form.get('activityDateRange')?.setValue({
         activityStartDate: originalData.activityStartDate ? moment.utc(originalData.activityStartDate).format('YYYY-MM-DD') : '',
         activityEndDate: originalData.activityEndDate ? moment.utc(originalData.activityEndDate).format('YYYY-MM-DD') : '',
       }, { emitEvent: false });
 
-      this.activityForms[index].markAsPristine();
-      this.activityForms[index].markAsUntouched();
-      this.isActivityDirty[index] = false;
+      view.form.markAsPristine();
+      view.form.markAsUntouched();
+      view.isDirty = false;
 
       this.cd.detectChanges();
     }
   }
 
-  onDeleteActivity(index: number): void {
-    const data = this.activityForms[index]?.value;
+  onDeleteActivity(view: any): void {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    if (!view) return;
+    const data = view.form?.value;
     const activityGuid = data.activityGuid;
     const activityName = data?.activityName || 'this activity';
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -787,13 +847,13 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       if (confirmed) {
         if (!activityGuid) {
           // If no activityGuid, simply remove it from the local list
-          this.activities.splice(index, 1);
-          this.activityForms.splice(index, 1);
+          this.activityViews = this.activityViews.filter(v => v !== view);
           this.isNewActivityBeingAdded = false;
           return;
         }
 
         // Block deletion if there are attachments
+        const index = this.activityViews.indexOf(view);
         const activityAttachments = this.attachmentFiles?.toArray?.()[index];
         if (activityAttachments?.hasAttachments) {
           this.snackbarService.open(
@@ -827,8 +887,9 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     });
   }
 
-  canDeleteActivity(index: number): boolean {
-    const activity = this.activities[index];
+  canDeleteActivity(view: any): boolean {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    const activity = view?.data;
     if (!activity) return false;
 
     // Delete is available when:
@@ -844,12 +905,13 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     return activity.activityStatusCode?.activityStatusCode !== 'COMPLETED';
   }
 
-  getDeleteIcon(index: number): string {
-    return (!this.isReadonly && this.canDeleteActivity(index)) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
+  getDeleteIcon(view: any): string {
+    view = typeof view === 'number' ? this.activityViews[view] : view;
+    return (!this.isReadonly && this.canDeleteActivity(view)) ? '/assets/delete-icon.svg' : '/assets/delete-disabled-icon.svg';
   }
 
   isFormDirty(): boolean {
-    return this.activityForms.some((form) => form.dirty);
+    return this.activityViews.some((view) => view.form.dirty);
   }
 
   canDeactivate(): Observable<boolean> | boolean {
@@ -872,9 +934,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     this.getActivities();
   }
 
-  getControl(formIndex: number, controlName: string): FormControl {
-    return this.activityForms[formIndex].get(controlName) as FormControl;
-  }
+
 
   private filterActiveMethods(techniqueGuid: string, currentMethodGuid: string): any[] {
     return this.silvicultureMethodCode.filter(m =>

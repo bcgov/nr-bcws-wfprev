@@ -30,6 +30,89 @@ class MockPermissionsService {
   hasAction() { return true; }
 }
 
+function createArrayProxy(component: any, type: 'form' | 'data' | 'dirty' | 'saving') {
+  const targetArray: any[] = [];
+  const handler: ProxyHandler<any[]> = {
+    get(target, prop, receiver) {
+      const views = component.activityViews || [];
+      if (prop === 'length') {
+        return views.length;
+      }
+      if (prop === 'push') {
+        return (...args: any[]) => {
+          args.forEach(item => {
+            let view: any;
+            if (type === 'form') {
+              view = { data: {}, originalData: {}, form: item, isExpanded: false, isDirty: false, isSaving: false };
+            } else if (type === 'data') {
+              view = { data: item, originalData: JSON.parse(JSON.stringify(item)), form: component.createActivityForm(item), isExpanded: false, isDirty: false, isSaving: false };
+            } else if (type === 'dirty') {
+              view = { data: {}, originalData: {}, form: component.createActivityForm({}), isExpanded: false, isDirty: item, isSaving: false };
+            } else if (type === 'saving') {
+              view = { data: {}, originalData: {}, form: component.createActivityForm({}), isExpanded: false, isDirty: false, isSaving: item };
+            }
+            component.activityViews.push(view);
+          });
+          return component.activityViews.length;
+        };
+      }
+      if (prop === 'unshift') {
+        return (...args: any[]) => {
+          args.reverse().forEach(item => {
+            let view: any;
+            if (type === 'form') {
+              view = { data: {}, originalData: {}, form: item, isExpanded: false, isDirty: false, isSaving: false };
+            } else if (type === 'data') {
+              view = { data: item, originalData: JSON.parse(JSON.stringify(item)), form: component.createActivityForm(item), isExpanded: false, isDirty: false, isSaving: false };
+            } else if (type === 'dirty') {
+              view = { data: {}, originalData: {}, form: component.createActivityForm({}), isExpanded: false, isDirty: item, isSaving: false };
+            } else if (type === 'saving') {
+              view = { data: {}, originalData: {}, form: component.createActivityForm({}), isExpanded: false, isDirty: false, isSaving: item };
+            }
+            component.activityViews.unshift(view);
+          });
+          return component.activityViews.length;
+        };
+      }
+      if (prop === 'indexOf') {
+        return (item: any) => {
+          if (type === 'form') return views.findIndex((v: any) => v.form === item);
+          if (type === 'data') return views.findIndex((v: any) => v.data === item);
+          return -1;
+        };
+      }
+      const index = Number(prop);
+      if (!isNaN(index)) {
+        if (index >= views.length) return undefined;
+        if (type === 'form') return views[index].form;
+        if (type === 'data') return views[index].data;
+        if (type === 'dirty') return views[index].isDirty;
+        if (type === 'saving') return views[index].isSaving;
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+    set(target, prop, value, receiver) {
+      const views = component.activityViews || [];
+      const index = Number(prop);
+      if (!isNaN(index)) {
+        while (views.length <= index) {
+          component.activityViews.push({ data: {}, originalData: {}, form: component.createActivityForm({}), isExpanded: false, isDirty: false, isSaving: false });
+        }
+        if (type === 'form') views[index].form = value;
+        else if (type === 'data') {
+          views[index].data = value;
+          views[index].originalData = JSON.parse(JSON.stringify(value));
+        }
+        else if (type === 'dirty') views[index].isDirty = value;
+        else if (type === 'saving') views[index].isSaving = value;
+        return true;
+      }
+      return Reflect.set(target, prop, value, receiver);
+    }
+  };
+  return new Proxy(targetArray, handler);
+}
+
 describe('ActivitiesComponent', () => {
   let component: ActivitiesComponent;
   let fixture: ComponentFixture<ActivitiesComponent>;
@@ -88,6 +171,205 @@ describe('ActivitiesComponent', () => {
 
     fixture = TestBed.createComponent(ActivitiesComponent);
     component = fixture.componentInstance;
+    Object.defineProperty(component, 'activities', {
+      get: () => createArrayProxy(component, 'data'),
+      set: (val: any[]) => {
+        component.activityViews = val.map(data => ({
+          data,
+          originalData: JSON.parse(JSON.stringify(data)),
+          form: component.createActivityForm(data),
+          isExpanded: false,
+          isDirty: false,
+          isSaving: false
+        }));
+      },
+      configurable: true
+    });
+
+    Object.defineProperty(component, 'activityForms', {
+      get: () => createArrayProxy(component, 'form'),
+      set: (val: any[]) => {
+        component.activityViews = val.map((form, index) => {
+          const data = component.activityViews[index]?.data || {};
+          return {
+            data,
+            originalData: JSON.parse(JSON.stringify(data)),
+            form,
+            isExpanded: false,
+            isDirty: false,
+            isSaving: false
+          };
+        });
+      },
+      configurable: true
+    });
+
+    Object.defineProperty(component, 'isActivityDirty', {
+      get: () => createArrayProxy(component, 'dirty'),
+      set: (val: boolean[]) => {
+        val.forEach((dirty, idx) => {
+          if (component.activityViews[idx]) component.activityViews[idx].isDirty = dirty;
+        });
+      },
+      configurable: true
+    });
+
+    Object.defineProperty(component, 'isActivitySaving', {
+      get: () => createArrayProxy(component, 'saving'),
+      set: (val: boolean[]) => {
+        val.forEach((saving, idx) => {
+          if (component.activityViews[idx]) component.activityViews[idx].isSaving = saving;
+        });
+      },
+      configurable: true
+    });
+
+    Object.defineProperty(component, 'originalActivitiesValues', {
+      get: () => {
+        const targetArray: any[] = [];
+        return new Proxy(targetArray, {
+          get(target, prop, receiver) {
+            const views = component.activityViews || [];
+            if (prop === 'length') return views.length;
+            const index = Number(prop);
+            if (!isNaN(index)) {
+              return views[index]?.originalData;
+            }
+            if (prop === 'push') {
+              return (...args: any[]) => {
+                args.forEach((item, i) => {
+                  if (views[i]) {
+                    views[i].originalData = item;
+                  }
+                });
+                return views.length;
+              };
+            }
+            return Reflect.get(target, prop, receiver);
+          },
+          set(target, prop, value, receiver) {
+            const views = component.activityViews || [];
+            const index = Number(prop);
+            if (!isNaN(index) && views[index]) {
+              views[index].originalData = value;
+              return true;
+            }
+            return Reflect.set(target, prop, value, receiver);
+          }
+        });
+      },
+      configurable: true
+    });
+
+    Object.defineProperty(component, 'expandedPanels', {
+      get: () => {
+        const targetArray: any[] = [];
+        return new Proxy(targetArray, {
+          get(target, prop, receiver) {
+            const views = component.activityViews || [];
+            if (prop === 'length') return views.length;
+            const index = Number(prop);
+            if (!isNaN(index)) {
+              return views[index]?.isExpanded;
+            }
+            return Reflect.get(target, prop, receiver);
+          },
+          set(target, prop, value, receiver) {
+            const views = component.activityViews || [];
+            const index = Number(prop);
+            if (!isNaN(index) && views[index]) {
+              views[index].isExpanded = value;
+              return true;
+            }
+            return Reflect.set(target, prop, value, receiver);
+          }
+        });
+      },
+      set: (val: boolean[]) => {
+        val.forEach((expanded, idx) => {
+          if (component.activityViews[idx]) component.activityViews[idx].isExpanded = expanded;
+        });
+      },
+      configurable: true
+    });
+
+    const originalOnSave = component.onSaveActivity.bind(component);
+    (component as any).onSaveActivity = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalOnSave(component.activityViews[arg]);
+      }
+      return originalOnSave(arg);
+    };
+
+    const originalOnDelete = component.onDeleteActivity.bind(component);
+    (component as any).onDeleteActivity = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalOnDelete(component.activityViews[arg]);
+      }
+      return originalOnDelete(arg);
+    };
+
+    const originalOnCancel = component.onCancelActivity.bind(component);
+    (component as any).onCancelActivity = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalOnCancel(component.activityViews[arg]);
+      }
+      return originalOnCancel(arg);
+    };
+
+    const originalToggleReportable = component.toggleResultsReportableInd.bind(component);
+    (component as any).toggleResultsReportableInd = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalToggleReportable(component.activityViews[arg]);
+      }
+      return originalToggleReportable(arg);
+    };
+
+    const originalCanDelete = component.canDeleteActivity.bind(component);
+    (component as any).canDeleteActivity = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalCanDelete(component.activityViews[arg]);
+      }
+      return originalCanDelete(arg);
+    };
+
+    const originalGetDeleteIcon = component.getDeleteIcon.bind(component);
+    (component as any).getDeleteIcon = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalGetDeleteIcon(component.activityViews[arg]);
+      }
+      return originalGetDeleteIcon(arg);
+    };
+
+    const originalGetActivityTitle = component.getActivityTitle.bind(component);
+    (component as any).getActivityTitle = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalGetActivityTitle(component.activityViews[arg]);
+      }
+      return originalGetActivityTitle(arg);
+    };
+
+    const originalGetLastUpdated = component.getLastUpdated.bind(component);
+    (component as any).getLastUpdated = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalGetLastUpdated(component.activityViews[arg]);
+      }
+      return originalGetLastUpdated(arg);
+    };
+
+    const originalToggleStatus = component.toggleActivityStatus.bind(component);
+    (component as any).toggleActivityStatus = (arg: any) => {
+      if (typeof arg === 'number') {
+        return originalToggleStatus(component.activityViews[arg]);
+      }
+      return originalToggleStatus(arg);
+    };
+
+    (component as any).getControl = (index: number, controlName: string) => {
+      return component.activityViews[index]?.form?.get(controlName);
+    };
+
+    fixture.detectChanges();
   });
 
   it('should create the component', () => {
@@ -127,6 +409,8 @@ describe('ActivitiesComponent', () => {
       activityGuid: 'test-guid',
       activityName: 'Test Activity',
       activityStartDate: '2025-03-10T00:00:00.000+00:00',
+      isCarryForwardInd: true,
+      finalOutcomeComments: 'Outcome comments test'
     };
 
     const form = component.createActivityForm(testActivity);
@@ -134,6 +418,8 @@ describe('ActivitiesComponent', () => {
     expect(form.get('activityName')?.value).toBe('Test Activity');
     expect(form.get('activityDateRange.activityStartDate')?.value).toBe('2025-03-10');
     expect(form.get('activityDateRange.activityEndDate')?.value).toBe('2025-03-20');
+    expect(form.get('isCarryForwardInd')?.value).toBeTrue();
+    expect(form.get('finalOutcomeComments')?.value).toBe('Outcome comments test');
   });
 
   it('should add a new activity', () => {

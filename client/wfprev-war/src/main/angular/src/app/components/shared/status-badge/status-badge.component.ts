@@ -17,6 +17,7 @@ export class StatusBadgeComponent {
     'on-track': { icon: '/assets/progress-status-ontrack.svg', label: 'On track' },
     'delayed': { icon: '/assets/progress-status-delayed.svg', label: 'Delayed' },
     'deferred': { icon: '/assets/progress-status-deferred.svg', label: 'Deferred' },
+    'deferred-filled': { icon: '/assets/deferred.svg', label: 'Deferred' },
     'cancelled': { icon: '/assets/progress-status-cancelled.svg', label: 'Cancelled' },
     'forecast-decreased': { icon: '/assets/budget-change-decreased.svg', label: 'Forecast Decreased' },
     'forecast-increased': { icon: '/assets/budget-change-increased.svg', label: 'Forecast Increased' },
@@ -33,7 +34,8 @@ export class StatusBadgeComponent {
     'risk-none': { icon: '/assets/none-risk.svg', label: 'Complete' },
     'spatial-added': { icon: '/assets/spatial-added-icon.svg', label: 'Spatial Added' },
     'spatial-not-added': { icon: '/assets/no-spatial-added-icon.svg', label: 'No Spatial Added' },
-    'warning': { icon: '/assets/warning-activity.svg', label: 'Warning' },
+    'substantially-complete': { icon: '/assets/substantially-complete.svg', label: 'Substantially Complete' },
+    'warning': { icon: '/assets/warning.svg', label: 'Warning' },
   };
 
   get displayIcon(): string | null {

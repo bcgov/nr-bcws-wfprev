@@ -1,3 +1,5 @@
+@use 'styles/variables';
+
 :host {
   font-family: var(--wf-font-family-main) !important;
 }
@@ -12,7 +14,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   textarea {
@@ -24,6 +26,13 @@
     resize: vertical;
     padding: 6px;
     padding-bottom: 16px;
+    box-sizing: border-box;
+
+    &:focus:not(.over-limit) {
+      outline: none;
+      border: 2px solid variables.$colour-primary-blue;
+    }
+
     &.over-limit {
       border-color: var(--wf-colour-error);
       &:focus {

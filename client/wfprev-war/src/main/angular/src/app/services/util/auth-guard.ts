@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
   protected credentials: any;
   protected baseScopes = []; 
   constructor(protected tokenService: TokenService, protected router: Router) {
-    this.tokenService.credentialsEmitter.subscribe(credentials => {
+    this.tokenService.credentialsEmitter.subscribe((credentials: any) => {
       this.credentials = credentials;
     });
   }

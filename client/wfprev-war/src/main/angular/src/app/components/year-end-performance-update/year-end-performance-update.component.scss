@@ -1,0 +1,258 @@
+@use 'styles/variables';
+@use "../edit-project/project-fiscals/project-fiscals.component.scss";
+
+:host {
+  display: block;
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.wf-form-container {
+  padding: 24px;
+  padding-top: 0;
+}
+
+.navigate {
+  width: fit-content;
+  padding: 12px 24px;
+  font-family: var(--wf-font-family-main) !important;
+  font-size: 15px;
+  font-weight: 400;
+  color: #2d2d2d;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.project-title {
+  color: #000;
+  font-size: 34px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding: 12px 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 400;
+    color: #000;
+    line-height: normal;
+  }
+}
+
+.wf-card-container {
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+}
+
+.summary-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 equal columns (25% each)
+    gap: 16px;
+    align-items: flex-end;
+    width: 100%;
+
+    .spacer {
+      display: block;
+    }
+  }
+
+  .summary-metrics-row {
+    align-items: stretch;
+  }
+
+  .comments-row {
+    display: block; // Span across the entire width
+    width: 100%;
+    .full-width-textarea {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .form-row {
+      grid-template-columns: repeat(2, 1fr); // Collapse to 2 columns
+      
+      .spacer {
+        display: none; // Hide spacer so fields take up full width
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    .form-row {
+      grid-template-columns: 1fr; // Collapse to 1 column
+    }
+  }
+}
+
+.field-container {
+  display: flex;
+  flex-direction: column;
+
+  .field-label {
+    padding: 0;
+    color: #282828;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    .required {
+      color: #ef1616;
+    }
+  }
+}
+
+.card-footer {
+  padding: 0 48px 24px 48px;
+  border-top: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .review-text {
+    font-family: "BC Sans", var(--wf-font-family-main);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 31px;
+    color: #2d2d2d;
+    margin: 0;
+
+    .required {
+      color: #ef1616;
+    }
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    align-self: stretch;
+
+    .wf-checkbox {
+      color: #2d2d2d;
+      font-family: "BC Sans", var(--wf-font-family-main);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 21px;
+      margin: 0 !important;
+
+      ::ng-deep {
+        .mdc-form-field {
+          gap: 10px !important;
+          font-size: 14px;
+          color: #2d2d2d;
+          align-items: center !important;
+        }
+
+        .mdc-label {
+          font-family: "BC Sans", var(--wf-font-family-main);
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 21px;
+          color: #2d2d2d;
+        }
+      }
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    width: 100%; // Spans the full width to keep buttons aligned to the right
+
+    button {
+      &.primary {
+        @extend .button-primary;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      &.secondary {
+        @extend .button-secondary;
+      }
+    }
+  }
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  font-family: var(--wf-font-family-main) !important;
+  color: #282828;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  width: 100%;
+  margin: 4px 0px 8px 0px;
+  padding: 8px 4px;
+  border: none;
+  border-bottom: 1px solid #282828;
+  border-radius: 0;
+  outline: none;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  background: transparent;
+
+  &:focus {
+    outline: none;
+    border-bottom: 2px solid variables.$colour-primary-blue;
+  }
+}
+
+select {
+  -webkit-appearance: none;
+  background-image: url("/assets/dropdown-icon.svg");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px 20px;
+}
+
+.currency-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: 8px;
+
+  .currency-symbol {
+    position: absolute;
+    left: 4px;
+    font-size: 16px;
+    color: #282828;
+  }
+
+  input {
+    padding-left: 16px !important;
+    margin-bottom: 0px !important;
+  }
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}

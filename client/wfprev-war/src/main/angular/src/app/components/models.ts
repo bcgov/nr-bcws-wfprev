@@ -129,6 +129,8 @@ export interface ActivityModel {
   outstandingObligationsInd?: boolean;
   activityComment?: string;
   isSpatialAddedInd?: boolean;
+  isCarryForwardInd?: boolean;
+  finalOutcomeComments?: string;
   createDate?: string; // ISO 8601 format, e.g., "2025-02-06T23:56:53.663+00:00"
   lastUpdatedTimestamp?: string;
 }
@@ -432,6 +434,12 @@ export interface PerformanceUpdate {
   totalAmount: number;
 }
 
+export interface FiscalCloseout {
+  projectPlanFiscalCloseoutGuid?: string;
+  projectPlanFiscalGuid?: string;
+  outcomeComment?: string;
+}
+
 export enum ForecastStatus {
   ChangedDecreased = "CHANGED_DECREASED",
   ChangedIncreased = "CHANGED_INCREASED",
@@ -485,4 +493,18 @@ export interface DetailedErrorMessage {
   messageBefore: string;
   messageAfter: string;
   reasons: string[];
+}
+
+export interface FiscalActivityViewModel {
+  data: any;
+  originalData: any;
+  form: import('@angular/forms').FormGroup;
+  isExpanded: boolean;
+  isDirty: boolean;
+  isSaving: boolean;
+}
+
+export interface YearEndActivityViewModel {
+  data: any;
+  isExpanded: boolean;
 }

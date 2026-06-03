@@ -1,0 +1,92 @@
+@use 'src/styles/variables';
+
+:host {
+  width: 100%;
+}
+
+.activity-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .activity-title {
+      color: #000;
+      font-family: var(--wf-font-family-main);
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+  }
+
+  .activity-indicators {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .indicator-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #313132;
+      
+      .indicator-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .custom-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+      
+      .badge-icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      &.substantially-complete {
+        background-color: variables.$colour-light-orange-badge;
+        color: variables.$colour-dark-orange-badge;
+      }
+    }
+  }
+}
+
+.activity-header-content.stack-badges {
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 0;
+
+  .activity-title {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    margin-top: 2px;
+  }
+
+  .activity-indicators {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 10px !important;
+    margin-left: 8px !important;
+  }
+}

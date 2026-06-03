@@ -1109,5 +1109,67 @@ describe('ProjectService', () => {
       req.flush('Error', { status: 500, statusText: 'Server Error' });
     });
 
+    it('should fetch all fiscal closeouts', () => {
+      const projectGuid = 'proj-123';
+      const projectPlanFiscalGuid = 'fiscal-456';
+      const mockCloseouts = [{ closeoutGuid: 'closeout-789' }];
+
+      service.getAllFiscalCloseouts(projectGuid, projectPlanFiscalGuid).subscribe((closeouts) => {
+        expect(closeouts).toEqual(mockCloseouts);
+      });
+
+      const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+      req.flush(mockCloseouts);
+    });
+
+    it('should handle error when fetching closeouts', () => {
+      const projectGuid = 'proj-123';
+      const projectPlanFiscalGuid = 'fiscal-456';
+
+      service.getAllFiscalCloseouts(projectGuid, projectPlanFiscalGuid).subscribe({
+        next: () => fail('Should have failed'),
+        error: (err) => {
+          expect(err.message).toBe('Failed to fetch closeouts');
+        }
+      });
+
+      const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`);
+      req.flush('Error', { status: 500, statusText: 'Server Error' });
+    });
+
+    it('should create fiscal closeout', () => {
+      const projectGuid = 'proj-123';
+      const projectPlanFiscalGuid = 'fiscal-456';
+      const closeoutModel = { notes: 'Some notes' };
+      const mockResponse = { closeoutGuid: 'closeout-789', ...closeoutModel };
+
+      service.createFiscalCloseout(projectGuid, projectPlanFiscalGuid, closeoutModel).subscribe((response) => {
+        expect(response).toEqual(mockResponse);
+      });
+
+      const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+      expect(req.request.body).toEqual(closeoutModel);
+      req.flush(mockResponse);
+    });
+
+    it('should handle error when creating closeout', () => {
+      const projectGuid = 'proj-123';
+      const projectPlanFiscalGuid = 'fiscal-456';
+      const closeoutModel = { notes: 'Some notes' };
+
+      service.createFiscalCloseout(projectGuid, projectPlanFiscalGuid, closeoutModel).subscribe({
+        next: () => fail('Should have failed'),
+        error: (err) => {
+          expect(err.message).toBe('Failed to create closeout');
+        }
+      });
+
+      const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`);
+      req.flush('Error', { status: 500, statusText: 'Server Error' });
+    });
 
 });

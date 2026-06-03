@@ -1,0 +1,21 @@
+<div class="activities-section">
+  <h2>Activity Details</h2>
+  
+  <div *ngIf="activityViews && activityViews.length > 0" class="activities-list">
+    @for (view of activityViews; track view; let i = $index) {
+      <wfprev-year-end-activity-item
+        [activity]="view.data"
+        [index]="i"
+        [isExpanded]="view.isExpanded"
+        [fiscalGuid]="fiscalGuid"
+        (expandedChange)="view.isExpanded = $event"
+        (save)="saveActivity.emit({ view: view, event: $event })"
+        (filesUpdated)="filesUpdated.emit()">
+      </wfprev-year-end-activity-item>
+    }
+  </div>
+
+  <div *ngIf="!activityViews || activityViews.length === 0" class="empty-state">
+    <p>No activities found for this fiscal year.</p>
+  </div>
+</div>

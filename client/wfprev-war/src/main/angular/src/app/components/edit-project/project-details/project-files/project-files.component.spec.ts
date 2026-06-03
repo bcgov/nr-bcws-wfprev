@@ -9,6 +9,8 @@ import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-at
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { DetailedErrorMessageComponent } from 'src/app/components/detailed-error-message/detailed-error-message.component';
 import { AttachmentTypeCode, FileAttachment, ProjectFile } from 'src/app/components/models';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
@@ -69,6 +71,10 @@ describe('ProjectFilesComponent', () => {
     mockSnackRef = { dismiss: jasmine.createSpy('dismiss') } as any;
     mockSnackbar.open.and.returnValue(mockSnackRef);
     mockSnackbar.openFromComponent.and.returnValue(mockSnackRef);
+    const mockIconRegistry = jasmine.createSpyObj('MatIconRegistry', ['addSvgIcon']);
+    const mockSanitizer = jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
+    mockSanitizer.bypassSecurityTrustResourceUrl.and.callFake((url: string) => url as any);
+
     await TestBed.configureTestingModule({
       imports: [],
       providers: [
@@ -79,6 +85,8 @@ describe('ProjectFilesComponent', () => {
         { provide: SpatialService, useValue: mockSpatialService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-project-guid' } } } },
+        { provide: MatIconRegistry, useValue: mockIconRegistry },
+        { provide: DomSanitizer, useValue: mockSanitizer },
       ],
     }).compileComponents();
 

@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { OAuthService, OAuthLogger, UrlHelperService, DateTimeProvider } from 'angular-oauth2-oidc';
 import { ROUTING } from 'src/app/app.routing';
@@ -29,6 +29,7 @@ import { MapConfigService } from './services/map-config.service';
     ErrorPageComponent,
   ],
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(withInterceptorsFromDi()),
     OAuthService,
     UrlHelperService,

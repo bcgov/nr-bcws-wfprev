@@ -163,55 +163,52 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
 
     public ActivityEntity updateEntity(ActivityModel model, ActivityEntity existingEntity) {
         log.debug(">> updateEntity");
-        ActivityEntity entity = new ActivityEntity();
 
-        entity.setActivityGuid(existingEntity.getActivityGuid());
-        entity.setProjectPlanFiscalGuid(nonNullOrDefault(
+        existingEntity.setProjectPlanFiscalGuid(nonNullOrDefault(
                 model.getProjectPlanFiscalGuid() != null ? UUID.fromString(model.getProjectPlanFiscalGuid()) : null,
                 existingEntity.getProjectPlanFiscalGuid()
         ));
-        entity.setActivityStatusCode(nonNullOrDefault(
+        existingEntity.setActivityStatusCode(nonNullOrDefault(
                 toActivityStatusCodeEntity(model.getActivityStatusCode()),
                 existingEntity.getActivityStatusCode()
         ));
-        entity.setSilvicultureBaseGuid(model.getSilvicultureBaseGuid() != null ? UUID.fromString(model.getSilvicultureBaseGuid()) : null);
-        entity.setSilvicultureTechniqueGuid(model.getSilvicultureTechniqueGuid() != null ? UUID.fromString(model.getSilvicultureTechniqueGuid()) : null);
-        entity.setSilvicultureMethodGuid(model.getSilvicultureMethodGuid() != null ? UUID.fromString(model.getSilvicultureMethodGuid()) : null);
-        entity.setRiskRatingCode(nonNullOrDefault(
+        existingEntity.setSilvicultureBaseGuid(model.getSilvicultureBaseGuid() != null ? UUID.fromString(model.getSilvicultureBaseGuid()) : null);
+        existingEntity.setSilvicultureTechniqueGuid(model.getSilvicultureTechniqueGuid() != null ? UUID.fromString(model.getSilvicultureTechniqueGuid()) : null);
+        existingEntity.setSilvicultureMethodGuid(model.getSilvicultureMethodGuid() != null ? UUID.fromString(model.getSilvicultureMethodGuid()) : null);
+        existingEntity.setRiskRatingCode(nonNullOrDefault(
                 toRiskRatingCodeEntity(model.getRiskRatingCode()),
                 existingEntity.getRiskRatingCode()
         ));
-        entity.setContractPhaseCode(nonNullOrDefault(
+        existingEntity.setContractPhaseCode(nonNullOrDefault(
                 toContractPhaseCodeEntity(model.getContractPhaseCode()),
                 existingEntity.getContractPhaseCode()
         ));
-        entity.setActivityFundingSourceGuid(nonNullOrDefault(
+        existingEntity.setActivityFundingSourceGuid(nonNullOrDefault(
                 model.getActivityFundingSourceGuid() != null ? UUID.fromString(model.getActivityFundingSourceGuid()) : null,
                 existingEntity.getActivityFundingSourceGuid()
         ));
-        entity.setActivityName(nonNullOrDefault(model.getActivityName(), existingEntity.getActivityName()));
-        entity.setActivityDescription(nonNullOrDefault(model.getActivityDescription(), existingEntity.getActivityDescription()));
-        entity.setActivityStartDate(nonNullOrDefault(model.getActivityStartDate(), existingEntity.getActivityStartDate()));
-        entity.setActivityEndDate(nonNullOrDefault(model.getActivityEndDate(), existingEntity.getActivityEndDate()));
-        entity.setPlannedSpendAmount(nonNullOrDefault(model.getPlannedSpendAmount(), existingEntity.getPlannedSpendAmount()));
-        entity.setPlannedTreatmentAreaHa(nonNullOrDefault(model.getPlannedTreatmentAreaHa(), existingEntity.getPlannedTreatmentAreaHa()));
-        entity.setReportedSpendAmount(nonNullOrDefault(model.getReportedSpendAmount(), existingEntity.getReportedSpendAmount()));
-        entity.setCompletedAreaHa(nonNullOrDefault(model.getCompletedAreaHa(), existingEntity.getCompletedAreaHa()));
-        entity.setIsResultsReportableInd(nonNullOrDefault(model.getIsResultsReportableInd(), existingEntity.getIsResultsReportableInd()));
-        entity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
-        entity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
-        entity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
-        entity.setIsCarryForwardInd(nonNullOrDefault(model.getIsCarryForwardInd(), existingEntity.getIsCarryForwardInd()));
-        entity.setFinalOutcomeComments(nonNullOrDefault(model.getFinalOutcomeComments(), existingEntity.getFinalOutcomeComments()));
-        entity.setRevisionCount(nonNullOrDefault(model.getRevisionCount(), existingEntity.getRevisionCount()));
-        entity.setCreateUser(existingEntity.getCreateUser());
-        entity.setCreateDate(existingEntity.getCreateDate());
-        entity.setUpdateUser(model.getUpdateUser());
-        entity.setUpdateDate(model.getUpdateDate());
-        entity.setLastUpdatedTimestamp(
+        existingEntity.setActivityName(nonNullOrDefault(model.getActivityName(), existingEntity.getActivityName()));
+        existingEntity.setActivityDescription(nonNullOrDefault(model.getActivityDescription(), existingEntity.getActivityDescription()));
+        existingEntity.setActivityStartDate(nonNullOrDefault(model.getActivityStartDate(), existingEntity.getActivityStartDate()));
+        existingEntity.setActivityEndDate(nonNullOrDefault(model.getActivityEndDate(), existingEntity.getActivityEndDate()));
+        existingEntity.setPlannedSpendAmount(nonNullOrDefault(model.getPlannedSpendAmount(), existingEntity.getPlannedSpendAmount()));
+        existingEntity.setPlannedTreatmentAreaHa(nonNullOrDefault(model.getPlannedTreatmentAreaHa(), existingEntity.getPlannedTreatmentAreaHa()));
+        existingEntity.setReportedSpendAmount(nonNullOrDefault(model.getReportedSpendAmount(), existingEntity.getReportedSpendAmount()));
+        existingEntity.setCompletedAreaHa(nonNullOrDefault(model.getCompletedAreaHa(), existingEntity.getCompletedAreaHa()));
+        existingEntity.setIsResultsReportableInd(nonNullOrDefault(model.getIsResultsReportableInd(), existingEntity.getIsResultsReportableInd()));
+        existingEntity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
+        existingEntity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
+        existingEntity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
+        existingEntity.setIsCarryForwardInd(nonNullOrDefault(model.getIsCarryForwardInd(), existingEntity.getIsCarryForwardInd()));
+        existingEntity.setFinalOutcomeComments(nonNullOrDefault(model.getFinalOutcomeComments(), existingEntity.getFinalOutcomeComments()));
+        existingEntity.setCreateUser(existingEntity.getCreateUser());
+        existingEntity.setCreateDate(existingEntity.getCreateDate());
+        existingEntity.setUpdateUser(model.getUpdateUser());
+        existingEntity.setUpdateDate(model.getUpdateDate());
+        existingEntity.setLastUpdatedTimestamp(
             nonNullOrDefault(model.getLastUpdatedTimestamp(), existingEntity.getLastUpdatedTimestamp())
         );
-        return entity;
+        return existingEntity;
     }
 
     private <T> T nonNullOrDefault(T newValue, T existingValue) {

@@ -1,5 +1,16 @@
 package ca.bc.gov.nrs.wfprev.services;
 
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.stereotype.Component;
+
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ActivityResourceAssembler;
@@ -9,7 +20,6 @@ import ca.bc.gov.nrs.wfprev.data.entities.ContractPhaseCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.RiskRatingCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
-import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityStatusCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ContractPhaseCodeRepository;
@@ -21,16 +31,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.stereotype.Component;
-
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -76,18 +76,22 @@ public class ActivityService implements CommonService {
         this.validator = validator;
     }
 
-    public CollectionModel<ActivityModel> getAllActivities(String projectGuid, String fiscalGuid) throws ServiceException {
+    public CollectionModel<ActivityModel> getAllActivities(String projectGuid, String fiscalGuid)
+            throws ServiceException {
         try {
             // Verify project fiscal exists and belongs to project
             ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                    .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, FISCAL_NOT_FOUND, fiscalGuid)));
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            MessageFormat.format(KEY_FORMAT, FISCAL_NOT_FOUND, fiscalGuid)));
 
             if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-                throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
+                throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid,
+                        DOES_NOT_BELONG_PROJECT, projectGuid));
             }
 
             // Find all activities for this project fiscal
-            List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+            List<ActivityEntity> activities = activityRepository
+                    .findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
 
             // Convert entities to models
             List<ActivityModel> activityModels = activities.stream()
@@ -110,11 +114,13 @@ public class ActivityService implements CommonService {
 
         initializeNewActivity(resource, fiscalGuid);
         ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT,FISCAL_NOT_FOUND, fiscalGuid)));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        MessageFormat.format(KEY_FORMAT, FISCAL_NOT_FOUND, fiscalGuid)));
 
         // Verify project fiscal belongs to project
         if (!projectFiscalEntity.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT,PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
+            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid,
+                    DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
         ActivityEntity entity = activityResourceAssembler.toEntity(resource);
@@ -141,6 +147,11 @@ public class ActivityService implements CommonService {
         }
 
         ActivityEntity existingEntity = validateHierarchy(projectGuid, fiscalGuid, resource.getActivityGuid());
+
+        if (resource.getRevisionCount() != null
+                && !resource.getRevisionCount().equals(existingEntity.getRevisionCount())) {
+            throw new ObjectOptimisticLockingFailureException(ActivityEntity.class, resource.getActivityGuid());
+        }
 
         ActivityEntity entity = activityResourceAssembler.updateEntity(resource, existingEntity);
         assignAssociatedEntities(resource, entity);
@@ -171,7 +182,7 @@ public class ActivityService implements CommonService {
         validateHierarchy(projectGuid, fiscalGuid, activityGuid);
 
         fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid, deleteFiles);
-        
+
         activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
         activityRepository.deleteById(UUID.fromString(activityGuid));
     }
@@ -181,9 +192,9 @@ public class ActivityService implements CommonService {
         List<ActivityEntity> activities = activityRepository.findByProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
         for (ActivityEntity activity : activities) {
             String activityGuid = activity.getActivityGuid().toString();
-            
+
             fileAttachmentService.deleteAttachmentsBySourceObject(activityGuid, deleteFiles);
-            
+
             activityBoundaryService.deleteActivityBoundaries(activityGuid, deleteFiles);
             activityRepository.delete(activity);
         }
@@ -194,11 +205,12 @@ public class ActivityService implements CommonService {
             String activityStatusCode = resource.getActivityStatusCode().getActivityStatusCode();
             ActivityStatusCodeEntity activityStatusCodeEntity = activityStatusCodeRepository
                     .findById(activityStatusCode)
-                    .orElseThrow(() -> new IllegalArgumentException("ActivityStatusCode not found: " + activityStatusCode));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("ActivityStatusCode not found: " + activityStatusCode));
             entity.setActivityStatusCode(activityStatusCodeEntity);
         }
 
-        if(resource.getRiskRatingCode() != null) {
+        if (resource.getRiskRatingCode() != null) {
             String riskRatingCode = resource.getRiskRatingCode().getRiskRatingCode();
             RiskRatingCodeEntity riskRatingCodeEntity = riskRatingCodeRepository
                     .findById(riskRatingCode)
@@ -206,11 +218,12 @@ public class ActivityService implements CommonService {
             entity.setRiskRatingCode(riskRatingCodeEntity);
         }
 
-        if(resource.getContractPhaseCode() != null) {
+        if (resource.getContractPhaseCode() != null) {
             String contractPhaseCode = resource.getContractPhaseCode().getContractPhaseCode();
             ContractPhaseCodeEntity contractPhaseCodeEntity = contractPhaseCodeRepository
                     .findById(contractPhaseCode)
-                    .orElseThrow(() -> new IllegalArgumentException("ContractPhaseCode not found: " + contractPhaseCode));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("ContractPhaseCode not found: " + contractPhaseCode));
             entity.setContractPhaseCode(contractPhaseCodeEntity);
         }
     }
@@ -218,18 +231,22 @@ public class ActivityService implements CommonService {
     private ActivityEntity validateHierarchy(String projectGuid, String fiscalGuid, String activityGuid) {
         // Verify activity exists
         ActivityEntity activity = activityRepository.findById(UUID.fromString(activityGuid))
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        MessageFormat.format(KEY_FORMAT, ACTIVITY_NOT_FOUND, activityGuid)));
 
         // Verify activity belongs to the specified project fiscal
         if (!activity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
-            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, ACTIVITY, activityGuid, DOES_NOT_BELONG_FISCAL, fiscalGuid));
+            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, ACTIVITY, activityGuid,
+                    DOES_NOT_BELONG_FISCAL, fiscalGuid));
         }
 
         // Verify project fiscal belongs to project
         ProjectFiscalEntity projectFiscal = projectFiscalRepository.findById(UUID.fromString(fiscalGuid))
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(KEY_FORMAT, FISCAL_NOT_FOUND, fiscalGuid)));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        MessageFormat.format(KEY_FORMAT, FISCAL_NOT_FOUND, fiscalGuid)));
         if (!projectFiscal.getProject().getProjectGuid().toString().equals(projectGuid)) {
-            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid, DOES_NOT_BELONG_PROJECT, projectGuid));
+            throw new EntityNotFoundException(MessageFormat.format(EXTENDED_KEY_FORMAT, PROJECT_FISCAL, fiscalGuid,
+                    DOES_NOT_BELONG_PROJECT, projectGuid));
         }
 
         return activity;

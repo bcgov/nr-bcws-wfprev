@@ -1,0 +1,13 @@
+<div class="icon-display-field">
+  <div class="icon-circle">
+    @if (matIcon) {
+      <mat-icon class="field-icon">{{ matIcon }}</mat-icon>
+    } @else if (imageIcon) {
+      <img class="field-image-icon" [src]="imageIcon" alt="icon">
+    }
+  </div>
+  <div class="field-text">
+    <span class="field-label">{{ label }}</span>
+    <span class="field-val">{{ value }}</span>
+  </div>
+</div>

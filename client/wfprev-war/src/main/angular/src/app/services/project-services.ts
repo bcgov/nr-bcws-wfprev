@@ -1,4 +1,4 @@
-import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, HttpParams, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
@@ -719,10 +719,47 @@ export class ProjectService {
                 }
             }
         ).pipe(
-            map(response => response),
-            catchError(error => {
+            map((response: EvaluationCriteriaSummaryModel) => response),
+            catchError((error: HttpErrorResponse) => {
                 console.error("Error creating evaluation criteria summary", error);
                 return throwError(() => new Error("Failed to create evaluation criteria summary"));
+            })
+        );
+    }
+
+    getAllFiscalCloseouts(projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`;
+
+        return this.httpClient.get(url, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error: HttpErrorResponse) => {
+                console.error("Error fetching closeouts", error);
+                return throwError(() => new Error("Failed to fetch closeouts"));
+            })
+        );
+    }
+
+    createFiscalCloseout(projectGuid: string, projectPlanFiscalGuid: string, closeoutModel: any): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts`;
+        return this.httpClient.post<any>(
+            url,
+            closeoutModel,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.tokenService.getOauthToken()}`
+                }
+            }
+        ).pipe(
+            map((response: any) => response),
+            catchError((error: HttpErrorResponse) => {
+                console.error("Error creating closeout", error);
+                return throwError(() => new Error("Failed to create closeout"));
             })
         );
     }

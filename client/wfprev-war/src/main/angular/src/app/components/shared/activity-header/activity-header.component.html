@@ -1,0 +1,51 @@
+<div class="activity-header-content" [class.stack-badges]="shouldStack">
+  <div class="header-left">
+    <wfprev-expansion-indicator [isExpanded]="isExpanded"></wfprev-expansion-indicator>
+    <div class="activity-title">
+      {{ title }}
+    </div>
+  </div>
+  
+  <div class="activity-indicators">
+    <!-- Results Reportable -->
+    @if (isResultsReportable) {
+      <div class="indicator-item">
+        <img src="/assets/blue-checkmark.svg" alt="RESULTS Reportable" class="indicator-icon" />
+        <span>RESULTS Reportable</span>
+      </div>
+    }
+
+    <!-- Carry Forward -->
+    @if (isCarryForward) {
+      <wfprev-status-badge type="warning" label="Carry Forward"></wfprev-status-badge>
+    }
+
+    <!-- Outstanding Obligations -->
+    @if (hasOutstandingObligations) {
+      <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
+    }
+
+    <!-- Spatial Added / No Spatial Added -->
+    @if (isSpatialAdded !== undefined) {
+      @if (isSpatialAdded) {
+        <wfprev-status-badge type="spatial-added"></wfprev-status-badge>
+      } @else {
+        <wfprev-status-badge type="spatial-not-added"></wfprev-status-badge>
+      }
+    }
+
+    <!-- Status Code Badges -->
+    @if (statusCode === 'COMPLETED') {
+      <wfprev-status-badge type="status-complete"></wfprev-status-badge>
+    }
+    @if (statusCode === 'CANCELLED') {
+      <wfprev-status-badge type="status-cancelled"></wfprev-status-badge>
+    }
+    @if (statusCode === 'DEFERRED') {
+      <wfprev-status-badge type="deferred-filled"></wfprev-status-badge>
+    }
+    @if (statusCode === 'SUBSTANTIALLY_COMPLETE') {
+      <wfprev-status-badge type="substantially-complete"></wfprev-status-badge>
+    }
+  </div>
+</div>

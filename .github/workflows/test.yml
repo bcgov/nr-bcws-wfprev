@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]  # Use LTS Node.js version
+        node-version: [20.x]  # Use LTS Node.js version
 
     steps:
       - uses: actions/checkout@v4

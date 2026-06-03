@@ -1,19 +1,41 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
+@use 'variables' as *;
 @use '@angular/material' as mat;
 // Plus imports for other components in your app.
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.elevation-classes();
-@include mat.app-background();
+@include mat.core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
+$my-custom-blue: (
+  50: #e0f2fe,
+  100: #bae6fd,
+  200: #7dd3fc,
+  300: #38bdf8,
+  400: #0ea5e9,
+  500: $colour-primary-blue, // Main product blue shade
+  600: #0369a1,
+  700: #075985,
+  800: #0c4a6e,
+  900: $colour-primary-blue,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
 $theme-primary: mat.m2-define-palette(mat.$m2-blue-gray-palette, A400, 500, 900);
-$theme-accent: mat.m2-define-palette(mat.$m2-orange-palette, A200, A100, A400);
+$theme-accent: mat.m2-define-palette($my-custom-blue, 500, 100, 900);
  
 // The warn palette is optional (defaults to red).
 $theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
@@ -35,7 +57,64 @@ $theme: mat.m2-define-light-theme((
   ),
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 @include mat.all-component-themes($theme);
+
+/* Shared Date Range, Overlay, and Text Field Overrides */
+.mat-date-range-input {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 400;
+  font-size: 16px;
+  color: #282828;
+  flex: 1 1 auto !important;
+}
+
+.mat-date-range-input input {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  margin: 0 !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  display: none !important;
+}
+
+.mat-datepicker-toggle {
+  margin-left: 8px;
+}
+
+.date-range-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  mat-form-field {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .mat-date-range-input input {
+    padding: 0 !important;
+  }
+
+  .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: white;
+    padding: 8px 12px;
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 20px;
+    margin: 4px;
+  }
+
+  .mat-mdc-form-field-infix {
+    padding: 0 !important;
+  }
+
+  .mat-form-field-disabled .mdc-text-field {
+    margin-top: 6px;
+    height: 38px;
+  }
+}
+

@@ -1,3 +1,5 @@
+@use 'styles/variables';
+
 .fiscals-container {
   margin: 19px;
   box-sizing: border-box;
@@ -36,7 +38,7 @@
       }
 
       label {
-        padding: 9px;
+        padding: 0;
         color: #282828;
         font-size: 14px;
         font-style: normal;
@@ -52,14 +54,19 @@
         font-style: normal;
         font-weight: 400;
         width: 100%;
-        margin: 8px 0px;
-        padding: 8px 12px;
+        margin: 4px 0px 8px 0px;
+        padding: 8px 4px;
         font-size: 16px;
         border: none;
         border-bottom: 1px solid #282828;
         outline: none;
         text-overflow: ellipsis;
         box-sizing: border-box;
+
+        &:focus {
+          outline: none;
+          border-bottom: 2px solid variables.$colour-primary-blue;
+        }
       }
 
       select {
@@ -85,6 +92,11 @@
         white-space: pre-wrap;
         word-wrap: break-word;
         font-family: var(--wf-font-family-main) !important;
+
+        &:focus {
+          outline: none;
+          border: 2px solid variables.$colour-primary-blue;
+        }
       }
     }
 
@@ -441,16 +453,18 @@ mat-expansion-panel {
   position: relative;
   display: flex;
   align-items: center;
+  margin-bottom: 8px;
 
   .currency-symbol {
     position: absolute;
     font-size: 16px;
     color: #282828;
-    left: 12px;
+    left: 4px;
   }
 
   input {
-    padding-left: 24px !important;
+    padding-left: 16px !important;
+    margin-bottom: 0px !important;
   }
 }
 
@@ -524,7 +538,7 @@ mat-expansion-panel {
 }
 
 :host ::ng-deep wfprev-textarea .textarea-label {
-  padding-left: 10px;
+  padding-left: 0px;
 }
 
 .wf-empty-state {
