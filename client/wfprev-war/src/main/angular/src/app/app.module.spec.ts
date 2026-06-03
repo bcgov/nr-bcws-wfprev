@@ -7,7 +7,7 @@ import { ErrorPageComponent } from './components/error-page/error-page/error-pag
 import { CoreUIModule } from './lib/core-ui.module';
 import { LibraryConfig } from './config/library-config';
 import { AppConfigService } from './services/app-config.service';
-import { APP_INITIALIZER } from '@angular/core';
+import { provideAppInitializer } from '@angular/core';
 import { TokenService } from './services/token.service';
  
 describe('AppModule', () => {
@@ -34,11 +34,7 @@ describe('AppModule', () => {
         { provide: LibraryConfig, useValue: {} },
         { provide: AppConfigService, useValue: mockAppConfigService },
         { provide: TokenService, useValue: mockTokenService },
-        {
-          provide: APP_INITIALIZER,
-          useValue: () => Promise.resolve(),
-          multi: true,
-        },
+        provideAppInitializer(() => Promise.resolve()),
       ],
       teardown: { destroyAfterEach: true },
     });

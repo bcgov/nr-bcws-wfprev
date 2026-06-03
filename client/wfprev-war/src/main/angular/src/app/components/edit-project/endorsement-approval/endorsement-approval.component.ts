@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,10 +22,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { capitalizeFirstLetter } from 'src/app/utils';
 
 @Component({
-  selector: 'wfprev-endorsement-approval',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'wfprev-endorsement-approval',
+    standalone: true,
+    imports: [
     ReactiveFormsModule,
     FormsModule,
     MatCheckboxModule,
@@ -39,10 +38,10 @@ import { capitalizeFirstLetter } from 'src/app/utils';
     ReadOnlyFieldComponent,
     TextareaComponent,
     TimestampComponent,
-    MatTooltipModule,
-  ],
-  templateUrl: './endorsement-approval.component.html',
-  styleUrl: './endorsement-approval.component.scss'
+    MatTooltipModule
+],
+    templateUrl: './endorsement-approval.component.html',
+    styleUrl: './endorsement-approval.component.scss'
 })
 export class EndorsementApprovalComponent implements OnChanges, OnInit {
 

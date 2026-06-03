@@ -28,7 +28,7 @@ RUN npm install
 EXPOSE 8080
 
 # Start angular dev server
-CMD ["npx", "ng", "serve", "--configuration", "local", "--host", "0.0.0.0", "--port", "8080", "--disable-host-check", "--poll", "2000"]
+CMD ["npx", "ng", "serve", "--configuration", "local", "--host", "0.0.0.0", "--port", "8080", "--allowed-hosts", "wfprev", "--poll", "2000"]
 
 
 # Runner Stage
