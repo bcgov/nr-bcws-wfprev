@@ -208,6 +208,23 @@ class ActivityControllerTest {
 
     @Test
     @WithMockUser
+    void testUpdateActivity_OptimisticLockingFailure() throws Exception {
+        ActivityModel requestModel = buildActivityModel();
+
+        when(activityService.updateActivity(anyString(), anyString(), any(ActivityModel.class)))
+                .thenThrow(new org.springframework.orm.ObjectOptimisticLockingFailureException(ActivityModel.class, "id"));
+
+        mockMvc.perform(put("/projects/{projectId}/projectFiscals/{projectFiscalId}/activities/{id}",
+                        "123e4567-e89b-12d3-a456-426614174001",
+                        "123e4567-e89b-12d3-a456-426614174002",
+                        requestModel.getActivityGuid())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(requestModel)))
+                .andExpect(status().isPreconditionFailed());
+    }
+
+    @Test
+    @WithMockUser
     void testUpdateActivity_IllegalArgumentException() throws Exception {
         ActivityModel requestModel = buildActivityModel();
 

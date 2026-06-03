@@ -19,6 +19,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -105,6 +106,7 @@ public class ActivityController extends CommonController {
             @ApiResponse(responseCode = "400", description = "Bad Request",
                     content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "412", description = "Precondition Failed"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
@@ -130,6 +132,9 @@ public class ActivityController extends CommonController {
         } catch (EntityNotFoundException e) {
             response = notFound();
             log.warn(" ### Activity not found with id: {}", id, e);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            response = preconditionFailed();
+            log.warn(" ### Optimistic locking failure updating Activity with id: {}", id, e);
         } catch (IllegalArgumentException e) {
             response = ResponseEntity.badRequest().build();
             log.error(" ### IllegalArgumentException while updating Activity", e);
