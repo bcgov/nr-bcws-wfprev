@@ -1,0 +1,303 @@
+@import 'src/styles/variables';
+@import "../../project-fiscals/project-fiscals.component.scss";
+
+:host {
+  display: block;
+
+  .fiscals-container {
+    margin: 0 !important;
+  }
+
+  ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: white !important;
+    padding: 8px 12px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    height: 20px;
+    margin: 4px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding: 0 !important;
+  }
+
+  ::ng-deep .mat-form-field-disabled .mdc-text-field {
+    margin-top: 6px;
+    height: 38px;
+  }
+}
+
+.form-fieldset {
+  display: contents;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+.expansion-panel {
+  border: 1px solid $colour-border-grey;
+  background-color: #fff;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+
+  .mat-expansion-panel-header {
+    min-height: 64px !important;
+    height: auto !important;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+
+  .dropdown-button {
+    cursor: pointer;
+    span {
+      padding-left: 10px;
+    }
+    &:disabled {
+      background-color: #c0c0c0 !important;
+      cursor: not-allowed;
+      border: none;
+    }
+  }
+}
+
+.activity-header {
+  ::ng-deep .mat-content {
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.activity-title {
+  font-family: var(--wf-font-family-main) !important;
+  flex-wrap: wrap;
+  color: $colour-text-dark;
+  font-family: var(--wf-font-family-main);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  .update-date {
+    padding-top: 4px;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+  }
+}
+
+.activity-indicators {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+}
+
+.two-columns {
+  flex: 1 1 calc(50% - 20px) !important; // 2 items per row with a 20px gap
+}
+.three-columns {
+  flex: 1 1 calc(33% - 20px) !important; // 3 items per row with a 20px gap
+}
+.form-item {
+  flex: 1 1 calc(25% - 20px); // 4 items per row with a 20px gap
+  input,
+  select {
+    text-overflow: unset !important;
+  }
+}
+.form-item.wide {
+  grid-column: span 2;
+  min-width: unset !important;
+}
+.full-width {
+  flex: 1 1 100% !important;
+}
+.five-columns {
+  flex: 1 1 calc(20% - 20px) !important; // 5 items per row with a 20px gap
+}
+
+.narrow-width {
+  max-width: 210px;
+}
+
+.comment-container {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.checkbox-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 0 300px;
+  .checkbox-label {
+    padding: 0 !important;
+    white-space: nowrap;
+    color: #282828;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+}
+
+.textarea-container {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.first-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  padding-top: 16px;
+}
+
+.currency-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+
+  .currency-symbol {
+    position: absolute;
+    left: 4px;
+    font-size: 16px;
+    color: #282828;
+  }
+
+  input {
+    padding-left: 16px;
+    margin-bottom: 0px !important;
+  }
+}
+
+.comment-display {
+  font-family: var(--wf-font-family-main);
+  font-size: 16px;
+  display: flex;
+  padding-top: 8px;
+  padding-left: 8px;
+  font-weight: 700;
+  color: #282828;
+  cursor: pointer;
+  border-bottom: none;
+}
+
+input#activityComment {
+  border-bottom: 1px solid black; // Underline when editing
+}
+
+
+
+input[readonly] {
+  border-bottom: 1px dashed $colour-text-dark !important;
+  background-color: #fff;
+}
+
+@container (max-width: 900px) {
+  .activity-header {
+    ::ng-deep .mat-content {
+      display: flex;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      padding: 12px 0;
+    }
+  }
+
+  .activity-title {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    font-size: 17px !important;
+    margin-top: 2px;
+  }
+
+  .activity-indicators {
+    display: flex;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 10px !important;
+    margin-left: 8px !important;
+  }
+}
+
+.activity-files {
+  padding: 15px 24px;
+}
+
+.project-activity-footer {
+  border-top: 1px solid $colour-border-grey;
+  background: #f2f2f2;
+  box-sizing: border-box;
+
+  .button-row {
+    padding: 14px 24px 14px 23px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  .delete-container {
+    flex: 1;
+  }
+
+  .delete {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    img {
+      margin-right: 10px;
+    }
+
+    &-active span {
+      color: $colour-text-dark;
+    }
+
+    &-inactive {
+      cursor: not-allowed;
+      span {
+        color: #9f9d9c;
+      }
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 14px; // Use standardized gap
+
+    button {
+      &.primary {
+        @extend .button-primary;
+      }
+
+      &.secondary {
+        @extend .button-secondary;
+      }
+    }
+  }
+}
+
+
+
+.wf-empty-state {
+  margin-top: 0px;
+  border: none;
+  background-color: transparent;
+}

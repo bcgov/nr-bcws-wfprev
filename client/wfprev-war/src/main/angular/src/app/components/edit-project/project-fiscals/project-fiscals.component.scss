@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 .fiscals-container {
   margin: 19px;
   box-sizing: border-box;
@@ -60,6 +62,11 @@
         outline: none;
         text-overflow: ellipsis;
         box-sizing: border-box;
+
+        &:focus {
+          outline: none;
+          border-bottom: 2px solid $colour-primary-blue;
+        }
       }
 
       select {
@@ -85,6 +92,11 @@
         white-space: pre-wrap;
         word-wrap: break-word;
         font-family: var(--wf-font-family-main) !important;
+
+        &:focus {
+          outline: none;
+          border: 2px solid $colour-primary-blue;
+        }
       }
     }
 

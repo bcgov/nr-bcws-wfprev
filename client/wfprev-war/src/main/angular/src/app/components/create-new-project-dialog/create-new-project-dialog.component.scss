@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 ::ng-deep .cdk-global-overlay-wrapper {
   position: fixed;
   top: 0;
@@ -109,7 +111,8 @@
     }
 
     &:focus {
-      border-bottom: 1px solid black;
+      outline: none;
+      border-bottom: 2px solid $colour-primary-blue;
     }
   }
 
@@ -218,6 +221,11 @@ select {
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 20px;
+
+  &:focus {
+    outline: none;
+    border-bottom: 2px solid $colour-primary-blue;
+  }
 }
 
 /* Add ellipses support for select options */
@@ -258,6 +266,11 @@ select option {
     height: auto;
     font-family: var(--wf-font-family-main);
     margin-top: 8px;
+
+    &:focus {
+      outline: none;
+      border: 2px solid $colour-primary-blue;
+    }
   }
 }
 

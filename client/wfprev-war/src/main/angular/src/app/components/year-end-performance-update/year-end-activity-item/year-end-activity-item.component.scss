@@ -1,0 +1,278 @@
+@import 'src/styles/variables';
+@import "../../edit-project/project-fiscals/project-fiscals.component.scss";
+
+:host {
+  display: block;
+
+  ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: white !important;
+    padding: 8px 12px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    height: 20px;
+    margin: 4px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding: 0 !important;
+  }
+
+  ::ng-deep .mat-form-field-disabled .mdc-text-field {
+    margin-top: 6px;
+    height: 38px;
+  }
+}
+
+
+.expansion-panel {
+  border: 1px solid $colour-border-grey;
+  background-color: #fff;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+
+  ::ng-deep .mat-expansion-panel-header {
+    min-height: 64px !important;
+    height: auto !important;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+
+  .row {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+
+    &.info-row {
+      grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    &.metrics-row {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+
+  .form-item {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      padding: 0;
+      color: #282828;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+
+      .required {
+        color: $colour-error-red;
+      }
+    }
+
+    &.status-field {
+      width: auto;
+    }
+
+    &.desc-field {
+      min-width: 0;
+    }
+
+    &.date-field {
+      width: auto;
+    }
+
+    &.currency-field, &.number-field {
+      min-width: 0;
+    }
+
+    input, select {
+      font-family: var(--wf-font-family-main) !important;
+      color: #282828;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      width: 100%;
+      margin: 4px 0px 8px 0px;
+      padding: 8px 4px;
+      border: none;
+      border-bottom: 1px solid #282828;
+      border-radius: 0;
+      outline: none;
+      text-overflow: ellipsis;
+      box-sizing: border-box;
+      background: transparent;
+      height: auto;
+
+      &:focus {
+        outline: none;
+        border-bottom: 2px solid $colour-primary-blue;
+      }
+
+      &[readonly] {
+        border-bottom: 1px dashed $colour-text-dark !important;
+        background-color: #FFF;
+        cursor: not-allowed;
+      }
+    }
+
+    select {
+      -webkit-appearance: none;
+      background-image: url("/assets/dropdown-icon.svg");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 20px 20px;
+    }
+
+    .currency-input {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .currency-symbol {
+        position: absolute;
+        left: 4px;
+        font-size: 16px;
+        color: #282828;
+      }
+
+      input {
+        width: 100%;
+        padding-left: 16px !important;
+        margin-bottom: 0px !important;
+      }
+    }
+
+    .error {
+      color: $colour-error-red;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }
+
+  .readonly-text-noborder {
+    font-size: 14px;
+    font-weight: 400;
+    color: $colour-text-dark;
+    line-height: 21px;
+    padding-top: 8px;
+  }
+
+  .comment-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 columns (each is 25%)
+    gap: 16px; // Same gap as form grid rows
+    width: 100%;
+
+    .checkbox-container {
+      grid-column: span 1; // Takes 25% (aligns with 1st column)
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .checkbox-label {
+        padding: 0 !important;
+        white-space: nowrap;
+        color: #282828;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+    }
+
+    .textarea-container {
+      grid-column: span 3; // Takes 75% (aligns with remaining 3 columns)
+      width: 100%;
+      
+      ::ng-deep .textarea-container textarea {
+        background: #FFFFFF;
+        border: 1px solid #C6C8CB;
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .row {
+      &.info-row {
+        grid-template-columns: repeat(2, 1fr);
+        
+        .desc-field {
+          grid-column: span 2;
+        }
+      }
+      &.metrics-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .comment-container {
+      grid-template-columns: 1fr;
+      gap: 12px;
+
+      .checkbox-container {
+        grid-column: span 1;
+      }
+      .textarea-container {
+        grid-column: span 1;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    .row {
+      &.info-row {
+        grid-template-columns: 1fr;
+        
+        .desc-field {
+          grid-column: span 1;
+        }
+      }
+      &.metrics-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+.project-activity-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 16px;
+
+  .action-buttons {
+    display: flex;
+    gap: 14px;
+
+    button {
+      &.primary {
+        @extend .button-primary;
+      }
+
+      &.secondary {
+        @extend .button-secondary;
+      }
+    }
+  }
+}
+
+.activity-files {
+  padding: 15px 16px;
+}
+
+.section-divider {
+  border-top: 1px solid #E0E0E0;
+  margin-bottom: 15px;
+}
+
+
+

@@ -434,6 +434,12 @@ export interface PerformanceUpdate {
   totalAmount: number;
 }
 
+export interface FiscalCloseout {
+  projectPlanFiscalCloseoutGuid?: string;
+  projectPlanFiscalGuid?: string;
+  outcomeComment?: string;
+}
+
 export enum ForecastStatus {
   ChangedDecreased = "CHANGED_DECREASED",
   ChangedIncreased = "CHANGED_INCREASED",
@@ -487,4 +493,18 @@ export interface DetailedErrorMessage {
   messageBefore: string;
   messageAfter: string;
   reasons: string[];
+}
+
+export interface FiscalActivityViewModel {
+  data: any;
+  originalData: any;
+  form: import('@angular/forms').FormGroup;
+  isExpanded: boolean;
+  isDirty: boolean;
+  isSaving: boolean;
+}
+
+export interface YearEndActivityViewModel {
+  data: any;
+  isExpanded: boolean;
 }

@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 .input-field {
   .required {
     color: var(--wf-colour-error);
@@ -55,6 +57,11 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+
+      &:focus {
+        outline: none;
+        border-bottom: 2px solid $colour-primary-blue;
+      }
     }
   }
 

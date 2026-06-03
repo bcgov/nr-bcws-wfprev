@@ -10,12 +10,12 @@
         justify-content: center;
         padding: 20px;
     }
-    .expansion-panel{
+    .expansion-panel {
         border: 1px solid #D9D9D9;
         background-color: #fff;
+        box-shadow: none !important;
 
         .mat-expansion-panel-header{
-            border-bottom: 1px solid #D9D9D9;;
             min-height: 64px !important;
             height: auto !important;
             padding: 0 24px;
@@ -33,6 +33,10 @@
                 border: none;
             }
         }
+    }
+
+    .activity-item-wrapper + .activity-item-wrapper {
+        margin-top: -1px;
     }
     
     .activity-header {
@@ -243,7 +247,7 @@
 }
 
 .activity-files{
-    padding: 15px;
+    padding: 15px 24px;
 }
 
 .project-activity-footer {

@@ -11,13 +11,14 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { matchTotalValidator } from './validators/match-total.validator';
+import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
 
 @Component({
-    selector: ' wfprev-performance-update-modal-window',
-    standalone: true,
-    imports: [CommonModule, SelectFieldComponent, TextareaComponent, InputFieldComponent],
-    templateUrl: './wfprev-performance-update-modal-window.component.html',
-    styleUrl: './wfprev-performance-update-modal-window.component.scss'
+  selector: ' wfprev-performance-update-modal-window',
+  standalone: true,
+  imports: [CommonModule, SelectFieldComponent, TextareaComponent, InputFieldComponent, IconDisplayFieldComponent],
+  templateUrl: './wfprev-performance-update-modal-window.component.html',
+  styleUrl: './wfprev-performance-update-modal-window.component.scss'
 })
 export class PerformanceUpdateModalWindowComponent {
 

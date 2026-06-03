@@ -25,32 +25,18 @@
     <div class="section">
       <p mat-dialog-title class="budget-title">Budget Adjustment</p>
       <div class="modal-window-row">
-        <div class="forecast-container">
-          <div class="forecast-img">
-            <img alt="dollar" class="status-icon" src="/assets/dollar-sign.svg">
-          </div>
-          <div class="forecast-text">
-            <div>
-              <p>Current Forecast:</p>
-            </div>
-            <div class="amount">
-              <p>{{data?.currentForecast ?? 0 | currency}}</p>
-            </div>
-          </div>
-        </div>
-        <div class="forecast-container">
-          <div class="forecast-img">
-            <img alt="dollar" class="status-icon" src="/assets/dollar-sign.svg">
-          </div>
-          <div class="forecast-text">
-            <div>
-              <p>Original Cost Estimate:</p>
-            </div>
-            <div class="amount">
-              <p>{{data?.originalCostEstimate ?? 0 | currency}}</p>
-            </div>
-          </div>
-        </div>
+        <wfprev-icon-display-field
+          class="modal-forecast-field"
+          [imageIcon]="'/assets/dollar-sign.svg'"
+          [label]="'Current Forecast:'"
+          [value]="data?.currentForecast ?? 0 | currency">
+        </wfprev-icon-display-field>
+        <wfprev-icon-display-field
+          class="modal-forecast-field"
+          [imageIcon]="'/assets/dollar-sign.svg'"
+          [label]="'Original Cost Estimate:'"
+          [value]="data?.originalCostEstimate ?? 0 | currency">
+        </wfprev-icon-display-field>
       </div>
       <div class="modal-window-row">
         <div>
