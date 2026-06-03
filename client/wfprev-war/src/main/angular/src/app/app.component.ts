@@ -6,9 +6,10 @@ import { TokenService } from 'src/app/services/token.service';
 import { ResourcesRoutes } from 'src/app/utils';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   activeRoute = '';

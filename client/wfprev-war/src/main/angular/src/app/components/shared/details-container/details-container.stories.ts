@@ -1,6 +1,6 @@
 import { Meta, moduleMetadata } from '@storybook/angular';
 import { DetailsContainerComponent } from 'src/app/components/shared/details-container/details-container.component';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 export default {
   title: 'Components/Layout/DetailsContainer',

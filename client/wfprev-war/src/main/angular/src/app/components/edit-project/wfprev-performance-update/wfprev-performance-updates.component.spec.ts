@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 import { ProjectService } from 'src/app/services/project-services';
@@ -18,6 +18,7 @@ describe('PerformanceUpdatesComponent', () => {
   let mockProjectFiscalsSignalService: jasmine.SpyObj<ProjectFiscalsSignalService>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
+  let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     mockProjectService = jasmine.createSpyObj('ProjectService', ['getPerformanceUpdates', 'getProjectFiscalByProjectPlanFiscalGuid']);
@@ -25,6 +26,7 @@ describe('PerformanceUpdatesComponent', () => {
     mockProjectFiscalsSignalService = jasmine.createSpyObj('ProjectFiscalsSignalService', ['trigger']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [PerformanceUpdatesComponent, BrowserAnimationsModule],
@@ -34,6 +36,7 @@ describe('PerformanceUpdatesComponent', () => {
         { provide: ProjectFiscalsSignalService, useValue: mockProjectFiscalsSignalService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: Router, useValue: mockRouter },
         {
           provide: PermissionsService,
           useValue: {

@@ -207,6 +207,41 @@ class ActivityServiceTest {
     }
 
     @Test
+    void testUpdateActivity_OptimisticLockingFailure() {
+        // GIVEN
+        String projectGuid = "123e4567-e89b-12d3-a456-426614174000";
+        String fiscalGuid = "456e7890-e89b-12d3-a456-426614174001";
+        String activityGuid = "789e1234-e89b-12d3-a456-426614174002";
+
+        ActivityModel activityModel = new ActivityModel();
+        activityModel.setActivityGuid(activityGuid);
+        activityModel.setProjectPlanFiscalGuid(fiscalGuid);
+        activityModel.setRevisionCount(1);
+
+        ProjectEntity projectEntity = ProjectEntity.builder()
+                .projectGuid(UUID.fromString(projectGuid))
+                .build();
+
+        ProjectFiscalEntity projectFiscalEntity = ProjectFiscalEntity.builder()
+                .projectPlanFiscalGuid(UUID.fromString(fiscalGuid))
+                .project(projectEntity)
+                .build();
+
+        ActivityEntity existingEntity = new ActivityEntity();
+        existingEntity.setProjectPlanFiscalGuid(UUID.fromString(fiscalGuid));
+        existingEntity.setRevisionCount(2);
+
+        when(activityRepository.findById(UUID.fromString(activityGuid)))
+                .thenReturn(Optional.of(existingEntity));
+        when(projectFiscalRepository.findById(UUID.fromString(fiscalGuid)))
+                .thenReturn(Optional.of(projectFiscalEntity));
+
+        // WHEN/THEN
+        assertThrows(org.springframework.orm.ObjectOptimisticLockingFailureException.class, () ->
+                activityService.updateActivity(projectGuid, fiscalGuid, activityModel));
+    }
+
+    @Test
     void testGetActivity_Success() {
         // GIVEN
         String projectGuid = "123e4567-e89b-12d3-a456-426614174000";

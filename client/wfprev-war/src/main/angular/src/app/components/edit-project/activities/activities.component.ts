@@ -26,7 +26,7 @@ import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
-import { NgxCurrencyDirective } from 'ngx-currency';
+import { NgxCurrency } from '@dintecom/ngx-currency';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 
@@ -41,32 +41,32 @@ export const CUSTOM_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'wfprev-activities',
-  standalone: true,
-  imports: [MatExpansionModule,
-    ReactiveFormsModule,
-    CommonModule,
-    MatSlideToggleModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    FormsModule,
-    MatCheckboxModule,
-    ProjectFilesComponent,
-    ExpansionIndicatorComponent,
-    IconButtonComponent,
-    TimestampComponent,
-    TextareaComponent,
-    NgxCurrencyDirective,
-    StatusBadgeComponent,
-    MatProgressSpinnerModule],
-  templateUrl: './activities.component.html',
-  styleUrl: './activities.component.scss',
-  providers: [
-    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
-  ],
+    selector: 'wfprev-activities',
+    standalone: true,
+    imports: [MatExpansionModule,
+        ReactiveFormsModule,
+        CommonModule,
+        MatSlideToggleModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatInputModule,
+        FormsModule,
+        MatCheckboxModule,
+        ProjectFilesComponent,
+        ExpansionIndicatorComponent,
+        IconButtonComponent,
+        TimestampComponent,
+        TextareaComponent,
+        NgxCurrency,
+        StatusBadgeComponent,
+        MatProgressSpinnerModule],
+    templateUrl: './activities.component.html',
+    styleUrl: './activities.component.scss',
+    providers: [
+        { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+        { provide: MAT_DATE_LOCALE, useValue: 'en-CA' }, // Change locale to Canada (YYYY/MM/DD format)
+        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }
+    ]
 })
 
 export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDeactivate {

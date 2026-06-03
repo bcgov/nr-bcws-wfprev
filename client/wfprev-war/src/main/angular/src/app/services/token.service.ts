@@ -192,7 +192,7 @@ export class TokenService {
       redirectUri: redirectUri ?? globalThis.location?.href,
       clientId: configuration.webade.clientId,
       scope: configuration.webade.authScopes
-    };
+    }; 
 
     const oauthService = this.injector.get(OAuthService);
     oauthService.configure(authConfig);

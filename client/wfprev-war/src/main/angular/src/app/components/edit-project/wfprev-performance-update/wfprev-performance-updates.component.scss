@@ -1,4 +1,4 @@
-@import "../project-fiscals/project-fiscals.component.scss";
+@use "../project-fiscals/project-fiscals.component.scss" as *;
 
 .performance-update-container {
   padding-top: 12px;
@@ -367,4 +367,24 @@
   margin-top: 0px;
   border: none;
   background-color: transparent;
+}
+
+.header-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+:host ::ng-deep .year-end-update .shared-icon-button {
+  background: #fff !important;
+  border: 1px solid #2d2d2d !important;
+  
+  .button-text {
+    color: #2d2d2d !important;
+  }
+  
+  .icon {
+    filter: invert(1) !important;
+  }
 }

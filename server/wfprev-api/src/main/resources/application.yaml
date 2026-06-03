@@ -41,7 +41,7 @@ logging:
       apache.poi: WARN
 
   pattern:
-    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{40} - %msg%n%wEx"
+    console: ${LOGGING_PATTERN_CONSOLE:%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{40} - %msg%n%wEx}
 
   file:
     name: logs/wfprev-api.log

@@ -4,7 +4,7 @@ import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/ex
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { ProjectService } from 'src/app/services/project-services';
 import { PerformanceUpdate, ForecastStatus, ProgressStatus, UpdateGeneralStatus, Option, ReportingPeriod, ReportingPeriodCode, ProgressStatusCode } from '../../models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { CommonModule } from '@angular/common';
@@ -18,11 +18,11 @@ import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.com
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
-  selector: 'wfprev-performance-updates',
-  standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
-  templateUrl: './wfprev-performance-updates.component.html',
-  styleUrl: './wfprev-performance-updates.component.scss'
+    selector: 'wfprev-performance-updates',
+    standalone: true,
+    imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule],
+    templateUrl: './wfprev-performance-updates.component.html',
+    styleUrl: './wfprev-performance-updates.component.scss'
 })
 export class PerformanceUpdatesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';
@@ -62,6 +62,10 @@ export class PerformanceUpdatesComponent implements OnChanges {
     return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE);
   }
 
+  get canCreateYearEndReport(): boolean {
+    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT);
+  }
+
   constructor(
     private readonly projectService: ProjectService,
     private readonly codeTableService: CodeTableServices,
@@ -69,8 +73,18 @@ export class PerformanceUpdatesComponent implements OnChanges {
     private readonly route: ActivatedRoute,
     private dialog: MatDialog,
     private readonly snackbarService: MatSnackBar,
-    private readonly permissionsService: PermissionsService
+    private readonly permissionsService: PermissionsService,
+    private readonly router: Router
   ) {}
+
+  navigateToYearEnd(): void {
+    this.router.navigate(['/performance/year-end'], {
+      queryParams: {
+        projectGuid: this.projectGuid,
+        fiscalGuid: this.fiscalGuid
+      }
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid'] && changes['fiscalGuid'].currentValue && !this.isUpdatesCalled) {

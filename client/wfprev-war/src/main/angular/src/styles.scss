@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'styles/material';
-@import 'material/mat-slide-toggle';
-@import 'material/mat-tabs';
-@import 'material/mat-checkbox';
-@import 'styles/variables';
+@use 'styles/material' as *;
+@use 'material/mat-slide-toggle' as *;
+@use 'material/mat-tabs' as *;
+@use 'material/mat-checkbox' as *;
+@use 'styles/variables' as *;
 
 body {
     margin: 0;
