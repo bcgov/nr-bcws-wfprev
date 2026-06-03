@@ -107,7 +107,7 @@
                           (change)="!isReadonly && toggleActivityStatus(i)">
                         </mat-slide-toggle>
                         <span class="toggle-label">
-                          Complete
+                          {{ activityForms[i].getRawValue().activityStatusCode === 'COMPLETED' ? 'Complete' : 'Active' }}
                         </span>
                       </div>
                     </div>
@@ -253,12 +253,27 @@
                     </div>
                     <div class="form-item full-width comment-container">
                       <div class="checkbox-container">
+                        <label class="checkbox-label">Carry forward to a future fiscal activity</label>
+                        <mat-checkbox formControlName="isCarryForwardInd">Yes</mat-checkbox>
+                      </div>
+                      <div class="textarea-container">
+                        <wfprev-textarea
+                          [label]="'Final Outcome & Comments (Including Reason for Deferred or Cancelled, $0 spent)'"
+                          [rows]="2"
+                          [maxLength]="500"
+                          [control]="getControl(i, 'finalOutcomeComments')"
+                          placeholder="If the activity was Deferred or Cancelled, or $0 spent, explain the reason here.">
+                        </wfprev-textarea>
+                      </div>
+                    </div>
+                    <div class="form-item full-width comment-container">
+                      <div class="checkbox-container">
                         <label class="checkbox-label">Outstanding Obligations</label>
                         <mat-checkbox formControlName="outstandingObligationsInd">Yes</mat-checkbox>
                       </div>
                       <div class="textarea-container">
                         <wfprev-textarea
-                          [label]="'Activity outcomes and comments (Include approach for Outstanding Obligations if they remain):'"
+                          [label]="'Describe your plan for addressing outstanding obligations and work to be carried‑forward:'"
                           [rows]="2"
                           [maxLength]="500"
                           [control]="getControl(i, 'activityComment')"

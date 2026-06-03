@@ -15,7 +15,7 @@
     }
 
     label {
-      padding: 9px;
+      padding: 0;
       color: #474543;
       font-size: 14px;
       font-style: normal;
@@ -29,7 +29,7 @@
       margin-bottom: 5px;
 
       .input-header-lable {
-        padding: 0px 9px;
+        padding: 0px;
         color: #474543;
         font-size: 14px;
         font-style: normal;
@@ -44,12 +44,12 @@
       font-style: normal;
       font-weight: 400;
       width: 100%;
-      margin: 8px 0;
+      margin: 4px 0 8px 0;
       font-size: 16px;
       border: none;
       border-bottom: 1px solid #282828;
       outline: none;
-      padding: 8px 12px;
+      padding: 8px 4px;
       box-sizing: border-box;
 
       text-overflow: ellipsis;
@@ -62,16 +62,18 @@
     position: relative;
     display: flex;
     align-items: center;
+    margin-bottom: 8px;
 
     .currency-symbol {
       position: absolute;
       font-size: 16px;
       color: #282828;
-      left: 12px;
+      left: 4px;
     }
 
     input {
-      padding-left: 24px !important;
+      padding-left: 16px !important;
+      margin-bottom: 0px !important;
     }
   }
 }

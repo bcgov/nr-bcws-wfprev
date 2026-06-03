@@ -8,7 +8,8 @@ export enum ResourcesRoutes {
   MAP = 'map',
   LIST = 'list',
   ERROR_PAGE = 'error-page',
-  EDIT_PROJECT = 'edit-project'
+  EDIT_PROJECT = 'edit-project',
+  YEAR_END = 'performance/year-end'
 }
 
 export enum EditProjectTabIndexes {

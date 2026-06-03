@@ -27,7 +27,7 @@
       }
 
       label {
-        padding: 9px;
+        padding: 0;
         color: #474543;
         font-size: 14px;
         font-style: normal;
@@ -42,12 +42,12 @@
         font-style: normal;
         font-weight: 400;
         width: 100%;
-        margin: 8px 0px;
+        margin: 4px 0px 8px 0px;
         font-size: 16px;
         border: none;
         border-bottom: 1px solid #282828;
         outline: none;
-        padding: 8px 12px;
+        padding: 8px 4px;
         box-sizing: border-box;
 
         // Add overflow control
@@ -457,7 +457,7 @@
 }
 
 :host ::ng-deep wfprev-textarea .textarea-label {
-  padding-left: 10px;
+  padding-left: 0px;
 }
 
 .project-description .editable-description.over-limit {
