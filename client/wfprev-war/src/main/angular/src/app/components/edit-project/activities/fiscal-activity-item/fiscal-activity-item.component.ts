@@ -27,7 +27,6 @@ import { Messages } from '../../../../utils/constants';
     MatInputModule,
     MatCheckboxModule,
     ProjectFilesComponent,
-    IconButtonComponent,
     TimestampComponent,
     TextareaComponent,
     NgxCurrency,

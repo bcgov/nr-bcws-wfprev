@@ -24,7 +24,7 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "es2020",
+    "module": "esnext",
     "useDefineForClassFields": false,
     "resolveJsonModule": true,
     "types": ["leaflet", "leaflet.markercluster"]

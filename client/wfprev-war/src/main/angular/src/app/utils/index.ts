@@ -19,7 +19,7 @@ export enum EditProjectTabIndexes {
 
 export function appInitializerFactory(injector: Injector) {
   const appConfig = injector.get(AppConfigService);
-  appConfig.configEmitter.subscribe(config => {
+  appConfig.configEmitter.subscribe((config: any) => {
     injector.get(TokenService);
   });
   return () => appConfig.loadAppConfig();

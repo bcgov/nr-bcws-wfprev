@@ -297,14 +297,14 @@ export class SpatialService {
         });
 
         return this.httpClient.post<any>(url, formData, { headers }).pipe(
-            map((response) => {
+            map((response: any) => {
                 const body = JSON.parse(response.body);
                 return body.map((geom: any) => {
                     const geometries: Geometry[] = [geom];
                     return geometries.map(this.stripAltitude);
                 }).flat();
             }),
-            catchError((error) => {
+            catchError((error: any) => {
                 console.error("Error extracting geodatabase geometry", error);
                 return throwError(() => new Error("Failed to extract geodatabase geometry"));
             })
@@ -521,7 +521,7 @@ export class SpatialService {
 
     getBritishColumbiaGeoJSON(): Observable<number[][][][]> {
         return this.httpClient.get<any>('assets/data/british_columbia.geojson').pipe(
-            map((geojson) => {
+            map((geojson: any) => {
                 const geometry = geojson?.features[0]?.geometry;
                 if (geometry.type === 'MultiPolygon') {
                     return geometry.coordinates;

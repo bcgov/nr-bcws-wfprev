@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables';
 
 ::ng-deep .cdk-global-overlay-wrapper {
   position: fixed;
@@ -112,7 +112,7 @@
 
     &:focus {
       outline: none;
-      border-bottom: 2px solid $colour-primary-blue;
+      border-bottom: 2px solid variables.$colour-primary-blue;
     }
   }
 
@@ -224,7 +224,7 @@ select {
 
   &:focus {
     outline: none;
-    border-bottom: 2px solid $colour-primary-blue;
+    border-bottom: 2px solid variables.$colour-primary-blue;
   }
 }
 
@@ -269,7 +269,7 @@ select option {
 
     &:focus {
       outline: none;
-      border: 2px solid $colour-primary-blue;
+      border: 2px solid variables.$colour-primary-blue;
     }
   }
 }

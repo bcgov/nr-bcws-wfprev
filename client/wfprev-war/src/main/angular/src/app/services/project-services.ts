@@ -1,4 +1,4 @@
-import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, HttpParams, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
@@ -719,8 +719,8 @@ export class ProjectService {
                 }
             }
         ).pipe(
-            map(response => response),
-            catchError(error => {
+            map((response: EvaluationCriteriaSummaryModel) => response),
+            catchError((error: HttpErrorResponse) => {
                 console.error("Error creating evaluation criteria summary", error);
                 return throwError(() => new Error("Failed to create evaluation criteria summary"));
             })
@@ -737,7 +737,7 @@ export class ProjectService {
             }
         }).pipe(
             map((response: any) => response),
-            catchError((error) => {
+            catchError((error: HttpErrorResponse) => {
                 console.error("Error fetching closeouts", error);
                 return throwError(() => new Error("Failed to fetch closeouts"));
             })
@@ -756,8 +756,8 @@ export class ProjectService {
                 }
             }
         ).pipe(
-            map(response => response),
-            catchError(error => {
+            map((response: any) => response),
+            catchError((error: HttpErrorResponse) => {
                 console.error("Error creating closeout", error);
                 return throwError(() => new Error("Failed to create closeout"));
             })

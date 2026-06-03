@@ -1,4 +1,4 @@
-@import 'src/styles/variables';
+@use 'src/styles/variables';
 
 :host {
   width: 100%;
@@ -63,8 +63,8 @@
       }
 
       &.substantially-complete {
-        background-color: $colour-light-orange-badge;
-        color: $colour-dark-orange-badge;
+        background-color: variables.$colour-light-orange-badge;
+        color: variables.$colour-dark-orange-badge;
       }
     }
   }

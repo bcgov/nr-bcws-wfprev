@@ -39,7 +39,7 @@ export class PrevAuthGuard extends AuthGuard {
         if (route?.data?.['scopes']?.length > 0) {
             // Wrap the Promise returned by getTokenInfo with from()
             return from(this.getTokenInfo(route)).pipe(
-                map(result => {
+                map((result: boolean) => {
                     if (result === false || result === undefined) {
                         this.redirectToErrorPage();
                         return false;
@@ -81,7 +81,7 @@ export class PrevAuthGuard extends AuthGuard {
                 redirectUri = redirectUri.concat(queryParamStr);
             }
             return this.checkForToken(redirectUri, route).pipe(
-                mergeMap((result) => {
+                mergeMap((result: boolean) => {
                     this.asyncCheckingToken = undefined;
                     if (!result) {
                         this.redirectToErrorPage();
