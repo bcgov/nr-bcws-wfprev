@@ -8,7 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { NgxCurrencyDirective } from 'ngx-currency';
+import { NgxCurrency } from '@dintecom/ngx-currency';
 import { ProjectFilesComponent } from '../../edit-project/project-details/project-files/project-files.component';
 import { TextareaComponent } from '../../shared/textarea/textarea.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
@@ -40,7 +40,7 @@ export const CUSTOM_DATE_FORMATS = {
     MatNativeDateModule,
     ProjectFilesComponent,
     TextareaComponent,
-    NgxCurrencyDirective,
+    NgxCurrency,
     ActivityHeaderComponent,
     IconDisplayFieldComponent
   ],

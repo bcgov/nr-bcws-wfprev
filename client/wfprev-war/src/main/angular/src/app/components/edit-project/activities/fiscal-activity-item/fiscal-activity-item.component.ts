@@ -7,7 +7,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { NgxCurrencyDirective } from 'ngx-currency';
+import { NgxCurrency } from '@dintecom/ngx-currency';
 import { ProjectFilesComponent } from '../../project-details/project-files/project-files.component';
 import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
 import { TextareaComponent } from '../../../shared/textarea/textarea.component';
@@ -30,7 +30,7 @@ import { Messages } from '../../../../utils/constants';
     IconButtonComponent,
     TimestampComponent,
     TextareaComponent,
-    NgxCurrencyDirective,
+    NgxCurrency,
     MatProgressSpinnerModule,
     ActivityHeaderComponent
   ],

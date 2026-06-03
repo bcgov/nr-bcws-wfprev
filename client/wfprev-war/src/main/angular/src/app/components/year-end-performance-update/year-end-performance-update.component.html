@@ -50,16 +50,16 @@
             <span class="field-label">Final Reported Spend <span class="required">*</span></span>
             <div class="currency-input">
               <span class="currency-symbol">$</span>
-              <input type="text" class="standard-input" formControlName="fiscalReportedSpendAmount" currencyMask
-                [options]="{ align: 'left', prefix: '', thousands: ',', decimal: '.', precision: 2 }">
+              <input type="text" class="standard-input" formControlName="fiscalReportedSpendAmount"
+                [currencyMask]="{ align: 'left', prefix: '', thousands: ',', decimal: '.', precision: 2 }">
             </div>
           </div>
           <div class="field-container">
             <span class="field-label">CFS Actual Spend <span class="required">*</span></span>
             <div class="currency-input">
               <span class="currency-symbol">$</span>
-              <input type="text" class="standard-input" formControlName="fiscalActualAmount" currencyMask
-                [options]="{ align: 'left', prefix: '', thousands: ',', decimal: '.', precision: 2 }">
+              <input type="text" class="standard-input" formControlName="fiscalActualAmount"
+                [currencyMask]="{ align: 'left', prefix: '', thousands: ',', decimal: '.', precision: 2 }">
             </div>
           </div>
           <div class="field-container">

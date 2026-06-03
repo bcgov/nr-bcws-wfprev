@@ -13,7 +13,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { NgxCurrencyDirective } from 'ngx-currency';
+import { NgxCurrency } from '@dintecom/ngx-currency';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectFiscalExtended, FiscalCloseout, YearEndActivityViewModel } from 'src/app/components/models';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
@@ -32,7 +32,7 @@ import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-dis
     MatSelectModule,
     MatCheckboxModule,
     MatButtonModule,
-    NgxCurrencyDirective,
+    NgxCurrency,
     TextareaComponent,
     MatIconModule, 
     MatProgressSpinnerModule,
