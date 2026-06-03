@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnInit } from '@angular/core';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { CodeTableKeys } from 'src/app/utils/constants';
@@ -7,14 +7,13 @@ import { ActivityCategoryCodeModel, PlanFiscalStatusCodeModel, ProgramAreaModel,
 import { getFiscalYearDisplay } from 'src/app/utils/tools';
 import { FiscalCardComponent } from 'src/app/components/shared/fiscal-card/fiscal-card.component';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
-import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
-  selector: 'wfprev-project-popup',
-  standalone: true,
-  imports: [CommonModule, FiscalCardComponent, IconButtonComponent, MatTooltip],
-  templateUrl: './project-popup.component.html',
-  styleUrls: ['./project-popup.component.scss']
+    selector: 'wfprev-project-popup',
+    standalone: true,
+    imports: [FiscalCardComponent, IconButtonComponent],
+    templateUrl: './project-popup.component.html',
+    styleUrls: ['./project-popup.component.scss']
 })
 export class ProjectPopupComponent implements OnInit {
   @Input() project: any;

@@ -5,7 +5,6 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
 import { forkJoin, map, Observable } from 'rxjs';
@@ -14,7 +13,7 @@ import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/pro
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
-import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, WildfireOrgUnitTypeCodes, CodeTableNames, BC_BOUNDS } from 'src/app/utils/constants';
+import { CodeTableKeys, Messages, FiscalYearColors, ModalTitles, ModalMessages, BC_BOUNDS } from 'src/app/utils/constants';
 import {
   formatLatLong,
   getBluePinIcon,
@@ -33,13 +32,13 @@ import { TokenService } from 'src/app/services/token.service';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 @Component({
-  selector: 'wfprev-project-details',
-  standalone: true,
-  imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
-    ProjectFilesComponent, MatTooltip, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
-    EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
-  templateUrl: './project-details.component.html',
-  styleUrl: './project-details.component.scss'
+    selector: 'wfprev-project-details',
+    standalone: true,
+    imports: [ReactiveFormsModule, MatExpansionModule, CommonModule, FormsModule, FiscalYearProjectsComponent,
+        ProjectFilesComponent, TextFieldModule, ExpansionIndicatorComponent, SelectFieldComponent, InputFieldComponent,
+        EvaluationCriteriaComponent, TimestampComponent, TextareaComponent],
+    templateUrl: './project-details.component.html',
+    styleUrl: './project-details.component.scss'
 })
 export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(FiscalYearProjectsComponent) fiscalYearProjectsComponent!: FiscalYearProjectsComponent;
@@ -275,7 +274,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         this.map.removeLayer(this.marker);
       }
       const teardropIcon = getBluePinIcon();
-      this.marker = L.marker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
+      this.marker = this.createMarker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
 
       this.map.setView([latitude, longitude], 13); // Update the map view
     }
@@ -300,7 +299,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (boundaryGeometry && this.map) {
               // Create new GeoJSON layer
-              this.boundaryLayer = L.geoJSON(boundaryGeometry, {
+              this.boundaryLayer = this.createGeoJSON(boundaryGeometry, {
                 style: {
                   color: '#000000',
                   weight: 3,
@@ -346,7 +345,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS;
 
     if (!this.map) {
-      this.map = L.map(container, { zoomControl: false });
+      this.map = this.createMap(container, { zoomControl: false });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
@@ -819,7 +818,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           : [geometry];
 
         for (const geom of geometries) {
-          const layer = L.geoJSON(geom, {
+          const layer = this.createGeoJSON(geom, {
             style: {
               color,
               weight: 2,
@@ -959,5 +958,17 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const hasProjectPolygon = !!this.boundaryLayer; 
     const hasActivityPolygons = this.allActivityBoundaries?.length > 0;
     return hasProjectPolygon || hasActivityPolygons;
+  }
+
+  createMap(element: any, options: L.MapOptions): L.Map {
+    return L.map(element, options);
+  }
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+
+  createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
+    return L.geoJSON(geom, options);
   }
 }

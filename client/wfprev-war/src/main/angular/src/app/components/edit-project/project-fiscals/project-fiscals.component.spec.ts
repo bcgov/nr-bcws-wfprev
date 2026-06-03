@@ -50,8 +50,9 @@ describe('ProjectFiscalsComponent', () => {
 
   @Component({
     selector: 'wfprev-fiscal-map',
-    template: '<div></div>'
-  })
+    template: '<div></div>',
+    standalone: false
+})
   class MockFiscalMapComponent {
     ngOnInit() { }
     ngAfterViewInit() { }
@@ -59,8 +60,9 @@ describe('ProjectFiscalsComponent', () => {
   }
   @Component({
     selector: 'wfprev-activities',
-    template: ''
-  })
+    template: '',
+    standalone: false
+})
   class MockActivitiesComponent {
     isFormDirty = () => false;
   }
@@ -915,15 +917,13 @@ describe('ProjectFiscalsComponent', () => {
       afterClosed: () => of(true) // Simulates user clicking "Confirm"
     } as any);
 
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
+    component.selectedTabIndex = 0;
+
     // ✅ Provide activities that match the fiscalGuid
     (component as any).activitiesComponent = {
       activities: [{ projectPlanFiscalGuid: 'test-guid' }]
     };
-
-    component.projectFiscals = [{ projectPlanFiscalGuid: 'test-guid' }];
-    component.selectedTabIndex = 0;
-
-    fixture.detectChanges();
 
     component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);
 

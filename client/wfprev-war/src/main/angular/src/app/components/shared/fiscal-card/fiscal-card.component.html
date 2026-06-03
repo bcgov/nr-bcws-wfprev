@@ -16,7 +16,7 @@
     <span class="sub-value">{{ getFiscalYearDisplay(fiscal.fiscalYear) }}</span>
   </div>
 
-  <ng-container *ngIf="fiscal.planFiscalStatusCode === 'COMPLETE'; else notComplete">
+  @if (fiscal.planFiscalStatusCode === 'COMPLETE') {
     <div class="fiscal-values">
       <span class="sub-title">Completed Hectares:</span>
       <span class="sub-value">{{ formatValue(fiscal.fiscalCompletedSizeHa, ' Ha') }}</span>
@@ -25,9 +25,7 @@
       <span class="sub-title">CFS Actual Spend:</span>
       <span class="sub-value">{{ formatCurrency(fiscal.fiscalActualAmount) }}</span>
     </div>
-  </ng-container>
-
-  <ng-template #notComplete>
+  } @else {
     <div class="fiscal-values">
       <span class="sub-title">Planned Hectares:</span>
       <span class="sub-value">{{ formatValue(fiscal.fiscalPlannedSizeHa, ' Ha') }}</span>
@@ -36,5 +34,6 @@
       <span class="sub-title">Forecast Amount:</span>
       <span class="sub-value">{{ formatCurrency(fiscal.fiscalForecastAmount) }}</span>
     </div>
-  </ng-template>
+  }
+
 </div>

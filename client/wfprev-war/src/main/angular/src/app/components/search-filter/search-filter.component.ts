@@ -4,7 +4,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormControl, FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
@@ -31,9 +31,9 @@ type MultiSelectConfig = {
 };
 
 @Component({
-  selector: 'wfprev-search-filter',
-  standalone: true,
-  imports: [
+    selector: 'wfprev-search-filter',
+    standalone: true,
+    imports: [
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -41,11 +41,10 @@ type MultiSelectConfig = {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    CommonModule,
     ReactiveFormsModule
-  ],
-  templateUrl: './search-filter.component.html',
-  styleUrl: './search-filter.component.scss'
+],
+    templateUrl: './search-filter.component.html',
+    styleUrl: './search-filter.component.scss'
 })
 export class SearchFilterComponent implements OnInit {
 

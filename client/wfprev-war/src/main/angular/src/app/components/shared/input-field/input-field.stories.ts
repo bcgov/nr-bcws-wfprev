@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxCurrencyDirective } from 'ngx-currency';
+import { NgxCurrency } from '@dintecom/ngx-currency';
 import { InputFieldComponent } from './input-field.component';
 
 const meta: Meta<InputFieldComponent> = {
@@ -17,7 +17,7 @@ const meta: Meta<InputFieldComponent> = {
         ReactiveFormsModule,
         MatTooltipModule,
         NoopAnimationsModule,
-        NgxCurrencyDirective,
+        NgxCurrency,
       ],
     }),
   ],

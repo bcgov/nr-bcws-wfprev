@@ -6,7 +6,7 @@ import { MapService } from 'src/app/services/map.service';
 import { LeafletLegendService, getBluePinIcon, getActivePinIcon } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
-import '@maplibre/maplibre-gl-leaflet';
+import '@maplibre/maplibre-gl-leaflet'; 
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
@@ -14,11 +14,11 @@ import { BC_BOUNDS } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
 
 @Component({
-  selector: 'app-map',
-  standalone: true,
-  imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
-  templateUrl: './map.component.html',
-  styleUrl: './map.component.scss'
+    selector: 'app-map',
+    standalone: true,
+    imports: [ResizablePanelComponent, SearchFilterComponent, ProjectPopupComponent],
+    templateUrl: './map.component.html',
+    styleUrl: './map.component.scss'
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
@@ -132,9 +132,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const legendHelper = new LeafletLegendService();
     this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
 
-    this.markersClusterGroup = L.markerClusterGroup({
+    this.markersClusterGroup = this.createMarkerClusterGroup({
       showCoverageOnHover: false,
-      iconCreateFunction: (cluster) =>
+      iconCreateFunction: (cluster: L.MarkerCluster) =>
         L.divIcon({
           html: `<div class="cluster-icon"><span>${cluster.getChildCount()}</span></div>`,
           className: 'custom-marker-cluster',
@@ -313,7 +313,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     for (const loc of validLocations) {
       try {
-        const marker = L.marker([loc.latitude, loc.longitude], {
+        const marker = this.createMarker([loc.latitude, loc.longitude], {
           icon: getBluePinIcon(),
         });
 
@@ -482,5 +482,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.activeMarker = null;
     }
   }
+
+  createMarkerClusterGroup(options?: L.MarkerClusterGroupOptions): L.MarkerClusterGroup {
+  return (window as any).L.markerClusterGroup(options);
+}
+
+  createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
+    return L.marker(latlng, options);
+  }
+  
 
 }

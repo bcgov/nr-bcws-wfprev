@@ -29,11 +29,11 @@ import { ProjectFilterStateService } from 'src/app/services/project-filter-state
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 
 @Component({
-  selector: 'wfprev-projects-list',
-  standalone: true,
-  imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
-  templateUrl: './projects-list.component.html',
-  styleUrls: ['./projects-list.component.scss'],
+    selector: 'wfprev-projects-list',
+    standalone: true,
+    imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
+    templateUrl: './projects-list.component.html',
+    styleUrls: ['./projects-list.component.scss']
 })
 export class ProjectsListComponent implements OnInit {
   @ViewChildren('panel', { read: ElementRef }) panelElements!: QueryList<ElementRef>;
@@ -769,5 +769,9 @@ export class ProjectsListComponent implements OnInit {
     this.sharedService.updateDisplayedProjects(updated);
     this.totalItems = updated.length;
     this.cdr.detectChanges();
+  }
+
+  trackByProjectGuid(index: number, project: any): string {
+    return project.projectGuid;
   }
 }

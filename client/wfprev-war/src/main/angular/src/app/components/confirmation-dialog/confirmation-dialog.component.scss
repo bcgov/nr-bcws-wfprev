@@ -1,4 +1,4 @@
-@import '../create-new-project-dialog/create-new-project-dialog.component.scss';
+@use '../create-new-project-dialog/create-new-project-dialog.component.scss' as *;
 
 .dialog-container-confirm {
   .title-bar{

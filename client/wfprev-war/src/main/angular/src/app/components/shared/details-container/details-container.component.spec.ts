@@ -13,7 +13,6 @@ describe('DetailsContainerComponent', () => {
 
     fixture = TestBed.createComponent(DetailsContainerComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
