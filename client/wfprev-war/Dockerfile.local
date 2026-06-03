@@ -43,7 +43,7 @@ COPY backend .
 RUN npm install --only=production
 
 # Copy built Angular artifacts from builder stage
-COPY --from=builder /app/dist/wfprev ./dist/wfprev
+COPY --from=builder /app/dist/wfprev/browser ./dist/wfprev
 
 # Expose port
 EXPOSE 8080
