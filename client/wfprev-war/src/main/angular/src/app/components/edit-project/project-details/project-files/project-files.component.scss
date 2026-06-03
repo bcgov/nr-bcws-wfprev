@@ -52,11 +52,13 @@ button.primary {
 .table-button {
   background-color: transparent;
 
-  svg {
+  mat-icon {
     color: variables.$colour-primary-blue;
     display: inline-block;
     vertical-align: middle;
     transition: color 0.2s ease;
+    width: 24px;
+    height: 24px;
   }
 }
 
