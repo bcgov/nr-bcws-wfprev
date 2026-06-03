@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Position } from 'geojson';
 import { catchError, finalize, map, throwError } from 'rxjs';
@@ -21,7 +23,7 @@ import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 @Component({
     selector: 'wfprev-project-files',
     standalone: true,
-    imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent, MatProgressSpinnerModule],
+    imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent, MatProgressSpinnerModule, MatIconModule],
     templateUrl: './project-files.component.html',
     styleUrls: ['./project-files.component.scss']
 })
@@ -62,7 +64,22 @@ export class ProjectFilesComponent implements OnInit {
     public attachmentService: AttachmentService,
     public spatialService: SpatialService,
     private readonly route: ActivatedRoute,
-  ) { }
+    private readonly iconRegistry: MatIconRegistry,
+    private readonly sanitizer: DomSanitizer,
+  ) {
+    this.iconRegistry.addSvgIcon(
+      'download',
+      this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/download.svg')
+    );
+    this.iconRegistry.addSvgIcon(
+      'view',
+      this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/view.svg')
+    );
+    this.iconRegistry.addSvgIcon(
+      'delete',
+      this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/delete.svg')
+    );
+  }
 
   messages = Messages;
   displayedColumns: string[] = [
