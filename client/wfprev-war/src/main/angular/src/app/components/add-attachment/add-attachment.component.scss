@@ -1,3 +1,4 @@
+@import 'styles/variables';
 @use '../create-new-project-dialog/create-new-project-dialog.component.scss' as *;
 
 .dialog-container {
@@ -73,7 +74,7 @@
 
     &:focus {
       outline: none;
-      border-bottom: 2px solid #1a5a96;
+      border-bottom: 2px solid $colour-primary-blue;
     }
   }
   .custom-input::placeholder {
@@ -94,7 +95,7 @@
 
     &:focus {
       outline: none;
-      border-bottom: 2px solid #1a5a96;
+      border-bottom: 2px solid $colour-primary-blue;
     }
   }
 

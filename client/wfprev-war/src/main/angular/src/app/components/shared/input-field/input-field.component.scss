@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 .input-field {
   .required {
     color: var(--wf-colour-error);
@@ -58,7 +60,7 @@
 
       &:focus {
         outline: none;
-        border-bottom: 2px solid #1a5a96;
+        border-bottom: 2px solid $colour-primary-blue;
       }
     }
   }

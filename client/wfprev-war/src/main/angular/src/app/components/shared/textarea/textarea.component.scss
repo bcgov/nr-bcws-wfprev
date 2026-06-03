@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 :host {
   font-family: var(--wf-font-family-main) !important;
 }
@@ -28,7 +30,7 @@
 
     &:focus:not(.over-limit) {
       outline: none;
-      border: 2px solid #1a5a96;
+      border: 2px solid $colour-primary-blue;
     }
 
     &.over-limit {

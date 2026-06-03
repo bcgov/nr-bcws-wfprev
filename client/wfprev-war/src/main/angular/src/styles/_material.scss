@@ -1,5 +1,6 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
+@use 'variables' as *;
 @use '@angular/material' as mat;
 // Plus imports for other components in your app.
 
@@ -18,11 +19,11 @@ $my-custom-blue: (
   200: #7dd3fc,
   300: #38bdf8,
   400: #0ea5e9,
-  500: #1a5a96, // Main product blue shade
+  500: $colour-primary-blue, // Main product blue shade
   600: #0369a1,
   700: #075985,
   800: #0c4a6e,
-  900: #1a5a96,
+  900: $colour-primary-blue,
   contrast: (
     50: rgba(0, 0, 0, 0.87),
     100: rgba(0, 0, 0, 0.87),

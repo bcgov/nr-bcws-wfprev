@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 .details-container {
   margin: 19px;
   border-radius: 6px;
@@ -57,7 +59,7 @@
 
         &:focus {
           outline: none;
-          border-bottom: 2px solid #1a5a96;
+          border-bottom: 2px solid $colour-primary-blue;
         }
       }
 
@@ -92,7 +94,7 @@
 
         &:focus:not(.over-limit) {
           outline: none;
-          border: 2px solid #1a5a96;
+          border: 2px solid $colour-primary-blue;
         }
 
          &.over-limit {
@@ -361,7 +363,7 @@
 
       &:focus:not(.over-limit) {
         outline: none;
-        border-top: 2px solid #1a5a96;
+        border-top: 2px solid $colour-primary-blue;
       }
     }
   }

@@ -34,7 +34,7 @@ mat-selection-list .mat-mdc-list-option {
                     border: 1px solid $colour-light-grey;
 
                     .mdc-checkbox__checkmark-path {
-                        stroke: #1a5a96 !important;
+                        stroke: $colour-primary-blue !important;
                     }
                 } 
             }

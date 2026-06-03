@@ -235,5 +235,5 @@ textarea:disabled {
 /* Date picker/Form field focus state */
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-line-ripple::after {
   border-bottom-width: 2px !important;
-  border-bottom-color: #1a5a96 !important;
+  border-bottom-color: $colour-primary-blue !important;
 }
