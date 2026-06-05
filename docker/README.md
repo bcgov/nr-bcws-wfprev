@@ -33,7 +33,7 @@ The primary script for starting the local environment.
 - **Options**:
     - `-c` or `--clean`: Clears PostgreSQL volumes before starting to ensure a fresh setup.
     - `-r` or `--restore-data`: Automatically waits for Liquibase migrations to complete and restores the seed data.
-    - `-w` or `--watch`: Starts the Angular UI in **Watch / Live Reload Mode**. This runs the Angular dev server inside Docker, mounting your host source directory so edits are recompiled in real-time.
+    - `-s` or `--static`: Starts the Angular UI in **Static Runner Mode** instead of Watch Mode. (By default, the script starts the stack in Watch / Live Reload Mode).
 - **Robust Java Fallback**: If JDK 21 is not installed in your active shell (common in default WSL shells), the script gracefully prints a warning and automatically locates and re-uses the pre-compiled `wfprev-api-1.0.0-SNAPSHOT.jar` target instead of exiting!
 
 ### [stop-local.sh](./stop-local.sh)
@@ -89,11 +89,11 @@ Contains internal database initialization scripts used by the PostgreSQL contain
 
 ## Watch / Live Reload Mode (Development)
 
-To enable automatic in-container builds and hot reloads for the Angular frontend:
-1. Pass the `-w` or `--watch` flag when starting the stack (e.g., `./docker/start-local.sh -w`).
-2. This runs `client-watch` using a dedicated containerized Angular Dev Server configuration instead of static assets.
-3. The host folder `./client/wfprev-war/src/main/angular` is dynamically mounted into the container. Any edits you make on your host machine will compile in milliseconds and automatically trigger a browser refresh!
-4. **Mock Login Safety:** The mock login screen (`login-mock.html`) resides inside `./docker` and is mounted dynamically during watch sessions under the `"local"` Angular build configuration. This ensures that the mock login screen is never bundled or accessible in other build targets (like Staging or Production).
+By default, the local environment starts in **Watch / Live Reload Mode** for the Angular frontend:
+1. This runs `client-watch` (instead of static assets) using a dedicated containerized Angular Dev Server configuration.
+2. The host folder `./client/wfprev-war/src/main/angular` is dynamically mounted into the container. Any edits you make on your host machine will compile in milliseconds and automatically trigger a browser refresh!
+3. **Mock Login Safety:** The mock login screen (`login-mock.html`) resides inside `./docker` and is mounted dynamically during watch sessions under the `"local"` Angular build configuration. This ensures that the mock login screen is never bundled or accessible in other build targets (like Staging or Production).
+4. **Static Mode Alternative:** If you want to run the static production-like bundle of the client inside the container, pass the `-s` or `--static` flag when starting (e.g., `./docker/start-local.sh -s`).
 
 ---
 
@@ -115,6 +115,6 @@ To customize user permissions, modify:
 # 1. Grant execution permissions
 chmod +x docker/*.sh
 
-# 2. Boot the stack with data restoration and live reloading enabled
-./docker/start-local.sh -w -r
+# 2. Boot the stack with data restoration and live reloading (Watch mode is default)
+./docker/start-local.sh -r
 ```

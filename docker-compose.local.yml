@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile.local
       target: runner
     profiles:
-      - dev
+      - dev-static
     ports:
       - "4200:8080"
     networks:
@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile.local
       target: dev
     profiles:
-      - dev-watch
+      - dev
     ports:
       - "4200:8080"
     networks:
