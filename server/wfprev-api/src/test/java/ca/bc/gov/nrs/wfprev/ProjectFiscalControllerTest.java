@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitRequest;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -577,5 +579,128 @@ class ProjectFiscalControllerTest {
                                 .delete("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts/{closeoutGuid}", projectPlanFiscalGuid, closeoutGuid)
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
                                 .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @WithMockUser
+        void testSubmitFiscalCloseout_Success() throws Exception {
+                String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+
+                FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
+                        .projectFiscal(ProjectFiscalModel.builder()
+                                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                                .activityCategoryCode("OPER_TREAT")
+                                .fiscalYear(2024L)
+                                .build())
+                        .closeout(FiscalCloseoutResponse.builder()
+                                .outcomeComment("Completed successfully")
+                                .build())
+                        .activities(List.of())
+                        .build();
+
+                FiscalCloseoutSubmitResponse response = FiscalCloseoutSubmitResponse.builder()
+                        .projectFiscal(request.getProjectFiscal())
+                        .closeout(request.getCloseout())
+                        .activities(List.of())
+                        .build();
+
+                when(projectFiscalService.submitFiscalCloseout(eq(projectPlanFiscalGuid), any(FiscalCloseoutSubmitRequest.class)))
+                        .thenReturn(response);
+
+                mockMvc.perform(MockMvcRequestBuilders
+                                .post("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts/submit", projectPlanFiscalGuid)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                                .content(gson.toJson(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.closeout.outcomeComment").value("Completed successfully"));
+        }
+
+        @Test
+        @WithMockUser
+        void testSubmitFiscalCloseout_NotFound() throws Exception {
+                String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+
+                FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
+                        .projectFiscal(ProjectFiscalModel.builder()
+                                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                                .activityCategoryCode("OPER_TREAT")
+                                .fiscalYear(2024L)
+                                .build())
+                        .closeout(FiscalCloseoutResponse.builder()
+                                .outcomeComment("Completed successfully")
+                                .build())
+                        .activities(List.of())
+                        .build();
+
+                when(projectFiscalService.submitFiscalCloseout(eq(projectPlanFiscalGuid), any(FiscalCloseoutSubmitRequest.class)))
+                        .thenThrow(new EntityNotFoundException("Project Fiscal not found"));
+
+                mockMvc.perform(MockMvcRequestBuilders
+                                .post("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts/submit", projectPlanFiscalGuid)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                                .content(gson.toJson(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @WithMockUser
+        void testSubmitFiscalCloseout_DataIntegrityViolation() throws Exception {
+                String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+
+                FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
+                        .projectFiscal(ProjectFiscalModel.builder()
+                                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                                .activityCategoryCode("OPER_TREAT")
+                                .fiscalYear(2024L)
+                                .build())
+                        .closeout(FiscalCloseoutResponse.builder()
+                                .outcomeComment("Completed successfully")
+                                .build())
+                        .activities(List.of())
+                        .build();
+
+                when(projectFiscalService.submitFiscalCloseout(eq(projectPlanFiscalGuid), any(FiscalCloseoutSubmitRequest.class)))
+                        .thenThrow(new DataIntegrityViolationException("Constraint violation"));
+
+                mockMvc.perform(MockMvcRequestBuilders
+                                .post("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts/submit", projectPlanFiscalGuid)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                                .content(gson.toJson(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @WithMockUser
+        void testSubmitFiscalCloseout_InternalServerError() throws Exception {
+                String projectPlanFiscalGuid = "123e4567-e89b-12d3-a456-426614174000";
+
+                FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
+                        .projectFiscal(ProjectFiscalModel.builder()
+                                .projectPlanFiscalGuid(projectPlanFiscalGuid)
+                                .projectGuid("123e4567-e89b-12d3-a456-426614174001")
+                                .activityCategoryCode("OPER_TREAT")
+                                .fiscalYear(2024L)
+                                .build())
+                        .closeout(FiscalCloseoutResponse.builder()
+                                .outcomeComment("Completed successfully")
+                                .build())
+                        .activities(List.of())
+                        .build();
+
+                when(projectFiscalService.submitFiscalCloseout(eq(projectPlanFiscalGuid), any(FiscalCloseoutSubmitRequest.class)))
+                        .thenThrow(new RuntimeException("Unexpected error"));
+
+                mockMvc.perform(MockMvcRequestBuilders
+                                .post("/projects/1234/projectFiscals/{projectPlanFiscalGuid}/closeouts/submit", projectPlanFiscalGuid)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer test-token")
+                                .content(gson.toJson(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isInternalServerError());
         }
 }

@@ -61,12 +61,14 @@ describe('ActivityHeaderComponent', () => {
   it('should show spatial added / not added badge', () => {
     component.isSpatialAdded = true;
     fixture.detectChanges();
-    let badge = fixture.debugElement.query(By.css('wfprev-status-badge[type="spatial-added"]'));
+    const badge = fixture.debugElement.query(By.css('wfprev-status-badge[type="spatial-added"]'));
     expect(badge).toBeTruthy();
+  }); 
 
+  it('should show spatial added / not added badge when isSpatialAdded is false', () => {
     component.isSpatialAdded = false;
     fixture.detectChanges();
-    badge = fixture.debugElement.query(By.css('wfprev-status-badge[type="spatial-not-added"]'));
+    const badge = fixture.debugElement.query(By.css('wfprev-status-badge[type="spatial-not-added"]'));
     expect(badge).toBeTruthy();
   });
 

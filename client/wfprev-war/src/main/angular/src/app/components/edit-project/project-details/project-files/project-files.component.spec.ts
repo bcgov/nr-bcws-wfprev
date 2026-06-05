@@ -101,6 +101,7 @@ describe('ProjectFilesComponent', () => {
   });
 
   it('should have predefined columns', () => {
+    fixture.detectChanges();
     expect(component.displayedColumns).toEqual([
       'attachmentType',
       'fileName',

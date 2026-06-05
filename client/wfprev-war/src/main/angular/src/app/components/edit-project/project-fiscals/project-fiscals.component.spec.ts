@@ -922,7 +922,7 @@ describe('ProjectFiscalsComponent', () => {
 
     // ✅ Provide activities that match the fiscalGuid
     (component as any).activitiesComponent = {
-      activities: [{ projectPlanFiscalGuid: 'test-guid' }]
+      activityViews: [{ data: { projectPlanFiscalGuid: 'test-guid' } }]
     };
 
     component.deleteFiscalYear({ value: component.projectFiscals[0] }, 0);

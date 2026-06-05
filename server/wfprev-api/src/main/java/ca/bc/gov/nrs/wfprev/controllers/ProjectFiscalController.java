@@ -1,8 +1,12 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitRequest;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -413,6 +417,57 @@ public class ProjectFiscalController extends CommonController {
         } catch (Exception e) {
             log.error(" ### Error while deleting Fiscal Closeout with id: {}", closeoutGuid, e);
             return internalServerError();
+        }
+    }
+
+    @PostMapping("/{projectPlanFiscalGuid}/closeouts/submit")
+    @Operation(summary = "Submit Fiscal Closeout", description = "Atomically saves fiscal closeout, project fiscal, and all associated activities",
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
+                            @ExtensionProperty(name = "throttling-tier", value = "Unlimited")
+                    })
+            })
+    @PreAuthorize("hasAuthority('WFPREV.UPDATE_PREVENTION_FISCAL')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = FiscalCloseoutResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+    })
+    public ResponseEntity<FiscalCloseoutSubmitResponse> submitFiscalCloseout(
+            @PathVariable("projectPlanFiscalGuid") String projectPlanFiscalGuid,
+            @Valid @RequestBody FiscalCloseoutSubmitRequest request) {
+        log.debug(" >> submitFiscalCloseout for projectPlanFiscalGuid: {}", projectPlanFiscalGuid);
+
+        try {
+            initializeSubmitCloseout(request);
+            FiscalCloseoutSubmitResponse result = projectFiscalService.submitFiscalCloseout(projectPlanFiscalGuid, request);
+            return ok(result);
+        } catch (ConstraintViolationException | DataIntegrityViolationException e) {
+            log.error(" ### Validation/integrity error during fiscal closeout submit", e);
+            return badRequest();
+        } catch (EntityNotFoundException e) {
+            log.warn(" ### Entity not found during fiscal closeout submit", e);
+            return notFound();
+        } catch (HttpMessageNotReadableException e) {
+            log.error(" ### Failed to deserialize request body: {}", e.getMessage());
+            return badRequest();
+        } catch (RuntimeException e) {
+            log.error(" ### RuntimeException during fiscal closeout submit", e);
+            return internalServerError();
+        }
+    }
+
+    private void initializeSubmitCloseout(FiscalCloseoutSubmitRequest request) {
+        if (request.getCloseout() != null) {
+            request.getCloseout().setCreateUser(getWebAdeAuthentication().getUserId());
+            request.getCloseout().setUpdateUser(getWebAdeAuthentication().getUserId());
+            request.getCloseout().setRevisionCount(0);
         }
     }
 }

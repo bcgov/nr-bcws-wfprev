@@ -763,4 +763,20 @@ export class ProjectService {
             })
         );
     }
+
+   submitFiscalCloseout(projectGuid: string, projectPlanFiscalGuid: string, payload: any): Observable<any> {
+        const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;
+        const url = `${baseUrl}/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts/submit`;
+        return this.httpClient.post(url, payload, {
+            headers: {
+                Authorization: `Bearer ${this.tokenService.getOauthToken()}`
+            }
+        }).pipe(
+            map((response: any) => response),
+            catchError((error: HttpErrorResponse) => {
+                console.error("Error submitting closeout", error);
+                return throwError(() => new Error("Failed to submit closeout"));
+            })
+        );
+    }
 }
