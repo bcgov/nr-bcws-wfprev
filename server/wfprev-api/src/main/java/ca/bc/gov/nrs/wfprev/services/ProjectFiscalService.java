@@ -2,18 +2,25 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.common.services.CommonService;
+import ca.bc.gov.nrs.wfprev.data.assemblers.ActivityResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.PerformanceUpdateResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.ProjectFiscalResourceAssembler;
 import ca.bc.gov.nrs.wfprev.data.assemblers.FiscalCloseoutResourceAssembler;
+import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FiscalCloseoutEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.PlanFiscalStatusCodeEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectPlanFiscalPerfEntity;
+import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutRequest;
 import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitRequest;
+import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitResponse;
 import ca.bc.gov.nrs.wfprev.data.models.PerformanceUpdateResponse;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel;
+import ca.bc.gov.nrs.wfprev.data.repositories.ActivityRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.EndorsementCodeRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FiscalCloseoutRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.PlanFiscalStatusCodeRepository;
@@ -33,6 +40,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +63,8 @@ public class ProjectFiscalService implements CommonService {
     private final PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler;
     private final FiscalCloseoutRepository fiscalCloseoutRepository;
     private final FiscalCloseoutResourceAssembler fiscalCloseoutResourceAssembler;
+    private final ActivityRepository activityRepository;
+    private final ActivityResourceAssembler activityResourceAssembler;
 
     private static final String DRAFT = "DRAFT";
     private static final String PROPOSED = "PROPOSED";
@@ -81,7 +91,9 @@ public class ProjectFiscalService implements CommonService {
             ProjectPlanFiscalPerfRepository projectPlanFiscalPerfRepository,
             PerformanceUpdateResourceAssembler performanceUpdateResourceAssembler,
             FiscalCloseoutRepository fiscalCloseoutRepository,
-            FiscalCloseoutResourceAssembler fiscalCloseoutResourceAssembler) {
+            FiscalCloseoutResourceAssembler fiscalCloseoutResourceAssembler,
+            ActivityRepository activityRepository,
+            ActivityResourceAssembler activityResourceAssembler) {
         this.projectFiscalRepository = projectFiscalRepository;
         this.projectFiscalResourceAssembler = projectFiscalResourceAssembler;
         this.projectRepository = projectRepository;
@@ -94,6 +106,8 @@ public class ProjectFiscalService implements CommonService {
         this.performanceUpdateResourceAssembler = performanceUpdateResourceAssembler;
         this.fiscalCloseoutRepository = fiscalCloseoutRepository;
         this.fiscalCloseoutResourceAssembler = fiscalCloseoutResourceAssembler;
+        this.activityRepository = activityRepository;
+        this.activityResourceAssembler = activityResourceAssembler;
     }
 
     public CollectionModel<ProjectFiscalModel> getAllProjectFiscals(String projectId) {
@@ -323,5 +337,56 @@ public class ProjectFiscalService implements CommonService {
             throw new EntityNotFoundException("Fiscal Closeout not found: " + closeoutGuid);
         }
         fiscalCloseoutRepository.deleteById(guid);
+    }
+
+    @Transactional
+    public FiscalCloseoutSubmitResponse submitFiscalCloseout(String fiscalGuid, FiscalCloseoutSubmitRequest request) {
+        UUID projectPlanFiscalGuid = UUID.fromString(fiscalGuid);
+
+        ProjectFiscalEntity projectFiscalEntity = projectFiscalRepository.findById(projectPlanFiscalGuid)
+                .orElseThrow(() -> new EntityNotFoundException("Project Fiscal not found: " + projectPlanFiscalGuid));
+
+        // Save project fiscal
+        ProjectFiscalEntity updatedFiscalEntity = projectFiscalResourceAssembler.updateEntity(request.getProjectFiscal(), projectFiscalEntity);
+        assignAssociatedEntities(request.getProjectFiscal(), updatedFiscalEntity);
+        ProjectFiscalEntity savedFiscal = projectFiscalRepository.save(updatedFiscalEntity);
+
+        // Save each activity
+        List<ActivityModel> savedActivities = new ArrayList<>();
+        for (ActivityModel activityModel : request.getActivities()) {
+            ActivityEntity existingActivity = activityRepository
+                    .findById(UUID.fromString(activityModel.getActivityGuid()))
+                    .orElseThrow(() -> new EntityNotFoundException("Activity not found: " + activityModel.getActivityGuid()));
+
+            if (!existingActivity.getProjectPlanFiscalGuid().toString().equals(fiscalGuid)) {
+                throw new EntityNotFoundException(
+                        "Activity " + activityModel.getActivityGuid() + " does not belong to Project Fiscal " + fiscalGuid);
+            }
+
+            ActivityEntity updatedActivity = activityResourceAssembler.updateEntity(activityModel, existingActivity);
+            activityService.assignAssociatedEntities(activityModel, updatedActivity);
+            ActivityEntity savedActivity = activityRepository.save(updatedActivity);
+            savedActivities.add(activityResourceAssembler.toModel(savedActivity));
+        }
+
+        // Upsert closeout
+        FiscalCloseoutResponse closeoutResponse = request.getCloseout();
+
+        FiscalCloseoutEntity closeoutEntity = fiscalCloseoutRepository
+                .findByProjectFiscal_ProjectPlanFiscalGuid(updatedFiscalEntity.getProjectPlanFiscalGuid())
+                .map(existing -> fiscalCloseoutResourceAssembler.updateEntity(closeoutResponse, existing))
+                .orElseGet(() -> {
+                    FiscalCloseoutEntity newEntity = fiscalCloseoutResourceAssembler.toEntity(closeoutResponse, updatedFiscalEntity);
+                    newEntity.setProjectPlanFiscalCloseoutGuid(UUID.randomUUID());
+                    return newEntity;
+                });
+
+        FiscalCloseoutEntity savedCloseout = fiscalCloseoutRepository.save(closeoutEntity);
+
+        return FiscalCloseoutSubmitResponse.builder()
+                .projectFiscal(projectFiscalResourceAssembler.toModel(savedFiscal))
+                .closeout(fiscalCloseoutResourceAssembler.toModel(savedCloseout))
+                .activities(savedActivities)
+                .build();
     }
 }

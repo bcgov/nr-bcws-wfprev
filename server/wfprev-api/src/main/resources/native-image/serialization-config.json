@@ -14,6 +14,8 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectFiscalModel"},
   { "name": "ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutRequest"},
   { "name": "ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutResponse"},
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitRequest"},
+  { "name": "ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitResponse"},
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel" },
   { "name": "ca.bc.gov.nrs.wfprev.data.models.SourceObjectNameCodeModel" },

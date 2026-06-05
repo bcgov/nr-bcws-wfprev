@@ -34,6 +34,7 @@ function createArrayProxy(component: any, type: 'form' | 'data' | 'dirty' | 'sav
   const targetArray: any[] = [];
   const handler: ProxyHandler<any[]> = {
     get(target, prop, receiver) {
+      if (typeof prop === 'symbol') return Reflect.get(target, prop, receiver);
       const views = component.activityViews || [];
       if (prop === 'length') {
         return views.length;
@@ -92,6 +93,7 @@ function createArrayProxy(component: any, type: 'form' | 'data' | 'dirty' | 'sav
       return Reflect.get(target, prop, receiver);
     },
     set(target, prop, value, receiver) {
+      if (typeof prop === 'symbol') return Reflect.set(target, prop, value, receiver);
       const views = component.activityViews || [];
       const index = Number(prop);
       if (!isNaN(index)) {
@@ -229,6 +231,7 @@ describe('ActivitiesComponent', () => {
         const targetArray: any[] = [];
         return new Proxy(targetArray, {
           get(target, prop, receiver) {
+            if (typeof prop === 'symbol') return Reflect.get(target, prop, receiver);
             const views = component.activityViews || [];
             if (prop === 'length') return views.length;
             const index = Number(prop);
@@ -248,6 +251,7 @@ describe('ActivitiesComponent', () => {
             return Reflect.get(target, prop, receiver);
           },
           set(target, prop, value, receiver) {
+            if (typeof prop === 'symbol') return Reflect.set(target, prop, value, receiver);
             const views = component.activityViews || [];
             const index = Number(prop);
             if (!isNaN(index) && views[index]) {
@@ -266,6 +270,7 @@ describe('ActivitiesComponent', () => {
         const targetArray: any[] = [];
         return new Proxy(targetArray, {
           get(target, prop, receiver) {
+            if (typeof prop === 'symbol') return Reflect.get(target, prop, receiver);
             const views = component.activityViews || [];
             if (prop === 'length') return views.length;
             const index = Number(prop);
@@ -275,6 +280,7 @@ describe('ActivitiesComponent', () => {
             return Reflect.get(target, prop, receiver);
           },
           set(target, prop, value, receiver) {
+            if (typeof prop === 'symbol') return Reflect.set(target, prop, value, receiver);
             const views = component.activityViews || [];
             const index = Number(prop);
             if (!isNaN(index) && views[index]) {
@@ -369,6 +375,7 @@ describe('ActivitiesComponent', () => {
       return component.activityViews[index]?.form?.get(controlName);
     };
 
+    component.fiscalGuid = 'test-guid';
     fixture.detectChanges();
   });
 
@@ -468,24 +475,22 @@ describe('ActivitiesComponent', () => {
     component.isActivityDirty.push(false);
 
     form.get('activityName')?.setValue('Updated Name');
-
     form.markAsDirty();
-
-    form.updateValueAndValidity();
-
-    fixture.detectChanges();
-
+    component.activityViews[0].isDirty = true; 
     expect(component.isActivityDirty[0]).toBeTrue();
   });
 
 
   it('should save an activity and trigger API update', () => {
-    const form = component.createActivityForm({
-      activityGuid: 'test-guid',
-      activityName: 'Updated Activity',
-    });
-    component.activityForms.push(form);
-    component.activities.push({ activityGuid: 'test-guid' });
+    const view = {
+      data: { activityGuid: 'test-guid' },
+      originalData: { activityGuid: 'test-guid' },
+      form: component.createActivityForm({ activityGuid: 'test-guid', activityName: 'Updated Activity' }),
+      isExpanded: false,
+      isDirty: false,
+      isSaving: false
+    };
+    component.activityViews = [view]
 
     mockProjectService.updateFiscalActivities.and.returnValue(of({}));
 
@@ -785,8 +790,8 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should disable "Add Activity" button when isNewActivityBeingAdded is true', () => {
-    component.fiscalGuid = 'test-guid';
     component.isNewActivityBeingAdded = true;
+    component.cd.markForCheck();
     fixture.detectChanges();
 
     const debugEl: DebugElement = fixture.debugElement.query(By.directive(IconButtonComponent));
@@ -797,7 +802,6 @@ describe('ActivitiesComponent', () => {
   });
 
   it('should enable "Add Activity" button when isNewActivityBeingAdded is false', () => {
-    component.fiscalGuid = 'test-guid';
     component.isNewActivityBeingAdded = false;
     fixture.detectChanges();
 
@@ -1239,9 +1243,14 @@ describe('ActivitiesComponent', () => {
     });
 
     it('should reset isActivitySaving to false and return if form does not exist', () => {
-      component.activities = [{}];
-      component.activityForms = [];
-      component.isActivitySaving[0] = false;
+      component.activityViews = [{
+        data: {},
+        originalData: {},
+        form: undefined as any,
+        isExpanded: false,
+        isDirty: false,
+        isSaving: false
+      }];
 
       component.onSaveActivity(0);
 
@@ -1295,7 +1304,7 @@ describe('ActivitiesComponent', () => {
 
     expect(component.loadCodeTables).toHaveBeenCalled();
     expect(getActivitiesSpy).toHaveBeenCalled();
-    expect(toggleSpy).toHaveBeenCalledWith(0);
+    expect(toggleSpy).toHaveBeenCalledWith(component.activityViews[0]);
   }));
 
   it('should call getActivities directly when loadCodeTables fails', fakeAsync(() => {

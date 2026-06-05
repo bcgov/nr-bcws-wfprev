@@ -1172,4 +1172,49 @@ describe('ProjectService', () => {
       req.flush('Error', { status: 500, statusText: 'Server Error' });
     });
 
+    it('should submit fiscal closeout', () => {
+      const projectGuid = 'proj-123';
+      const projectPlanFiscalGuid = 'fiscal-456';
+      const payload = {
+        projectFiscal: { projectPlanFiscalGuid },
+        closeout: { outcomeComment: 'Test outcome' },
+        activities: []
+      };
+      const mockResponse = { closeoutGuid: 'closeout-789' };
+
+      service.submitFiscalCloseout(projectGuid, projectPlanFiscalGuid, payload).subscribe((response) => {
+        expect(response).toEqual(mockResponse);
+      });
+
+      const req = httpMock.expectOne(
+        `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts/submit`
+      );
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer mock-token');
+      expect(req.request.body).toEqual(payload);
+      req.flush(mockResponse);
+    });
+
+    it('should handle error when submitting fiscal closeout', () => {
+      const projectGuid = 'proj-123';
+      const projectPlanFiscalGuid = 'fiscal-456';
+      const payload = {
+        projectFiscal: { projectPlanFiscalGuid },
+        closeout: { outcomeComment: 'Test outcome' },
+        activities: []
+      };
+
+      service.submitFiscalCloseout(projectGuid, projectPlanFiscalGuid, payload).subscribe({
+        next: () => fail('Should have failed'),
+        error: (err) => {
+          expect(err.message).toBe('Failed to submit closeout');
+        }
+      });
+
+      const req = httpMock.expectOne(
+        `http://mock-api.com/wfprev-api/projects/${projectGuid}/projectFiscals/${projectPlanFiscalGuid}/closeouts/submit`
+      );
+      req.flush('Error', { status: 500, statusText: 'Server Error' });
+    });
+
 });
