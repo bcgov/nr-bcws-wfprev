@@ -1650,5 +1650,17 @@
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitResponse",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitRequest",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
   }
 ]
