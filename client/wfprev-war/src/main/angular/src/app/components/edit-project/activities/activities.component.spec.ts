@@ -476,7 +476,7 @@ describe('ActivitiesComponent', () => {
 
     form.get('activityName')?.setValue('Updated Name');
     form.markAsDirty();
-    component.activityViews[0].isDirty = true; // set directly
+    component.activityViews[0].isDirty = true; 
     expect(component.isActivityDirty[0]).toBeTrue();
   });
 

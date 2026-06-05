@@ -163,7 +163,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     if (!this.fiscalData) return;
     this.isSavingSummary = true;
     
-    // 1. Update ProjectFiscal
+    // Update ProjectFiscal
     const updatedFiscal = {
       ...this.fiscalData,
       fiscalReportedSpendAmount: this.summaryForm.value.fiscalReportedSpendAmount,
@@ -177,6 +177,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
         : null
     };
 
+    // Update activities
     const activities = (this.activitiesComponent ? this.activitiesComponent.getActivityData() : [])
       .map((activity: any) => {
         const { activityDateRange, ...activityWithoutDateRange } = activity;
