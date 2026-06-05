@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
+import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitRequest;
 import ca.bc.gov.nrs.wfprev.data.models.FiscalCloseoutSubmitResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -432,7 +433,7 @@ public class ProjectFiscalController extends CommonController {
     @PreAuthorize("hasAuthority('WFPREV.UPDATE_PREVENTION_FISCAL')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = FiscalCloseoutResponse.class))),
+                    content = @Content(schema = @Schema(implementation = FiscalCloseoutSubmitResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request",
                     content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
             @ApiResponse(responseCode = "404", description = "Not Found"),
@@ -465,9 +466,23 @@ public class ProjectFiscalController extends CommonController {
 
     private void initializeSubmitCloseout(FiscalCloseoutSubmitRequest request) {
         if (request.getCloseout() != null) {
-            request.getCloseout().setCreateUser(getWebAdeAuthentication().getUserId());
+            request.getCloseout().setCreateUser(request.getCloseout().getCreateUser() == null ? getWebAdeAuthentication().getUserId() : request.getCloseout().getCreateUser());
             request.getCloseout().setUpdateUser(getWebAdeAuthentication().getUserId());
-            request.getCloseout().setRevisionCount(0);
+            request.getCloseout().setRevisionCount(request.getCloseout().getRevisionCount() != null ? request.getCloseout().getRevisionCount() : 0);
+        }
+
+        if (request.getProjectFiscal() != null) {
+            request.getProjectFiscal().setCreateUser(request.getProjectFiscal().getCreateUser() == null ? getWebAdeAuthentication().getUserId() : request.getProjectFiscal().getCreateUser());
+            request.getProjectFiscal().setUpdateUser(getWebAdeAuthentication().getUserId());
+            request.getProjectFiscal().setRevisionCount(request.getProjectFiscal().getRevisionCount() != null ? request.getProjectFiscal().getRevisionCount() : 0);
+        }
+
+        if (request.getActivities() != null){
+            for (ActivityModel activity : request.getActivities()) {
+                activity.setCreateUser(activity.getCreateUser() == null ? getWebAdeAuthentication().getUserId() : activity.getCreateUser());
+                activity.setUpdateUser(getWebAdeAuthentication().getUserId());
+                activity.setRevisionCount(activity.getRevisionCount() != null ? activity.getRevisionCount() : 0);
+            }
         }
     }
 }

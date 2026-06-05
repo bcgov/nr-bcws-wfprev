@@ -89,7 +89,6 @@ describe('YearEndPerformanceUpdateComponent', () => {
 
     it('should call submitFiscalCloseout with correct payload on onSubmitSummary', () => {
       component.fiscalData = {
-        planFiscalStatusCode: { planFiscalStatusCode: 'COMPLETE' },
         endorsementCode: { endorsementCode: 'NOT_ENDORS' },
         fiscalReportedSpendAmount: 0,
         fiscalActualAmount: 0,
@@ -97,10 +96,13 @@ describe('YearEndPerformanceUpdateComponent', () => {
       } as any;
 
       component.summaryForm.patchValue({
+        planFiscalStatusCode: 'COMPLETE',
         fiscalReportedSpendAmount: 100,
         fiscalActualAmount: 200,
         fiscalCompletedSizeHa: 50,
-        outcomeComment: 'Test outcome'
+        outcomeComment: 'Test outcome',
+        spatialFileUploaded: true,
+        acknowledgement: true
       });
 
       mockProjectService.submitFiscalCloseout.and.returnValue(of({}));
@@ -130,6 +132,13 @@ describe('YearEndPerformanceUpdateComponent', () => {
         endorsementCode: null
       } as any;
 
+      component.summaryForm.patchValue({
+        planFiscalStatusCode: 'COMPLETE',
+        outcomeComment: 'Test outcome',
+        spatialFileUploaded: true,
+        acknowledgement: true
+      });
+
       mockProjectService.submitFiscalCloseout.and.returnValue(of({}));
 
       component.onSubmitSummary();
@@ -137,15 +146,22 @@ describe('YearEndPerformanceUpdateComponent', () => {
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         'Year End Update saved successfully',
         'Close',
-        { duration: 3000 }
+        { duration: 3000, panelClass: 'snackbar-success' }
       );
     });
 
     it('should show error snackbar on submit failure', () => {
       component.fiscalData = {
-        planFiscalStatusCode: { planFiscalStatusCode: 'COMPLETE' },
+        planFiscalStatusCode: 'COMPLETE',
         endorsementCode: null
       } as any;
+
+      component.summaryForm.patchValue({
+        planFiscalStatusCode: 'COMPLETE',
+        outcomeComment: 'Test outcome',
+        spatialFileUploaded: true,
+        acknowledgement: true
+      });
 
       mockProjectService.submitFiscalCloseout.and.returnValue(
         throwError(() => new Error('Submit failed'))
@@ -156,7 +172,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         'Failed to save Year End Update',
         'Close',
-        { duration: 3000 }
+        { duration: 3000, panelClass: 'snackbar-error' }
       );
     });
 

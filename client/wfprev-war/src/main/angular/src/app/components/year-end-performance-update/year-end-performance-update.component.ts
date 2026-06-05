@@ -160,17 +160,18 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   }
 
   onSubmitSummary(): void {
-    if (!this.fiscalData) return;
+    if (!this.fiscalData || !this.summaryForm.valid) return;
     this.isSavingSummary = true;
     
+    console.log("this.fiscalData.planFiscalStatusCode: ", this.fiscalData.planFiscalStatusCode )
     // Update ProjectFiscal
     const updatedFiscal = {
       ...this.fiscalData,
       fiscalReportedSpendAmount: this.summaryForm.value.fiscalReportedSpendAmount,
       fiscalActualAmount: this.summaryForm.value.fiscalActualAmount,
       fiscalCompletedSizeHa: this.summaryForm.value.fiscalCompletedSizeHa,
-      planFiscalStatusCode: this.fiscalData.planFiscalStatusCode 
-        ? { planFiscalStatusCode: this.fiscalData.planFiscalStatusCode.planFiscalStatusCode } 
+      planFiscalStatusCode: this.summaryForm.value.planFiscalStatusCode
+        ? { planFiscalStatusCode: this.summaryForm.value.planFiscalStatusCode }
         : null,
       endorsementCode: this.fiscalData.endorsementCode 
         ? { endorsementCode: this.fiscalData.endorsementCode.endorsementCode } 
@@ -183,6 +184,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
         const { activityDateRange, ...activityWithoutDateRange } = activity;
         return {
           ...activityWithoutDateRange,
+          activityStartDate: activityDateRange?.activityStartDate ? new Date(activityDateRange.activityStartDate).toISOString() : null,
+          activityEndDate: activityDateRange?.activityEndDate ? new Date(activityDateRange.activityEndDate).toISOString() : null,
           activityStatusCode: activity.activityStatusCode
             ? { activityStatusCode: typeof activity.activityStatusCode === 'string' ? activity.activityStatusCode : activity.activityStatusCode.activityStatusCode }
             : null,
@@ -207,12 +210,12 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => this.isSavingSummary = false))
       .subscribe({
         next: () => {
-          this.snackbar.open('Year End Update saved successfully', 'Close', { duration: 3000 });
+          this.snackbar.open('Year End Update saved successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success'});
           this.loadActivities();
         },
         error: (err: any) => {
           console.error('Failed to save summary', err);
-          this.snackbar.open('Failed to save Year End Update', 'Close', { duration: 3000 });
+          this.snackbar.open('Failed to save Year End Update', 'Close', { duration: 3000, panelClass: 'snackbar-error' });
         }
       });
     this.subscriptions.add(sub);
@@ -232,12 +235,12 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       payload
     ).subscribe({
         next: (response: any) => {
-          this.snackbar.open('Activity updated successfully', 'Close', { duration: 3000 });
+          this.snackbar.open('Activity updated successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success' });
           this.loadActivities(); // Reload to get fresh data
         },
         error: (err: any) => {
           console.error('Failed to update activity', err);
-          this.snackbar.open('Failed to update activity', 'Close', { duration: 3000 });
+          this.snackbar.open('Failed to update activity', 'Close', { duration: 3000, panelClass: 'snackbar-error' });
         }
       });
 
