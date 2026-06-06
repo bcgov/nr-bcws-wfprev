@@ -19,6 +19,7 @@ import { ProjectFiscalExtended, FiscalCloseout, YearEndActivityViewModel } from 
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { MatButtonModule } from '@angular/material/button';
 import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
+import { FiscalStatuses } from 'src/app/utils/constants';
 
 
 
@@ -45,6 +46,7 @@ import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-dis
 export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   projectGuid: string = '';
   fiscalGuid: string = '';
+  workflow: string = '';
   isLoading: boolean = true;
   activityViews: YearEndActivityViewModel[] = [];
   summaryForm!: FormGroup;
@@ -74,6 +76,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
 
     this.projectGuid = this.route.snapshot.queryParamMap.get('projectGuid') || '';
     this.fiscalGuid = this.route.snapshot.queryParamMap.get('fiscalGuid') || '';
+    this.workflow = this.route.snapshot.queryParamMap.get('workflow') || 'update';
 
     this.initForm();
     this.loadActivities();
@@ -142,8 +145,15 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   }
 
   patchForm(): void {
+    let defaultStatus = this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode || '';
+    if (this.workflow === 'cancel') {
+        defaultStatus = FiscalStatuses.CANCELLED;
+    } else if (this.workflow === 'update') {
+        defaultStatus = FiscalStatuses.COMPLETE;
+    }
+
     this.summaryForm.patchValue({
-      planFiscalStatusCode: this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode || '',
+      planFiscalStatusCode: defaultStatus,
       fiscalReportedSpendAmount: this.fiscalData?.fiscalReportedSpendAmount || 0,
       fiscalActualAmount: this.fiscalData?.fiscalActualAmount || 0,
       fiscalCompletedSizeHa: this.fiscalData?.fiscalCompletedSizeHa || 0,

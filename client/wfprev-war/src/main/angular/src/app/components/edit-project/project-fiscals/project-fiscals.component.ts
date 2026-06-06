@@ -31,7 +31,7 @@ import { EndorsementApprovalComponent } from 'src/app/components/edit-project/en
 import { TokenService } from 'src/app/services/token.service';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
-import { capitalizeFirstLetter } from 'src/app/utils';
+import { capitalizeFirstLetter, ResourcesRoutes } from 'src/app/utils';
 import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
@@ -720,6 +720,16 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
     if (action === 'DELETE') {
       this.deleteFiscalYear(this.fiscalForms[index], index);
+    } else if (action === 'YEAR_END_UPDATE' || action === 'YEAR_END_CANCEL') {
+      const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
+      const workflow = action === 'YEAR_END_CANCEL' ? 'cancel' : 'update';
+      this.router.navigate(['/' + ResourcesRoutes.YEAR_END], {
+        queryParams: {
+          projectGuid: this.projectGuid,
+          fiscalGuid: fiscalGuid,
+          workflow: workflow
+        }
+      });
     } else {
       this.updateFiscalStatus(index, action);
     }

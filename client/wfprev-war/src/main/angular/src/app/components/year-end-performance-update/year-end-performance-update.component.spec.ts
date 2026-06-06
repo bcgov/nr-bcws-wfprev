@@ -72,9 +72,10 @@ describe('YearEndPerformanceUpdateComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should initialize projectGuid and fiscalGuid from query params', () => {
+    it('should initialize projectGuid, fiscalGuid, and workflow from query params', () => {
       expect(component.projectGuid).toBe('test-project-guid');
       expect(component.fiscalGuid).toBe('test-fiscal-guid');
+      expect(component.workflow).toBe('update');
     });
 
     it('should navigate back to project on goBack()', () => {
