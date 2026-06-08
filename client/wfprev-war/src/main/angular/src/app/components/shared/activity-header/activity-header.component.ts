@@ -19,6 +19,7 @@ export class ActivityHeaderComponent implements AfterViewInit, OnDestroy, OnChan
   @Input() isResultsReportable?: boolean;
   @Input() statusCode?: string;
   @Input() backgroundColor?: string;
+  @Input() isMissingInfo?: boolean;
 
   shouldStack = false;
   private resizeObserver?: ResizeObserver;

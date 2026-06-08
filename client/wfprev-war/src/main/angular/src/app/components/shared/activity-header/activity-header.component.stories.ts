@@ -77,3 +77,16 @@ export const YearEndBackground: Story = {
     backgroundColor: '#FAF9F8',
   },
 };
+
+export const MissingInfo: Story = {
+  args: {
+    title: 'Prescription',
+    isExpanded: false,
+    isResultsReportable: true,
+    hasOutstandingObligations: false,
+    isCarryForward: false,
+    isSpatialAdded: true,
+    statusCode: '',
+    isMissingInfo: true,
+  },
+};

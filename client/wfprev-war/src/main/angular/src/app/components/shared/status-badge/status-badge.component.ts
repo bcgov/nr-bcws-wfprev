@@ -1,5 +1,5 @@
 
-import { Component, Input } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
 @Component({
     selector: 'wfprev-status-badge',
@@ -12,6 +12,12 @@ export class StatusBadgeComponent {
   @Input() type?: string;
   @Input() label?: string;
   @Input() icon?: { src: string; alt: string; title: string } | null;
+
+  // Apply the type as a CSS class for styling
+  @HostBinding('class')
+  get hostClass(): string {
+    return this.type ?? '';
+  }
 
   private statusMap: { [key: string]: { icon: string; label: string } } = {
     'on-track': { icon: '/assets/progress-status-ontrack.svg', label: 'On track' },
@@ -36,6 +42,7 @@ export class StatusBadgeComponent {
     'spatial-not-added': { icon: '/assets/no-spatial-added-icon.svg', label: 'No Spatial Added' },
     'substantially-complete': { icon: '/assets/substantially-complete.svg', label: 'Substantially Complete' },
     'warning': { icon: '/assets/warning.svg', label: 'Warning' },
+    'missing-info': { icon: '/assets/warning-red.svg', label: 'Missing info' }
   };
 
   get displayIcon(): string | null {

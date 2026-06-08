@@ -63,6 +63,6 @@ export const CurrencyAmount: Story = {
     placeholder: 'Enter cost',
     id: 'cost-input',
     enableAmountFormat: true,
-    prefix: '$',
+    inputPrefix: '$',
   },
 };

@@ -4,8 +4,11 @@
     <div class="activity-title">
       {{ title }}
     </div>
+     @if (isMissingInfo) {
+      <wfprev-status-badge type="missing-info" label="Missing info"></wfprev-status-badge>
+     }
   </div>
-  
+
   <div class="activity-indicators">
     <!-- Results Reportable -->
     @if (isResultsReportable) {
