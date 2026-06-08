@@ -2,6 +2,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectFiscal } from 'src/app/components/models';
 import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
 
@@ -12,7 +13,8 @@ import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
     standalone: true,
     imports: [
     MatMenuModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule
 ]
 })
 export class DropdownButtonComponent {

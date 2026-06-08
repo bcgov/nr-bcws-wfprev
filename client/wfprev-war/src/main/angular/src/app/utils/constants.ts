@@ -141,10 +141,9 @@ export const EnvironmentIndicators: { [key: string]: string } = {
 export const FiscalActionLabels = {
   SUBMIT: 'Submit',
   REVERT_TO_DRAFT: 'Revert to Draft',
-  SET_IN_PROGRESS: 'Set to In Progress',
-  SET_COMPLETE: 'Set to Complete',
   CANCEL_FISCAL: 'Cancel Fiscal',
   DELETE: 'Delete Fiscal Activity',
+  YEAR_END_UPDATE: 'Year End Update',
 };
 
 export const FiscalStatuses = {
