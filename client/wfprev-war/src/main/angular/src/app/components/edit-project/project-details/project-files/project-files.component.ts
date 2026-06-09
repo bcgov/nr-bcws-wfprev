@@ -18,6 +18,7 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
+import { FileViewerService } from 'src/app/services/file-viewer.service';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 @Component({
@@ -66,6 +67,7 @@ export class ProjectFilesComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly iconRegistry: MatIconRegistry,
     private readonly sanitizer: DomSanitizer,
+    private fileViewerService: FileViewerService,
   ) {
     this.iconRegistry.addSvgIcon(
       'download',
@@ -133,13 +135,16 @@ export class ProjectFilesComponent implements OnInit {
 
                   if (boundaries && boundaries.length > 0) {
                     const boundarySizeMap = new Map<string, number>();
-                    boundaries.forEach((boundary: { projectBoundaryGuid: string; boundarySizeHa: number }) => {
+                    const boundaryGeometryMap = new Map<string, any>();
+                    boundaries.forEach((boundary: { projectBoundaryGuid: string; boundarySizeHa: number; boundaryGeometry: any }) => {
                       boundarySizeMap.set(boundary.projectBoundaryGuid, boundary.boundarySizeHa);
+                      boundaryGeometryMap.set(boundary.projectBoundaryGuid, boundary.boundaryGeometry);
                     });
 
                     this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
                       ...file,
-                      polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
+                      polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null,
+                      boundaryGeometry: file.sourceObjectUniqueId ? boundaryGeometryMap.get(file.sourceObjectUniqueId) : undefined
                     }));
 
                     this.dataSource.data = [...this.projectFiles];
@@ -197,13 +202,16 @@ export class ProjectFilesComponent implements OnInit {
 
                 if (boundaries && boundaries.length > 0) {
                   const boundarySizeMap = new Map<string, number>();
-                  boundaries.forEach((boundary: { activityBoundaryGuid: string, boundarySizeHa: number }) => {
+                  const boundaryGeometryMap = new Map<string, any>();
+                  boundaries.forEach((boundary: { activityBoundaryGuid: string, boundarySizeHa: number, geometry: any }) => {
                     boundarySizeMap.set(boundary.activityBoundaryGuid, boundary.boundarySizeHa);
+                    boundaryGeometryMap.set(boundary.activityBoundaryGuid, boundary.geometry);
                   });
 
                   this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
                     ...file,
-                    polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null
+                    polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null,
+                    boundaryGeometry: file.sourceObjectUniqueId ? boundaryGeometryMap.get(file.sourceObjectUniqueId) : undefined
                   }));
 
                   this.dataSource.data = [...this.projectFiles];
@@ -744,8 +752,12 @@ export class ProjectFilesComponent implements OnInit {
     return this.downloadingFileId === file.fileIdentifier;
   }
 
+  canViewFile(file: ProjectFile): boolean {
+    return this.fileViewerService.canView(file);
+  }
+
   viewFile(file: ProjectFile): void {
-    console.log('Stub viewing file:', file);
+    this.fileViewerService.viewFile(file);
   }
 
   translateAttachmentType(description: string): string {
