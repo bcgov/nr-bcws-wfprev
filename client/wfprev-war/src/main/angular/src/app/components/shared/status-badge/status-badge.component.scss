@@ -22,3 +22,9 @@
       line-height: normal;
   }
 }
+
+:host(.missing-info) {
+  .badge-label {
+    color: #CE3E39;
+  }
+}

@@ -118,4 +118,68 @@ describe('YearEndActivityItemComponent', () => {
     spendCtrl?.setValue(0);
     expect(spendCtrl?.valid).toBeTrue();
   });
+
+  describe('isMissingInfo', () => {
+    beforeEach(() => {
+      component.ngOnChanges({
+        activity: new SimpleChange(null, component.activity, true)
+      });
+      fixture.detectChanges();
+    });
+
+    it('should set isMissingInfo to false when all required fields are present', () => {
+      expect(component.form.get('isMissingInfo')?.value).toBeFalse();
+    });
+
+    it('should set isMissingInfo to true when activityStatusCode is missing', () => {
+      component.form.get('activityStatusCode')?.setValue('');
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should set isMissingInfo to true when reportedSpendAmount is null', () => {
+      component.form.get('reportedSpendAmount')?.setValue(null);
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should set isMissingInfo to true when reportedSpendAmount is 0', () => {
+      component.form.get('reportedSpendAmount')?.setValue(0);
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should set isMissingInfo to true when completedAreaHa is 0', () => {
+      component.form.get('completedAreaHa')?.setValue(0);
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should set isMissingInfo to true when activityStartDate is missing', () => {
+      component.form.get('activityDateRange.activityStartDate')?.setValue('');
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should set isMissingInfo to true when activityEndDate is missing', () => {
+      component.form.get('activityDateRange.activityEndDate')?.setValue('');
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should set isMissingInfo to false when all fields are corrected', () => {
+      component.form.get('activityStatusCode')?.setValue('');
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+
+      component.form.get('activityStatusCode')?.setValue('COMPLETED');
+      expect(component.form.get('isMissingInfo')?.value).toBeFalse();
+    });
+
+    it('should initialize isMissingInfo to true when activity is missing required fields', () => {
+      component.activity = {
+        ...component.activity,
+        activityStatusCode: null,
+        reportedSpendAmount: null,
+      };
+      component.ngOnChanges({
+        activity: new SimpleChange(null, component.activity, true)
+      });
+
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+  });
 });

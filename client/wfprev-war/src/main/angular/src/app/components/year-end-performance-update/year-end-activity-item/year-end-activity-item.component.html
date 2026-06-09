@@ -6,7 +6,8 @@
       [hasOutstandingObligations]="form.getRawValue().outstandingObligationsInd"
       [isCarryForward]="form.getRawValue().isCarryForwardInd" [isResultsReportable]="activity.isResultsReportableInd"
       [statusCode]="form.getRawValue().activityStatusCode"
-      [backgroundColor]="'var(--wf-colour-year-end-bg)'"></wfprev-activity-header>
+      [backgroundColor]="'var(--wf-colour-year-end-bg)'"
+      [isMissingInfo]="form.getRawValue().isMissingInfo"></wfprev-activity-header>
   </mat-expansion-panel-header>
 
   <form class="form-grid" [formGroup]="form">

@@ -1,20 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { NgxCurrency } from '@dintecom/ngx-currency';
-import { ProjectFilesComponent } from '../../edit-project/project-details/project-files/project-files.component';
-import { TextareaComponent } from '../../shared/textarea/textarea.component';
-import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
+import { merge } from 'rxjs';
 import { Messages, NumericLimits } from '../../../utils/constants';
-import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
 import { nonZeroUnlessCancelledValidator } from '../../../utils/validators';
+import { ProjectFilesComponent } from '../../edit-project/project-details/project-files/project-files.component';
+import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
+import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
+import { TextareaComponent } from '../../shared/textarea/textarea.component';
 
 export const CUSTOM_DATE_FORMATS = {
   display: {
@@ -91,6 +92,8 @@ export class YearEndActivityItemComponent implements OnChanges {
     const activityCommentValidators = [Validators.maxLength(500)];
     if (outstandingObligationsInd) activityCommentValidators.push(Validators.required);
 
+    const isMissingInfo = !this.activity.activityStatusCode ||!this.activity.reportedSpendAmount || !this.activity.completedAreaHa || !this.activity.activityStartDate || !this.activity.activityEndDate;
+
     this.form = this.fb.group({
       activityGuid: [this.activity.activityGuid],
       activityStatusCode: [this.activity.activityStatusCode?.activityStatusCode || '', Validators.required],
@@ -111,7 +114,8 @@ export class YearEndActivityItemComponent implements OnChanges {
       isCarryForwardInd: [isCarryForwardInd],
       finalOutcomeComments: [this.activity.finalOutcomeComments || '', finalOutcomeValidators],
       outstandingObligationsInd: [outstandingObligationsInd],
-      activityComment: [this.activity.activityComment || '', activityCommentValidators]
+      activityComment: [this.activity.activityComment || '', activityCommentValidators],
+      isMissingInfo: [isMissingInfo]
     });
 
     // Update conditional validations
@@ -132,6 +136,19 @@ export class YearEndActivityItemComponent implements OnChanges {
     this.form.get('activityStatusCode')?.valueChanges.subscribe(() => {
       this.form.get('reportedSpendAmount')?.updateValueAndValidity();
       this.form.get('completedAreaHa')?.updateValueAndValidity();
+      this.updateMissingInfo();
+    });
+
+    // display missing info badge if any of the required fields are missing or invalid
+    const missingInfoFields = ['activityStatusCode', 'reportedSpendAmount', 'completedAreaHa'];
+    const dateGroup = this.form.get('activityDateRange');
+
+    merge(
+      ...missingInfoFields.map(f => this.form.get(f)!.valueChanges),
+      dateGroup!.get('activityStartDate')!.valueChanges,
+      dateGroup!.get('activityEndDate')!.valueChanges
+    ).subscribe(() => {
+      this.updateMissingInfo();
     });
 
     if (this.isReadonly) {
@@ -154,5 +171,15 @@ export class YearEndActivityItemComponent implements OnChanges {
       delete updatedData.activityDateRange;
       this.save.emit({ ...this.activity, ...updatedData });
     }
+  }
+
+  updateMissingInfo(): void {
+    const rawValue = this.form.getRawValue();
+    const isMissingInfo = !rawValue.activityStatusCode
+      || rawValue.reportedSpendAmount === null || rawValue.reportedSpendAmount === '' || rawValue.reportedSpendAmount === 0
+      || rawValue.completedAreaHa === null || rawValue.completedAreaHa === '' || rawValue.completedAreaHa === 0
+      || !rawValue.activityDateRange?.activityStartDate
+      || !rawValue.activityDateRange?.activityEndDate;
+    this.form.get('isMissingInfo')?.setValue(isMissingInfo, { emitEvent: false });
   }
 }

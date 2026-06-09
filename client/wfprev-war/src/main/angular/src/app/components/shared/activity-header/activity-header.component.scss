@@ -6,25 +6,31 @@
 
 .activity-header-content {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: nowrap;
   align-items: center;
+  gap: 8px;
   width: 100%;
 
   .header-left {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+
+    wfprev-status-badge.missing-info {
+      padding-left: 8px;
+    }
 
     .activity-title {
       color: #000;
       font-family: var(--wf-font-family-main);
       font-size: 20px;
-      font-style: normal;
       font-weight: 400;
       line-height: normal;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      white-space: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
@@ -32,6 +38,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 0 0 auto; 
 
     .indicator-item {
       display: flex;
@@ -40,7 +47,8 @@
       font-size: 14px;
       font-weight: 400;
       color: #313132;
-      
+      white-space: nowrap;
+
       .indicator-icon {
         width: 24px;
         height: 24px;
@@ -71,22 +79,29 @@
 }
 
 .activity-header-content.stack-badges {
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
+  flex-wrap: nowrap; 
   padding: 12px 0;
 
-  .activity-title {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    margin-top: 2px;
+  .activity-indicators {
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 0 0 auto;
+    gap: 10px;
+    margin-left: 8px;
+  }
+}
+
+.activity-header-content.stack-badges.wrap-below {
+  flex-wrap: wrap;
+
+  .header-left .activity-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
   }
 
   .activity-indicators {
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    gap: 10px !important;
-    margin-left: 8px !important;
+    flex: 1 1 100%;
+    align-items: flex-start;
   }
 }

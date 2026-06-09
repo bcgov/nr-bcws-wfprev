@@ -1,12 +1,18 @@
-<div class="activity-header-content" [class.stack-badges]="shouldStack">
+<div class="activity-header-content" [class.stack-badges]="shouldStack" [class.wrap-below]="shouldWrapBelow">
   <div class="header-left">
     <wfprev-expansion-indicator [isExpanded]="isExpanded"></wfprev-expansion-indicator>
     <div class="activity-title">
       {{ title }}
     </div>
+     @if (isMissingInfo && !shouldStack) {
+      <wfprev-status-badge type="missing-info" label="Missing info"></wfprev-status-badge>
+     }
   </div>
-  
+
   <div class="activity-indicators">
+    @if (isMissingInfo && shouldStack) {
+    <wfprev-status-badge type="missing-info" label="Missing info"></wfprev-status-badge>
+  }
     <!-- Results Reportable -->
     @if (isResultsReportable) {
       <div class="indicator-item">
