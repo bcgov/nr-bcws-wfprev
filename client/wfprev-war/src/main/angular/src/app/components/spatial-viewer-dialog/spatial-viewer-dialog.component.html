@@ -1,0 +1,19 @@
+<div class="dialog-container">
+  <div class="title-bar">
+    <span>{{ file.fileName || file.documentPath }}</span>
+  </div>
+
+  <div class="dialog-content">
+    <div *ngIf="!file.boundaryGeometry" class="no-geometry-warning">
+      <div class="mask-icon warning" aria-hidden="true"></div>
+      <span>No geometry data available to display for this spatial file.</span>
+    </div>
+    <div id="spatial-viewer-map" class="map-container"></div>
+  </div>
+
+  <div class="footer">
+    <div class="button-row">
+      <button class="secondary" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>

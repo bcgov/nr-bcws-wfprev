@@ -203,7 +203,8 @@ export interface ProjectFile {
   attachmentContentTypeCode?: {
     attachmentContentTypeCode?: string;
   };
-  sourceObjectUniqueId?: string
+  sourceObjectUniqueId?: string,
+  boundaryGeometry?: Geometry
 }
 
 export interface FeaturesResponse {
