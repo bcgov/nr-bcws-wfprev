@@ -14,6 +14,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { AttachmentService } from 'src/app/services/attachment-service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
+import { FileViewerService } from 'src/app/services/file-viewer.service';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import { ProjectFilesComponent } from './project-files.component';
 
@@ -25,6 +26,7 @@ describe('ProjectFilesComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockAttachmentService: jasmine.SpyObj<AttachmentService>;
   let mockSpatialService: jasmine.SpyObj<SpatialService>;
+  let mockFileViewerService: jasmine.SpyObj<FileViewerService>;
   let mockCdr: jasmine.SpyObj<ChangeDetectorRef>;
   let mockSnackRef: MatSnackBarRef<SimpleSnackBar>;
   const mockProjectGuid = 'test-project-guid';
@@ -51,6 +53,7 @@ describe('ProjectFilesComponent', () => {
       'deleteActivityAttachments'
     ]);
     mockSpatialService = jasmine.createSpyObj('SpatialService', ['extractCoordinates']);
+    mockFileViewerService = jasmine.createSpyObj('FileViewerService', ['viewFile', 'canView']);
     mockCdr = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
 
     // Setup default mock return values to prevent subscribe errors
@@ -83,6 +86,7 @@ describe('ProjectFilesComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: AttachmentService, useValue: mockAttachmentService },
         { provide: SpatialService, useValue: mockSpatialService },
+        { provide: FileViewerService, useValue: mockFileViewerService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => 'test-project-guid' } } } },
         { provide: MatIconRegistry, useValue: mockIconRegistry },

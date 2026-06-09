@@ -1,12 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-@use 'styles/material' as *;
-@use 'material/mat-slide-toggle' as *;
-@use 'material/mat-tabs' as *;
-@use 'material/mat-checkbox' as *;
-@use 'styles/variables' as *;
+@use "styles/material" as *;
+@use "material/mat-slide-toggle" as *;
+@use "material/mat-tabs" as *;
+@use "material/mat-checkbox" as *;
+@use "styles/variables" as *;
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .detailed-error-message .mat-mdc-snackbar-surface {
@@ -17,8 +17,8 @@ body {
   padding: 0 !important;
 }
 
-.mat-mdc-snack-bar-container{
-  .mdc-snackbar__label{
+.mat-mdc-snack-bar-container {
+  .mdc-snackbar__label {
     color: var(--wf-colour-white);
     font-family: var(--wf-font-family-main) !important;
     font-size: var(--font-size) !important;
@@ -60,7 +60,7 @@ body {
 
   &.snackbar-info {
     background-color: var(--wf-colour-info);
-    color: black; 
+    color: black;
     position: inherit;
     width: fit-content;
     text-align: center;
@@ -78,8 +78,8 @@ body {
         color: black !important;
       }
     }
-    .mdc-snackbar__label{
-      color: black !important; 
+    .mdc-snackbar__label {
+      color: black !important;
     }
   }
 
@@ -89,12 +89,13 @@ body {
   }
 }
 
-html, body{
-    font-family: var(--wf-font-family-main) !important;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+html,
+body {
+  font-family: var(--wf-font-family-main) !important;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 [class^="mat-"],
@@ -106,11 +107,11 @@ html, body{
 
 mat-icon,
 .mat-icon {
-  font-family: 'Material Icons' !important;
+  font-family: "Material Icons" !important;
 }
 
 .mat-mdc-tab-body-wrapper {
-  height: calc(100vh - 250px) !important
+  height: calc(100vh - 250px) !important;
 }
 
 .custom-marker-cluster {
@@ -123,7 +124,7 @@ mat-icon,
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: #5595D9; /* Blue background */
+  background-color: #5595d9; /* Blue background */
   border-radius: 50%; /* Circular shape */
   color: white; /* White text */
   font-size: 16px; /* Text size */
@@ -138,8 +139,8 @@ mat-icon,
 
 /* Global styles.scss */
 
-.leaflet-control{
-  background: linear-gradient(90deg, #FFF 0%, rgba(255, 255, 255, 0.00) 84.96%);
+.leaflet-control {
+  background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0) 84.96%);
 }
 .leaflet-control .legend {
   background: white;
@@ -165,7 +166,7 @@ mat-icon,
   display: flex;
   align-items: center;
   margin-bottom: 4px;
-  margin-left:4px;
+  margin-left: 4px;
   font-family: var(--wf-font-family-main) !important;
 }
 
@@ -186,7 +187,7 @@ mat-icon,
 input:disabled,
 select:disabled,
 textarea:disabled {
-  background-color: #FFF !important;
+  background-color: #fff !important;
   color: #282828 !important;
   opacity: 0.7 !important;
 }
@@ -199,7 +200,7 @@ textarea:disabled {
   padding: 20px 24px;
   text-align: left;
   background-color: #ffffff;
-  border: 1px solid #C6C8CB;
+  border: 1px solid #c6c8cb;
   border-radius: 6px;
   margin: 0;
   box-sizing: border-box;
@@ -209,7 +210,7 @@ textarea:disabled {
   }
 
   .empty-state-text {
-    color: #6D6D6D;
+    color: #6d6d6d;
     font-family: var(--wf-font-family-main);
     font-size: 16px;
     font-style: italic;
@@ -236,4 +237,10 @@ textarea:disabled {
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-line-ripple::after {
   border-bottom-width: 2px !important;
   border-bottom-color: $colour-primary-blue !important;
-}
+}
+
+.spatial-viewer-panel .mdc-dialog__surface {
+  padding: 0 !important;
+  border: 1px solid #b1b1b1;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
