@@ -1,18 +1,14 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectFile } from '../components/models';
 import { SpatialViewerDialogComponent } from '../components/spatial-viewer-dialog/spatial-viewer-dialog.component';
-import { ProjectService } from './project-services';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileViewerService {
   constructor(
-    private dialog: MatDialog,
-    private projectService: ProjectService,
-    private snackbar: MatSnackBar
+    private readonly dialog: MatDialog
   ) { }
 
   /**
@@ -20,7 +16,7 @@ export class FileViewerService {
    * Only spatial files (kml, kmz, shp, gdb, zip) are supported and will open the spatial map dialog.
    */
   public viewFile(file: ProjectFile): void {
-    if (!file || !file.fileAttachmentGuid || !this.isSpatialFile(file)) {
+    if (!file?.fileAttachmentGuid || !this.isSpatialFile(file)) {
       return;
     }
 
@@ -34,7 +30,7 @@ export class FileViewerService {
   }
 
   public canView(file: ProjectFile): boolean {
-    if (!file || !file.fileAttachmentGuid) {
+    if (!file?.fileAttachmentGuid) {
       return false;
     }
 

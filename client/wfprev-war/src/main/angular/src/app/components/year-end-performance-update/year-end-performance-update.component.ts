@@ -54,6 +54,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   closeoutData?: FiscalCloseout;
   planFiscalStatusCodes: any[] = [];
   isSavingSummary = false;
+  projectName: string = '';
   @ViewChild(YearEndActivitiesComponent) activitiesComponent!: YearEndActivitiesComponent;
 
   private subscriptions = new Subscription();
@@ -108,6 +109,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
 
     // Fetch everything we need: fiscal data, activities, closeout data, and activity statuses
     const requests = {
+      project: this.projectService.getProjectByProjectGuid(this.projectGuid),
       fiscal: this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid),
       activities: this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid),
       closeouts: this.projectService.getAllFiscalCloseouts(this.projectGuid, this.fiscalGuid),
@@ -118,7 +120,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (responses: any) => {
           this.fiscalData = responses.fiscal;
-          
+          this.projectName = responses.project?.projectName || '';
           const activities = responses.activities?._embedded?.activities || [];
           this.activityViews = activities.map((activity: any, index: number) => ({
             data: activity,
@@ -173,7 +175,6 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     if (!this.fiscalData || !this.summaryForm.valid) return;
     this.isSavingSummary = true;
     
-    console.log("this.fiscalData.planFiscalStatusCode: ", this.fiscalData.planFiscalStatusCode )
     // Update ProjectFiscal
     const updatedFiscal = {
       ...this.fiscalData,
@@ -265,7 +266,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     this.router.navigate(['/' + ResourcesRoutes.EDIT_PROJECT], {
       queryParams: {
         projectGuid: this.projectGuid,
-        fiscalGuid: this.fiscalGuid
+        fiscalGuid: this.fiscalGuid,
+        tab: 'fiscal'
       }
     });
   }

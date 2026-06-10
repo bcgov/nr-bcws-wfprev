@@ -26,7 +26,8 @@ describe('YearEndPerformanceUpdateComponent', () => {
       'getFiscalActivities',
       'getAllFiscalCloseouts',
       'submitFiscalCloseout',
-      'updateFiscalActivities'
+      'updateFiscalActivities',
+      'getProjectByProjectGuid'
     ]);
     mockCodeTableService = jasmine.createSpyObj('CodeTableServices', ['fetchCodeTable']);
     mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
@@ -34,6 +35,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
     mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: [] } }));
     mockProjectService.getAllFiscalCloseouts.and.returnValue(of({ _embedded: { fiscalCloseouts: [] } }));
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: { planFiscalStatusCode: [] } }));
+    mockProjectService.getProjectByProjectGuid.and.returnValue(of({ projectName: 'Test Project' }));
 
     mockActivatedRoute = {
       snapshot: {
@@ -78,12 +80,13 @@ describe('YearEndPerformanceUpdateComponent', () => {
       expect(component.workflow).toBe('update');
     });
 
-    it('should navigate back to project on goBack()', () => {
+    it('should navigate back to project fiscal on goBack()', () => {
       component.goBack();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.EDIT_PROJECT], {
         queryParams: {
           projectGuid: 'test-project-guid',
-          fiscalGuid: 'test-fiscal-guid'
+          fiscalGuid: 'test-fiscal-guid',
+          tab: 'fiscal'
         }
       });
     });
