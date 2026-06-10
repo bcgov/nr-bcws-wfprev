@@ -192,7 +192,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     // Update activities
     const activities = (this.activitiesComponent ? this.activitiesComponent.getActivityData() : [])
       .map((activity: any) => {
-        const { activityDateRange, ...activityWithoutDateRange } = activity;
+        const { activityDateRange, isMissingInfo, ...activityWithoutDateRange } = activity;
         return {
           ...activityWithoutDateRange,
           activityStartDate: activityDateRange?.activityStartDate ? new Date(activityDateRange.activityStartDate).toISOString() : null,
