@@ -1,29 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FileViewerService } from './file-viewer.service';
-import { ProjectService } from './project-services';
 import { ProjectFile } from '../components/models';
-import { of, throwError } from 'rxjs';
 import { SpatialViewerDialogComponent } from '../components/spatial-viewer-dialog/spatial-viewer-dialog.component';
+import { FileViewerService } from './file-viewer.service';
 
 describe('FileViewerService', () => {
   let service: FileViewerService;
   let dialogSpy: jasmine.SpyObj<MatDialog>;
-  let projectServiceSpy: jasmine.SpyObj<ProjectService>;
-  let snackbarSpy: jasmine.SpyObj<MatSnackBar>;
 
   beforeEach(() => {
     dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
-    projectServiceSpy = jasmine.createSpyObj('ProjectService', ['downloadDocument']);
-    snackbarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     TestBed.configureTestingModule({
       providers: [
         FileViewerService,
         { provide: MatDialog, useValue: dialogSpy },
-        { provide: ProjectService, useValue: projectServiceSpy },
-        { provide: MatSnackBar, useValue: snackbarSpy }
       ]
     });
     service = TestBed.inject(FileViewerService);
@@ -62,29 +53,7 @@ describe('FileViewerService', () => {
       expect(dialogSpy.open).toHaveBeenCalledWith(SpatialViewerDialogComponent, jasmine.objectContaining({
         data: { file }
       }));
-      expect(projectServiceSpy.downloadDocument).not.toHaveBeenCalled();
     });
 
-    it('should download and open in new tab for non-spatial files', () => {
-      const file: ProjectFile = { fileAttachmentGuid: '123', fileName: 'test.pdf' };
-      const fakeBlob = new Blob(['dummy content'], { type: 'application/pdf' });
-      projectServiceSpy.downloadDocument.and.returnValue(of(fakeBlob));
-
-      service.viewFile(file);
-
-      expect(projectServiceSpy.downloadDocument).toHaveBeenCalledWith('123');
-      expect(createObjectURLSpy).toHaveBeenCalled();
-      expect(windowOpenSpy).toHaveBeenCalledWith('blob:fake-url', '_blank');
-    });
-
-    it('should show snackbar error on download failure', () => {
-      const file: ProjectFile = { fileAttachmentGuid: '123', fileName: 'test.pdf' };
-      projectServiceSpy.downloadDocument.and.returnValue(throwError(() => new Error('Network error')));
-
-      service.viewFile(file);
-
-      expect(snackbarSpy.open).toHaveBeenCalledWith('Failed to load file.', 'Close', { duration: 3000 });
-      expect(windowOpenSpy).not.toHaveBeenCalled();
-    });
   });
 });
