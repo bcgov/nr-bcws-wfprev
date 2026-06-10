@@ -8,7 +8,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { of, throwError } from 'rxjs';
 
-fdescribe('YearEndPerformanceUpdateComponent', () => {
+describe('YearEndPerformanceUpdateComponent', () => {
   let component: YearEndPerformanceUpdateComponent;
   let fixture: ComponentFixture<YearEndPerformanceUpdateComponent>;
   let mockRouter: jasmine.SpyObj<Router>;
