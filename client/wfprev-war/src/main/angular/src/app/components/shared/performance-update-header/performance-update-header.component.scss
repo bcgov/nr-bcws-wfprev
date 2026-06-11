@@ -1,0 +1,92 @@
+:host {
+  width: 100%;
+}
+
+.performance-update-header-content {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .title-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .performance-update-title {
+    color: #000;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    align-content: center;
+    white-space: nowrap;
+  }
+
+  .badges-section,
+  .status-section,
+  .title-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--wf-font-family-main);
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d2d2d;
+  }
+
+  .header-indicators-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .reporting-period {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    line-height: 1.2;
+
+    .label {
+      white-space: nowrap;
+    }
+  }
+}
+
+.performance-update-header-content.stack-badges {
+  padding: 12px 0;
+
+  .title-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    .performance-update-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: #000;
+    }
+  }
+
+  .header-indicators-group,
+  .badges-section,
+  .status-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

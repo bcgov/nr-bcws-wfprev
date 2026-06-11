@@ -1,0 +1,83 @@
+<div class="performance-update-header-content" [class.stack-badges]="shouldStack">
+  <div class="header-left">
+    <wfprev-expansion-indicator [isExpanded]="isExpanded"></wfprev-expansion-indicator>
+    <div class="title-group">
+      <div class="title-section">
+        @if (update.reportingPeriod === other.value) {
+          <span class="reporting-period"><span class="label">Reporting Period:</span> <span class="value">{{ other.description }}</span></span>
+        }
+        @if (update.reportingPeriod === march7.value) {
+          <span class="reporting-period"><span class="label">Reporting Period:</span> <span class="value">{{ march7.description }}</span></span>
+        }
+        @if (update.reportingPeriod === q1.value) {
+          <span class="reporting-period"><span class="label">Reporting Period:</span> <span class="value">{{ q1.description }}</span></span>
+        }
+        @if (update.reportingPeriod === q2.value) {
+          <span class="reporting-period"><span class="label">Reporting Period:</span> <span class="value">{{ q2.description }}</span></span>
+        }
+        @if (update.reportingPeriod === q3.value) {
+          <span class="reporting-period"><span class="label">Reporting Period:</span> <span class="value">{{ q3.description }}</span></span>
+        }
+        @if (shouldStack) {
+          <div class="performance-update-title">
+            {{ update.submittedTimestamp | date:'yyyy-MM-dd' }}
+          </div>
+        }
+      </div>
+      @if (!shouldStack) {
+        <div class="performance-update-title">
+          {{ update.submittedTimestamp | date:'yyyy-MM-dd' }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="header-indicators-group">
+    <div class="badges-section">
+      @if (update.progressStatusCode === delayedProgressStatus.value) {
+        <wfprev-status-badge type="delayed"></wfprev-status-badge>
+      }
+      @if (update.progressStatusCode === onTrackProgressStatus.value) {
+        <wfprev-status-badge type="on-track"></wfprev-status-badge>
+      }
+      @if (update.progressStatusCode === deferredProgressStatus.value) {
+        <wfprev-status-badge type="deferred"></wfprev-status-badge>
+      }
+      @if (update.progressStatusCode === cancelledProgressStatus.value) {
+        <wfprev-status-badge type="cancelled"></wfprev-status-badge>
+      }
+      @if (update.forecastAdjustmentAmount < 0) {
+        <wfprev-status-badge type="forecast-decreased"></wfprev-status-badge>
+      }
+      @if (update.forecastAdjustmentAmount > 0) {
+        <wfprev-status-badge type="forecast-increased"></wfprev-status-badge>
+      }
+      @if (update.isCarryForwardInd === true) {
+        <wfprev-status-badge type="warning" label="Carry Forward"></wfprev-status-badge>
+      }
+      @if (update.outstandingObligationsInd === true) {
+        <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
+      }
+    </div>
+    <div class="status-section">
+      @if (update.updateGeneralStatus === cancelledUpdateGeneralStatus.value) {
+        <wfprev-status-badge type="status-cancelled"></wfprev-status-badge>
+      }
+      @if (update.updateGeneralStatus === completeUpdateGeneralStatus.value) {
+        <wfprev-status-badge type="status-complete"></wfprev-status-badge>
+      }
+      @if (update.updateGeneralStatus === draftUpdateGeneralStatus.value) {
+        <wfprev-status-badge type="status-draft"></wfprev-status-badge>
+      }
+      @if (update.updateGeneralStatus === inProgressUpdateGeneralStatus.value) {
+        <wfprev-status-badge type="status-in-progress"></wfprev-status-badge>
+      }
+      @if (update.updateGeneralStatus === preparedUpdateGeneralStatus.value) {
+        <wfprev-status-badge type="status-prepared"></wfprev-status-badge>
+      }
+      @if (update.updateGeneralStatus === proposedUpdateGeneralStatus.value) {
+        <wfprev-status-badge type="status-proposed"></wfprev-status-badge>
+      }
+    </div>
+  </div>
+</div>
