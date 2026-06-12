@@ -515,3 +515,8 @@ export interface YearEndActivityViewModel {
   data: any;
   isExpanded: boolean;
 }
+
+export enum StatusManagementCodes {
+  Cancelled = "CANCELLED",
+  Complete = "COMPLETE"
+}

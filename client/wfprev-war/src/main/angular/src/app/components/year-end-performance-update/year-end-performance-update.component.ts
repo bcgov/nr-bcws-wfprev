@@ -15,7 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgxCurrency } from '@dintecom/ngx-currency';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ProjectFiscalExtended, FiscalCloseout, YearEndActivityViewModel } from 'src/app/components/models';
+import { ProjectFiscalExtended, FiscalCloseout, YearEndActivityViewModel, StatusManagementCodes } from 'src/app/components/models';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { MatButtonModule } from '@angular/material/button';
 import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
@@ -134,7 +134,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
 
           // display only COMPLETE and CANCELLED in the dropdown, and ensure COMPLETE is listed first
           if (responses.statuses?._embedded?.planFiscalStatusCode) {
-            const fiscalStatusCodeOrder = ['COMPLETE', 'CANCELLED'];
+            const fiscalStatusCodeOrder = [StatusManagementCodes.Complete, StatusManagementCodes.Cancelled];
             this.planFiscalStatusCodes = [...responses.statuses._embedded.planFiscalStatusCode]
               .filter((s: any) => fiscalStatusCodeOrder.includes(s.planFiscalStatusCode))
               .sort((a: any, b: any) => fiscalStatusCodeOrder.indexOf(a.planFiscalStatusCode) - fiscalStatusCodeOrder.indexOf(b.planFiscalStatusCode));
