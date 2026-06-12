@@ -2,214 +2,144 @@
   <mat-expansion-panel [expanded]='true' class="expansion-panel" #performanceUpdatesPanels>
     <mat-expansion-panel-header>
       <div class="header-container">
-        <wfprev-expansion-indicator
-        [isExpanded]="performanceUpdatesPanels.expanded"></wfprev-expansion-indicator>
+        <wfprev-expansion-indicator [isExpanded]="performanceUpdatesPanels.expanded"></wfprev-expansion-indicator>
         <span class="project-title">Performance Updates</span>
         <div class="header-buttons">
           <wfprev-icon-button class="add-update" [text]="'Add Update'" [icon]="'/assets/add-button.svg'"
             [alt]="'add-update'" [iconSize]="19" [disabled]="!canCreatePerformanceUpdate" (clicked)="openDialog()">
           </wfprev-icon-button>
           <wfprev-icon-button class="year-end-update" [text]="'Year End Update'" [icon]="'/assets/add-button.svg'"
-            [alt]="'year-end-update'" [iconSize]="19" [disabled]="!canCreateYearEndReport" (clicked)="navigateToYearEnd()">
+            [alt]="'year-end-update'" [iconSize]="19" [disabled]="!canCreateYearEndReport"
+            (clicked)="navigateToYearEnd()">
           </wfprev-icon-button>
         </div>
       </div>
     </mat-expansion-panel-header>
     @if (isLoading) {
-      <div class="spinner-container">
-        <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
-      </div>
+    <div class="spinner-container">
+      <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+    </div>
     }
     @if (!isLoading) {
-      <div>
-        @if(updates.length > 0) {
-          @for (update of updates; track update.submittedTimestamp; let i = $index) {
-            <mat-expansion-panel [expanded]='i === 0' class="expansion-panel" #updatePanel>
-              <mat-expansion-panel-header class="performance-update-header">
-                <wfprev-expansion-indicator [isExpanded]="updatePanel.expanded"></wfprev-expansion-indicator>
-                <div class="title-group">
-                  <div class="performance-update-title">
-                    <div>
-                      <p class="project-title"><b>Date: {{update.submittedTimestamp | date:'yyyy-MM-dd'}}</b></p>
-                    </div>
-                  </div>
-                  <div class="reporting-period-section">
-                    @if (update.reportingPeriod === other.value) {
-                      <span class="reporting-period"><span class="label">Reporting Period:</span> <span
-                    class="value">{{other.description}}</span></span>
+    <div>
+      @if(updates.length > 0) {
+      @for (update of updates; track update.submittedTimestamp; let i = $index) {
+      <mat-expansion-panel [expanded]='i === 0' class="expansion-panel" #updatePanel>
+        <mat-expansion-panel-header class="performance-update-header">
+          <wfprev-performance-update-header [update]="update" [isExpanded]="updatePanel.expanded">
+          </wfprev-performance-update-header>
+        </mat-expansion-panel-header>
+        <div class="form-grid">
+          <div class="general-updates-container">
+            <div class="updates-header">
+              <div class="updates-header-title">
+                <p>General Updates (Successes, Challenges, Progress)</p>
+              </div>
+              <div class="submitted-by">
+                <p>Submitted by: {{update.submittedBy}}</p>
+              </div>
+            </div>
+            <div>
+              <p>{{update.generalUpdateComment}}</p>
+            </div>
+          </div>
+          <div class="budget-adjustment-container">
+            <div class="budget-adjustment-header">
+              <div class="budget-adjustment-title">
+                <span>Budget Adjustment</span>
+              </div>
+              <div class="badges-section">
+                @if(update.forecastAdjustmentAmount < 0){ <wfprev-status-badge type="forecast-decreased">
+                  </wfprev-status-badge>
                   }
-                  @if (update.reportingPeriod === march7.value) {
-                    <span class="reporting-period"><span class="label">Reporting Period:</span> <span
-                  class="value">{{march7.description}}</span></span>
-                }
-                @if (update.reportingPeriod === q1.value) {
-                  <span class="reporting-period"><span class="label">Reporting Period:</span> <span
-                class="value">{{q1.description}}</span></span>
-              }
-              @if (update.reportingPeriod === q2.value) {
-                <span class="reporting-period"><span class="label">Reporting Period:</span> <span
-              class="value">{{q2.description}}</span></span>
-            }
-            @if (update.reportingPeriod === q3.value) {
-              <span class="reporting-period"><span class="label">Reporting Period:</span> <span
-            class="value">{{q3.description}}</span></span>
-          }
+                  @if(update.forecastAdjustmentAmount > 0){
+                  <wfprev-status-badge type="forecast-increased"></wfprev-status-badge>
+                  }
+              </div>
+            </div>
+            <div class="budget-adjustment-details">
+              <div class="budget-adjustment-item">
+                <p class="budget-title">Revised Forecast Amount</p>
+                <p>{{update.forecastAmount | currency}}</p>
+              </div>
+              <div class="budget-adjustment-item">
+                <p class="budget-title">Forecast Adjustment Amount</p>
+                <p>{{update.forecastAdjustmentAmount | currency}}</p>
+              </div>
+              <div class="budget-adjustment-item">
+                <p class="budget-title">Forecast Adjustment Rationale</p>
+                <p>{{update.forecastAdjustmentRationale}}</p>
+              </div>
+            </div>
+          </div>
+          <div class="budget-breakdown-container">
+            <div class="budget-breakdown-header">
+              <p>Budget Risk Breakdown</p>
+            </div>
+            <div class="budget-breakdown-table">
+              <div class="budget-breakdown-row">
+                <div class="budget-breakdown-cell1">
+                  <wfprev-status-badge type="risk-high"></wfprev-status-badge>
+                </div>
+                <div class="budget-breakdown-cell2">
+                  <p>{{update.budgetHighRiskAmount | currency}}</p>
+                </div>
+                <div class="rationale-cell">
+                  <p>{{update.budgetHighRiskRationale}}</p>
+                </div>
+              </div>
+              <div class="budget-breakdown-row">
+                <div class="budget-breakdown-cell1">
+                  <wfprev-status-badge type="risk-medium"></wfprev-status-badge>
+                </div>
+                <div class="budget-breakdown-cell2">
+                  <p>{{update.budgetMediumRiskAmount | currency}}</p>
+                </div>
+                <div class="rationale-cell">
+                  <p>{{update.budgetMediumRiskRationale}}</p>
+                </div>
+              </div>
+              <div class="budget-breakdown-row">
+                <div class="budget-breakdown-cell1">
+                  <wfprev-status-badge type="risk-low"></wfprev-status-badge>
+                </div>
+                <div class="budget-breakdown-cell2">
+                  <p>{{update.budgetLowRiskAmount | currency}}</p>
+                </div>
+                <div class="rationale-cell">
+                  <p>{{update.budgetLowRiskRationale}}</p>
+                </div>
+              </div>
+              <div class="budget-breakdown-row">
+                <div class="budget-breakdown-cell1">
+                  <wfprev-status-badge type="risk-none"></wfprev-status-badge>
+                </div>
+                <div class="budget-breakdown-cell2">
+                  <p>{{update.budgetCompletedAmount | currency}}</p>
+                </div>
+                <div class="rationale-cell">
+                  <p>{{update.budgetCompletedDescription}}</p>
+                </div>
+              </div>
+              <div class="budget-breakdown-last-row">
+                <div class="budget-breakdown-cell1">
+                  <p>Total:</p>
+                </div>
+                <div class="budget-breakdown-cell2">
+                  <p>{{update.totalAmount | currency}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </mat-expansion-panel>
+      }
+      } @else {
+      <div class="wf-empty-state">
+        <p class="empty-state-text">No Performance Updates have been added.</p>
       </div>
-      <div class="header-indicators-group">
-        <div class="badges-section">
-          @if(update.progressStatusCode === delayedProgressStatus.value) {
-            <wfprev-status-badge type="delayed"></wfprev-status-badge>
-          }
-          @if(update.progressStatusCode === onTrackProgressStatus.value) {
-            <wfprev-status-badge type="on-track"></wfprev-status-badge>
-          }
-          @if(update.progressStatusCode === deferredProgressStatus.value) {
-            <wfprev-status-badge type="deferred"></wfprev-status-badge>
-          }
-          @if(update.progressStatusCode === cancelledProgressStatus.value) {
-            <wfprev-status-badge type="cancelled"></wfprev-status-badge>
-          }
-          @if(update.forecastAdjustmentAmount < 0){
-            <wfprev-status-badge type="forecast-decreased"></wfprev-status-badge>
-          }
-          @if(update.forecastAdjustmentAmount > 0){
-            <wfprev-status-badge type="forecast-increased"></wfprev-status-badge>
-          }
-        </div>
-        <div class="status-section">
-          @if(update.updateGeneralStatus === cancelledUpdateGeneralStatus.value) {
-            <wfprev-status-badge type="status-cancelled"></wfprev-status-badge>
-          }
-          @if(update.updateGeneralStatus === completeUpdateGeneralStatus.value) {
-            <wfprev-status-badge type="status-complete"></wfprev-status-badge>
-          }
-          @if(update.updateGeneralStatus === draftUpdateGeneralStatus.value) {
-            <wfprev-status-badge type="status-draft"></wfprev-status-badge>
-          }
-          @if(update.updateGeneralStatus === inProgressUpdateGeneralStatus.value) {
-            <wfprev-status-badge type="status-in-progress"></wfprev-status-badge>
-          }
-          @if(update.updateGeneralStatus === preparedUpdateGeneralStatus.value) {
-            <wfprev-status-badge type="status-prepared"></wfprev-status-badge>
-          }
-          @if(update.updateGeneralStatus === proposedUpdateGeneralStatus.value) {
-            <wfprev-status-badge type="status-proposed"></wfprev-status-badge>
-          }
-        </div>
-      </div>
-    </mat-expansion-panel-header>
-    <div class="form-grid">
-      <div class="general-updates-container">
-        <div class="updates-header">
-          <div class="updates-header-title">
-            <p>General Updates (Successes, Challenges, Progress)</p>
-          </div>
-          <div class="submitted-by">
-            <p>Submitted by: {{update.submittedBy}}</p>
-          </div>
-        </div>
-        <div>
-          <p>{{update.generalUpdateComment}}</p>
-        </div>
-      </div>
-      <div class="budget-adjustment-container">
-        <div class="budget-adjustment-header">
-          <div class="budget-adjustment-title">
-            <span>Budget Adjustment</span>
-          </div>
-          <div class="badges-section">
-            @if(update.forecastAdjustmentAmount < 0){
-              <wfprev-status-badge type="forecast-decreased"></wfprev-status-badge>
-            }
-            @if(update.forecastAdjustmentAmount > 0){
-              <wfprev-status-badge type="forecast-increased"></wfprev-status-badge>
-            }
-          </div>
-        </div>
-        <div class="budget-adjustment-details">
-          <div class="budget-adjustment-item">
-            <p class="budget-title">Revised Forecast Amount</p>
-            <p>{{update.forecastAmount | currency}}</p>
-          </div>
-          <div class="budget-adjustment-item">
-            <p class="budget-title">Forecast Adjustment Amount</p>
-            <p>{{update.forecastAdjustmentAmount | currency}}</p>
-          </div>
-          <div class="budget-adjustment-item">
-            <p class="budget-title">Forecast Adjustment Rationale</p>
-            <p>{{update.forecastAdjustmentRationale}}</p>
-          </div>
-        </div>
-      </div>
-      <div class="budget-breakdown-container">
-        <div class="budget-breakdown-header">
-          <p>Budget Risk Breakdown</p>
-        </div>
-        <div class="budget-breakdown-table">
-          <div class="budget-breakdown-row">
-            <div class="budget-breakdown-cell1">
-              <wfprev-status-badge type="risk-high"></wfprev-status-badge>
-            </div>
-            <div class="budget-breakdown-cell2">
-              <p>{{update.budgetHighRiskAmount | currency}}</p>
-            </div>
-            <div class="rationale-cell">
-              <p>{{update.budgetHighRiskRationale}}</p>
-            </div>
-          </div>
-          <div class="budget-breakdown-row">
-            <div class="budget-breakdown-cell1">
-              <wfprev-status-badge type="risk-medium"></wfprev-status-badge>
-            </div>
-            <div class="budget-breakdown-cell2">
-              <p>{{update.budgetMediumRiskAmount | currency}}</p>
-            </div>
-            <div class="rationale-cell">
-              <p>{{update.budgetMediumRiskRationale}}</p>
-            </div>
-          </div>
-          <div class="budget-breakdown-row">
-            <div class="budget-breakdown-cell1">
-              <wfprev-status-badge type="risk-low"></wfprev-status-badge>
-            </div>
-            <div class="budget-breakdown-cell2">
-              <p>{{update.budgetLowRiskAmount | currency}}</p>
-            </div>
-            <div class="rationale-cell">
-              <p>{{update.budgetLowRiskRationale}}</p>
-            </div>
-          </div>
-          <div class="budget-breakdown-row">
-            <div class="budget-breakdown-cell1">
-              <wfprev-status-badge type="risk-none"></wfprev-status-badge>
-            </div>
-            <div class="budget-breakdown-cell2">
-              <p>{{update.budgetCompletedAmount | currency}}</p>
-            </div>
-            <div class="rationale-cell">
-              <p>{{update.budgetCompletedDescription}}</p>
-            </div>
-          </div>
-          <div class="budget-breakdown-last-row">
-            <div class="budget-breakdown-cell1">
-              <p>Total:</p>
-            </div>
-            <div class="budget-breakdown-cell2">
-              <p>{{update.totalAmount | currency}}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      }
     </div>
+    }
   </mat-expansion-panel>
-}
-} @else {
-  <div class="wf-empty-state">
-    <p class="empty-state-text">No Performance Updates have been added.</p>
-  </div>
-}
-</div>
-}
-</mat-expansion-panel>
 </div>

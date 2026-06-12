@@ -435,6 +435,12 @@ export interface PerformanceUpdate {
   totalAmount: number;
 }
 
+export interface PerformanceUpdateExtended extends PerformanceUpdate {
+
+  isCarryForwardInd: boolean;
+  outstandingObligationsInd: boolean;
+}
+
 export interface FiscalCloseout {
   projectPlanFiscalCloseoutGuid?: string;
   projectPlanFiscalGuid?: string;
