@@ -155,6 +155,11 @@ export const FiscalStatuses = {
   CANCELLED: 'CANCELLED',
 };
 
+export const StatusManagementStatuses = {
+  COMPLETE: 'COMPLETE',
+  CANCELLED: 'CANCELLED',
+};
+
 export const CUSTOM_DATE_FORMATS = {
   parse: { dateInput: 'YYYY-MM-DD' },
   display: {
