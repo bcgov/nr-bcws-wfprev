@@ -35,7 +35,7 @@ export class SpatialViewerDialogComponent implements OnInit, AfterViewInit {
     // Initialize map
     this.map = L.map('spatial-viewer-map', {
       zoomControl: false,
-      maxZoom: 20,
+      maxZoom: 18,
       minZoom: 4
     }).setView([53.7267, -127.6476], 5); // Default center of BC
 
