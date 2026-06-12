@@ -132,8 +132,12 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
             this.closeoutData = closeouts[0];
           }
 
-          if (responses.statuses && responses.statuses._embedded && responses.statuses._embedded.planFiscalStatusCode) {
-            this.planFiscalStatusCodes = [...responses.statuses._embedded.planFiscalStatusCode].sort((a: any, b: any) => (a.description ?? '').localeCompare(b.description ?? ''));
+          // display only COMPLETE and CANCELLED in the dropdown, and ensure COMPLETE is listed first
+          if (responses.statuses?._embedded?.planFiscalStatusCode) {
+            const fiscalStatusCodeOrder = ['COMPLETE', 'CANCELLED'];
+            this.planFiscalStatusCodes = [...responses.statuses._embedded.planFiscalStatusCode]
+              .filter((s: any) => fiscalStatusCodeOrder.includes(s.planFiscalStatusCode))
+              .sort((a: any, b: any) => fiscalStatusCodeOrder.indexOf(a.planFiscalStatusCode) - fiscalStatusCodeOrder.indexOf(b.planFiscalStatusCode));
           }
 
           this.patchForm();
