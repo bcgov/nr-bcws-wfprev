@@ -15,4 +15,5 @@ import org.springframework.data.domain.Sort;
 public interface FiscalCloseoutRepository extends JpaRepository<FiscalCloseoutEntity, UUID> {
     List<FiscalCloseoutEntity> findAllByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid, Sort sort);
     void deleteByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
+    Optional<FiscalCloseoutEntity> findByProjectFiscal_ProjectPlanFiscalGuid(UUID projectPlanFiscalGuid);
 }
