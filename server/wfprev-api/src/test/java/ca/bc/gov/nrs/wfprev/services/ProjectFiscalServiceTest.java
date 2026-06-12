@@ -1093,8 +1093,6 @@ class ProjectFiscalServiceTest {
         when(activityRepository.save(activityEntity)).thenReturn(savedActivityEntity);
         when(activityResourceAssembler.toModel(savedActivityEntity)).thenReturn(activityModel);
 
-        when(fiscalCloseoutRepository.findByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid))
-                .thenReturn(Optional.empty());
         when(fiscalCloseoutResourceAssembler.toEntity(closeoutResponse, fiscalEntity)).thenReturn(newCloseoutEntity);
         when(fiscalCloseoutRepository.save(newCloseoutEntity)).thenReturn(savedCloseoutEntity);
         when(fiscalCloseoutResourceAssembler.toModel(savedCloseoutEntity)).thenReturn(closeoutResponse);
@@ -1105,57 +1103,6 @@ class ProjectFiscalServiceTest {
         verify(projectFiscalRepository).save(fiscalEntity);
         verify(activityRepository).save(activityEntity);
         verify(fiscalCloseoutRepository).save(newCloseoutEntity);
-    }
-
-    @Test
-    void testSubmitFiscalCloseout_Success_ExistingCloseoutUpdated() {
-        UUID fiscalGuid = UUID.randomUUID();
-
-        ProjectFiscalModel projectFiscalModel = new ProjectFiscalModel();
-        projectFiscalModel.setProjectPlanFiscalGuid(fiscalGuid.toString());
-        PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
-        statusModel.setPlanFiscalStatusCode("COMPLETE");
-        projectFiscalModel.setPlanFiscalStatusCode(statusModel);
-
-        FiscalCloseoutResponse closeoutResponse = new FiscalCloseoutResponse();
-        closeoutResponse.setOutcomeComment("Updated outcome");
-
-        FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
-                .projectFiscal(projectFiscalModel)
-                .closeout(closeoutResponse)
-                .activities(List.of())
-                .build();
-
-        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
-        fiscalEntity.setProjectPlanFiscalGuid(fiscalGuid);
-        PlanFiscalStatusCodeEntity statusEntity = new PlanFiscalStatusCodeEntity();
-        statusEntity.setPlanFiscalStatusCode("COMPLETE");
-        fiscalEntity.setPlanFiscalStatusCode(statusEntity);
-
-        PlanFiscalStatusCodeEntity completeStatus = new PlanFiscalStatusCodeEntity();
-        completeStatus.setPlanFiscalStatusCode("COMPLETE");
-        when(planFiscalStatusCodeRepository.findById("COMPLETE")).thenReturn(Optional.of(completeStatus));
-
-        FiscalCloseoutEntity existingCloseout = new FiscalCloseoutEntity();
-        FiscalCloseoutEntity savedCloseout = new FiscalCloseoutEntity();
-        ProjectFiscalEntity savedFiscal = new ProjectFiscalEntity();
-
-        when(projectFiscalRepository.findById(fiscalGuid)).thenReturn(Optional.of(fiscalEntity));
-        when(projectFiscalResourceAssembler.updateEntity(projectFiscalModel, fiscalEntity)).thenReturn(fiscalEntity);
-        when(projectFiscalRepository.save(fiscalEntity)).thenReturn(savedFiscal);
-        when(projectFiscalResourceAssembler.toModel(savedFiscal)).thenReturn(projectFiscalModel);
-
-        when(fiscalCloseoutRepository.findByProjectFiscal_ProjectPlanFiscalGuid(fiscalGuid))
-                .thenReturn(Optional.of(existingCloseout));
-        when(fiscalCloseoutResourceAssembler.updateEntity(closeoutResponse, existingCloseout)).thenReturn(existingCloseout);
-        when(fiscalCloseoutRepository.save(existingCloseout)).thenReturn(savedCloseout);
-        when(fiscalCloseoutResourceAssembler.toModel(savedCloseout)).thenReturn(closeoutResponse);
-
-        FiscalCloseoutSubmitResponse result = projectFiscalService.submitFiscalCloseout(fiscalGuid.toString(), request);
-
-        assertNotNull(result);
-        verify(fiscalCloseoutResourceAssembler).updateEntity(closeoutResponse, existingCloseout);
-        verify(fiscalCloseoutRepository).save(existingCloseout);
     }
 
     @Test

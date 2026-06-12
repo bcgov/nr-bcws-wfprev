@@ -372,15 +372,8 @@ public class ProjectFiscalService implements CommonService {
         // Upsert closeout
         FiscalCloseoutResponse closeoutResponse = request.getCloseout();
 
-        FiscalCloseoutEntity closeoutEntity = fiscalCloseoutRepository
-                .findByProjectFiscal_ProjectPlanFiscalGuid(updatedFiscalEntity.getProjectPlanFiscalGuid())
-                .map(existing -> fiscalCloseoutResourceAssembler.updateEntity(closeoutResponse, existing))
-                .orElseGet(() -> {
-                    FiscalCloseoutEntity newEntity = fiscalCloseoutResourceAssembler.toEntity(closeoutResponse, updatedFiscalEntity);
-                    newEntity.setProjectPlanFiscalCloseoutGuid(UUID.randomUUID());
-                    return newEntity;
-                });
-
+        FiscalCloseoutEntity closeoutEntity = fiscalCloseoutResourceAssembler.toEntity(closeoutResponse, updatedFiscalEntity);
+        closeoutEntity.setProjectPlanFiscalCloseoutGuid(UUID.randomUUID());
         FiscalCloseoutEntity savedCloseout = fiscalCloseoutRepository.save(closeoutEntity);
 
         return FiscalCloseoutSubmitResponse.builder()
