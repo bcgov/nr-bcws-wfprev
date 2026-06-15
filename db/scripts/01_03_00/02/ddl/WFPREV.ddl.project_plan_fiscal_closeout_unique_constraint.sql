@@ -1,0 +1,1 @@
+ALTER TABLE wfprev.project_plan_fiscal_closeout ADD CONSTRAINT ppfyco_uc UNIQUE (project_plan_fiscal_guid);
