@@ -2190,6 +2190,23 @@
         "rollback": [],
         "tagDatabase": { "tag": "version_01_03_00_01" }
       }
+    },{
+      "changeSet": {
+        "id": "01_03_00_02",
+        "author": "ssylver",
+        "tagDatabase": { "tag" : "version_01_03_00_02" },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/02/ddl/WFPREV.ddl.project_plan_fiscal_closeout_unique_constraint.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
