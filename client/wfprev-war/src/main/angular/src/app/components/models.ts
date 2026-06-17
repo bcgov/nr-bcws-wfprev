@@ -202,6 +202,7 @@ export interface ProjectFile {
   documentPath?: string,
   attachmentContentTypeCode?: {
     attachmentContentTypeCode?: string;
+    description?: string;
   };
   sourceObjectUniqueId?: string,
   boundaryGeometry?: Geometry
@@ -435,10 +436,12 @@ export interface PerformanceUpdate {
   totalAmount: number;
 }
 
-export interface PerformanceUpdateExtended extends PerformanceUpdate {
-
+export interface YearEndPerformanceUpdateExtended extends PerformanceUpdate {
+  statusManagementStatus: UpdateGeneralStatus;
+  fiscalYearFormatted: string;
   isCarryForwardInd: boolean;
   outstandingObligationsInd: boolean;
+  updateDate: Date;
 }
 
 export interface FiscalCloseout {
@@ -515,3 +518,14 @@ export interface YearEndActivityViewModel {
   data: any;
   isExpanded: boolean;
 }
+
+export interface YearEndModel {
+  closeout: FiscalCloseoutModel;
+  projectFiscal: ProjectFiscalExtended;
+  activities: YearEndActivityViewModel[];
+}
+
+export interface FiscalCloseoutModel {
+  outcomeComment: string;
+}
+

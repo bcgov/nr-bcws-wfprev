@@ -1,0 +1,53 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--wf-font-family-main);
+}
+
+.year-end-grid {
+  padding: 18px 24px;
+}
+
+.summary-totals {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0 0 15px 24px;
+}
+
+.summary-metric {
+  flex: 1 1 0;
+  min-width: 0;
+  color: #474543;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.outcomes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 15px 0 8px;
+  padding-left: 24px;
+}
+
+.outcomes-title {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.outcomes-content {
+  color: #000;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+}
+
+@container (max-width: 900px) {
+  .summary-totals {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

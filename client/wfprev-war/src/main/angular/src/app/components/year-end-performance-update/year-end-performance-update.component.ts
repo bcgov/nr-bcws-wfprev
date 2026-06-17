@@ -234,6 +234,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
         }
       });
     this.subscriptions.add(sub);
+    this.goBack();
   }
 
   onSaveActivity(view: YearEndActivityViewModel, updatedActivity: any): void {

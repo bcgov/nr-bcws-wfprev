@@ -19,12 +19,31 @@
     <div class="spinner-container">
       <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
     </div>
+    }@if (!isLoading) {
+    <div>
+      @if(fiscalCloseout) {
+      <mat-expansion-panel class="expansion-panel" #updatePanel>
+        <mat-expansion-panel-header class="performance-update-header">
+          <wfprev-performance-update-header [fiscalCloseout]="fiscalCloseout" [isExpanded]="updatePanel.expanded">
+          </wfprev-performance-update-header>
+        </mat-expansion-panel-header>
+        <wfprev-year-end-summary [projectGuid]="projectGuid" [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary>
+      </mat-expansion-panel>
+      } @else {
+      <div class="wf-empty-state">
+        <p class="empty-state-text">No Performance Updates have been added.</p>
+      </div>
+      }
+    </div>
     }
+
+
+
     @if (!isLoading) {
     <div>
       @if(updates.length > 0) {
       @for (update of updates; track update.submittedTimestamp; let i = $index) {
-      <mat-expansion-panel [expanded]='i === 0' class="expansion-panel" #updatePanel>
+      <mat-expansion-panel [expanded]='false' class="expansion-panel" #updatePanel>
         <mat-expansion-panel-header class="performance-update-header">
           <wfprev-performance-update-header [update]="update" [isExpanded]="updatePanel.expanded">
           </wfprev-performance-update-header>

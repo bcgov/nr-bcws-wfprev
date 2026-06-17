@@ -40,6 +40,7 @@ export class ProjectFilesComponent implements OnInit {
   @Input() title: string = 'Files';
   @Input() showViewButton: boolean = false;
   @Input() showDeleteButton: boolean = true;
+  @Input() isSummaryView: boolean = false;
   attachmentDescription: string = '';
   uploadedBy = '';
 
@@ -99,7 +100,7 @@ export class ProjectFilesComponent implements OnInit {
     if (this.showViewButton) {
       this.displayedColumns.push('view');
     }
-    if (this.showDeleteButton) {
+    if (this.showDeleteButton && !this.isSummaryView) {
       this.displayedColumns.push('delete');
     }
 

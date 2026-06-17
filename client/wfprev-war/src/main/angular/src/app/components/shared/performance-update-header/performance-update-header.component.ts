@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, AfterViewInit, OnDestroy } from '@angular/core';
-import { ForecastStatus, Option, PerformanceUpdateExtended, ProgressStatus, ReportingPeriod, UpdateGeneralStatus } from '../../models';
+import { ForecastStatus, Option, YearEndPerformanceUpdateExtended, ProgressStatus, ReportingPeriod, UpdateGeneralStatus } from '../../models';
 import { ExpansionIndicatorComponent } from '../expansion-indicator/expansion-indicator.component';
 import { StatusBadgeComponent } from '../status-badge/status-badge.component';
 
@@ -12,7 +12,8 @@ import { StatusBadgeComponent } from '../status-badge/status-badge.component';
   styleUrl: './performance-update-header.component.scss',
 })
 export class PerformanceUpdateHeaderComponent implements AfterViewInit, OnDestroy {
-  @Input() update!: PerformanceUpdateExtended;
+  @Input() update!: YearEndPerformanceUpdateExtended;
+  @Input() fiscalCloseout?: YearEndPerformanceUpdateExtended;
   @Input() isExpanded = false;
 
   shouldStack = false;

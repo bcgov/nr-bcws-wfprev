@@ -1,0 +1,9 @@
+<div class="activity-list">
+  <div class="activity-list-title">Activities:</div>
+
+  <div class="activity-items">
+    @for (activityVM of activities; track activityVM.data.activityGuid) {
+      <wfprev-year-end-summary-activity-item [activity]="activityVM" [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary-activity-item>
+    }
+  </div>
+</div>

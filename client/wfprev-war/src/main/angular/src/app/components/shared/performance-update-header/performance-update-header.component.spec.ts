@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { PerformanceUpdateHeaderComponent } from './performance-update-header.component';
-import { PerformanceUpdateExtended, ProgressStatus, ReportingPeriod, UpdateGeneralStatus } from '../../models';
+import { YearEndPerformanceUpdateExtended, ProgressStatus, ReportingPeriod, UpdateGeneralStatus } from '../../models';
 
 class MockResizeObserver {
   observe() {}
@@ -9,7 +9,7 @@ class MockResizeObserver {
   disconnect() {}
 }
 
-const mockUpdate: PerformanceUpdateExtended = {
+const mockUpdate: YearEndPerformanceUpdateExtended = {
   submittedTimestamp: new Date('2026-06-11T00:00:00Z'),
   reportingPeriod: ReportingPeriod.Q2,
   progressStatusCode: ProgressStatus.OnTrack,
@@ -33,6 +33,9 @@ const mockUpdate: PerformanceUpdateExtended = {
   totalAmount: 0,
   isCarryForwardInd: false,
   outstandingObligationsInd: false,
+  statusManagementStatus: UpdateGeneralStatus.Cancelled,
+  fiscalYearFormatted: '',
+  updateDate: new Date('2026-06-11T00:00:00Z')
 };
 
 describe('PerformanceUpdateHeaderComponent', () => {

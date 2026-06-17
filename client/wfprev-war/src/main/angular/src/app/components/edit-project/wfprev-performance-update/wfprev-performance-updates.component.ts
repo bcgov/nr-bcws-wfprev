@@ -10,19 +10,20 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 import { ProjectService } from 'src/app/services/project-services';
-import { PerformanceUpdate, PerformanceUpdateExtended, ProgressStatusCode, ReportingPeriodCode } from '../../models';
+import { PerformanceUpdate, YearEndPerformanceUpdateExtended, ProgressStatusCode, ReportingPeriodCode } from '../../models';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { PerformanceUpdateHeaderComponent } from '../../shared/performance-update-header/performance-update-header.component';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
+import { YearEndSummaryComponent } from '../../year-end-performance-update/year-end-summary/year-end-summary.component';
 
 @Component({
-    selector: 'wfprev-performance-updates',
-    standalone: true,
-    imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule, PerformanceUpdateHeaderComponent],
-    templateUrl: './wfprev-performance-updates.component.html',
-    styleUrl: './wfprev-performance-updates.component.scss'
+  selector: 'wfprev-performance-updates',
+  standalone: true,
+  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule, PerformanceUpdateHeaderComponent, YearEndSummaryComponent],
+  templateUrl: './wfprev-performance-updates.component.html',
+  styleUrl: './wfprev-performance-updates.component.scss'
 })
 export class PerformanceUpdatesComponent implements OnChanges {
   @Input() fiscalGuid: string = '';
@@ -30,7 +31,8 @@ export class PerformanceUpdatesComponent implements OnChanges {
   @Input() currentForecast: string = '';
   @Input() originalCostEstimate: string = ''
 
-  updates: PerformanceUpdateExtended[] = [];
+  updates: YearEndPerformanceUpdateExtended[] = [];
+  fiscalCloseout: YearEndPerformanceUpdateExtended | undefined;
   isUpdatesCalled: boolean = false;
   isLoading = true;
 
@@ -51,7 +53,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
     private readonly snackbarService: MatSnackBar,
     private readonly permissionsService: PermissionsService,
     private readonly router: Router
-  ) {}
+  ) { }
 
   navigateToYearEnd(): void {
     this.router.navigate(['/performance/year-end'], {
@@ -65,32 +67,20 @@ export class PerformanceUpdatesComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['fiscalGuid']?.currentValue && !this.isUpdatesCalled) {
       this.isUpdatesCalled = true;
-      this.getPerformanceUpdates();
+      this.getPerformanceUpdatesAndCloseout();
     } else if (changes['fiscalGuid'] && !changes['fiscalGuid'].currentValue) {
       this.isLoading = false;
     }
   }
 
-  getPerformanceUpdates(): void {
+  getPerformanceUpdatesAndCloseout(): void {
     if (this.fiscalGuid) {
       this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
       if (this.projectGuid) {
-        this.projectService.getPerformanceUpdates(this.projectGuid, this.fiscalGuid)
-          .pipe(finalize(() => this.isLoading = false))
-          .subscribe({
-            next: (data: any) => {
-              this.updates = data?._embedded?.performanceUpdate ?? [];
-            },
-            error: (error) => {
-              console.error('Error fetching performance updates:', error);
-              this.snackbarService.open(
-                'Failed to load performance updates. Please try again later.',
-                'OK',
-                { duration: 5000, panelClass: 'snackbar-error' }
-              );
-            }
-          });
+        this.getFiscalCloseout(this.projectGuid, this.fiscalGuid);
+        this.getPerformanceUpdates(this.projectGuid, this.fiscalGuid);
+
       } else {
         this.isLoading = false;
       }
@@ -99,14 +89,64 @@ export class PerformanceUpdatesComponent implements OnChanges {
     }
   }
 
+  getPerformanceUpdates(projectGuid: string, fiscalGuid: string): void {
+    this.projectService.getPerformanceUpdates(projectGuid, fiscalGuid)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (data: any) => {
+          this.updates = data?._embedded?.performanceUpdate ?? [];
+        },
+        error: (error) => {
+          console.error('Error fetching performance updates:', error);
+          this.snackbarService.open(
+            'Failed to load performance updates. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+  }
+
+  getFiscalCloseout(projectGuid: string, fiscalGuid: string): void {
+    forkJoin({
+      closeouts: this.projectService.getAllFiscalCloseouts(projectGuid, fiscalGuid),
+      activities: this.projectService.getFiscalActivities(projectGuid, fiscalGuid),
+      fiscal: this.projectService.getProjectFiscalByProjectPlanFiscalGuid(projectGuid, fiscalGuid)
+    })
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: ({ closeouts, activities, fiscal }: any) => {
+          this.fiscalCloseout = closeouts?._embedded?.fiscalCloseouts[0] ?? undefined;
+
+          const activityList = activities?._embedded?.activities ?? [];
+          if (this.fiscalCloseout) {
+            this.fiscalCloseout.outstandingObligationsInd =
+              activityList.some((a: any) => a.outstandingObligationsInd);
+            this.fiscalCloseout.isCarryForwardInd =
+              activityList.some((a: any) => a.isCarryForwardInd);
+            this.fiscalCloseout.statusManagementStatus = fiscal?.planFiscalStatusCode?.planFiscalStatusCode;  
+            this.fiscalCloseout.fiscalYearFormatted = `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`;
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching year end updates:', error);
+          this.snackbarService.open(
+            'Failed to load year end updates. Please try again later.',
+            'OK',
+            { duration: 5000, panelClass: 'snackbar-error' }
+          );
+        }
+      });
+  }
+
   openDialog(): void {
     forkJoin({
       projectFiscal: this.projectService.getProjectFiscalByProjectPlanFiscalGuid(this.projectGuid, this.fiscalGuid),
       reportingPeriod: this.codeTableService.getReportingPeriodCodes(),
       progressStatus: this.codeTableService.getProgressStatusCodes()
     })
-    .subscribe({
-        next: ({projectFiscal, reportingPeriod, progressStatus}) => {
+      .subscribe({
+        next: ({ projectFiscal, reportingPeriod, progressStatus }) => {
           const dialogRef = this.dialog.open(PerformanceUpdateModalWindowComponent,
             {
               data: {
