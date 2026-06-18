@@ -144,6 +144,7 @@ export const FiscalActionLabels = {
   CANCEL_FISCAL: 'Cancel Fiscal',
   DELETE: 'Delete Fiscal Activity',
   YEAR_END_UPDATE: 'Year End Update',
+  SET_IN_PROG: 'Set to In Progress'
 };
 
 export const FiscalStatuses = {
