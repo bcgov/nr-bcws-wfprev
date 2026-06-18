@@ -29,18 +29,8 @@
         </mat-expansion-panel-header>
         <wfprev-year-end-summary [projectGuid]="projectGuid" [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary>
       </mat-expansion-panel>
-      } @else {
-      <div class="wf-empty-state">
-        <p class="empty-state-text">No Performance Updates have been added.</p>
-      </div>
       }
-    </div>
-    }
 
-
-
-    @if (!isLoading) {
-    <div>
       @if(updates.length > 0) {
       @for (update of updates; track update.submittedTimestamp; let i = $index) {
       <mat-expansion-panel [expanded]='false' class="expansion-panel" #updatePanel>
@@ -51,7 +41,9 @@
         <wfprev-performance-update-summary [update]="update"></wfprev-performance-update-summary>
       </mat-expansion-panel>
       }
-      } @else {
+      }
+
+      @if(!fiscalCloseout && updates.length === 0) {
       <div class="wf-empty-state">
         <p class="empty-state-text">No Performance Updates have been added.</p>
       </div>
