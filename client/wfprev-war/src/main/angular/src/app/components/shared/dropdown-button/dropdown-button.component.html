@@ -51,6 +51,16 @@
       [disabled]="isDirty"
       [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
       matTooltipPosition="left"
+      (click)="emitAction('IN_PROG')">
+      {{ FiscalActionLabels.SET_IN_PROG }}
+    </button>
+  }  
+  @if (status === FiscalStatuses.PREPARED) {
+    <button
+      mat-menu-item
+      [disabled]="isDirty"
+      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
+      matTooltipPosition="left"
       (click)="emitAction('YEAR_END_UPDATE')">
       {{ FiscalActionLabels.YEAR_END_UPDATE }}
     </button>
