@@ -1,95 +1,93 @@
 <div class="project-files-container">
+  @if (!isSummaryView) {
   <div class="title-container">
     <span class="title-text">
       {{ title }} @if (required) { <span class="required">*</span> }
     </span>
     <span matTooltip="Files can only be added once that activity has been saved"
       [matTooltipDisabled]="isTooltipDisabled">
-      <wfprev-icon-button
-        [text]="'Upload File'"
-        [icon]="'/assets/upload-file.svg'"
-        [alt]="'upload-file'"
-        [iconSize]="19"
-        [disabled]="isReadonly"
-        (clicked)="openFileUploadModal()">
+      <wfprev-icon-button [text]="'Upload File'" [icon]="'/assets/upload-file.svg'" [alt]="'upload-file'"
+        [iconSize]="19" [disabled]="isReadonly" (clicked)="openFileUploadModal()">
       </wfprev-icon-button>
     </span>
   </div>
+  }
 
   @if (isLoading) {
-    <div class="spinner-container">
-      <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
-    </div>
+  <div class="spinner-container">
+    <mat-progress-spinner mode="indeterminate" diameter="36" color="primary"></mat-progress-spinner>
+  </div>
   }
 
   @if (!isLoading && hasAttachments) {
-    <table mat-table [dataSource]="dataSource" class="files-table">
-      <ng-container matColumnDef="attachmentType">
-        <th mat-header-cell *matHeaderCellDef> Attachment Type </th>
-        <td mat-cell *matCellDef="let file" data-label="Attachment Type"> {{
+  <table mat-table [dataSource]="dataSource" class="files-table">
+    <ng-container matColumnDef="attachmentType">
+      <th mat-header-cell *matHeaderCellDef> Attachment Type </th>
+      <td mat-cell *matCellDef="let file" data-label="Attachment Type"> {{
         translateAttachmentType(file.attachmentContentTypeCode?.description) }} </td>
-      </ng-container>
-      <ng-container matColumnDef="fileName">
-        <th mat-header-cell *matHeaderCellDef> File Name </th>
-        <td mat-cell *matCellDef="let file" data-label="File Name"> {{ file.documentPath }} </td>
-      </ng-container>
-      <ng-container matColumnDef="fileType">
-        <th mat-header-cell *matHeaderCellDef> File Type </th>
-        <td mat-cell *matCellDef="let file" data-label="File Type"> {{
+    </ng-container>
+    <ng-container matColumnDef="fileName">
+      <th mat-header-cell *matHeaderCellDef> File Name </th>
+      <td mat-cell *matCellDef="let file" data-label="File Name"> {{ file.documentPath }} </td>
+    </ng-container>
+    <ng-container matColumnDef="fileType">
+      <th mat-header-cell *matHeaderCellDef> File Type </th>
+      <td mat-cell *matCellDef="let file" data-label="File Type"> {{
         file.documentPath?.split('.').pop()?.toUpperCase() }} </td>
-      </ng-container>
-      <ng-container matColumnDef="uploadedBy">
-        <th mat-header-cell *matHeaderCellDef> Uploaded By </th>
-        <td mat-cell *matCellDef="let file" data-label="Uploaded By"> {{ file.uploadedByUserId }} </td>
-      </ng-container>
-      <ng-container matColumnDef="uploadedDate">
-        <th mat-header-cell *matHeaderCellDef> Uploaded Date </th>
-        <td mat-cell *matCellDef="let file" data-label="Uploaded Date"> {{ file.uploadedByTimestamp |
+    </ng-container>
+    <ng-container matColumnDef="uploadedBy">
+      <th mat-header-cell *matHeaderCellDef> Uploaded By </th>
+      <td mat-cell *matCellDef="let file" data-label="Uploaded By"> {{ file.uploadedByUserId }} </td>
+    </ng-container>
+    <ng-container matColumnDef="uploadedDate">
+      <th mat-header-cell *matHeaderCellDef> Uploaded Date </th>
+      <td mat-cell *matCellDef="let file" data-label="Uploaded Date"> {{ file.uploadedByTimestamp |
         date:'yyyy-MM-dd' }} </td>
-      </ng-container>
-      <ng-container matColumnDef="polygonHectares">
-        <th mat-header-cell *matHeaderCellDef> Polygon Hectares </th>
-        <td mat-cell *matCellDef="let file" data-label="Polygon Hectares"> {{ file.polygonHectares &&
+    </ng-container>
+    <ng-container matColumnDef="polygonHectares">
+      <th mat-header-cell *matHeaderCellDef> Polygon Hectares </th>
+      <td mat-cell *matCellDef="let file" data-label="Polygon Hectares"> {{ file.polygonHectares &&
         (file.polygonHectares | number) + ' Ha' }} </td>
-      </ng-container>
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef> Description </th>
-        <td mat-cell *matCellDef="let file" data-label="Description"> {{ file.attachmentDescription }} </td>
-      </ng-container>
-      <ng-container matColumnDef="download">
-        <th mat-header-cell *matHeaderCellDef> Download </th>
-        <td mat-cell *matCellDef="let file" data-label="Download">
-          <button class="table-button" mat-icon-button (click)="downloadFile(file)"
-            [disabled]="isDownloading(file)">
-            <mat-icon svgIcon="download"></mat-icon>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let file" data-label="Description"> {{ file.attachmentDescription }} </td>
+    </ng-container>
+    <ng-container matColumnDef="download">
+      <th mat-header-cell *matHeaderCellDef> Download </th>
+      <td mat-cell *matCellDef="let file" data-label="Download">
+        <button class="table-button" mat-icon-button (click)="downloadFile(file)" [disabled]="isDownloading(file)">
+          <mat-icon svgIcon="download"></mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="view">
+      <th mat-header-cell *matHeaderCellDef> View </th>
+      <td mat-cell *matCellDef="let file" data-label="View">
+        <span [matTooltip]="'Viewing is only supported for spatial files'" [matTooltipDisabled]="canViewFile(file)">
+          <button class="table-button" mat-icon-button (click)="viewFile(file)" [disabled]="!canViewFile(file)">
+            <mat-icon svgIcon="view"></mat-icon>
           </button>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="view">
-        <th mat-header-cell *matHeaderCellDef> View </th>
-        <td mat-cell *matCellDef="let file" data-label="View">
-          <span [matTooltip]="'Viewing is only supported for spatial files'" [matTooltipDisabled]="canViewFile(file)">
-            <button class="table-button" mat-icon-button (click)="viewFile(file)" [disabled]="!canViewFile(file)">
-              <mat-icon svgIcon="view"></mat-icon>
-            </button>
-          </span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef> Delete </th>
-        <td mat-cell *matCellDef="let file" data-label="Delete">
-          <button class="table-button" mat-icon-button (click)="deleteFile(file)" [disabled]="isReadonly">
-            <mat-icon svgIcon="delete"></mat-icon>
-          </button>
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        </span>
+      </td>
+    </ng-container>
+    @if (!isSummaryView) {
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef> Delete </th>
+      <td mat-cell *matCellDef="let file" data-label="Delete">
+        <button class="table-button" mat-icon-button (click)="deleteFile(file)" [disabled]="isReadonly">
+          <mat-icon svgIcon="delete"></mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    }
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
   }
   @if (!isLoading && !hasAttachments) {
-    <div class="wf-empty-state">
-      <p class="empty-state-text">No Files have been added.</p>
-    </div>
+  <div class="wf-empty-state">
+    <p class="empty-state-text">No Files have been added.</p>
+  </div>
   }
 </div>

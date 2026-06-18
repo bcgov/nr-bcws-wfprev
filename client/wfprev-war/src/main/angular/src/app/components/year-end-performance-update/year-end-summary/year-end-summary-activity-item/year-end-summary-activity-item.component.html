@@ -1,0 +1,60 @@
+<div class="activity-item">
+
+  <div class="activity-header">
+    <span class="activity-name">{{ activity.data.activityName }}</span>
+
+    <div class="activity-status">
+      @if (statusBadgeType) {
+        <wfprev-status-badge [type]="statusBadgeType"></wfprev-status-badge>
+      }
+    </div>
+
+    <div class="activity-results">
+      @if (activity.data.isResultsReportableInd) {
+        <div class="indicator-item">
+          <img src="/assets/blue-checkmark.svg" alt="RESULTS Reportable" class="indicator-icon" />
+          <span>RESULTS Reportable</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="activity-metrics">
+    <span class="summary-metric">Completed Hectares (Ha): <strong>{{ activity.data.completedAreaHa ?? 0 }}</strong></span>
+    <span class="summary-metric">Final Reported Spend: <strong>${{ activity.data.reportedSpendAmount ?? 0 }}</strong></span>
+    <span class="summary-metric"></span>
+  </div>
+
+  <div class="final-outcome-block">
+    <div class="final-outcome-title">Final Outcome &amp; Comments (Including Reason for Deferred or Cancelled, $0 spent)</div>
+    <p class="final-outcome-content">{{ activity.data.finalOutcomeComments }}</p>
+  </div>
+
+  @if (activity.data.outstandingObligationsInd || activity.data.isCarryForwardInd) {
+    <div class="obligation-badges">
+      @if (activity.data.outstandingObligationsInd) {
+        <wfprev-status-badge type="warning" label="Outstanding Obligations"></wfprev-status-badge>
+      }
+      @if (activity.data.isCarryForwardInd) {
+        <wfprev-status-badge type="warning" label="Carry Forward"></wfprev-status-badge>
+      }
+    </div>
+    <div class="carry-forward-block">
+      <div class="carry-forward-title">Describe your plan for addressing outstanding obligations and work to be carried-forward.</div>
+      <p class="carry-forward-content">{{ activity.data.activityComment }}</p>
+    </div>
+  }
+
+  <div class="activity-files">
+    @if (activity.data.activityGuid && fiscalGuid) {
+      <wfprev-project-files
+        [activityGuid]="activity.data.activityGuid"
+        [isReadonly]="true"
+        [isSummaryView]="true"
+        [showViewButton]="true"
+        [fiscalGuid]="fiscalGuid">
+      </wfprev-project-files>
+    }
+  </div>
+
+</div>

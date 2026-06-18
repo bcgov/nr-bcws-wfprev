@@ -1,0 +1,21 @@
+<div class="year-end-grid">
+  @if (summary) {
+
+    <!-- Fiscal Totals Row -->
+    <div class="summary-totals">
+      <span class="summary-metric">Final Reported Spend: <strong>${{ summary.projectFiscal.fiscalReportedSpendAmount ?? 0 }}</strong></span>
+      <span class="summary-metric">CFS Actual Spend: <strong>${{ summary.projectFiscal.fiscalActualAmount ?? 0 }}</strong></span>
+      <span class="summary-metric">Completed Hectares (Ha): <strong>{{ summary.projectFiscal.fiscalCompletedSizeHa ?? 0 }}</strong></span>
+    </div>
+
+    <!-- Outcomes & General Comments -->
+    <div class="outcomes-section">
+      <div class="outcomes-title">Outcomes &amp; General Comments</div>
+      <p class="outcomes-content">{{ summary.closeout?.outcomeComment }}</p>
+    </div>
+
+    <!-- Activities -->
+    <wfprev-year-end-summary-activity-list [activities]="summary.activities" [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary-activity-list>
+
+  }
+</div>
