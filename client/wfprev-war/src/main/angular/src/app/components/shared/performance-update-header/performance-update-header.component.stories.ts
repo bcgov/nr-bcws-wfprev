@@ -41,6 +41,9 @@ const baseUpdate = {
   totalAmount: 0,
   isCarryForwardInd: false,
   outstandingObligationsInd: false,
+  statusManagementStatus: UpdateGeneralStatus.Draft,
+  fiscalYearFormatted: '2025/26',
+  updateDate: new Date('2026-06-11T00:00:00Z'),
 };
 
 export const Default: Story = {

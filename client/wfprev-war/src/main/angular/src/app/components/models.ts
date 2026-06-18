@@ -202,7 +202,6 @@ export interface ProjectFile {
   documentPath?: string,
   attachmentContentTypeCode?: {
     attachmentContentTypeCode?: string;
-    description?: string;
   };
   sourceObjectUniqueId?: string,
   boundaryGeometry?: Geometry

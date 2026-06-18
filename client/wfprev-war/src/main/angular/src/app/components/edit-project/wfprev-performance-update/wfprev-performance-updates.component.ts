@@ -17,11 +17,23 @@ import { PerformanceUpdateHeaderComponent } from '../../shared/performance-updat
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { YearEndSummaryComponent } from '../../year-end-performance-update/year-end-summary/year-end-summary.component';
+import { PerformanceUpdateSummaryComponent } from '../../shared/performance-update-summary/performance-update-summary.component';
 
 @Component({
   selector: 'wfprev-performance-updates',
   standalone: true,
-  imports: [CommonModule, MatExpansionPanel, ExpansionIndicatorComponent, MatExpansionPanelHeader, IconButtonComponent, StatusBadgeComponent, MatProgressSpinnerModule, PerformanceUpdateHeaderComponent, YearEndSummaryComponent],
+  imports: [
+    CommonModule,
+    MatExpansionPanel, 
+    ExpansionIndicatorComponent, 
+    MatExpansionPanelHeader, 
+    IconButtonComponent, 
+    StatusBadgeComponent, 
+    MatProgressSpinnerModule, 
+    PerformanceUpdateHeaderComponent, 
+    YearEndSummaryComponent,
+    PerformanceUpdateSummaryComponent
+  ],
   templateUrl: './wfprev-performance-updates.component.html',
   styleUrl: './wfprev-performance-updates.component.scss'
 })
@@ -124,7 +136,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
               activityList.some((a: any) => a.outstandingObligationsInd);
             this.fiscalCloseout.isCarryForwardInd =
               activityList.some((a: any) => a.isCarryForwardInd);
-            this.fiscalCloseout.statusManagementStatus = fiscal?.planFiscalStatusCode?.planFiscalStatusCode;  
+            this.fiscalCloseout.statusManagementStatus = fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
             this.fiscalCloseout.fiscalYearFormatted = `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`;
           }
         },
