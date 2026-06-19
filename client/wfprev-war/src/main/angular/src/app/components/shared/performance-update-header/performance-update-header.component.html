@@ -28,7 +28,7 @@
         }
         @if (fiscalCloseout && shouldStack) {
           <div class="performance-update-title">
-            {{ fiscalCloseout.updateDate | date:'yyyy-MM-dd' }}
+            {{ fiscalCloseout.updateDate | date:'yyyy-MM-dd':'UTC' }}
           </div>
         }
       </div>
@@ -39,7 +39,7 @@
       }
       @if (fiscalCloseout && !shouldStack) {
         <div class="performance-update-title">
-          {{ fiscalCloseout.updateDate | date:'yyyy-MM-dd' }}
+          {{ fiscalCloseout.updateDate | date:'yyyy-MM-dd':'UTC' }}
         </div>
       }
     </div>
