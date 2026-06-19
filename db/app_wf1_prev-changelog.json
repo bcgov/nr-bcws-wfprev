@@ -2207,6 +2207,40 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_03",
+        "author": "ssylver",
+        "tagDatabase": {
+          "tag": "version_01_03_00_03"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/03/ddl/WFPREV.ddl.project_plan_fiscal_add_bcws_hq_columns.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/03/ddl/WFPREV.ddl.project_plan_fiscal_audit_add_bcws_hq_columns.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_03_00/03/ddl/WFPREV.ddl.update_project_plan_fiscal_trigger.sql",
+              "splitStatements": false
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
