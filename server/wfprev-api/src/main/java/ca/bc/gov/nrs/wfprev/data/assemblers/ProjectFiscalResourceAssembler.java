@@ -104,6 +104,12 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         model.setEndorseApprUpdateUserGuid(entity.getEndorseApprUpdateUserGuid());
         model.setEndorseApprUpdateUserid(entity.getEndorseApprUpdateUserid());
         model.setEndorseApprUpdatedTimestamp(entity.getEndorseApprUpdatedTimestamp());
+        model.setIsBcwsHQApprovedInd(entity.getIsBcwsHQApprovedInd());
+        model.setBcwsHQApproverName(entity.getBcwsHQApproverName());
+        model.setBcwsHQApproverUserGuid(entity.getBcwsHQApproverUserGuid());
+        model.setBcwsHQApproverUserUserid(entity.getBcwsHQApproverUserUserid());
+        model.setBcwsHQApprovedTimestamp(entity.getBcwsHQApprovedTimestamp());
+        model.setBcwsHQApprovedComment(entity.getBcwsHQApprovedComment());
 
         return model;
     }
@@ -190,6 +196,12 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         entity.setEndorseApprUpdateUserGuid(model.getEndorseApprUpdateUserGuid());
         entity.setEndorseApprUpdateUserid(model.getEndorseApprUpdateUserid());
         entity.setEndorseApprUpdatedTimestamp(model.getEndorseApprUpdatedTimestamp());
+        entity.setIsBcwsHQApprovedInd(model.getIsBcwsHQApprovedInd());
+        entity.setBcwsHQApproverName(model.getBcwsHQApproverName());
+        entity.setBcwsHQApproverUserGuid(model.getBcwsHQApproverUserGuid());
+        entity.setBcwsHQApproverUserUserid(model.getBcwsHQApproverUserUserid());
+        entity.setBcwsHQApprovedTimestamp(model.getBcwsHQApprovedTimestamp());
+        entity.setBcwsHQApprovedComment(model.getBcwsHQApprovedComment());
         return entity;
     }
 
@@ -303,6 +315,18 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getEndorseApprUpdateUserid(), existingEntity.getEndorseApprUpdateUserid()));
         existingEntity.setEndorseApprUpdatedTimestamp(
                 nonNullOrDefault(projectFiscalModel.getEndorseApprUpdatedTimestamp(), existingEntity.getEndorseApprUpdatedTimestamp()));
+        existingEntity.setIsBcwsHQApprovedInd(
+                nonNullOrDefault(projectFiscalModel.getIsBcwsHQApprovedInd(), existingEntity.getIsBcwsHQApprovedInd()));
+        existingEntity.setBcwsHQApproverName(
+                nonNullOrDefault(projectFiscalModel.getBcwsHQApproverName(), existingEntity.getBcwsHQApproverName()));
+        existingEntity.setBcwsHQApproverUserGuid(
+                nonNullOrDefault(projectFiscalModel.getBcwsHQApproverUserGuid(), existingEntity.getBcwsHQApproverUserGuid()));
+        existingEntity.setBcwsHQApproverUserUserid(
+                nonNullOrDefault(projectFiscalModel.getBcwsHQApproverUserUserid(), existingEntity.getBcwsHQApproverUserUserid()));
+        existingEntity.setBcwsHQApprovedTimestamp(
+                nonNullOrDefault(projectFiscalModel.getBcwsHQApprovedTimestamp(), existingEntity.getBcwsHQApprovedTimestamp()));
+        existingEntity.setBcwsHQApprovedComment(
+                nonNullOrDefault(projectFiscalModel.getBcwsHQApprovedComment(), existingEntity.getBcwsHQApprovedComment()));
 
         return existingEntity;
     }

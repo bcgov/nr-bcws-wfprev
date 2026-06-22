@@ -758,7 +758,8 @@ describe('ProjectFiscalsComponent', () => {
       firstNationsDelivPartInd: false,
       isApprovedInd: false,
       isDelayedInd: false,
-      totalCostEstimateAmount: 0
+      totalCostEstimateAmount: 0,
+      isBcwsHQApprovedInd: false
     });
   });
 
