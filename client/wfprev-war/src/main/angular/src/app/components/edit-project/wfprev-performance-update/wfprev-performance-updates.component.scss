@@ -139,3 +139,17 @@
     filter: invert(1) !important;
   }
 }
+
+:host ::ng-deep .year-end-update button:disabled {
+  background-color: #c0c0c0 !important;
+  cursor: not-allowed;
+  border: none !important;
+
+  .button-text {
+    color: #fff !important;
+  }
+
+  .icon {
+    filter: brightness(0) invert(1) !important;
+  }
+}
