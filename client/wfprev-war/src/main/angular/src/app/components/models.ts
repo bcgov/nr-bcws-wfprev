@@ -104,6 +104,13 @@ export interface ProjectFiscal {
   endorseApprUpdateUserGuid?: string;
   endorseApprUpdateUserid?: string;
   endorseApprUpdatedTimestamp?: string;
+  isBcwsHQApprovedInd: boolean;
+  bcwsHQApproverName?: string;
+  bcwsHQApproverUserGuid?: string;
+  bcwsHQApproverUserUserid?: string;
+  bcwsHQApprovedTimestamp?: string;
+  bcwsHQApprovedComment?: string;
+
 }
 
 

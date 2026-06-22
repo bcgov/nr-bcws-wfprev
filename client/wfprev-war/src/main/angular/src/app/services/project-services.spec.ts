@@ -87,7 +87,8 @@ describe('ProjectService', () => {
     fiscalActualAmount: 0,
     fiscalActualCostPerHaAmt: 0,
     firstNationsDelivPartInd: false,
-    firstNationsEngagementInd: false
+    firstNationsEngagementInd: false,
+    isBcwsHQApprovedInd: false
   };
 
 

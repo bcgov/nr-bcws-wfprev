@@ -232,4 +232,23 @@ public class ProjectFiscalEntity implements Serializable {
 
     @Column(name = "endorse_appr_updated_timestamp")
     private Date endorseApprUpdatedTimestamp;
+
+    @NotNull
+    @Column(name = "is_bcws_hq_approved_ind", nullable = false)
+    private Boolean isBcwsHQApprovedInd;
+
+    @Column(name = "bcws_hq_approver_name", length = 100)
+    private String bcwsHQApproverName;
+
+    @Column(name = "bcws_hq_approver_user_guid", length = 100)
+    private String bcwsHQApproverUserGuid;
+
+    @Column(name = "bcws_hq_approver_user_userid", length = 100)
+    private String bcwsHQApproverUserUserid;
+
+    @Column(name = "bcws_hq_approved_timestamp")
+    private Date bcwsHQApprovedTimestamp;
+
+    @Column(name = "bcws_hq_approved_comment", length = 4000)
+    private String bcwsHQApprovedComment;
 }

@@ -32,6 +32,7 @@ describe('EndorsementApprovalComponent', () => {
     projectGuid: '123',
     projectPlanStatusCode: 'ACTIVE',
     totalCostEstimateAmount: 1000,
+    isBcwsHQApprovedInd: false
   };
 
   beforeEach(async () => {

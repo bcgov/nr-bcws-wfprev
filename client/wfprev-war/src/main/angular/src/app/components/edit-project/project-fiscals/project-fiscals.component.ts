@@ -544,6 +544,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       endorseApprUpdateUserid: isDraft ? undefined : original.endorseApprUpdateUserid,
       endorseApprUpdatedTimestamp: isDraft ? undefined : original.endorseApprUpdateUpdatedTimestamp,
       isApprovedInd: isDraft ? false : original.isApprovedInd,
+      isBcwsHQApprovedInd: isDraft ? false : original.isApprovedInd,
       ...this.buildSubmissionFields(),
     };
   }
@@ -679,7 +680,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       firstNationsDelivPartInd: false,
       isApprovedInd: false,
       isDelayedInd: false,
-      totalCostEstimateAmount: 0
+      totalCostEstimateAmount: 0,
+      isBcwsHQApprovedInd: false
     };
   }
 

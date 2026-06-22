@@ -43,6 +43,12 @@ class ProjectFiscalResourceAssemblerTest {
                 .endorseApprUpdateUserGuid("user-guid-123")
                 .endorseApprUpdateUserid("idir123")
                 .endorseApprUpdatedTimestamp(new Date())
+                .isBcwsHQApprovedInd(true)
+                .bcwsHQApproverName("Joe Bloggs")
+                .bcwsHQApproverUserGuid(UUID.randomUUID().toString())
+                .bcwsHQApproverUserUserid(UUID.randomUUID().toString())
+                .bcwsHQApprovedTimestamp(new Date())
+                .bcwsHQApprovedComment("Approved")
                 .build();
 
         // Act
@@ -78,6 +84,12 @@ class ProjectFiscalResourceAssemblerTest {
         model.setProjectFiscalName("Test Project Fiscal");
         model.setIsApprovedInd(true);
         model.setIsDelayedInd(false);
+        model.setIsBcwsHQApprovedInd(true);
+        model.setBcwsHQApproverName("Joe Bloggs");
+        model.setBcwsHQApproverUserGuid(UUID.randomUUID().toString());
+        model.setBcwsHQApproverUserUserid(UUID.randomUUID().toString());
+        model.setBcwsHQApprovedTimestamp(new Date());
+        model.setBcwsHQApprovedComment("Approved");
         model.setRevisionCount(1);
         model.setCreateUser("tester");
         model.setCreateDate(new Date());
@@ -102,6 +114,12 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(entity.getEndorseApprUpdateUserGuid(), model.getEndorseApprUpdateUserGuid());
         assertEquals(entity.getEndorseApprUpdateUserid(), model.getEndorseApprUpdateUserid());
         assertEquals(entity.getEndorseApprUpdatedTimestamp(), model.getEndorseApprUpdatedTimestamp());
+        assertEquals(entity.getIsBcwsHQApprovedInd(), model.getIsBcwsHQApprovedInd());
+        assertEquals(entity.getBcwsHQApproverName(), model.getBcwsHQApproverName());
+        assertEquals(entity.getBcwsHQApproverUserGuid(), model.getBcwsHQApproverUserGuid());
+        assertEquals(entity.getBcwsHQApproverUserUserid(), model.getBcwsHQApproverUserUserid());
+        assertEquals(entity.getBcwsHQApprovedTimestamp(), model.getBcwsHQApprovedTimestamp());
+        assertEquals(entity.getBcwsHQApprovedComment(), model.getBcwsHQApprovedComment());
     }
 
     @Test

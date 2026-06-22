@@ -3,6 +3,8 @@ package ca.bc.gov.nrs.wfprev.data.models;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -80,4 +82,10 @@ public class ProjectFiscalModel extends CommonModel<ProjectFiscalModel> {
     private String endorseApprUpdateUserGuid;
     private String endorseApprUpdateUserid;
     private Date endorseApprUpdatedTimestamp;
+    private Boolean isBcwsHQApprovedInd;
+    private String bcwsHQApproverName;
+    private String bcwsHQApproverUserGuid;
+    private String bcwsHQApproverUserUserid;
+    private Date bcwsHQApprovedTimestamp;
+    private String bcwsHQApprovedComment;
 }
