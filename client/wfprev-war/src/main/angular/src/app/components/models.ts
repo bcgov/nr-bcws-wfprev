@@ -484,6 +484,14 @@ export enum UpdateGeneralStatus {
   Proposed = "PROPOSED"
 }
 
+export enum ActivityStatus {
+  InProgress = "ACTIVE",
+  Completed = "COMPLETED",
+  Cancelled = "CANCELLED",
+  Deferred = "DEFERRED",
+  SubstantiallyComplete = "SUBS_COMPL"
+}
+
 export enum ReportingPeriod {
   Custom = "CUSTOM",
   March7 = "MARCH7",

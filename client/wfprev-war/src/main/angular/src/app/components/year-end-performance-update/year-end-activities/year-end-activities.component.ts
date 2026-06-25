@@ -29,6 +29,6 @@ export class YearEndActivitiesComponent {
 
   isAllValid(): boolean {
     if (!this.activityItems) return true;
-    return this.activityItems.toArray().every(item => item.form.valid);
+    return this.activityItems.toArray().every(item => item.form.valid && !item.form.getRawValue().isMissingInfo);
   }
 }
