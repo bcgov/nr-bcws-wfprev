@@ -5,8 +5,7 @@
       [isSpatialAdded]="activity.isSpatialAddedInd"
       [hasOutstandingObligations]="form.getRawValue().outstandingObligationsInd"
       [isCarryForward]="form.getRawValue().isCarryForwardInd" [isResultsReportable]="activity.isResultsReportableInd"
-      [statusCode]="form.getRawValue().activityStatusCode"
-      [backgroundColor]="'var(--wf-colour-year-end-bg)'"
+      [statusCode]="form.getRawValue().activityStatusCode" [backgroundColor]="'var(--wf-colour-year-end-bg)'"
       [isMissingInfo]="form.getRawValue().isMissingInfo"></wfprev-activity-header>
   </mat-expansion-panel-header>
 
@@ -48,7 +47,11 @@
       </wfprev-icon-display-field>
 
       <div class="form-item currency-field">
-        <label>Final Reported Spend <span class="required">*</span></label>
+        <label>Final Reported Spend 
+          @if (form.value.activityStatusCode !== 'CANCELLED') {
+            <span class="required">*</span>
+          }
+        </label>
         <div class="currency-input">
           <span class="currency-symbol">$</span>
           <input type="text" id="reportedSpendAmount" formControlName="reportedSpendAmount" placeholder="0.00"
@@ -58,10 +61,7 @@
         getControl('reportedSpendAmount').touched)) {
         <div class="error">
           @if (getControl('reportedSpendAmount').hasError('required')) {
-          <span>Required</span>
-          }
-          @if (getControl('reportedSpendAmount').hasError('strictlyPositive')) {
-          <span>Must be greater than $0</span>
+          <span>This field can't be blank.</span>
           }
         </div>
         }
@@ -72,16 +72,17 @@
       </wfprev-icon-display-field>
 
       <div class="form-item number-field">
-        <label>Completed Hectares (Ha) <span class="required">*</span></label>
+        <label>Completed Hectares (Ha) 
+          @if (form.value.activityStatusCode !== 'CANCELLED') {
+            <span class="required">*</span>
+          }
+        </label>
         <input type="number" id="completedAreaHa" formControlName="completedAreaHa" />
         @if (getControl('completedAreaHa').errors && (getControl('completedAreaHa').dirty ||
         getControl('completedAreaHa').touched)) {
         <div class="error">
           @if (getControl('completedAreaHa').hasError('required')) {
-          <span>Required</span>
-          }
-          @if (getControl('completedAreaHa').hasError('strictlyPositive')) {
-          <span>Must be greater than 0</span>
+          <span>This field can't be blank.</span>
           }
         </div>
         }
@@ -95,8 +96,9 @@
       </div>
       <div class="textarea-container">
         <wfprev-textarea [label]="'Final Outcome & Comments (Including Reason for Deferred or Cancelled, $0 spent)'"
-          [rows]="3" [maxLength]="500" [control]="getControl('finalOutcomeComments')"
-          [required]="form.value.isCarryForwardInd"
+          [rows]="3" [maxLength]="500" [control]="getControl('finalOutcomeComments')" [required]="form.value.isCarryForwardInd 
+          || (form.value.reportedSpendAmount == 0 && form.value.activityStatusCode !== 'DEFERRED' && form.value.activityStatusCode !== 'CANCELLED')
+          || form.value.activityStatusCode === 'DEFERRED' || form.value.activityStatusCode === 'CANCELLED'"
           placeholder="If the activity was Deferred or Cancelled, or $0 spent, explain the reason here.">
         </wfprev-textarea>
       </div>
@@ -111,7 +113,7 @@
         <wfprev-textarea
           [label]="'Describe your plan for addressing outstanding obligations and work to be carried-forward.'"
           [rows]="3" [maxLength]="500" [control]="getControl('activityComment')"
-          [required]="form.value.outstandingObligationsInd" placeholder="Explain details for your approach.">
+          [required]="form.value.outstandingObligationsInd && form.value.activityStatusCode !== 'CANCELLED'" placeholder="Explain details for your approach.">
         </wfprev-textarea>
       </div>
     </div>
@@ -121,8 +123,10 @@
     <div class="section-divider"></div>
     @if (activity.activityGuid && fiscalGuid) {
     <wfprev-project-files [activityGuid]="activity.activityGuid" [isReadonly]="isReadonly" [fiscalGuid]="fiscalGuid"
-      [required]="true" [title]="'Spatial Files'" [showViewButton]="true" [showDeleteButton]="false"
-      (filesUpdated)="filesUpdated.emit()">
+      [required]="activity.isResultsReportableInd && 
+            form.value.activityStatusCode !== 'DEFERRED' && 
+            form.value.activityStatusCode !== 'CANCELLED'" [title]="'Spatial Files'" [showViewButton]="true" [showDeleteButton]="false"
+      (filesUpdated)="onFilesUpdated()">
       {{activity.activityGuid}}
     </wfprev-project-files>
     }
