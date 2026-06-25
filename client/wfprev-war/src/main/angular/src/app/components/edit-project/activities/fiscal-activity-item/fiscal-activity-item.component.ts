@@ -67,7 +67,7 @@ export class FiscalActivityItemComponent implements OnInit, OnChanges {
     { value: 'COMPLETED', label: 'Completed' },
     { value: 'CANCELLED', label: 'Cancelled' },
     { value: 'DEFERRED', label: 'Deferred' },
-    { value: 'SUBSTANTIALLY_COMPLETE', label: 'Substantially Complete' }
+    { value: 'SUBS_COMPL', label: 'Substantially Complete' }
   ];
 
   getControl(controlName: string): FormControl {

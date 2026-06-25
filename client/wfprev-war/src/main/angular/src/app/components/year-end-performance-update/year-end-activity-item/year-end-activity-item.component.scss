@@ -151,9 +151,9 @@
     }
 
     .error {
-      color: variables.$colour-error-red;
-      font-size: 12px;
-      margin-top: 4px;
+      color: var(--wf-colour-error) !important;
+      font-size: 14px !important;
+      margin-top: 2px !important;
     }
   }
 
