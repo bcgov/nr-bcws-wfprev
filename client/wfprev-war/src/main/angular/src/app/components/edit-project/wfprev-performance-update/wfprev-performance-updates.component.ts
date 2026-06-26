@@ -14,7 +14,6 @@ import { PerformanceUpdate, YearEndPerformanceUpdateExtended, ProgressStatusCode
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { PerformanceUpdateHeaderComponent } from '../../shared/performance-update-header/performance-update-header.component';
-import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { YearEndSummaryComponent } from '../../year-end-performance-update/year-end-summary/year-end-summary.component';
 import { PerformanceUpdateSummaryComponent } from '../../shared/performance-update-summary/performance-update-summary.component';
@@ -28,7 +27,6 @@ import { PerformanceUpdateSummaryComponent } from '../../shared/performance-upda
     ExpansionIndicatorComponent, 
     MatExpansionPanelHeader, 
     IconButtonComponent, 
-    StatusBadgeComponent, 
     MatProgressSpinnerModule, 
     PerformanceUpdateHeaderComponent, 
     YearEndSummaryComponent,

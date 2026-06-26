@@ -1,25 +1,22 @@
 
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { ProjectFiscal } from 'src/app/components/models';
-import { CheckboxComponent } from 'src/app/components/shared/checkbox/checkbox.component';
-import { DatePickerComponent } from 'src/app/components/shared/date-picker/date-picker.component';
 import { DetailsContainerComponent } from 'src/app/components/shared/details-container/details-container.component';
-import { ReadOnlyFieldComponent } from 'src/app/components/shared/read-only-field/read-only-field.component';
-import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
-import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
-import { getLocalIsoTimestamp, getUtcIsoTimestamp } from 'src/app/utils/tools';
-import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 import { capitalizeFirstLetter } from 'src/app/utils';
+import { EndorsementCode, FiscalStatuses } from 'src/app/utils/constants';
+import { getUtcIsoTimestamp } from 'src/app/utils/tools';
+import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
+import { EndorsementApprovalSectionComponent } from './endorsement-approval-section/endorsement-approval-section.component';
 
 @Component({
     selector: 'wfprev-endorsement-approval',
@@ -33,12 +30,9 @@ import { capitalizeFirstLetter } from 'src/app/utils';
     MatDatepickerModule,
     MatButtonModule,
     DetailsContainerComponent,
-    CheckboxComponent,
-    DatePickerComponent,
-    ReadOnlyFieldComponent,
-    TextareaComponent,
     TimestampComponent,
-    MatTooltipModule
+    MatTooltipModule,
+    EndorsementApprovalSectionComponent
 ],
     templateUrl: './endorsement-approval.component.html',
     styleUrl: './endorsement-approval.component.scss'
@@ -133,6 +127,16 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     }
     // or fall back to currentUser if the form is checked
     const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
+    return checked ? this.currentUser : '';
+  }
+
+  get effectiveApproverName(): string {
+    // use the approverName if set
+    if (this.fiscal?.approverName) {
+      return this.fiscal.approverName;
+    }
+    // or fall back to currentUser if the form is checked
+    const checked = this.endorsementApprovalForm.get('approveFiscalActivity')?.value;
     return checked ? this.currentUser : '';
   }
 
