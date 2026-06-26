@@ -1,8 +1,13 @@
 <div class="activity-list">
   <div class="activity-list-title">Activities:</div>
+  @if (activities?.length) {
   <div class="activity-items">
     @for (activity of activities; track activity.data.activityGuid) {
-      <wfprev-year-end-summary-activity-item [activity]="activity" [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary-activity-item>
+    <wfprev-year-end-summary-activity-item [activity]="activity"
+      [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary-activity-item>
     }
   </div>
+  } @else {
+  <div class="no-activities-text">No Activities have been added.</div>
+  }
 </div>
