@@ -1,79 +1,39 @@
 @if (fiscal.projectPlanFiscalGuid) {
-  <wfprev-details-container
-    [title]="'Endorsement and Approval'"
-    [saveDisabled]="isSaving || !endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
-    [cancelDisabled]="!endorsementApprovalForm.dirty"
-    (save)="onSave()"
-    (cancel)="onCancel()"
-    matTooltip="{{ showDraftTooltip ? draftTooltip : '' }}"
-    [matTooltipDisabled]="!showDraftTooltip">
-    <form [formGroup]="endorsementApprovalForm">
-      <!-- Endorsement Section -->
-      <div class="sub-header">
-        BCWS Endorsement
-      </div>
-      <div class="form-grid">
-        <div class="inline-grid">
-          <div class="form-item">
-            <wfprev-checkbox formControlName="endorseFiscalActivity">
-              <span>Endorse Fiscal Activity</span>
-            </wfprev-checkbox>
-          </div>
-          <div class="form-item">
-            <wfprev-date-picker
-              [control]="endorsementDateControl"
-              [label]="'Endorsement Date'">
-            </wfprev-date-picker>
-          </div>
-          <div class="form-item">
-            <wfprev-read-only-field
-              [label]="'Endorsed By'"
-              [value]="effectiveEndorserName">
-            </wfprev-read-only-field>
-          </div>
-        </div>
-        <div class="form-item full-width">
-          <wfprev-textarea
-            [label]="'Endorser\'s Comments'"
-            [placeholder]="'Add supporting details for BCWS endorsement decision...'"
-            [control]="endorsementCommentControl"
-            [maxLength]="500"
-            [rows]="2">
-          </wfprev-textarea>
-        </div>
-      </div>
-      <!-- Approval Section -->
-      <div class="sub-header">
-        Business Area Approval
-      </div>
-      <div class="form-grid">
-        <div class="inline-grid">
-          <div class="form-item">
-            <wfprev-checkbox formControlName="approveFiscalActivity">
-              Approve Fiscal Activity
-            </wfprev-checkbox>
-          </div>
-          <div class="form-item">
-            <wfprev-date-picker
-              [control]="approvalDateControl"
-              [label]="'Approval Date'">
-            </wfprev-date-picker>
-          </div>
-        </div>
-        <div class="form-item full-width">
-          <wfprev-textarea
-            [label]="'Approver\'s Comments'"
-            [placeholder]="'Include position/group(s) responsible for Business Area approval, such as RMT, District Manager(s), etc'"
-            [control]="approvalCommentControl"
-            [maxLength]="500"
-            [rows]="2">
-          </wfprev-textarea>
-        </div>
-      </div>
-      <wfprev-timestamp
-        [updateDate]="fiscal.endorseApprUpdatedTimestamp"
-        [updateUser]="fiscal.endorseApprUpdateUserid">
-      </wfprev-timestamp>
-    </form>
-  </wfprev-details-container>
+<wfprev-details-container [title]="'Endorsement and Approval'"
+  [saveDisabled]="isSaving || !endorsementApprovalForm.valid || !endorsementApprovalForm.dirty"
+  [cancelDisabled]="!endorsementApprovalForm.dirty" (save)="onSave()" (cancel)="onCancel()"
+  matTooltip="{{ showDraftTooltip ? draftTooltip : '' }}" [matTooltipDisabled]="!showDraftTooltip">
+  <form [formGroup]="endorsementApprovalForm">
+    <!-- Endorsement Section -->
+    <div class="sub-header">
+      BCWS Endorsement
+    </div>
+    <wfprev-endorsement-section [form]="endorsementApprovalForm" checkboxKey="endorseFiscalActivity"
+      dateKey="endorsementDate" commentKey="endorsementComment" [config]="{
+            checkboxLabel: 'Endorse Fiscal Activity',
+            datepickerLabel: 'Endorsement Date',
+            readOnlyLabel: 'Endorsed By',
+            readOnlyValue: effectiveEndorserName,
+            textareaLabel: 'Endorser\'s Comments',
+            textareaPlaceholder: 'Add supporting details for BCWS endorsement decision...'
+        }" />
+    <!-- Approval Section -->
+    <div class="sub-header">
+      Business Area Approval
+    </div>
+    <wfprev-endorsement-section [form]="endorsementApprovalForm" checkboxKey="approveFiscalActivity"
+      dateKey="approvalDate" commentKey="approvalComment" [config]="{
+            checkboxLabel: 'Approve Fiscal Activity',
+            datepickerLabel: 'Approval Date',
+            readOnlyLabel: 'Approval Entered By',
+            readOnlyValue: effectiveApproverName,
+            textareaLabel: 'Approver\'s Comments',
+            textareaPlaceholder: 'Include position/group(s) responsible for Business Area approval, such as RMT, District Manager(s), etc'
+          }" />
+    @if (fiscal.endorseApprUpdatedTimestamp && fiscal.endorseApprUpdateUserid) {
+    <wfprev-timestamp [updateDate]="fiscal.endorseApprUpdatedTimestamp" [updateUser]="fiscal.endorseApprUpdateUserid">
+    </wfprev-timestamp>
+    }
+  </form>
+</wfprev-details-container>
 }

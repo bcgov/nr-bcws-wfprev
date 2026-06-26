@@ -1,0 +1,23 @@
+<div class="form-grid">
+  <div class="inline-grid">
+    <div class="form-item">
+      <wfprev-checkbox [formControl]="checkboxControl">
+        <span>{{ config.checkboxLabel }}</span>
+      </wfprev-checkbox>
+    </div>
+    <div class="form-item">
+      <wfprev-date-picker [control]="dateControl" [label]="config.datepickerLabel" />
+    </div>
+    <div class="form-item">
+      <wfprev-read-only-field [label]="config.readOnlyLabel" [value]="config.readOnlyValue" />
+    </div>
+  </div>
+  <div class="form-item full-width">
+    <wfprev-textarea
+      [label]="config.textareaLabel"
+      [placeholder]="config.textareaPlaceholder"
+      [control]="commentControl"
+      [maxLength]="500"
+      [rows]="2" />
+  </div>
+</div>
