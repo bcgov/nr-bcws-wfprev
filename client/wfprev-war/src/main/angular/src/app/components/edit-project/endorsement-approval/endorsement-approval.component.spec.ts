@@ -391,4 +391,190 @@ describe('EndorsementApprovalComponent', () => {
     expect(component.endorsementApprovalForm.disabled).toBeTrue();
   });
 
+  it('should set bcwsHQApprovalDate when bcwsHQApproveFiscalActivity toggled on', () => {
+    const control = component.bcwsHQApprovalDateControl;
+    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(true);
+    expect(control.value).toBeInstanceOf(Date);
+  });
+
+  it('should clear bcwsHQApprovalDate when bcwsHQApproveFiscalActivity toggled off', () => {
+    const control = component.bcwsHQApprovalDateControl;
+    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(true);
+    expect(control.value).toBeInstanceOf(Date);
+    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(false);
+    expect(control.value).toBeNull();
+  });
+
+  it('should return bcwsHQApproverName from fiscal when set', () => {
+    component.fiscal = { ...mockFiscal, bcwsHQApproverName: 'HQ Approver' };
+    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(true);
+    expect(component.effectiveBcwsHQApproverName).toBe('HQ Approver');
+  });
+
+  it('should return currentUser when no bcwsHQApproverName and checkbox is checked', () => {
+    component.fiscal = { ...mockFiscal, bcwsHQApproverName: undefined };
+    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(true);
+    expect(component.effectiveBcwsHQApproverName).toBe('Test User');
+  });
+
+  it('should return empty string when no bcwsHQApproverName and checkbox is unchecked', () => {
+    component.fiscal = { ...mockFiscal, bcwsHQApproverName: undefined };
+    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(false);
+    expect(component.effectiveBcwsHQApproverName).toBe('');
+  });
+
+  it('should patch bcwsHQ fields and enable controls when isBcwsHQApprovedInd is true', () => {
+    const bcwsFiscal: ProjectFiscal = {
+      ...mockFiscal,
+      isBcwsHQApprovedInd: true,
+      bcwsHQApprovedTimestamp: '2024-03-01T00:00:00Z',
+      bcwsHQApprovedComment: 'HQ approved',
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+    };
+
+    component.fiscal = bcwsFiscal;
+    component.ngOnChanges({
+      fiscal: {
+        currentValue: bcwsFiscal,
+        previousValue: null,
+        firstChange: false,
+        isFirstChange: () => false,
+      }
+    });
+
+    expect(component.endorsementApprovalForm.value.bcwsHQApproveFiscalActivity).toBeTrue();
+    expect(component.bcwsHQApprovalDateControl.enabled).toBeTrue();
+    expect(component.bcwsHQApprovalCommentControl.enabled).toBeTrue();
+    expect(component.endorsementApprovalForm.pristine).toBeTrue();
+  });
+
+  it('should patch bcwsHQ fields and disable controls when isBcwsHQApprovedInd is false', () => {
+    const bcwsFiscal: ProjectFiscal = {
+      ...mockFiscal,
+      isBcwsHQApprovedInd: false,
+      bcwsHQApprovedTimestamp: undefined,
+      bcwsHQApprovedComment: undefined,
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+    };
+
+    component.fiscal = bcwsFiscal;
+    component.ngOnChanges({
+      fiscal: {
+        currentValue: bcwsFiscal,
+        previousValue: null,
+        firstChange: false,
+        isFirstChange: () => false,
+      }
+    });
+
+    expect(component.endorsementApprovalForm.value.bcwsHQApproveFiscalActivity).toBeFalse();
+    expect(component.bcwsHQApprovalDateControl.enabled).toBeFalse();
+    expect(component.bcwsHQApprovalCommentControl.enabled).toBeFalse();
+  });
+
+  it('resets to PROPOSED and clears bcwsHQ fields when bcwsHQ approval removed (confirm = true)', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+      isBcwsHQApprovedInd: true,
+      bcwsHQApproverName: 'HQ Boss',
+      bcwsHQApprovedComment: 'approved',
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: true,
+      approveFiscalActivity: true,
+      bcwsHQApproveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    expect(emitSpy).toHaveBeenCalled();
+    const payload = emitSpy.calls.mostRecent().args[0] as ProjectFiscal;
+
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
+    expect(payload.isBcwsHQApprovedInd).toBeFalse();
+    expect(payload.bcwsHQApprovedTimestamp).toBeUndefined();
+    expect(payload.bcwsHQApproverName).toBeUndefined();
+    expect(payload.bcwsHQApproverUserGuid).toBeUndefined();
+    expect(payload.bcwsHQApproverUserUserid).toBeUndefined();
+    expect(payload.bcwsHQApprovedComment).toBeUndefined();
+  });
+
+  it('calls confirmStatusChange with current status when bcwsHQ approval removed', async () => {
+    const confirmSpy = spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
+    spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: 'ACTIVE' },
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: true,
+      approveFiscalActivity: true,
+      bcwsHQApproveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    expect(confirmSpy).toHaveBeenCalledWith('ACTIVE', 'Proposed');
+  });
+
+  it('does not reset to PROPOSED when bcwsHQ removed but status is already PROPOSED', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: false,
+      approveFiscalActivity: false,
+      bcwsHQApproveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    // no confirmation dialog for removal (status already PROPOSED), no emit guard
+    const payload = emitSpy.calls.mostRecent().args[0] as ProjectFiscal;
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
+    // status wasn't reset by the removal logic — it stays as-is from fiscal
+    expect(payload.isBcwsHQApprovedInd).toBeFalse();
+  });
+  
+  it('should emit bcwsHQ approval fields when bcwsHQApproveFiscalActivity is checked', async () => {
+    spyOn<any>(component, 'confirmStatusChange').and.returnValue(Promise.resolve(true));
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+    };
+
+    const approvalDate = new Date('2024-05-01');
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: true,
+      endorsementDate: new Date('2024-04-01'),
+      approveFiscalActivity: true,
+      approvalDate: new Date('2024-04-15'),
+      bcwsHQApproveFiscalActivity: true,
+      bcwsHQApprovalDate: approvalDate,
+      bcwsHQApprovalComment: 'HQ sign-off',
+    });
+
+    await component.onSave();
+
+    const payload = emitSpy.calls.mostRecent().args[0] as ProjectFiscal;
+    expect(payload.isBcwsHQApprovedInd).toBeTrue();
+    expect(payload.bcwsHQApprovedTimestamp).toBe(approvalDate.toISOString());
+    expect(payload.bcwsHQApproverName).toBe('Test User');
+    expect(payload.bcwsHQApprovedComment).toBe('HQ sign-off');
+  });
+
 });

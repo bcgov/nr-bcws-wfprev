@@ -8,7 +8,7 @@
     <div class="sub-header">
       BCWS Endorsement
     </div>
-    <wfprev-endorsement-section [form]="endorsementApprovalForm" checkboxKey="endorseFiscalActivity"
+    <wfprev-endorsement-approval-section [form]="endorsementApprovalForm" checkboxKey="endorseFiscalActivity"
       dateKey="endorsementDate" commentKey="endorsementComment" [config]="{
             checkboxLabel: 'Endorse Fiscal Activity',
             datepickerLabel: 'Endorsement Date',
@@ -21,7 +21,7 @@
     <div class="sub-header">
       Business Area Approval
     </div>
-    <wfprev-endorsement-section [form]="endorsementApprovalForm" checkboxKey="approveFiscalActivity"
+    <wfprev-endorsement-approval-section [form]="endorsementApprovalForm" checkboxKey="approveFiscalActivity"
       dateKey="approvalDate" commentKey="approvalComment" [config]="{
             checkboxLabel: 'Approve Fiscal Activity',
             datepickerLabel: 'Approval Date',
@@ -34,12 +34,12 @@
     <div class="sub-header">
       BCWS HQ Approval
     </div>
-    <wfprev-endorsement-section [form]="endorsementApprovalForm" checkboxKey="approveFiscalActivity"
-      dateKey="approvalDate" commentKey="approvalComment" [config]="{
+    <wfprev-endorsement-approval-section [form]="endorsementApprovalForm" checkboxKey="bcwsHQApproveFiscalActivity"
+      dateKey="bcwsHQApprovalDate" commentKey="bcwsHQApprovalComment" [config]="{
             checkboxLabel: 'Approve Fiscal Activity',
             datepickerLabel: 'Approval Date',
             readOnlyLabel: 'Approval Entered By',
-            readOnlyValue: effectiveApproverName,
+            readOnlyValue: effectiveBcwsHQApproverName,
             textareaLabel: 'Approver\'s Comments',
             textareaPlaceholder: 'Add supporting details for BCWS HQ Approval Decision'
           }" />      

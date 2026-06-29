@@ -63,7 +63,7 @@ export class FiscalActivityItemComponent implements OnInit, OnChanges {
   messages = Messages;
 
   statusOptions = [
-    { value: 'ACTIVE', label: 'Active' },
+    { value: 'ACTIVE', label: 'In Progress' },
     { value: 'COMPLETED', label: 'Completed' },
     { value: 'CANCELLED', label: 'Cancelled' },
     { value: 'DEFERRED', label: 'Deferred' },
