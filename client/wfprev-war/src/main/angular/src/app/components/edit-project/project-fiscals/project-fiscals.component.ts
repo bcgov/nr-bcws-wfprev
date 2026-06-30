@@ -781,8 +781,9 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     const isApproved = updatedFiscal.isApprovedInd === true;
     const isEndorsed = updatedFiscal.endorsementCode?.endorsementCode === EndorsementCode.ENDORSED;
     const isProposed = updatedFiscal.planFiscalStatusCode?.planFiscalStatusCode === FiscalStatuses.PROPOSED;
+    const isBcwsHQApproved = updatedFiscal.isBcwsHQApprovedInd === true;
 
-    if (isApproved && isEndorsed && isProposed) {
+    if (isApproved && isEndorsed && isProposed && isBcwsHQApproved) {
       this.promoteFiscalStatus(index);
     } else {
       this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
