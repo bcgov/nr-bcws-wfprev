@@ -55,6 +55,9 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     approveFiscalActivity: new FormControl<boolean | null>(false),
     approvalDate: new FormControl<Date | null>(null),
     approvalComment: new FormControl<string | null>(''),
+    bcwsHQApproveFiscalActivity: new FormControl<boolean | null>(false),
+    bcwsHQApprovalDate: new FormControl<Date | null>(null),
+    bcwsHQApprovalComment: new FormControl<string | null>(''),
   });
 
   constructor(private readonly dialog: MatDialog) { }
@@ -81,6 +84,17 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       this.toggleControl(this.approvalDateControl, isChecked);
       this.toggleControl(this.approvalCommentControl, isChecked);
     });
+
+    this.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.valueChanges.subscribe((checked) => {
+      const isChecked = !!checked;
+
+      if (isChecked) {
+        this.bcwsHQApprovalDateControl.setValue(new Date());
+      }
+
+      this.toggleControl(this.bcwsHQApprovalDateControl, isChecked);
+      this.toggleControl(this.bcwsHQApprovalCommentControl, isChecked);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -88,6 +102,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       const fiscal = changes['fiscal'].currentValue as ProjectFiscal;
       const endorseChecked = !!fiscal.endorserName;
       const approveChecked = !!fiscal.isApprovedInd;
+      const bcwsHQApproveChecked = !!fiscal.isBcwsHQApprovedInd;
 
       this.endorsementApprovalForm.patchValue({
         endorseFiscalActivity: endorseChecked,
@@ -99,7 +114,12 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
         approvalDate: approveChecked && fiscal.approvedTimestamp
           ? new Date(fiscal.approvedTimestamp)
           : null,
-        approvalComment: fiscal.businessAreaComment ?? ''
+        approvalComment: fiscal.businessAreaComment ?? '',
+        bcwsHQApproveFiscalActivity: bcwsHQApproveChecked,
+        bcwsHQApprovalDate: bcwsHQApproveChecked && fiscal.bcwsHQApprovedTimestamp
+          ? new Date(fiscal.bcwsHQApprovedTimestamp)
+          : null,
+        bcwsHQApprovalComment: fiscal.bcwsHQApprovedComment ?? ''
       });
 
       if (this.isReadonly || this.isCardDisabled) {
@@ -112,6 +132,8 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       this.toggleControl(this.endorsementCommentControl, endorseChecked);
       this.toggleControl(this.approvalDateControl, approveChecked);
       this.toggleControl(this.approvalCommentControl, approveChecked);
+      this.toggleControl(this.bcwsHQApprovalDateControl, bcwsHQApproveChecked);
+      this.toggleControl(this.bcwsHQApprovalCommentControl, bcwsHQApproveChecked);
 
       this.endorsementApprovalForm.markAsPristine();
     }
@@ -140,20 +162,33 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     return checked ? this.currentUser : '';
   }
 
+  get effectiveBcwsHQApproverName(): string {
+    // use the approverName if set
+    if (this.fiscal?.bcwsHQApproverName) {
+      return this.fiscal.bcwsHQApproverName;
+    }
+    // or fall back to currentUser if the form is checked
+    const checked = this.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.value;
+    return checked ? this.currentUser : '';
+  }
+
   async onSave() {
     if (this.isSaving) return;
     const formValue = this.endorsementApprovalForm.value;
 
     const endorsementRemoved = !formValue.endorseFiscalActivity;
     const approvalRemoved = !formValue.approveFiscalActivity;
+    const bcwsHQAprovalRemoved = !formValue.bcwsHQApproveFiscalActivity;
+
     const currentStatusCode = this.fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
     const resetToProposedEndorsementRemoved = endorsementRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
     const resetToProposedApprovalRemoved = approvalRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
+    const resetToProposedBcwsHQApprovalRemoved = bcwsHQAprovalRemoved && currentStatusCode !== FiscalStatuses.DRAFT && currentStatusCode !== FiscalStatuses.PROPOSED;
 
-    if (resetToProposedEndorsementRemoved || resetToProposedApprovalRemoved) {
+    if (resetToProposedEndorsementRemoved || resetToProposedApprovalRemoved || resetToProposedBcwsHQApprovalRemoved) {
       const confirmed = await this.confirmStatusChange(currentStatusCode ?? '', 'Proposed');
       if (!confirmed) return; // user cancelled
-    } else if (!endorsementRemoved && !approvalRemoved) {
+    } else if (!endorsementRemoved && !approvalRemoved && !bcwsHQAprovalRemoved) {
       const confirmed = await this.confirmStatusChange(currentStatusCode ?? '', 'Prepared');
       if (!confirmed) return; // user cancelled
     }
@@ -181,6 +216,14 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
         : undefined,
       approverName: formValue.approveFiscalActivity ? this.currentUser : undefined,
       businessAreaComment: formValue.approvalComment ?? undefined,
+      
+      // BCWS HQ Approval logic
+      isBcwsHQApprovedInd: !!formValue.bcwsHQApproveFiscalActivity,
+      bcwsHQApprovedTimestamp: formValue.bcwsHQApproveFiscalActivity && formValue.bcwsHQApprovalDate
+        ? new Date(formValue.bcwsHQApprovalDate).toISOString()
+        : undefined,
+      bcwsHQApproverName: formValue.bcwsHQApproveFiscalActivity ? this.currentUser : undefined,
+      bcwsHQApprovedComment: formValue.bcwsHQApprovalComment ?? undefined,
 
       planFiscalStatusCode: this.fiscal.planFiscalStatusCode,
       endorseApprUpdateUserid: this.currentIdir,
@@ -210,6 +253,16 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       updatedFiscal.approverUserGuid = undefined;
       updatedFiscal.approverUserUserid = undefined;
       updatedFiscal.businessAreaComment = undefined;
+    }
+
+    if (resetToProposedBcwsHQApprovalRemoved) {
+      updatedFiscal.planFiscalStatusCode = { planFiscalStatusCode: FiscalStatuses.PROPOSED };
+      updatedFiscal.isBcwsHQApprovedInd = false;
+      updatedFiscal.bcwsHQApprovedTimestamp = undefined;
+      updatedFiscal.bcwsHQApproverName = undefined;
+      updatedFiscal.bcwsHQApproverUserGuid = undefined;
+      updatedFiscal.bcwsHQApproverUserUserid = undefined;
+      updatedFiscal.bcwsHQApprovedComment = undefined;
     }
 
     this.saveEndorsement.emit(updatedFiscal);
@@ -246,6 +299,14 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
 
   get approvalCommentControl(): FormControl {
     return this.endorsementApprovalForm.get('approvalComment') as FormControl;
+  }
+
+   get bcwsHQApprovalDateControl(): FormControl {
+    return this.endorsementApprovalForm.get('bcwsHQApprovalDate') as FormControl;
+  }
+
+  get bcwsHQApprovalCommentControl(): FormControl {
+    return this.endorsementApprovalForm.get('bcwsHQApprovalComment') as FormControl;
   }
 
   get statusCode(): string | undefined {
