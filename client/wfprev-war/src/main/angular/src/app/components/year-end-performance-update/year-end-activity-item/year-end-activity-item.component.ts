@@ -275,8 +275,9 @@ export class YearEndActivityItemComponent implements OnChanges {
     const obligationMissingDesc = activity.outstandingObligationsInd && this.isEmpty(activity.activityComment);
     const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
     const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
 
-    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || reportedSpendZeroMissingComments || spatialMissing || obligationMissingDesc || startDateMissing || endDateMissing;
+    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || reportedSpendZeroMissingComments || spatialMissing || obligationMissingDesc || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
 
   // Validates required fields for Deferred activities.
@@ -292,9 +293,10 @@ export class YearEndActivityItemComponent implements OnChanges {
     const finalOutcomeCommentsEmpty = this.isEmpty(activity.finalOutcomeComments);
     const obligationsNoDescription = activity.outstandingObligationsInd && this.isEmpty(activity.activityComment);
     const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.actityEndDate);
+    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
 
-    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || finalOutcomeCommentsEmpty || obligationsNoDescription || startDateMissing || endDateMissing;
+    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || finalOutcomeCommentsEmpty || obligationsNoDescription || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
 
   // Validates required fields for Cancelled activities.
@@ -306,8 +308,9 @@ export class YearEndActivityItemComponent implements OnChanges {
     // Always required for cancelled — must explain why activity was cancelled
     const finalOutcomeCommentsEmpty = this.isEmpty(activity.finalOutcomeComments);
     const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.actityEndDate);
+    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
 
-    return activityStatusCodeEmpty || finalOutcomeCommentsEmpty || startDateMissing || endDateMissing;
+    return activityStatusCodeEmpty || finalOutcomeCommentsEmpty || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
 }
