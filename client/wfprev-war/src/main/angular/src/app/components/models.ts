@@ -492,6 +492,14 @@ export enum ActivityStatus {
   SubstantiallyComplete = "SUBS_COMPL"
 }
 
+export const ActivityStatusOptions: { value: ActivityStatus; label: string }[] = [
+  { value: ActivityStatus.InProgress, label: 'In Progress' },
+  { value: ActivityStatus.Completed, label: 'Completed' },
+  { value: ActivityStatus.Cancelled, label: 'Cancelled' },
+  { value: ActivityStatus.Deferred, label: 'Deferred' },
+  { value: ActivityStatus.SubstantiallyComplete, label: 'Substantially Complete' }
+];
+
 export enum ReportingPeriod {
   Custom = "CUSTOM",
   March7 = "MARCH7",

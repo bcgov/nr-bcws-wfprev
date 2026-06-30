@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxCurrency } from '@dintecom/ngx-currency';
-import { ProjectFilesComponent } from '../../project-details/project-files/project-files.component';
-import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
+import { ActivityStatusOptions } from 'src/app/components/models';
+import { Messages } from '../../../../utils/constants';
+import { ActivityHeaderComponent } from '../../../shared/activity-header/activity-header.component';
 import { TextareaComponent } from '../../../shared/textarea/textarea.component';
 import { TimestampComponent } from '../../../shared/timestamp/timestamp.component';
-import { ActivityHeaderComponent } from '../../../shared/activity-header/activity-header.component';
-import { Messages } from '../../../../utils/constants';
+import { ProjectFilesComponent } from '../../project-details/project-files/project-files.component';
 
 @Component({
   selector: 'wfprev-fiscal-activity-item',
@@ -62,13 +62,7 @@ export class FiscalActivityItemComponent implements OnInit, OnChanges {
 
   messages = Messages;
 
-  statusOptions = [
-    { value: 'ACTIVE', label: 'In Progress' },
-    { value: 'COMPLETED', label: 'Completed' },
-    { value: 'CANCELLED', label: 'Cancelled' },
-    { value: 'DEFERRED', label: 'Deferred' },
-    { value: 'SUBS_COMPL', label: 'Substantially Complete' }
-  ];
+  statusOptions = ActivityStatusOptions;
 
   getControl(controlName: string): FormControl {
     return this.activityForm.get(controlName) as FormControl;

@@ -16,7 +16,7 @@ import { ProjectFilesComponent } from '../../edit-project/project-details/projec
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
 import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
 import { TextareaComponent } from '../../shared/textarea/textarea.component';
-import { ActivityStatus } from '../../models';
+import { ActivityStatus, ActivityStatusOptions } from '../../models';
 
 export const CUSTOM_DATE_FORMATS = {
   display: {
@@ -67,13 +67,7 @@ export class YearEndActivityItemComponent implements OnChanges {
 
   form!: FormGroup;
   messages = Messages;
-  statusOptions = [
-    { value: 'ACTIVE', label: 'In Progress' },
-    { value: 'COMPLETED', label: 'Completed' },
-    { value: 'CANCELLED', label: 'Cancelled' },
-    { value: 'DEFERRED', label: 'Deferred' },
-    { value: 'SUBS_COMPL', label: 'Substantially Complete' }
-  ];
+  statusOptions = ActivityStatusOptions;
   isEmpty = (val: any) => val == null || val === '';
 
   constructor(private readonly fb: FormBuilder) { }
