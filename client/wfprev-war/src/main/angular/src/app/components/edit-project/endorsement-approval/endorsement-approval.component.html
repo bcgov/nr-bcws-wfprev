@@ -15,7 +15,7 @@
             readOnlyLabel: 'Endorsed By',
             readOnlyValue: effectiveEndorserName,
             textareaLabel: 'Endorser\'s Comments',
-            textareaPlaceholder: 'Add supporting details for BCWS endorsement decision...'
+            textareaPlaceholder: 'Add supporting details for BCWS endorsement decision'
         }" />
     <!-- Approval Section -->
     <div class="sub-header">
@@ -41,7 +41,7 @@
             readOnlyLabel: 'Approval Entered By',
             readOnlyValue: effectiveBcwsHQApproverName,
             textareaLabel: 'Approver\'s Comments',
-            textareaPlaceholder: 'Add supporting details for BCWS HQ Approval Decision'
+            textareaPlaceholder: 'Add supporting details for BCWS approval decision'
           }" />      
     @if (fiscal.endorseApprUpdatedTimestamp && fiscal.endorseApprUpdateUserid) {
     <wfprev-timestamp [updateDate]="fiscal.endorseApprUpdatedTimestamp" [updateUser]="fiscal.endorseApprUpdateUserid">
