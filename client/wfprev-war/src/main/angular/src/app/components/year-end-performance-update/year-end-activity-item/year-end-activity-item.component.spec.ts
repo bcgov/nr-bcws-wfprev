@@ -417,4 +417,96 @@ describe('YearEndActivityItemComponent', () => {
       expect(ctrl?.hasError('required')).toBeFalse();
     });
   });
+
+  describe('isMissingInfo - isCarryForwardInd behaviour', () => {
+  describe('COMPLETED status', () => {
+    beforeEach(() => {
+      component.activity = {
+        ...component.activity,
+        activityStatusCode: { activityStatusCode: 'COMPLETED' },
+        reportedSpendAmount: 1000,
+        completedAreaHa: 10,
+        activityStartDate: '2026-01-01T00:00:00.000Z',
+        activityEndDate: '2026-01-10T00:00:00.000Z',
+        isCarryForwardInd: true,
+        finalOutcomeComments: '',
+        isResultsReportableInd: false
+      };
+      component.ngOnChanges({
+        activity: new SimpleChange(null, component.activity, true)
+      });
+      fixture.detectChanges();
+    });
+
+    it('should set isMissingInfo when isCarryForwardInd is true and finalOutcomeComments is blank', () => {
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should clear isMissingInfo when isCarryForwardInd is true and finalOutcomeComments is provided', () => {
+      component.form.get('finalOutcomeComments')?.setValue('Carried forward due to late season start');
+      expect(component.form.get('isMissingInfo')?.value).toBeFalse();
+    });
+
+    it('should not set isMissingInfo when isCarryForwardInd is false and finalOutcomeComments is blank', () => {
+      component.form.get('isCarryForwardInd')?.setValue(false);
+      component.form.get('finalOutcomeComments')?.setValue('');
+      expect(component.form.get('isMissingInfo')?.value).toBeFalse();
+    });
+  });
+
+  describe('DEFERRED status', () => {
+    beforeEach(() => {
+      component.activity = {
+        ...component.activity,
+        activityStatusCode: { activityStatusCode: 'DEFERRED' },
+        reportedSpendAmount: 0,
+        completedAreaHa: 0,
+        activityStartDate: '2026-01-01T00:00:00.000Z',
+        activityEndDate: '2026-01-10T00:00:00.000Z',
+        isCarryForwardInd: true,
+        finalOutcomeComments: '',
+        outstandingObligationsInd: false
+      };
+      component.ngOnChanges({
+        activity: new SimpleChange(null, component.activity, true)
+      });
+      fixture.detectChanges();
+    });
+
+    it('should set isMissingInfo when isCarryForwardInd is true and finalOutcomeComments is blank', () => {
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should clear isMissingInfo when isCarryForwardInd is true and finalOutcomeComments is provided', () => {
+      component.form.get('finalOutcomeComments')?.setValue('Deferred and carried forward');
+      expect(component.form.get('isMissingInfo')?.value).toBeFalse();
+    });
+  });
+
+  describe('CANCELLED status', () => {
+    beforeEach(() => {
+      component.activity = {
+        ...component.activity,
+        activityStatusCode: { activityStatusCode: 'CANCELLED' },
+        activityStartDate: '2026-01-01T00:00:00.000Z',
+        activityEndDate: '2026-01-10T00:00:00.000Z',
+        isCarryForwardInd: true,
+        finalOutcomeComments: ''
+      };
+      component.ngOnChanges({
+        activity: new SimpleChange(null, component.activity, true)
+      });
+      fixture.detectChanges();
+    });
+
+    it('should set isMissingInfo when isCarryForwardInd is true and finalOutcomeComments is blank', () => {
+      expect(component.form.get('isMissingInfo')?.value).toBeTrue();
+    });
+
+    it('should clear isMissingInfo when isCarryForwardInd is true and finalOutcomeComments is provided', () => {
+      component.form.get('finalOutcomeComments')?.setValue('Cancelled but carried forward for next fiscal');
+      expect(component.form.get('isMissingInfo')?.value).toBeFalse();
+    });
+  });
+});
 });
