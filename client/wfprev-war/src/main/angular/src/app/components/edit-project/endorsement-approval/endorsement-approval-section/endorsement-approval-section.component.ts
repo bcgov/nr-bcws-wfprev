@@ -15,7 +15,7 @@ export interface EndorsementApprovalSectionConfig {
 }
 
 @Component({
-  selector: 'wfprev-endorsement-section',
+  selector: 'wfprev-endorsement-approval-section',
   standalone: true,
   imports: [ReactiveFormsModule, CheckboxComponent, DatePickerComponent, ReadOnlyFieldComponent, TextareaComponent],
   templateUrl: './endorsement-approval-section.component.html',

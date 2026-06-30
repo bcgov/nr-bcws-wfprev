@@ -14,7 +14,7 @@ const endorsementConfig: EndorsementApprovalSectionConfig = {
   readOnlyLabel: 'Endorsed By',
   readOnlyValue: 'Smith, John',
   textareaLabel: "Endorser's Comments",
-  textareaPlaceholder: 'Add supporting details for BCWS endorsement decision...',
+  textareaPlaceholder: 'Add supporting details for BCWS endorsement decision',
 };
 
 const approvalConfig: EndorsementApprovalSectionConfig = {

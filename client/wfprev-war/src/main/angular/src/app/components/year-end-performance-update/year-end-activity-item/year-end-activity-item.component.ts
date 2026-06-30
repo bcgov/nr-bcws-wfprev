@@ -16,7 +16,7 @@ import { ProjectFilesComponent } from '../../edit-project/project-details/projec
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
 import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
 import { TextareaComponent } from '../../shared/textarea/textarea.component';
-import { ActivityStatus } from '../../models';
+import { ActivityStatus, ActivityStatusOptions } from '../../models';
 
 export const CUSTOM_DATE_FORMATS = {
   display: {
@@ -67,13 +67,7 @@ export class YearEndActivityItemComponent implements OnChanges {
 
   form!: FormGroup;
   messages = Messages;
-  statusOptions = [
-    { value: 'ACTIVE', label: 'Active' },
-    { value: 'COMPLETED', label: 'Completed' },
-    { value: 'CANCELLED', label: 'Cancelled' },
-    { value: 'DEFERRED', label: 'Deferred' },
-    { value: 'SUBS_COMPL', label: 'Substantially Complete' }
-  ];
+  statusOptions = ActivityStatusOptions;
   isEmpty = (val: any) => val == null || val === '';
 
   constructor(private readonly fb: FormBuilder) { }
@@ -275,8 +269,9 @@ export class YearEndActivityItemComponent implements OnChanges {
     const obligationMissingDesc = activity.outstandingObligationsInd && this.isEmpty(activity.activityComment);
     const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
     const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
 
-    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || reportedSpendZeroMissingComments || spatialMissing || obligationMissingDesc || startDateMissing || endDateMissing;
+    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || reportedSpendZeroMissingComments || spatialMissing || obligationMissingDesc || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
 
   // Validates required fields for Deferred activities.
@@ -292,9 +287,10 @@ export class YearEndActivityItemComponent implements OnChanges {
     const finalOutcomeCommentsEmpty = this.isEmpty(activity.finalOutcomeComments);
     const obligationsNoDescription = activity.outstandingObligationsInd && this.isEmpty(activity.activityComment);
     const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.actityEndDate);
+    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
 
-    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || finalOutcomeCommentsEmpty || obligationsNoDescription || startDateMissing || endDateMissing;
+    return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || finalOutcomeCommentsEmpty || obligationsNoDescription || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
 
   // Validates required fields for Cancelled activities.
@@ -306,8 +302,9 @@ export class YearEndActivityItemComponent implements OnChanges {
     // Always required for cancelled — must explain why activity was cancelled
     const finalOutcomeCommentsEmpty = this.isEmpty(activity.finalOutcomeComments);
     const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.actityEndDate);
+    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
 
-    return activityStatusCodeEmpty || finalOutcomeCommentsEmpty || startDateMissing || endDateMissing;
+    return activityStatusCodeEmpty || finalOutcomeCommentsEmpty || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
 }
