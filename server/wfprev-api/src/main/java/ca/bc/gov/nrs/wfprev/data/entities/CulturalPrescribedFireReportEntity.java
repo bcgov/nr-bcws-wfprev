@@ -396,4 +396,16 @@ public class CulturalPrescribedFireReportEntity implements Serializable {
 
     @Column(name = "other_budget_completed_description")
     private String otherBudgetCompletedDescription;
+
+    @Column(name = "fiscal_closeout_outcome_comment")
+    public String fiscalCloseoutOutcomeComment;
+
+    @Column(name = "bcws_hq_approved_timestamp")
+    public Date bcwsHQApprovedTimestamp;
+
+    @Column(name = "outstanding_obligations")
+    public String outstandingObligations;
+
+    @Column(name = "carried_forward")
+    public String carriedForward;
 }

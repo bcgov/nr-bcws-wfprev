@@ -8,7 +8,7 @@ services:
       - dev-watch
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      REPORT_GENERATOR_LAMBDA_URL: https://mock-lambda-url
+      REPORT_GENERATOR_LAMBDA_URL: http://host.docker.internal:9000/2015-03-31/functions/function/invocations
       REPORT_GENERATOR_SERVICE_URL: http://mock-report-generator
       WFDM_BASE_URL: https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api
     volumes:
