@@ -345,10 +345,7 @@ public class ReportService {
                 "Forecast Amount",
                 "Ancillary Funding Amount",
                 "Ancillary Funding Provider",
-                "Final Reported Spend",
-                "CFS Actual Spend",
                 "Planned Hectares (Ha)",
-                "Completed Hectares (Ha)",
                 "Spatial Submitted",
                 "First Nation Engagement (Y/N)",
                 "First Nation Co-Delivery (Y/N)",
@@ -359,8 +356,9 @@ public class ReportService {
                 "RESULTS Opening ID",
                 "Primary Objective",
                 "Secondary Objective (Optional)",
-                "Endorsement Date",
-                "Approval Date",
+                "BCWS Endorsement Date",
+                "BCWS Approval Date",
+                "BCWS HQ Approval Date",
                 "WUI Risk Class",
                 "Local WUI Risk Class",
                 "Local WUI Risk Class Rationale",
@@ -439,7 +437,14 @@ public class ReportService {
                 "Other: Budget Risk: Low Risk", 
                 "Other: Low Risk Rationale", 
                 "Other: Budget Risk: Complete", 
-                "Other: Complete Rationale"
+                "Other: Complete Rationale",
+                "Year End Update: Year End Update Date",
+                "Year End Update: Final Reported Spend",
+                "Year End Update: CFS Actual Spend",
+                "Year End Update: Completed Hectares (Ha)",
+                "Year End Update: Outcomes & General Comments",
+                "Year End Update: Outstanding Obligations",
+                "Year End Update: Carry Forward"
             ));
     }
 
@@ -471,10 +476,7 @@ public class ReportService {
                 safe(formatMonetaryFields(e.getFiscalForecastAmount())),
                 safe(formatMonetaryFields(e.getFiscalAncillaryFundAmount())),
                 safe(e.getAncillaryFundingProvider()),
-                safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())),
-                safe(formatMonetaryFields(e.getFiscalActualAmount())),
                 safe(e.getFiscalPlannedProjectSizeHa() != null ? formatHectares(e.getFiscalPlannedProjectSizeHa()) : ""),
-                safe(e.getFiscalCompletedSizeHa() != null ? formatHectares(e.getFiscalCompletedSizeHa()) : ""),
                 safe(String.format("=\"%s\"", e.getSpatialSubmitted())),
                 safe(e.getFirstNationsEngagement()),
                 safe(e.getFirstNationsDelivPartners()),
@@ -490,6 +492,9 @@ public class ReportService {
                         : ""),
                 safe(e.getApprovedTimestamp() != null
                         ? DATE_FORMAT.format(e.getApprovedTimestamp().toInstant())
+                        : ""),
+                safe(e.getBcwsHQApprovedTimestamp() != null
+                        ? DATE_FORMAT.format(e.getBcwsHQApprovedTimestamp().toInstant())
                         : ""),
                 safe(e.getWuiRiskClassDescription()),
                 safe(e.getLocalWuiRiskClassDescription()),
@@ -569,7 +574,16 @@ public class ReportService {
                 safe(formatMonetaryFields(e.getOtherBudgetLowRiskAmount())),
                 safe(e.getOtherBudgetLowRiskRationale()),
                 safe(formatMonetaryFields(e.getOtherBudgetCompletedAmount())),
-                safe(e.getOtherBudgetCompletedDescription())
+                safe(e.getOtherBudgetCompletedDescription()),
+                safe(e.getFiscalCloseoutSubmittedTimestamp() != null
+                        ? DATE_FORMAT.format(e.getFiscalCloseoutSubmittedTimestamp().toInstant())
+                        : ""),
+                safe(formatMonetaryFields(e.getFiscalReportedSpendAmount())),
+                safe(formatMonetaryFields(e.getFiscalActualAmount())),
+                safe(e.getFiscalCompletedSizeHa() != null ? formatHectares(e.getFiscalCompletedSizeHa()) : ""),
+                safe(e.getFiscalCloseoutOutcomeComment()),
+                safe(String.format("=\"%s\"", e.getOutstandingObligations())),
+                safe(String.format("=\"%s\"", e.getCarriedForward()))
             );
     }
 
@@ -599,10 +613,7 @@ public class ReportService {
                 "Forecast Amount",
                 "Ancillary Funding Amount",
                 "Ancillary Funding Provider",
-                "Final Reported Spend",
-                "CFS Actual Spend",
                 "Planned Hectares (Ha)",
-                "Completed Hectares (Ha)",
                 "Spatial Submitted",
                 "First Nation Engagement (Y/N)",
                 "First Nation Co-Delivery (Y/N)",
@@ -613,8 +624,9 @@ public class ReportService {
                 "RESULTS Opening ID",
                 "Primary Objective",
                 "Secondary Objective (Optional)",
-                "Endorsement Date",
-                "Approval Date",
+                "BCWS Endorsement Date",
+                "BCWS Approval Date",
+                "BCWS HQ Approval Date",
                 "Outside WUI (Y/N)",
                 "WUI Risk Class",
                 "Local WUI Risk Class",
@@ -694,7 +706,14 @@ public class ReportService {
                 "Other: Budget Risk: Low Risk",
                 "Other: Low Risk Rationale",
                 "Other: Budget Risk: Complete",
-                "Other: Complete Rationale"
+                "Other: Complete Rationale",
+                "Year End Update: Year End Update Date",
+                "Year End Update: Final Reported Spend",
+                "Year End Update: CFS Actual Spend",
+                "Year End Update: Completed Hectares (Ha)",
+                "Year End Update: Outcomes & General Comments",
+                "Year End Update: Outstanding Obligations",
+                "Year End Update: Carry Forward"
             ));
     }
 
@@ -726,10 +745,7 @@ public class ReportService {
                 safe(formatMonetaryFields(c.getFiscalForecastAmount())), 
                 safe(formatMonetaryFields(c.getFiscalAncillaryFundAmount())),
                 safe(c.getAncillaryFundingProvider()),
-                safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())),
-                safe(formatMonetaryFields(c.getFiscalActualAmount())),
                 safe(c.getFiscalPlannedProjectSizeHa() != null ? formatHectares(c.getFiscalPlannedProjectSizeHa()) : ""),
-                safe(c.getFiscalCompletedSizeHa() != null ? formatHectares(c.getFiscalCompletedSizeHa()) : ""),
                 safe(String.format("=\"%s\"", c.getSpatialSubmitted())),
                 safe(c.getFirstNationsEngagement()), 
                 safe(c.getFirstNationsDelivPartners()),
@@ -745,6 +761,9 @@ public class ReportService {
                         : ""),
                 safe(c.getApprovedTimestamp() != null
                         ? DATE_FORMAT.format(c.getApprovedTimestamp().toInstant())
+                        : ""),
+                safe(c.getBcwsHQApprovedTimestamp() != null
+                        ? DATE_FORMAT.format(c.getBcwsHQApprovedTimestamp().toInstant())
                         : ""),
                 safe((c.getOutsideWuiInd() != null && c.getOutsideWuiInd()) ? "Y" : "N"),
                 safe(c.getWuiRiskClassDescription()), 
@@ -825,7 +844,16 @@ public class ReportService {
                 safe(formatMonetaryFields(c.getOtherBudgetLowRiskAmount())),
                 safe(c.getOtherBudgetLowRiskRationale()),
                 safe(formatMonetaryFields(c.getOtherBudgetCompletedAmount())),
-                safe(c.getOtherBudgetCompletedDescription())
+                safe(c.getOtherBudgetCompletedDescription()),
+                safe(c.getFiscalCloseoutSubmittedTimestamp() != null
+                        ? DATE_FORMAT.format(c.getFiscalCloseoutSubmittedTimestamp().toInstant())
+                        : ""),
+                safe(formatMonetaryFields(c.getFiscalReportedSpendAmount())),
+                safe(formatMonetaryFields(c.getFiscalActualAmount())),
+                safe(c.getFiscalCompletedSizeHa() != null ? formatHectares(c.getFiscalCompletedSizeHa()) : ""),
+                safe(c.getFiscalCloseoutOutcomeComment()),
+                safe(String.format("=\"%s\"", c.getOutstandingObligations())),
+                safe(String.format("=\"%s\"", c.getCarriedForward()))
             );
     }
 

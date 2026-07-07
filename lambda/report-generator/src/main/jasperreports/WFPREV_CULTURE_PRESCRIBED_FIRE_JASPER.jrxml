@@ -138,6 +138,7 @@
     <field name="otherBudgetLowRiskRationale" class="java.lang.String" />
     <field name="otherBudgetCompletedAmount" class="java.math.BigDecimal" />
     <field name="otherBudgetCompletedDescription" class="java.lang.String" />
+    <field name="fiscalCloseoutSubmittedTimestamp" class="java.util.Date" />
     <field name="fiscalCloseoutOutcomeComment" class="java.lang.String" />
     <field name="outstandingObligations" class="java.lang.String" />
     <field name="carriedForward" class="java.lang.String" />
@@ -1450,7 +1451,7 @@
         </element>
         <element kind="staticText" uuid="9388a053-65af-4780-a7dd-b0603a4b9f0f" mode="Opaque" x="19904" y="0" width="220" height="108" backcolor="#BFBFBF" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
             <text>&lt;style forecolor="black"&gt;Other:&lt;/style&gt;
-&lt;style forecolor="white"&gt;`Complete Rationale&lt;/style&gt;</text>
+&lt;style forecolor="white"&gt;Complete Rationale&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="1.0" />
                 <topPen lineWidth="0.0" />
@@ -1459,9 +1460,9 @@
                 <rightPen lineWidth="1.0" lineColor="#000000" />
             </box>
         </element>
-        <element kind="staticText" uuid="2e7d3a77-d38c-4d37-8897-f927016e2520" mode="Opaque" x="20124" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
-            <text>&lt;style forecolor="#000000"&gt;Year End Update:&lt;/style&gt;
-&lt;style forecolor="#000000"&gt;Final Reported Spend&lt;/style&gt;</text>
+        <element kind="staticText" uuid="2e7d3f77-d38c-4d37-8897-f927016e2520" mode="Opaque" x="20124" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Year End Update Date&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -1470,9 +1471,9 @@
                 <rightPen lineWidth="0.0" />
             </box>
         </element>
-        <element kind="staticText" uuid="544e2e9f-f7b3-44e7-ab75-134b0d0523d0" mode="Opaque" x="20244" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
-            <text>&lt;style forecolor="#000000"&gt;Year End Update:&lt;/style&gt;
-&lt;style forecolor="#000000"&gt;CFS Actual Spend&lt;/style&gt;</text>
+        <element kind="staticText" uuid="2e7d3a77-d38c-4d37-8897-f927016e2520" mode="Opaque" x="20244" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Final Reported Spend&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -1481,9 +1482,9 @@
                 <rightPen lineWidth="0.0" />
             </box>
         </element>
-        <element kind="staticText" uuid="14a49017-14fe-46c0-bfd7-205d0d822e34" mode="Opaque" x="20364" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
-            <text>&lt;style forecolor="#000000"&gt;Year End Update:&lt;/style&gt;
-&lt;style forecolor="#000000"&gt;Completed Hectares (Ha)&lt;/style&gt;</text>
+        <element kind="staticText" uuid="544e2e9f-f7b3-44e7-ab75-134b0d0523d0" mode="Opaque" x="20364" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;CFS Actual Spend&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -1492,9 +1493,9 @@
                 <rightPen lineWidth="0.0" />
             </box>
         </element>
-        <element kind="staticText" uuid="eeff57b0-1d95-4883-9014-44671088b8f7" mode="Opaque" x="20484" y="0" width="270" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
-            <text>&lt;style forecolor="#000000"&gt;Year End Update:&lt;/style&gt;
-&lt;style forecolor="#000000"&gt;Outcomes &amp;amp; General Comments&lt;/style&gt;</text>
+        <element kind="staticText" uuid="14a49017-14fe-46c0-bfd7-205d0d822e34" mode="Opaque" x="20484" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Completed Hectares (Ha)&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -1503,9 +1504,9 @@
                 <rightPen lineWidth="0.0" />
             </box>
         </element>
-        <element kind="staticText" uuid="89d586f9-4e12-4f92-bb4f-c17d36b1cd9e" mode="Opaque" x="20754" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
-            <text>&lt;style forecolor="#000000"&gt;Year End Update:&lt;/style&gt;
-&lt;style forecolor="#000000"&gt;Outstanding Obligations&lt;/style&gt;</text>
+        <element kind="staticText" uuid="eeff57b0-1d95-4883-9014-44671088b8f7" mode="Opaque" x="20604" y="0" width="220" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Outcomes &amp;amp; General Comments&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -1514,9 +1515,20 @@
                 <rightPen lineWidth="0.0" />
             </box>
         </element>
-        <element kind="staticText" uuid="b779e36f-5f2d-41ff-97d4-4d85bc6c1aec" mode="Opaque" x="20874" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
-            <text>&lt;style forecolor="#000000"&gt;Year End Update:&lt;/style&gt;
-&lt;style forecolor="#000000"&gt;Carried Forward&lt;/style&gt;</text>
+        <element kind="staticText" uuid="89d586f9-4e12-4f92-bb4f-c17d36b1cd9e" mode="Opaque" x="20824" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Outstanding Obligations&lt;/style&gt;</text>
+            <box padding="4">
+                <pen lineWidth="0.0" />
+                <topPen lineWidth="0.0" />
+                <leftPen lineWidth="0.0" />
+                <bottomPen lineWidth="1.0" lineColor="#000000" />
+                <rightPen lineWidth="0.0" />
+            </box>
+        </element>
+        <element kind="staticText" uuid="b779e36f-5f2d-41ff-97d4-4d85bc6c1aec" mode="Opaque" x="20994" y="0" width="120" height="108" backcolor="#C534B7" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle" markup="styled">
+            <text>&lt;style forecolor="black"&gt;Year End Update:&lt;/style&gt;
+&lt;style forecolor="white"&gt;Carried Forward&lt;/style&gt;</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -1890,23 +1902,26 @@
             <element kind="textField" uuid="d267e1d6-c806-4b9d-b117-411827ebea6d" x="19904" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
                 <expression>$F{otherBudgetCompletedDescription}</expression>
             </element>
-            <element kind="textField" uuid="2367a273-2a93-4808-be8d-190b46adf6b8" x="20124" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
+            <element kind="textField" uuid="2367a273-2f93-4808-be8d-190b46adf6e4" x="20124" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="yyyy-MM-dd" blankWhenNull="true" vTextAlign="Bottom">
+                <expression>$F{fiscalCloseoutSubmittedTimestamp}</expression>
+            </element>
+            <element kind="textField" uuid="2367a273-2a93-4808-be8d-190b46adf6b8" x="20244" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
                 <expression>$F{fiscalReportedSpendAmount}</expression>
             </element>
-            <element kind="textField" uuid="2367a273-2a93-4808-be8d-190b46adf6b9" x="20244" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
+            <element kind="textField" uuid="2367a273-2a93-4808-be8d-190b46adf6b9" x="20364" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
                 <expression>$F{fiscalActualAmount}</expression>
             </element>
-            <element kind="textField" uuid="2367a273-2a93-4808-be8d-190b46adf6c2" x="20364" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="#,##0.##########" blankWhenNull="true" vTextAlign="Bottom">
+            <element kind="textField" uuid="2367a273-2a93-4808-be8d-190b46adf6c2" x="20484" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="#,##0.##########" blankWhenNull="true" vTextAlign="Bottom">
                 <expression>$F{fiscalCompletedSizeHa}</expression>
                 <propertyExpression name="net.sf.jasperreports.export.xls.pattern"><![CDATA[$F{fiscalCompletedSizeHa} == null ? "#,##0" : ($F{fiscalCompletedSizeHa}.stripTrailingZeros().scale() <= 0 ? "#,##0" : "#,##0.##########")]]></propertyExpression>
             </element>
-            <element kind="textField" uuid="c4a3e0a4-4a0d-4f13-84c1-7c14a2e6cfb6" x="20484" y="0" width="270" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
+            <element kind="textField" uuid="c4a3e0a4-4a0d-4f13-84c1-7c14a2e6cfb6" x="20604" y="0" width="220" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
                 <expression>$F{fiscalCloseoutOutcomeComment}</expression>
             </element>
-            <element kind="textField" uuid="c1879d1b-1de6-4ac5-bfa6-e73722757dd5" x="20754" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
+            <element kind="textField" uuid="c1879d1b-1de6-4ac5-bfa6-e73722757dd5" x="20824" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
                 <expression>$F{outstandingObligations}</expression>
             </element>
-            <element kind="textField" uuid="b3071136-3e39-49e6-b9e6-36438ea4e006" x="20874" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
+            <element kind="textField" uuid="b3071136-3e39-49e6-b9e6-36438ea4e006" x="20994" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" hTextAlign="Left" vTextAlign="Bottom">
                 <expression>$F{carriedForward}</expression>
             </element>
         </band>

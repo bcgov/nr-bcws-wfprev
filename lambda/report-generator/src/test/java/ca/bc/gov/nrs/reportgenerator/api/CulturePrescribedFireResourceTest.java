@@ -63,7 +63,6 @@ public class CulturePrescribedFireResourceTest {
             sample.setLocalWuiRiskClassDescription("Local Risk Class");
             sample.setBusinessArea("Business Area");
 
-
             given()
                 .contentType(ContentType.JSON)
                 .body(Collections.singletonList(sample))

@@ -35,7 +35,6 @@ public class FuelManagementResourceTest {
             sample.setResultsOpeningId("OPEN456");
             sample.setEndorsementTimestamp(new java.util.Date());
             sample.setApprovedTimestamp(new java.util.Date());
-            sample.setBcwsHQApprovedTimestamp(new java.util.Date());
             sample.setTotalFilterSectionScore(new java.math.BigDecimal("30.0"));
             sample.setProjectTypeDescription("Type B");
             sample.setProjectName("Project Name");
@@ -62,7 +61,6 @@ public class FuelManagementResourceTest {
             sample.setMediumFilterSectionComment("Medium Comment");
             sample.setTotalFineFilterSectionScore(new java.math.BigDecimal("15.0"));
             sample.setFineFilterSectionComment("Fine Comment");
-            sample.set
 
             given()
                 .contentType(ContentType.JSON)

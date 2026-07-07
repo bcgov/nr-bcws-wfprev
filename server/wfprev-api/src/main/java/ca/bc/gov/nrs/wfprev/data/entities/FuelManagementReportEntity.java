@@ -394,6 +394,9 @@ public class FuelManagementReportEntity implements Serializable {
     @Column(name = "other_budget_completed_description")
     private String otherBudgetCompletedDescription;
 
+    @Column(name = "fiscal_closeout_submitted_timestamp")
+    public Date fiscalCloseoutSubmittedTimestamp;
+
     @Column(name = "fiscal_closeout_outcome_comment")
     public String fiscalCloseoutOutcomeComment;
 

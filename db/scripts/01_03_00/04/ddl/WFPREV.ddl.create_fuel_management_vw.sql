@@ -54,6 +54,7 @@ uuid_generate_v5(
        ppf.fiscal_completed_size_ha,
        ppf.bcws_hq_approved_timestamp,
        ppfc.outcome_comment AS fiscal_closeout_outcome_comment,
+       ppfc.update_date AS fiscal_closeout_submitted_timestamp,
        (SELECT SUM(CASE WHEN is_spatial_added_ind THEN 1 ELSE 0 END)||'/'||COUNT(*)
         FROM wfprev.activity act
         WHERE act.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid

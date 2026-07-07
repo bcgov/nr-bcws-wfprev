@@ -2,8 +2,8 @@
 # Multi-stage Dockerfile for building and running Quarkus native application
 #
 # Usage:
-# docker build -f src/main/docker/Dockerfile.native -t report-generator-native .
-# docker run -i --rm -p 9000:8080 report-generator-native
+# docker build -f src/main/docker/Dockerfile.native -t  report-generator .
+# docker run -i --rm -p 8080:8080 report-generator
 ###
 
 # Stage 1: Build the native binary
@@ -30,13 +30,8 @@ COPY --from=builder /project/target/*.properties /work/
 COPY --from=builder /project/target/*.so /work/
 COPY --from=builder /project/target/*-runner /work/application
 
-# Install AWS Lambda Runtime Interface Emulator
-RUN curl -Lo /usr/bin/aws-lambda-rie https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie \
-    && chmod +x /usr/bin/aws-lambda-rie
-
 RUN chmod "ugo+x" /work/application
-EXPOSE 8080
+EXPOSE 8081
 USER 1001
 
-ENTRYPOINT ["/usr/bin/aws-lambda-rie"]
-CMD ["/work/application", "-Dquarkus.http.port=8081", "-Dquarkus.http.host=0.0.0.0"]
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
