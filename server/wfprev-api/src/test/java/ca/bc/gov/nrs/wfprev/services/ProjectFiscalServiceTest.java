@@ -969,6 +969,7 @@ class ProjectFiscalServiceTest {
         ProjectFiscalModel model = new ProjectFiscalModel();
         model.setProjectPlanFiscalGuid(guid.toString());
         model.setIsApprovedInd(true);
+        model.setIsBcwsHQApprovedInd(true);
 
         PlanFiscalStatusCodeModel statusModel = new PlanFiscalStatusCodeModel();
         statusModel.setPlanFiscalStatusCode("PROPOSED");

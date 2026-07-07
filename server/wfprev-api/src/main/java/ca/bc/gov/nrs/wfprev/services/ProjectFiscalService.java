@@ -146,10 +146,11 @@ public class ProjectFiscalService implements CommonService {
         // Check if incoming status is PROPOSED and both approved & endorsed
         boolean isProposed = PROPOSED.equalsIgnoreCase(incomingStatus);
         boolean isApproved = Boolean.TRUE.equals(projectFiscalModel.getIsApprovedInd());
+        boolean isBcwsHQApproved = Boolean.TRUE.equals(projectFiscalModel.getIsBcwsHQApprovedInd());
         boolean isEndorsed = projectFiscalModel.getEndorsementCode() != null &&
                 ENDORSED.equalsIgnoreCase(projectFiscalModel.getEndorsementCode().getEndorsementCode());
 
-        if (isProposed && isApproved && isEndorsed) {
+        if (isProposed && isApproved && isEndorsed && isBcwsHQApproved) {
             projectFiscalModel.getPlanFiscalStatusCode().setPlanFiscalStatusCode(PREPARED);
         }
 
