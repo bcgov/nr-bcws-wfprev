@@ -1,5 +1,5 @@
 import { FiscalYearColors } from 'src/app/utils/constants';
-import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp, getUtcIsoTimestamp } from './tools';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp, getUtcIsoTimestamp, isEmpty } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -137,4 +137,27 @@ describe('Latitude/Longitude Utilities', () => {
       expect(ts).toBe('2025-08-08T18:20:30.000Z');
     });
   });
+
+  describe('isEmpty', () => {
+    it('should return true for null or undefined', () => {
+      expect(isEmpty(null)).toBeTrue();
+      expect(isEmpty(undefined)).toBeTrue();
+    });
+
+    it('should return true for an empty string', () => {
+      expect(isEmpty('')).toBeTrue();
+    });
+
+    it('should return false for 0 or valid numbers', () => {
+      expect(isEmpty(0)).toBeFalse();
+      expect(isEmpty(123)).toBeFalse();
+    });
+
+    it('should return false for valid strings or objects', () => {
+      expect(isEmpty('hello')).toBeFalse();
+      expect(isEmpty({})).toBeFalse();
+      expect(isEmpty([])).toBeFalse();
+    });
+  });
 });
+
