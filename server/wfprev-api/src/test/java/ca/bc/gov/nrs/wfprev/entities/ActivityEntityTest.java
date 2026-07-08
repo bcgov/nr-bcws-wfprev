@@ -44,6 +44,7 @@ class ActivityEntityTest {
                 .isResultsReportableInd(true)
                 .outstandingObligationsInd(false)
                 .isSpatialAddedInd(true)
+                .isPreviousCarryForwardInd(false)
                 .isCarryForwardInd(false)
                 .finalOutcomeComments("Test Outcomes")
                 .revisionCount(1)
@@ -220,6 +221,20 @@ class ActivityEntityTest {
                 .hasSize(1)
                 .anyMatch(violation ->
                         violation.getPropertyPath().toString().equals("isCarryForwardInd") &&
+                                violation.getMessage().equals("must not be null"));
+    }
+
+    @Test
+    void testIsPreviousCarryForwardInd_IsNull() {
+        ActivityEntity entity = createValidActivityEntity();
+        entity.setIsPreviousCarryForwardInd(null);
+
+        Set<ConstraintViolation<ActivityEntity>> violations = validator.validate(entity);
+
+        assertThat(violations)
+                .hasSize(1)
+                .anyMatch(violation ->
+                        violation.getPropertyPath().toString().equals("isPreviousCarryForwardInd") &&
                                 violation.getMessage().equals("must not be null"));
     }
 

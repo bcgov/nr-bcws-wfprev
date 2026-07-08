@@ -127,6 +127,9 @@
 
 .narrow-width {
   max-width: 210px;
+  &-checkbox {
+    margin-top: 6px;
+  }
 }
 
 .comment-container {

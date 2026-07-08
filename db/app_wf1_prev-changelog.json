@@ -2295,6 +2295,40 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_06",
+        "author": "ssylver",
+        "tagDatabase": {
+          "tag": "version_01_03_00_06"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/06/ddl/WFPREV.ddl.activity_add_previous_carry_forward_ind.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/06/ddl/WFPREV.ddl.activity_audit_add_previous_carry_forward_ind.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_03_00/06/ddl/app_wf1_prev.ddl.activity_trigger_wfprev-1163.sql",
+              "splitStatements": false
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }

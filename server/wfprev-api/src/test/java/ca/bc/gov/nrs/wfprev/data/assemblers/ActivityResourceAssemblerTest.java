@@ -27,6 +27,7 @@ class ActivityResourceAssemblerTest {
         entity.setActivityEndDate(new Date());
         entity.setPlannedSpendAmount(BigDecimal.valueOf(1000));
         entity.setCompletedAreaHa(BigDecimal.valueOf(50));
+        entity.setIsPreviousCarryForwardInd(true);
         entity.setIsCarryForwardInd(true);
         entity.setFinalOutcomeComments("Final outcomes text");
 
@@ -40,6 +41,7 @@ class ActivityResourceAssemblerTest {
         assertEquals(entity.getActivityDescription(), model.getActivityDescription());
         assertEquals(entity.getPlannedSpendAmount(), model.getPlannedSpendAmount());
         assertEquals(entity.getCompletedAreaHa(), model.getCompletedAreaHa());
+        assertEquals(entity.getIsPreviousCarryForwardInd(), model.getIsPreviousCarryForwardInd());
         assertEquals(entity.getIsCarryForwardInd(), model.getIsCarryForwardInd());
         assertEquals(entity.getFinalOutcomeComments(), model.getFinalOutcomeComments());
     }
@@ -55,6 +57,7 @@ class ActivityResourceAssemblerTest {
         model.setActivityEndDate(new Date());
         model.setPlannedSpendAmount(BigDecimal.valueOf(1000));
         model.setCompletedAreaHa(BigDecimal.valueOf(50));
+        model.setIsPreviousCarryForwardInd(false);
         model.setIsCarryForwardInd(true);
         model.setFinalOutcomeComments("Final outcomes text");
 
@@ -68,6 +71,7 @@ class ActivityResourceAssemblerTest {
         assertEquals(model.getActivityDescription(), entity.getActivityDescription());
         assertEquals(model.getPlannedSpendAmount(), entity.getPlannedSpendAmount());
         assertEquals(model.getCompletedAreaHa(), entity.getCompletedAreaHa());
+        assertEquals(model.getIsPreviousCarryForwardInd(), entity.getIsPreviousCarryForwardInd());
         assertEquals(model.getIsCarryForwardInd(), entity.getIsCarryForwardInd());
         assertEquals(model.getFinalOutcomeComments(), entity.getFinalOutcomeComments());
     }
@@ -78,6 +82,7 @@ class ActivityResourceAssemblerTest {
         ActivityModel model = new ActivityModel();
         model.setActivityName("Updated Activity");
         model.setPlannedSpendAmount(BigDecimal.valueOf(2000));
+        model.setIsPreviousCarryForwardInd(true);
         model.setIsCarryForwardInd(true);
         model.setFinalOutcomeComments("New comments");
 
@@ -85,6 +90,7 @@ class ActivityResourceAssemblerTest {
         existingEntity.setActivityGuid(UUID.randomUUID());
         existingEntity.setActivityName("Old Activity");
         existingEntity.setPlannedSpendAmount(BigDecimal.valueOf(1000));
+        existingEntity.setIsPreviousCarryForwardInd(false);
         existingEntity.setIsCarryForwardInd(false);
         existingEntity.setFinalOutcomeComments("Old comments");
 
@@ -94,6 +100,7 @@ class ActivityResourceAssemblerTest {
         // Assert
         assertEquals("Updated Activity", updatedEntity.getActivityName());
         assertEquals(BigDecimal.valueOf(2000), updatedEntity.getPlannedSpendAmount());
+        assertEquals(true, updatedEntity.getIsPreviousCarryForwardInd());
         assertEquals(true, updatedEntity.getIsCarryForwardInd());
         assertEquals("New comments", updatedEntity.getFinalOutcomeComments());
     }

@@ -120,6 +120,11 @@ public class ActivityEntity implements Serializable {
 
     @NotNull
     @Builder.Default
+    @Column(name = "previous_carry_forward_ind", nullable = false)
+    private Boolean isPreviousCarryForwardInd = false;
+
+    @NotNull
+    @Builder.Default
     @Column(name = "carry_forward_ind", nullable = false)
     private Boolean isCarryForwardInd = false;
 
