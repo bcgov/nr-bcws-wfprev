@@ -12,6 +12,7 @@ import { NgxCurrency } from '@dintecom/ngx-currency';
 import { merge } from 'rxjs';
 import { Messages, NumericLimits } from '../../../utils/constants';
 import { nonNegativeValidator } from '../../../utils/validators';
+import { isEmpty } from '../../../utils/tools';
 import { ProjectFilesComponent } from '../../edit-project/project-details/project-files/project-files.component';
 import { ActivityHeaderComponent } from '../../shared/activity-header/activity-header.component';
 import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
@@ -68,7 +69,6 @@ export class YearEndActivityItemComponent implements OnChanges {
   form!: FormGroup;
   messages = Messages;
   statusOptions = ActivityStatusOptions;
-  isEmpty = (val: any) => val == null || val === '';
 
   constructor(private readonly fb: FormBuilder) { }
 
@@ -258,18 +258,18 @@ export class YearEndActivityItemComponent implements OnChanges {
   // - If isResultsReportableInd is true, a spatial file must be uploaded.
   // - If outstandingObligationsInd is checked, activityComment must be provided.
   isActivityMissingInformation(activity: any): boolean {
-    const activityStatusCodeEmpty = this.isEmpty(activity.activityStatusCode);
-    const reportedSpendAmountEmpty = this.isEmpty(activity.reportedSpendAmount) && activity.reportedSpendAmount !== 0;
-    const completedHectaresEmpty = this.isEmpty(activity.completedAreaHa) && activity.completedAreaHa !== 0;
+    const activityStatusCodeEmpty = isEmpty(activity.activityStatusCode);
+    const reportedSpendAmountEmpty = isEmpty(activity.reportedSpendAmount) && activity.reportedSpendAmount !== 0;
+    const completedHectaresEmpty = isEmpty(activity.completedAreaHa) && activity.completedAreaHa !== 0;
     // $0 spend requires a comment explaining the reason
-    const reportedSpendZeroMissingComments = activity.reportedSpendAmount === 0 && this.isEmpty(activity.finalOutcomeComments);
+    const reportedSpendZeroMissingComments = activity.reportedSpendAmount === 0 && isEmpty(activity.finalOutcomeComments);
     // Spatial file required only when activity is results-reportable
     const spatialMissing = !activity.isSpatialAddedInd && activity.isResultsReportableInd;
     // Obligations description required only when outstanding obligations is checked
-    const obligationMissingDesc = activity.outstandingObligationsInd && this.isEmpty(activity.activityComment);
-    const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
-    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
+    const obligationMissingDesc = activity.outstandingObligationsInd && isEmpty(activity.activityComment);
+    const startDateMissing = isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
+    const endDateMissing = isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && isEmpty(activity.finalOutcomeComments);
 
     return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || reportedSpendZeroMissingComments || spatialMissing || obligationMissingDesc || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
@@ -279,16 +279,16 @@ export class YearEndActivityItemComponent implements OnChanges {
   // Final outcome comments are always required to explain the deferral reason.
   // Obligations description required only when outstanding obligations is checked.
   isDeferredActivityMissingInfo(activity: any): boolean {
-    const activityStatusCodeEmpty = this.isEmpty(activity.activityStatusCode);
+    const activityStatusCodeEmpty = isEmpty(activity.activityStatusCode);
     // 0 is a valid value — only blank/null counts as missing
-    const reportedSpendAmountEmpty = this.isEmpty(activity.reportedSpendAmount) && activity.reportedSpendAmount !== 0;
-    const completedHectaresEmpty = this.isEmpty(activity.completedAreaHa) && activity.completedAreaHa !== 0;
+    const reportedSpendAmountEmpty = isEmpty(activity.reportedSpendAmount) && activity.reportedSpendAmount !== 0;
+    const completedHectaresEmpty = isEmpty(activity.completedAreaHa) && activity.completedAreaHa !== 0;
     // Always required for deferred — must explain why activity was deferred
-    const finalOutcomeCommentsEmpty = this.isEmpty(activity.finalOutcomeComments);
-    const obligationsNoDescription = activity.outstandingObligationsInd && this.isEmpty(activity.activityComment);
-    const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
-    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
+    const finalOutcomeCommentsEmpty = isEmpty(activity.finalOutcomeComments);
+    const obligationsNoDescription = activity.outstandingObligationsInd && isEmpty(activity.activityComment);
+    const startDateMissing = isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
+    const endDateMissing = isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && isEmpty(activity.finalOutcomeComments);
 
     return activityStatusCodeEmpty || reportedSpendAmountEmpty || completedHectaresEmpty || finalOutcomeCommentsEmpty || obligationsNoDescription || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }
@@ -298,12 +298,12 @@ export class YearEndActivityItemComponent implements OnChanges {
   // Final outcome comments are always required to explain the cancellation reason.
   // Outstanding obligations description is not required regardless of checkbox state.
   isCancelledActivityMissingInfo(activity: any): boolean {
-    const activityStatusCodeEmpty = this.isEmpty(activity.activityStatusCode);
+    const activityStatusCodeEmpty = isEmpty(activity.activityStatusCode);
     // Always required for cancelled — must explain why activity was cancelled
-    const finalOutcomeCommentsEmpty = this.isEmpty(activity.finalOutcomeComments);
-    const startDateMissing = this.isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
-    const endDateMissing = this.isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
-    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && this.isEmpty(activity.finalOutcomeComments);
+    const finalOutcomeCommentsEmpty = isEmpty(activity.finalOutcomeComments);
+    const startDateMissing = isEmpty(activity.activityDateRange?.activityStartDate ?? activity.activityStartDate);
+    const endDateMissing = isEmpty(activity.activityDateRange?.activityEndDate ?? activity.activityEndDate);
+    const carriedForwardFinalOutcomeCommentsEmpty = activity.isCarryForwardInd && isEmpty(activity.finalOutcomeComments);
 
     return activityStatusCodeEmpty || finalOutcomeCommentsEmpty || startDateMissing || endDateMissing || carriedForwardFinalOutcomeCommentsEmpty;
   }

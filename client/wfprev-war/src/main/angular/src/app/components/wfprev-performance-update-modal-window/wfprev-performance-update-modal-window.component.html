@@ -40,7 +40,7 @@
       </div>
       <div class="modal-window-row">
         <div>
-          <wfprev-input-field [id]="'revisedForecast'" [label]="'Revised Forecast'" [placeholder]="'0.00'"
+          <wfprev-input-field [id]="'revisedForecast'" [label]="'Revised Forecast'" [placeholder]="(data?.currentForecast | number:'1.2-2') || '0.00'"
             [control]="revisedForecastControl" [tooltip]="'Revised Forecast'" [required]="false"
             [errorMessages]="{ min: messages.positiveNumber, maxlength: messages.maxLengthExceeded, max: messages.maxLengthExceeded }"
             [inputPrefix]="'$'" [enableAmountFormat]="true" />
@@ -48,7 +48,7 @@
         <div class="forecast-rationale">
           <wfprev-textarea [label]="'Revised Forecast Rationale'"
             placeholder="Provide rationale for the adjusted forecast." [rows]="2" [maxLength]="500"
-            [control]="forecastRationaleControl" [required]="true">
+            [control]="forecastRationaleControl" [required]="isForecastRationaleRequired">
           </wfprev-textarea>
         </div>
       </div>
@@ -57,7 +57,7 @@
       <p mat-dialog-title class="risk-breakdown-title">Budget Risk Breakdown</p>
       <div class="modal-window-row">
         <p class="section-description">Provide a breakdown of the total budget risks. All values must add up to the
-          <b>{{revisedForecastControl.value && revisedForecastControl.value > 0 ? 'Revised' : 'Current'}} Forecast</b>
+          <b>{{activeForecastLabel}} Forecast</b>
           amount as this information is used to identify how much of the overall
           budget is at risk of not being spent.
         </p>
@@ -123,8 +123,7 @@
       </div>
       @if(form.hasError('totalMismatch')) {
       <div class="error">
-        <p>The sum of all risk amounts does not match the {{revisedForecastControl.value && revisedForecastControl.value
-          > 0 ? 'Revised' : 'Current'}} Forecast amount.</p>
+        <p>The sum of all risk amounts does not match the {{activeForecastLabel}} Forecast amount.</p>
       </div>
       }
     </div>

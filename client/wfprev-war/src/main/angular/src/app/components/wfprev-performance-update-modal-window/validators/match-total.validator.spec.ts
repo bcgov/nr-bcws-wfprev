@@ -28,6 +28,11 @@ describe('matchTotalValidator', () => {
     expect(form.errors).toBeNull();
   });
 
+  it('should return null when revisedForecast is 0 and matches totalAmount', () => {
+    form = createForm(0, 0, 100); // 0 revised forecast, 100 current forecast
+    expect(form.errors).toBeNull();
+  });
+
   it('should return null when currentForecast matches totalAmount and revisedForecast is null', () => {
     form = createForm(200, null, 200);
     expect(form.errors).toBeNull();
