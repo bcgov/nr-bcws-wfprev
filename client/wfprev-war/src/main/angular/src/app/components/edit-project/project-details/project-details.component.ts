@@ -712,7 +712,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.projectTypeLocked = this.hasApprovedFiscals(this.projectFiscals);
     const projectTypeControl = this.detailsForm.get('projectTypeCode');
-    if (this.projectTypeLocked) {
+    if (this.projectTypeLocked || this.isViewMod) {
       projectTypeControl?.disable({ emitEvent: false });
     } else {
       projectTypeControl?.enable({ emitEvent: false });
