@@ -98,12 +98,13 @@ export class PerformanceUpdateModalWindowComponent {
   }
 
   private calculateTotalAmount() {
-
-    this.totalAmountControl.setValue(
+    const total = 
       (Number(this.highRiskControl.value) || 0) +
       (Number(this.mediumRiskControl.value) || 0) +
       (Number(this.lowRiskControl.value) || 0) +
-      (Number(this.completeControl.value) || 0));
+      (Number(this.completeControl.value) || 0);
+
+    this.totalAmountControl.setValue(Number(total.toFixed(2)));
     this.form.updateValueAndValidity({ onlySelf: true });
   }
 
@@ -246,16 +247,16 @@ export class PerformanceUpdateModalWindowComponent {
 
       generalUpdateComment: this.generalUpdatesControl.value,
 
-      forecastAmount: this.revisedForecastControl.value | 0,
+      forecastAmount: this.revisedForecastControl.value || 0,
       forecastAdjustmentRationale: this.forecastRationaleControl.value,
 
-      budgetHighRiskAmount: this.highRiskControl.value | 0,
+      budgetHighRiskAmount: this.highRiskControl.value || 0,
       budgetHighRiskRationale: this.highRiskDescriptionControl.value,
-      budgetMediumRiskAmount: this.mediumRiskControl.value | 0,
+      budgetMediumRiskAmount: this.mediumRiskControl.value || 0,
       budgetMediumRiskRationale: this.mediumRiskDescriptionControl.value,
-      budgetLowRiskAmount: this.lowRiskControl.value | 0,
+      budgetLowRiskAmount: this.lowRiskControl.value || 0,
       budgetLowRiskRationale: this.lowRiskDescriptionControl.value,
-      budgetCompletedAmount: this.completeControl.value | 0,
+      budgetCompletedAmount: this.completeControl.value || 0,
       budgetCompletedDescription: this.completeDescriptionControl.value,
 
     }
