@@ -134,6 +134,11 @@ public class FuelManagementReportData {
     private String otherBudgetLowRiskRationale;
     private BigDecimal otherBudgetCompletedAmount;
     private String otherBudgetCompletedDescription;
+    private Date fiscalCloseoutSubmittedTimestamp;
+    private String fiscalCloseoutOutcomeComment;
+    private Date bcwsHQApprovedTimestamp;
+    private String outstandingObligations;
+    private String carriedForward;
 
     // Getters and setters
     public BigDecimal getTotalFilterSectionScore() { return totalFilterSectionScore; }
@@ -407,4 +412,15 @@ public class FuelManagementReportData {
     public void setOtherBudgetCompletedAmount(BigDecimal otherBudgetCompletedAmount) { this.otherBudgetCompletedAmount = otherBudgetCompletedAmount; }
     public String getOtherBudgetCompletedDescription() { return otherBudgetCompletedDescription; }
     public void setOtherBudgetCompletedDescription(String otherBudgetCompletedDescription) { this.otherBudgetCompletedDescription = otherBudgetCompletedDescription; }
+    public Date getFiscalCloseoutSubmittedTimestamp() { return fiscalCloseoutSubmittedTimestamp; }
+    public void setFiscalCloseoutSubmittedTimestamp(Date fiscalCloseoutSubmittedTimestamp) { this.fiscalCloseoutSubmittedTimestamp = fiscalCloseoutSubmittedTimestamp; }
+    public String getFiscalCloseoutOutcomeComment() { return fiscalCloseoutOutcomeComment; }
+    public void setFiscalCloseoutOutcomeComment(String fiscalCloseoutOutcomeComment) { this.fiscalCloseoutOutcomeComment = fiscalCloseoutOutcomeComment; }
+    public Date getBcwsHQApprovedTimestamp() { return bcwsHQApprovedTimestamp;}
+    public void setBcwsHQApprovedTimestamp(Date bcwsHQApprovedTimestamp) { this.bcwsHQApprovedTimestamp = bcwsHQApprovedTimestamp; }
+    public String getOutstandingObligations() { return outstandingObligations; }
+    public void setOutstandingObligations(String outstandingObligations) { this.outstandingObligations = outstandingObligations; }
+    public String getCarriedForward() { return carriedForward; }
+    public void setCarriedForward(String carriedForward){ this.carriedForward = carriedForward; }
+
 }

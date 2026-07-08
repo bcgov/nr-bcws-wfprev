@@ -3,14 +3,13 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
-import ca.bc.gov.nrs.wfprev.services.FeaturesService;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +20,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -32,9 +34,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -398,10 +397,7 @@ class ReportServiceTest {
         fuelEntity.setFiscalForecastAmount(new BigDecimal("1100.00"));
         fuelEntity.setFiscalAncillaryFundAmount(new BigDecimal("500.00"));
         fuelEntity.setAncillaryFundingProvider("Provider A");
-        fuelEntity.setFiscalReportedSpendAmount(new BigDecimal("900.00"));
-        fuelEntity.setFiscalActualAmount(new BigDecimal("950.00"));
         fuelEntity.setFiscalPlannedProjectSizeHa(new BigDecimal("50.5"));
-        fuelEntity.setFiscalCompletedSizeHa(new BigDecimal("40.5"));
         fuelEntity.setSpatialSubmitted("1/1");
         fuelEntity.setFirstNationsEngagement("Y");
         fuelEntity.setFirstNationsDelivPartners("N");
@@ -414,6 +410,7 @@ class ReportServiceTest {
         fuelEntity.setSecondaryObjectiveTypeDescription("Obj B");
         fuelEntity.setEndorsementTimestamp(Date.from(Instant.parse("2025-01-01T20:00:00Z")));
         fuelEntity.setApprovedTimestamp(Date.from(Instant.parse("2025-02-01T20:00:00Z")));
+        fuelEntity.setBcwsHQApprovedTimestamp(Date.from(Instant.parse("2025-02-01T20:00:00Z")));
         fuelEntity.setWuiRiskClassDescription("Risk A");
         fuelEntity.setLocalWuiRiskClassDescription("Local Risk A");
         fuelEntity.setLocalWuiRiskClassRationale("Rationale A");
@@ -493,6 +490,12 @@ class ReportServiceTest {
         fuelEntity.setOtherBudgetLowRiskRationale("Low Other A");
         fuelEntity.setOtherBudgetCompletedAmount(new BigDecimal("54.00"));
         fuelEntity.setOtherBudgetCompletedDescription("Comp Other A");
+        fuelEntity.setFiscalReportedSpendAmount(new BigDecimal("900.00"));
+        fuelEntity.setFiscalActualAmount(new BigDecimal("950.00"));
+        fuelEntity.setFiscalCompletedSizeHa(new BigDecimal("40.5"));
+        fuelEntity.setFiscalCloseoutOutcomeComment("Closing out FM fiscal activity");
+        fuelEntity.setOutstandingObligations("1/3");
+        fuelEntity.setCarriedForward("0/3");
 
         CulturalPrescribedFireReportEntity crxEntity = new CulturalPrescribedFireReportEntity();
         crxEntity.setUniqueRowGuid(UUID.randomUUID());
@@ -522,10 +525,7 @@ class ReportServiceTest {
         crxEntity.setFiscalForecastAmount(new BigDecimal("2100.00"));
         crxEntity.setFiscalAncillaryFundAmount(new BigDecimal("600.00"));
         crxEntity.setAncillaryFundingProvider("Provider B");
-        crxEntity.setFiscalReportedSpendAmount(new BigDecimal("1900.00"));
-        crxEntity.setFiscalActualAmount(new BigDecimal("1950.00"));
         crxEntity.setFiscalPlannedProjectSizeHa(new BigDecimal("60.5"));
-        crxEntity.setFiscalCompletedSizeHa(new BigDecimal("50.5"));
         crxEntity.setSpatialSubmitted("1/2");
         crxEntity.setFirstNationsEngagement("N");
         crxEntity.setFirstNationsDelivPartners("Y");
@@ -538,6 +538,7 @@ class ReportServiceTest {
         crxEntity.setSecondaryObjectiveTypeDescription("Obj D");
         crxEntity.setEndorsementTimestamp(Date.from(Instant.parse("2025-03-01T20:00:00Z")));
         crxEntity.setApprovedTimestamp(Date.from(Instant.parse("2025-04-01T20:00:00Z")));
+        crxEntity.setBcwsHQApprovedTimestamp(Date.from(Instant.parse("2025-04-01T20:00:00Z")));
         crxEntity.setOutsideWuiInd(true);
         crxEntity.setWuiRiskClassDescription("Risk B");
         crxEntity.setLocalWuiRiskClassDescription("Local Risk B");
@@ -618,6 +619,12 @@ class ReportServiceTest {
         crxEntity.setOtherBudgetLowRiskRationale("Low Other B");
         crxEntity.setOtherBudgetCompletedAmount(new BigDecimal("34.00"));
         crxEntity.setOtherBudgetCompletedDescription("Comp Other B");
+        crxEntity.setFiscalReportedSpendAmount(new BigDecimal("1900.00"));
+        crxEntity.setFiscalActualAmount(new BigDecimal("1950.00"));
+        crxEntity.setFiscalCompletedSizeHa(new BigDecimal("50.5"));
+        crxEntity.setFiscalCloseoutOutcomeComment("Closing out CRX fiscal activity");
+        crxEntity.setOutstandingObligations("2/3");
+        crxEntity.setCarriedForward("1/3");
 
         when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuelEntity));
         when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crxEntity));
@@ -764,7 +771,12 @@ class ReportServiceTest {
                     assertTrue(row.contains("$53"));
                     assertTrue(row.contains("Low Other A"));
                     assertTrue(row.contains("$54"));
-                    assertTrue(row.contains("Comp Other A"));
+                    assertTrue(row.contains("$900"));
+                    assertTrue(row.contains("$950"));
+                    assertTrue(row.contains("\"40.5\""));
+                    assertTrue(row.contains("Closing out FM fiscal activity"));
+                    assertTrue(row.contains("1/3"));
+                    assertTrue(row.contains("0/3"));
 
                 } else if (entry.getName().contains("cultural")) {
                     String header = lines[0];
@@ -897,6 +909,12 @@ class ReportServiceTest {
                     assertTrue(row.contains("Low Other B"));
                     assertTrue(row.contains("$34"));
                     assertTrue(row.contains("Comp Other B"));
+                    assertTrue(row.contains("$1,900"));
+                    assertTrue(row.contains("$1,950"));
+                    assertTrue(row.contains("\"50.5\""));
+                    assertTrue(row.contains("Closing out CRX fiscal activity"));
+                    assertTrue(row.contains("2/3"));
+                    assertTrue(row.contains("1/3"));
                 }
             }
         }
