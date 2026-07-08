@@ -1,4 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { isEmpty } from "../../../utils/tools";
 
 export function matchTotalValidator(totalAmountCtrlName: string): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -13,9 +14,9 @@ export function matchTotalValidator(totalAmountCtrlName: string): ValidatorFn {
       );
       return null;
     }
-    
-    const forecastValue = revisedForecastCtrl?.value && revisedForecastCtrl.value > 0
-      ? revisedForecastCtrl.value
+
+    const forecastValue = !isEmpty(revisedForecastCtrl?.value)
+      ? revisedForecastCtrl?.value
       : currentForecastCtrl?.value;
 
     if (forecastValue == null || forecastValue === '') {
@@ -27,7 +28,7 @@ export function matchTotalValidator(totalAmountCtrlName: string): ValidatorFn {
     if (Number.isNaN(entered)) {
       return { totalMismatch: true };
     };
-    
+
 
     return entered === totalAmound
       ? null

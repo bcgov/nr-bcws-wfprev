@@ -31,7 +31,7 @@
             />
         }
         @if (enableAmountFormat) {
-          <input [currencyMask]="{align: 'left', prefix: '', inputMode: 1}"
+          <input [currencyMask]="{align: 'left', prefix: '', inputMode: 1, nullable: true}"
             [id]="id"
             [type]="type"
             [formControl]="control"

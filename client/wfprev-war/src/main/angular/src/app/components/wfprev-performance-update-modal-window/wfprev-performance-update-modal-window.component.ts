@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { matchTotalValidator } from './validators/match-total.validator';
 import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
+import { isEmpty } from '../../utils/tools';
 
 @Component({
   selector: ' wfprev-performance-update-modal-window',
@@ -35,14 +36,14 @@ export class PerformanceUpdateModalWindowComponent {
       ]
     }),
 
-    revisedForecast: new FormControl<number | null>(0, {
+    revisedForecast: new FormControl<number | null>(null, {
       validators: [
         Validators.min(0),
         Validators.max(NumericLimits.MAX_NUMBER)
       ]
     }),
 
-    forecastRationale: new FormControl({value: '', disabled: true}, { validators: [Validators.required] }),
+    forecastRationale: new FormControl({value: '', disabled: false}),
 
     highRisk: new FormControl<number | null>(0, {
       validators: [
@@ -95,26 +96,54 @@ export class PerformanceUpdateModalWindowComponent {
     this.reportingPeriod = data.reportingPeriod;
     this.progressStatus = data.progressStatus;
     this.bindAmountValidation();
+    this.updateRationaleValidation(this.revisedForecastControl.value);
+  }
+
+  get activeForecastLabel(): string {
+    const val = this.revisedForecastControl.value;
+    return !isEmpty(val) ? 'Revised' : 'Current';
+  }
+
+  get isForecastRationaleRequired(): boolean {
+    const value = this.revisedForecastControl.value;
+    const currentForecast = this.data.currentForecast ?? 0;
+    const effectiveForecast = !isEmpty(value) ? Number(value) : currentForecast;
+    return effectiveForecast !== currentForecast;
+  }
+
+  private updateRationaleValidation(value: any) {
+    const currentForecast = this.data.currentForecast ?? 0;
+    const effectiveForecast = !isEmpty(value) ? Number(value) : currentForecast;
+    
+    if (effectiveForecast !== currentForecast) {
+      this.forecastRationaleControl.setValidators([Validators.required]);
+    } else {
+      this.forecastRationaleControl.clearValidators();
+    }
+    this.forecastRationaleControl.updateValueAndValidity({ emitEvent: false });
   }
 
   private calculateTotalAmount() {
-
-    this.totalAmountControl.setValue(
+    const total = 
       (Number(this.highRiskControl.value) || 0) +
       (Number(this.mediumRiskControl.value) || 0) +
       (Number(this.lowRiskControl.value) || 0) +
-      (Number(this.completeControl.value) || 0));
+      (Number(this.completeControl.value) || 0);
+
+    this.totalAmountControl.setValue(Number(total.toFixed(2)));
     this.form.updateValueAndValidity({ onlySelf: true });
   }
 
   private bindAmountValidation() {
-    this.revisedForecastControl.valueChanges.subscribe(value => {
-      if (value && value > 0) {
-        this.forecastRationaleControl.enable();
-      } else {
-        this.forecastRationaleControl.reset();
-        this.forecastRationaleControl.disable();
+    this.progressStatusControl.valueChanges.subscribe(value => {
+      if (value === ProgressStatus.Cancelled) {
+        this.revisedForecastControl.setValue(0);
+        this.revisedForecastControl.markAsDirty();
       }
+    });
+
+    this.revisedForecastControl.valueChanges.subscribe(value => {
+      this.updateRationaleValidation(value);
       this.calculateTotalAmount();
     });
 
@@ -246,16 +275,18 @@ export class PerformanceUpdateModalWindowComponent {
 
       generalUpdateComment: this.generalUpdatesControl.value,
 
-      forecastAmount: this.revisedForecastControl.value | 0,
+      forecastAmount: (!isEmpty(this.revisedForecastControl.value)) 
+        ? Number(this.revisedForecastControl.value) 
+        : (this.data.currentForecast ?? 0),
       forecastAdjustmentRationale: this.forecastRationaleControl.value,
 
-      budgetHighRiskAmount: this.highRiskControl.value | 0,
+      budgetHighRiskAmount: this.highRiskControl.value || 0,
       budgetHighRiskRationale: this.highRiskDescriptionControl.value,
-      budgetMediumRiskAmount: this.mediumRiskControl.value | 0,
+      budgetMediumRiskAmount: this.mediumRiskControl.value || 0,
       budgetMediumRiskRationale: this.mediumRiskDescriptionControl.value,
-      budgetLowRiskAmount: this.lowRiskControl.value | 0,
+      budgetLowRiskAmount: this.lowRiskControl.value || 0,
       budgetLowRiskRationale: this.lowRiskDescriptionControl.value,
-      budgetCompletedAmount: this.completeControl.value | 0,
+      budgetCompletedAmount: this.completeControl.value || 0,
       budgetCompletedDescription: this.completeDescriptionControl.value,
 
     }

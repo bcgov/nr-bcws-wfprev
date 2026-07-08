@@ -208,3 +208,7 @@ export function getUtcIsoTimestamp(date?: Date): string {
   // Example: 2025-08-08T18:20:30.000Z (always UTC)
   return (date ?? new Date()).toISOString();
 }
+
+export function isEmpty(val: any): boolean {
+  return val == null || val === '';
+}
