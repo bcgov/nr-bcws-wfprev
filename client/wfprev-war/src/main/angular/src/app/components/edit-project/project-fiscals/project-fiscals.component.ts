@@ -31,7 +31,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { TokenService } from 'src/app/services/token.service';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { capitalizeFirstLetter, ResourcesRoutes } from 'src/app/utils';
-import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
+import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles, NumericLimits, FiscalActions } from 'src/app/utils/constants';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
@@ -726,11 +726,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   onFiscalAction(event: { action: string; index: number }) {
     const { action, index } = event;
 
-    if (action === 'DELETE') {
+    if (action === FiscalActions.DELETE) {
       this.deleteFiscalYear(this.fiscalForms[index], index);
-    } else if (action === 'YEAR_END_UPDATE' || action === 'YEAR_END_CANCEL') {
+    } else if (action === FiscalActions.YEAR_END_UPDATE || action === FiscalActions.YEAR_END_CANCEL) {
       const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
-      const workflow = action === 'YEAR_END_CANCEL' ? 'cancel' : 'update';
+      const workflow = action === FiscalActions.YEAR_END_CANCEL ? 'cancel' : 'update';
       this.router.navigate(['/' + ResourcesRoutes.YEAR_END], {
         queryParams: {
           projectGuid: this.projectGuid,

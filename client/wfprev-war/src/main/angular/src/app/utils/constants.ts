@@ -147,6 +147,12 @@ export const FiscalActionLabels = {
   SET_IN_PROG: 'Set to In Progress'
 };
 
+export const FiscalActions = {
+  DELETE: 'DELETE',
+  YEAR_END_UPDATE: 'YEAR_END_UPDATE',
+  YEAR_END_CANCEL: 'YEAR_END_CANCEL'
+};
+
 export const FiscalStatuses = {
   DRAFT: 'DRAFT',
   PROPOSED: 'PROPOSED',

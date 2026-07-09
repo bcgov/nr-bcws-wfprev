@@ -9,126 +9,14 @@
 </button>
 
 <mat-menu #menu="matMenu" xPosition="before">
-  <!-- DRAFT -->
-  @if (status === FiscalStatuses.DRAFT) {
+  @for (action of allowedActions; track action.action) {
     <button
       mat-menu-item
-      [disabled]="!fiscal.projectPlanFiscalGuid || isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
+      [disabled]="isActionDisabled(action)"
+      [matTooltip]="getActionTooltip(action)"
       matTooltipPosition="left"
-      (click)="emitAction(FiscalStatuses.PROPOSED)">
-      {{ FiscalActionLabels.SUBMIT }}
-    </button>
-  }
-  @if (status === FiscalStatuses.DRAFT) {
-    <button
-      mat-menu-item
-      (click)="emitAction('DELETE')">
-      {{ FiscalActionLabels.DELETE }}
-    </button>
-  }
-
-  <!-- PROPOSED -->
-  @if (status === FiscalStatuses.PROPOSED) {
-    <button
-      mat-menu-item
-      (click)="emitAction(FiscalStatuses.DRAFT)">
-      {{ FiscalActionLabels.REVERT_TO_DRAFT }}
-    </button>
-  }
-  @if (status === FiscalStatuses.PROPOSED) {
-    <button
-      mat-menu-item
-      (click)="emitAction(FiscalStatuses.CANCELLED)">
-      {{ FiscalActionLabels.CANCEL_FISCAL }}
-    </button>
-  }
-
-  <!-- PREPARED -->
-  @if (status === FiscalStatuses.PREPARED) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('IN_PROG')">
-      {{ FiscalActionLabels.SET_IN_PROG }}
-    </button>
-  }  
-  @if (status === FiscalStatuses.PREPARED) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_UPDATE')">
-      {{ FiscalActionLabels.YEAR_END_UPDATE }}
-    </button>
-  }
-  @if (status === FiscalStatuses.PREPARED) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_CANCEL')">
-      {{ FiscalActionLabels.CANCEL_FISCAL }}
-    </button>
-  }
-
-  <!-- IN_PROGRESS -->
-  @if (status === FiscalStatuses.IN_PROGRESS) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_UPDATE')">
-      {{ FiscalActionLabels.YEAR_END_UPDATE }}
-    </button>
-  }
-  @if (status === FiscalStatuses.IN_PROGRESS) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_CANCEL')">
-      {{ FiscalActionLabels.CANCEL_FISCAL }}
-    </button>
-  }
-
-  <!-- COMPLETE -->
-  @if (status === FiscalStatuses.COMPLETE) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_UPDATE')">
-      {{ FiscalActionLabels.YEAR_END_UPDATE }}
-    </button>
-  }
-  @if (status === FiscalStatuses.COMPLETE) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_CANCEL')">
-      {{ FiscalActionLabels.CANCEL_FISCAL }}
-    </button>
-  }
-
-  <!-- CANCELLED -->
-  @if (status === FiscalStatuses.CANCELLED) {
-    <button
-      mat-menu-item
-      [disabled]="isDirty"
-      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
-      matTooltipPosition="left"
-      (click)="emitAction('YEAR_END_UPDATE')">
-      {{ FiscalActionLabels.YEAR_END_UPDATE }}
+      (click)="emitAction(action.action)">
+      {{ action.label }}
     </button>
   }
 </mat-menu>
