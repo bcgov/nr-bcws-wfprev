@@ -2329,6 +2329,26 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_07",
+        "author": "ssylver",
+        "tagDatabase": {
+          "tag": "version_01_03_00_07"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/07/dml/WFPREV.dml.bcws_hq_approval_datafix_wfprev_1103.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
