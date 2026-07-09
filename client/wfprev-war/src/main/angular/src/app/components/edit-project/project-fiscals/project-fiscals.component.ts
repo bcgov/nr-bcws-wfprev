@@ -5,43 +5,43 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ActivitiesComponent } from 'src/app/components/edit-project/activities/activities.component';
+import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
 import { FiscalMapComponent } from 'src/app/components/edit-project/fiscal-map/fiscal-map.component';
 import { ActivityCategoryCodeModel, ProjectFiscal } from 'src/app/components/models';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ProjectService } from 'src/app/services/project-services';
-import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
-import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
-import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
-import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
-import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
-import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
-import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { DropdownButtonComponent } from 'src/app/components/shared/dropdown-button/dropdown-button.component';
+import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
+import { InputFieldComponent } from 'src/app/components/shared/input-field/input-field.component';
+import { SelectFieldComponent } from 'src/app/components/shared/select-field/select-field.component';
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
-import { EndorsementApprovalComponent } from 'src/app/components/edit-project/endorsement-approval/endorsement-approval.component';
-import { TokenService } from 'src/app/services/token.service';
-import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
-import { capitalizeFirstLetter, ResourcesRoutes } from 'src/app/utils';
-import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
-import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
+import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
+import { CodeTableServices } from 'src/app/services/code-table-services';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
+import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
+import { ProjectService } from 'src/app/services/project-services';
+import { TokenService } from 'src/app/services/token.service';
+import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
+import { capitalizeFirstLetter, ResourcesRoutes } from 'src/app/utils';
+import { CodeTableKeys, EndorsementCode, FiscalStatuses, Messages, ModalMessages, ModalTitles, NumericLimits, FiscalActions } from 'src/app/utils/constants';
+import { getUtcIsoTimestamp } from 'src/app/utils/tools';
+import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
+import { PerformanceUpdatesComponent } from "../wfprev-performance-update/wfprev-performance-updates.component";
 
 @Component({
-    selector: 'wfprev-project-fiscals',
-    templateUrl: './project-fiscals.component.html',
-    styleUrls: ['./project-fiscals.component.scss'],
-    standalone: true,
-    imports: [
+  selector: 'wfprev-project-fiscals',
+  templateUrl: './project-fiscals.component.html',
+  styleUrls: ['./project-fiscals.component.scss'],
+  standalone: true,
+  imports: [
     ReactiveFormsModule,
     MatTabsModule,
     MatButtonModule,
@@ -63,12 +63,13 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
     TextareaComponent,
     PerformanceUpdatesComponent,
     MatProgressSpinnerModule
-]
+  ]
 })
 export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   @Input() focusedFiscalId: string | null = null;
   @ViewChild(ActivitiesComponent) activitiesComponent!: ActivitiesComponent;
   @ViewChild('fiscalMapRef') fiscalMapComponent!: FiscalMapComponent;
+  @ViewChild(PerformanceUpdatesComponent) performanceUpdatesComponent!: PerformanceUpdatesComponent;
   @Output() fiscalsUpdated = new EventEmitter<void>();
   currentUser: string = '';
   currentIdir: string = '';
@@ -113,15 +114,15 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     effect(() => {
       this.events.reloadFiscals();
 
-      if(this.initialized) {
+      if (this.initialized) {
         this.loadProjectFiscals();
       } else {
         this.initialized = true;
       }
 
     });
-   }
-   
+  }
+
   private routeNavTimeout: any;
 
   ngOnInit(): void {
@@ -626,6 +627,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     if (this.fiscalMapComponent) {
       this.fiscalMapComponent.getAllActivitiesBoundaries(); // refresh boundaries on map
     }
+
+    const fiscalGuid = this.projectFiscals[this.selectedTabIndex]?.projectPlanFiscalGuid;
+    if (this.performanceUpdatesComponent && this.projectGuid && fiscalGuid) {
+      this.performanceUpdatesComponent.getFiscalCloseout(this.projectGuid, fiscalGuid);
+    }
   }
 
   refreshMap(): void {
@@ -720,11 +726,11 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
   onFiscalAction(event: { action: string; index: number }) {
     const { action, index } = event;
 
-    if (action === 'DELETE') {
+    if (action === FiscalActions.DELETE) {
       this.deleteFiscalYear(this.fiscalForms[index], index);
-    } else if (action === 'YEAR_END_UPDATE' || action === 'YEAR_END_CANCEL') {
+    } else if (action === FiscalActions.YEAR_END_UPDATE || action === FiscalActions.YEAR_END_CANCEL) {
       const fiscalGuid = this.projectFiscals[index]?.projectPlanFiscalGuid;
-      const workflow = action === 'YEAR_END_CANCEL' ? 'cancel' : 'update';
+      const workflow = action === FiscalActions.YEAR_END_CANCEL ? 'cancel' : 'update';
       this.router.navigate(['/' + ResourcesRoutes.YEAR_END], {
         queryParams: {
           projectGuid: this.projectGuid,

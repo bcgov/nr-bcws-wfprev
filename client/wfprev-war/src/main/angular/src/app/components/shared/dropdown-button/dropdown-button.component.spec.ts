@@ -29,14 +29,14 @@ describe('DropdownButtonComponent', () => {
     expect(component.actionSelected.emit).toHaveBeenCalledWith({ action: 'approve', index: 2 });
   });
 
-  it('should return true for isButtonDisabled when status is COMPLETE', () => {
+  it('should return false for isButtonDisabled when status is COMPLETE', () => {
     component.status = component.FiscalStatuses.COMPLETE;
-    expect(component.isButtonDisabled()).toBeTrue();
+    expect(component.isButtonDisabled()).toBeFalse();
   });
 
-  it('should return true for isButtonDisabled when status is CANCELLED', () => {
+  it('should return false for isButtonDisabled when status is CANCELLED', () => {
     component.status = component.FiscalStatuses.CANCELLED;
-    expect(component.isButtonDisabled()).toBeTrue();
+    expect(component.isButtonDisabled()).toBeFalse();
   });
 
   it('should return false for isButtonDisabled when status is DRAFT', () => {

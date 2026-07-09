@@ -10,25 +10,26 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectFiscalsSignalService } from 'src/app/services/project-fiscals-signal.service';
 import { ProjectService } from 'src/app/services/project-services';
-import { PerformanceUpdate, YearEndPerformanceUpdateExtended, ProgressStatusCode, ReportingPeriodCode } from '../../models';
+import { FiscalStatuses, EndorsementCode } from 'src/app/utils/constants';
+import { PerformanceUpdate, ProgressStatusCode, ReportingPeriodCode, UpdateGeneralStatus, YearEndPerformanceUpdateExtended } from '../../models';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
 import { IconButtonComponent } from "../../shared/icon-button/icon-button.component";
 import { PerformanceUpdateHeaderComponent } from '../../shared/performance-update-header/performance-update-header.component';
+import { PerformanceUpdateSummaryComponent } from '../../shared/performance-update-summary/performance-update-summary.component';
 import { PerformanceUpdateModalWindowComponent } from '../../wfprev-performance-update-modal-window/wfprev-performance-update-modal-window.component';
 import { YearEndSummaryComponent } from '../../year-end-performance-update/year-end-summary/year-end-summary.component';
-import { PerformanceUpdateSummaryComponent } from '../../shared/performance-update-summary/performance-update-summary.component';
 
 @Component({
   selector: 'wfprev-performance-updates',
   standalone: true,
   imports: [
     CommonModule,
-    MatExpansionPanel, 
-    ExpansionIndicatorComponent, 
-    MatExpansionPanelHeader, 
-    IconButtonComponent, 
-    MatProgressSpinnerModule, 
-    PerformanceUpdateHeaderComponent, 
+    MatExpansionPanel,
+    ExpansionIndicatorComponent,
+    MatExpansionPanelHeader,
+    IconButtonComponent,
+    MatProgressSpinnerModule,
+    PerformanceUpdateHeaderComponent,
     YearEndSummaryComponent,
     PerformanceUpdateSummaryComponent
   ],
@@ -45,6 +46,7 @@ export class PerformanceUpdatesComponent implements OnChanges {
   fiscalCloseout: YearEndPerformanceUpdateExtended | undefined;
   isUpdatesCalled: boolean = false;
   isLoading = true;
+  fiscalStatus: string = '';
 
   get canCreatePerformanceUpdate(): boolean {
     return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE);
@@ -52,6 +54,10 @@ export class PerformanceUpdatesComponent implements OnChanges {
 
   get canCreateYearEndReport(): boolean {
     return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT);
+  }
+
+  get isYearEndUpdateDisabled(): boolean {
+    return [FiscalStatuses.DRAFT, FiscalStatuses.PROPOSED].includes(this.fiscalStatus);
   }
 
   constructor(
@@ -129,12 +135,14 @@ export class PerformanceUpdatesComponent implements OnChanges {
           this.fiscalCloseout = closeouts?._embedded?.fiscalCloseouts[0] ?? undefined;
 
           const activityList = activities?._embedded?.activities ?? [];
+          this.fiscalStatus = fiscal?.planFiscalStatusCode?.planFiscalStatusCode || '';
+          
           if (this.fiscalCloseout) {
             this.fiscalCloseout.outstandingObligationsInd =
               activityList.some((a: any) => a.outstandingObligationsInd);
             this.fiscalCloseout.isCarryForwardInd =
               activityList.some((a: any) => a.isCarryForwardInd);
-            this.fiscalCloseout.statusManagementStatus = fiscal?.planFiscalStatusCode?.planFiscalStatusCode;
+            this.fiscalCloseout.statusManagementStatus = this.fiscalStatus as UpdateGeneralStatus;
             this.fiscalCloseout.fiscalYearFormatted = `${fiscal.fiscalYear}/${(fiscal.fiscalYear + 1).toString().slice(-2)}`;
           }
         },
