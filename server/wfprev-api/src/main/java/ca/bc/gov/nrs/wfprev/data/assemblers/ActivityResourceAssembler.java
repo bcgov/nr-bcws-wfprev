@@ -64,6 +64,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         entity.setOutstandingObligationsInd(resource.getOutstandingObligationsInd());
         entity.setActivityComment(resource.getActivityComment());
         entity.setIsSpatialAddedInd(resource.getIsSpatialAddedInd());
+        entity.setIsPreviousCarryForwardInd(resource.getIsPreviousCarryForwardInd());
         entity.setIsCarryForwardInd(resource.getIsCarryForwardInd());
         entity.setFinalOutcomeComments(resource.getFinalOutcomeComments());
         entity.setRevisionCount(resource.getRevisionCount());
@@ -111,6 +112,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         resource.setOutstandingObligationsInd(entity.getOutstandingObligationsInd());
         resource.setActivityComment(entity.getActivityComment());
         resource.setIsSpatialAddedInd(entity.getIsSpatialAddedInd());
+        resource.setIsPreviousCarryForwardInd(entity.getIsPreviousCarryForwardInd());
         resource.setIsCarryForwardInd(entity.getIsCarryForwardInd());
         resource.setFinalOutcomeComments(entity.getFinalOutcomeComments());
         resource.setRevisionCount(entity.getRevisionCount());
@@ -199,6 +201,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         existingEntity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
         existingEntity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
         existingEntity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
+        existingEntity.setIsPreviousCarryForwardInd(nonNullOrDefault(model.getIsPreviousCarryForwardInd(), existingEntity.getIsPreviousCarryForwardInd()));
         existingEntity.setIsCarryForwardInd(nonNullOrDefault(model.getIsCarryForwardInd(), existingEntity.getIsCarryForwardInd()));
         existingEntity.setFinalOutcomeComments(nonNullOrDefault(model.getFinalOutcomeComments(), existingEntity.getFinalOutcomeComments()));
         existingEntity.setCreateUser(existingEntity.getCreateUser());

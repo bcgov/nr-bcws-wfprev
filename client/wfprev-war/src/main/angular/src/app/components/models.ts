@@ -136,6 +136,7 @@ export interface ActivityModel {
   outstandingObligationsInd?: boolean;
   activityComment?: string;
   isSpatialAddedInd?: boolean;
+  isPreviousCarryForwardInd?: boolean;
   isCarryForwardInd?: boolean;
   finalOutcomeComments?: string;
   createDate?: string; // ISO 8601 format, e.g., "2025-02-06T23:56:53.663+00:00"

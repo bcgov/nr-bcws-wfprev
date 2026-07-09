@@ -304,6 +304,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
       isResultsReportableInd: [activity?.isResultsReportableInd || false],
       outstandingObligationsInd: [outstandingObligationsInd],
       activityComment: [activity?.activityComment || '', activityCommentValidators],
+      isPreviousCarryForwardInd: [activity?.isPreviousCarryForwardInd || false],
       isCarryForwardInd: [isCarryForwardInd],
       finalOutcomeComments: [activity?.finalOutcomeComments || '', finalOutcomeCommentsValidators],
       isSpatialAddedInd: [activity?.isSpatialAddedInd || false],

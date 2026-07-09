@@ -67,6 +67,7 @@ describe('FiscalActivityItemComponent', () => {
       isResultsReportableInd: [false],
       outstandingObligationsInd: [false],
       activityComment: [''],
+      isPreviousCarryForwardInd: [false],
       isCarryForwardInd: [false],
       finalOutcomeComments: [''],
       isSpatialAddedInd: [false],
