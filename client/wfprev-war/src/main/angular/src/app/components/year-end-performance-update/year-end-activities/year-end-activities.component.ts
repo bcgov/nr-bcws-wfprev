@@ -31,4 +31,9 @@ export class YearEndActivitiesComponent {
     if (!this.activityItems) return true;
     return this.activityItems.toArray().every(item => item.form.valid && !item.form.getRawValue().isMissingInfo);
   }
+
+  isAnyDirty(): boolean {
+    if (!this.activityItems) return false;
+    return this.activityItems.toArray().some(item => item.form.dirty);
+  }
 }
