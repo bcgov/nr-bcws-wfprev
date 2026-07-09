@@ -121,7 +121,9 @@ describe('EndorsementApprovalComponent', () => {
   it('should return currentUser when no fiscal endorser and endorseFiscalActivity checked', () => {
     const noEndorserFiscal: ProjectFiscal = { ...mockFiscal, endorserName: undefined };
     component.fiscal = noEndorserFiscal;
-    component.endorsementApprovalForm.get('endorseFiscalActivity')?.setValue(true);
+    const control = component.endorsementApprovalForm.get('endorseFiscalActivity');
+    control?.setValue(true);
+    control?.markAsDirty(); 
     expect(component.effectiveEndorserName).toBe('Test User');
   });
 
@@ -413,7 +415,9 @@ describe('EndorsementApprovalComponent', () => {
 
   it('should return currentUser when no bcwsHQApproverName and checkbox is checked', () => {
     component.fiscal = { ...mockFiscal, bcwsHQApproverName: undefined };
-    component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.setValue(true);
+    const control = component.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity');
+    control?.setValue(true);
+    control?.markAsDirty();
     expect(component.effectiveBcwsHQApproverName).toBe('Test User');
   });
 
