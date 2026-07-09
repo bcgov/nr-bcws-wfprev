@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectFiscal } from 'src/app/components/models';
-import { FiscalActionLabels, FiscalStatuses } from 'src/app/utils/constants';
+import { FiscalActionLabels, FiscalStatuses, EndorsementCode } from 'src/app/utils/constants';
 
 @Component({
     selector: 'wfprev-dropdown-button',
@@ -35,6 +35,8 @@ export class DropdownButtonComponent {
   }
 
   isButtonDisabled(): boolean {
-    return this.isDisabled || [this.FiscalStatuses.COMPLETE, this.FiscalStatuses.CANCELLED].includes(this.status);
+    return this.isDisabled;
   }
+
+
 }

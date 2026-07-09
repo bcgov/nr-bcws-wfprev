@@ -97,4 +97,38 @@
       {{ FiscalActionLabels.CANCEL_FISCAL }}
     </button>
   }
+
+  <!-- COMPLETE -->
+  @if (status === FiscalStatuses.COMPLETE) {
+    <button
+      mat-menu-item
+      [disabled]="isDirty"
+      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
+      matTooltipPosition="left"
+      (click)="emitAction('YEAR_END_UPDATE')">
+      {{ FiscalActionLabels.YEAR_END_UPDATE }}
+    </button>
+  }
+  @if (status === FiscalStatuses.COMPLETE) {
+    <button
+      mat-menu-item
+      [disabled]="isDirty"
+      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
+      matTooltipPosition="left"
+      (click)="emitAction('YEAR_END_CANCEL')">
+      {{ FiscalActionLabels.CANCEL_FISCAL }}
+    </button>
+  }
+
+  <!-- CANCELLED -->
+  @if (status === FiscalStatuses.CANCELLED) {
+    <button
+      mat-menu-item
+      [disabled]="isDirty"
+      [matTooltip]="isDirty ? 'Please save your changes to enable this action.' : ''"
+      matTooltipPosition="left"
+      (click)="emitAction('YEAR_END_UPDATE')">
+      {{ FiscalActionLabels.YEAR_END_UPDATE }}
+    </button>
+  }
 </mat-menu>
