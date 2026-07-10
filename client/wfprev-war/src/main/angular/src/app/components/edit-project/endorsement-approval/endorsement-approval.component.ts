@@ -147,9 +147,10 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     if (this.fiscal?.endorserName) {
       return this.fiscal.endorserName;
     }
-    // or fall back to currentUser if the form is checked
-    const checked = this.endorsementApprovalForm.get('endorseFiscalActivity')?.value;
-    return checked ? this.currentUser : '';
+    // dirty = user actually clicked the checkbox (not just loaded from the API)
+    // We need both, otherwise a fiscal that loads pre-checked (no endorser name saved) would wrongly show currentUser
+    const control = this.endorsementApprovalForm.get('endorseFiscalActivity');
+    return control?.value && control?.dirty ? this.currentUser : '';
   }
 
   get effectiveApproverName(): string {
@@ -157,9 +158,10 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     if (this.fiscal?.approverName) {
       return this.fiscal.approverName;
     }
-    // or fall back to currentUser if the form is checked
-    const checked = this.endorsementApprovalForm.get('approveFiscalActivity')?.value;
-    return checked ? this.currentUser : '';
+    // dirty = user actually clicked the checkbox (not just loaded from the API)
+    // We need both, otherwise a fiscal that loads pre-checked (no approver name saved) would wrongly show currentUser
+    const control = this.endorsementApprovalForm.get('approveFiscalActivity');
+    return control?.value && control?.dirty ? this.currentUser : '';
   }
 
   get effectiveBcwsHQApproverName(): string {
@@ -167,9 +169,10 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
     if (this.fiscal?.bcwsHQApproverName) {
       return this.fiscal.bcwsHQApproverName;
     }
-    // or fall back to currentUser if the form is checked
-    const checked = this.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity')?.value;
-    return checked ? this.currentUser : '';
+    // dirty = user actually clicked the checkbox (not just loaded from the API)
+    // We need both, otherwise a fiscal that loads pre-checked (no approver name saved) would wrongly show currentUser
+    const control = this.endorsementApprovalForm.get('bcwsHQApproveFiscalActivity');
+    return control?.value && control?.dirty ? this.currentUser : '';
   }
 
   async onSave() {

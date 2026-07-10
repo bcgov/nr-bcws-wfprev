@@ -49,15 +49,13 @@ export class PerformanceUpdatesComponent implements OnChanges {
   fiscalStatus: string = '';
 
   get canCreatePerformanceUpdate(): boolean {
-    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE);
+    return !!this.fiscalGuid && this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_PERFORMANCE_UPDATE);
   }
 
   get canCreateYearEndReport(): boolean {
-    return this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT);
-  }
-
-  get isYearEndUpdateDisabled(): boolean {
-    return [FiscalStatuses.DRAFT, FiscalStatuses.PROPOSED].includes(this.fiscalStatus);
+    const hasPermission = this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT);
+    const hasValidStatus = !!this.fiscalGuid && ![FiscalStatuses.DRAFT, FiscalStatuses.PROPOSED].includes(this.fiscalStatus);
+    return hasPermission && hasValidStatus;
   }
 
   constructor(
