@@ -102,7 +102,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadActivities(): void {
+  loadActivities(preserveState: boolean = false): void {
     if (!this.projectGuid || !this.fiscalGuid) {
       this.isLoading = false;
       return;
@@ -130,11 +130,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
                 const nameB = (b.activityName || '').toLowerCase();
                 return nameA.localeCompare(nameB);
               });
-          this.activityViews = activities.map((activity: any, index: number) => ({
-            data: activity,
-            isExpanded: index === 0
-          }));
-
+              
           const closeouts = responses.closeouts?._embedded?.fiscalCloseouts || [];
           if (closeouts.length > 0) {
             this.closeoutData = closeouts[0];
@@ -148,7 +144,26 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
               .sort((a: any, b: any) => fiscalStatusCodeOrder.indexOf(a.planFiscalStatusCode) - fiscalStatusCodeOrder.indexOf(b.planFiscalStatusCode));
           }
 
-          this.patchForm();
+          if (preserveState) {
+            this.activityViews.forEach(view => {
+              const updatedActivity = activities.find((a: any) => a.activityGuid === view.data.activityGuid);
+              if (updatedActivity) {
+                Object.assign(view.data, updatedActivity);
+              }
+            });
+
+            if (this.activitiesComponent && this.activitiesComponent.activityItems) {
+              this.activitiesComponent.activityItems.forEach(item => {
+                item.updateMissingInfo();
+              });
+            }
+          } else {
+            this.activityViews = activities.map((activity: any, index: number) => ({
+              data: activity,
+              isExpanded: index === 0
+            }));
+            this.patchForm();
+          }
         },
         error: (err: any) => {
           console.error('Failed to load data', err);
@@ -260,7 +275,13 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response: any) => {
         this.snackbar.open('Activity updated successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success' });
-        this.loadActivities(); // Reload to get fresh data
+        if (this.activitiesComponent && this.activitiesComponent.activityItems) {
+          const item = this.activitiesComponent.activityItems.find(i => i.activity.activityGuid === view.data.activityGuid);
+          if (item) {
+            item.form.markAsPristine();
+          }
+        }
+        this.loadActivities(true); // Reload to get fresh data but preserve form states
       },
       error: (err: any) => {
         console.error('Failed to update activity', err);
@@ -272,7 +293,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   }
 
   onFilesUpdated(): void {
-    this.loadActivities();
+    this.loadActivities(true);
   }
 
   goBack(): void {
