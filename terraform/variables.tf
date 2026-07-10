@@ -414,3 +414,8 @@ variable "SNS_TOPIC_NAME" {
   type        = string
   default     = "wfprev-alb-alerts"
 }
+
+variable "SLACK_NOTIFICATION_EMAIL" {
+  description = "Email address for slack notification"
+  type = string
+}
