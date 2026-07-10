@@ -18,7 +18,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
-import { FiscalStatuses, ModalMessages, ModalTitles, StatusManagementStatuses } from 'src/app/utils/constants';
+import { ModalMessages, ModalTitles, StatusManagementStatuses } from 'src/app/utils/constants';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
 import { YearEndActivitiesComponent } from './year-end-activities/year-end-activities.component';
@@ -123,6 +123,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (responses: any) => {
           this.fiscalData = responses.fiscal;
+          console.log('Fiscal Data:', this.fiscalData);
           this.projectName = responses.project?.projectName || '';
           const activities = responses.activities?._embedded?.activities || [];
           activities.sort((a: any, b: any) => {
@@ -174,12 +175,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   }
 
   patchForm(): void {
-    let defaultStatus = this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode || '';
-    if (this.workflow === 'cancel') {
-      defaultStatus = FiscalStatuses.CANCELLED;
-    } else if (this.workflow === 'update') {
-      defaultStatus = FiscalStatuses.COMPLETE;
-    }
+    // Default Fiscal Status dropdown value to COMPLETE unless the fiscal is already CANCELLED, in which case default to CANCELLED
+    let defaultStatus = this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode === StatusManagementStatuses.CANCELLED ? StatusManagementStatuses.CANCELLED : StatusManagementStatuses.COMPLETE;
 
     this.summaryForm.patchValue({
       planFiscalStatusCode: defaultStatus,
@@ -257,7 +254,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
         }
       });
     this.subscriptions.add(sub);
-    this.goBack();
+    this.goBack(false);
   }
 
   onSaveActivity(view: YearEndActivityViewModel, updatedActivity: any): void {
@@ -296,7 +293,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     this.loadActivities(true);
   }
 
-  goBack(): void {
+  goBack(checkFormDirty: boolean): void {
     const navigate = () => {
       this.router.navigate(['/' + ResourcesRoutes.EDIT_PROJECT], {
         queryParams: {
@@ -307,7 +304,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       });
     };
 
-    if (this.isFormDirty()) {
+    if (checkFormDirty && this.isFormDirty()) {
       this.confirmDiscardChanges().subscribe(confirmed => {
         if (confirmed) {
           navigate();
