@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { of, throwError } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 
 describe('YearEndPerformanceUpdateComponent', () => {
   let component: YearEndPerformanceUpdateComponent;
@@ -17,6 +18,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
   let mockProjectService: jasmine.SpyObj<ProjectService>;
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
@@ -36,6 +38,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
     mockProjectService.getAllFiscalCloseouts.and.returnValue(of({ _embedded: { fiscalCloseouts: [] } }));
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: { planFiscalStatusCode: [] } }));
     mockProjectService.getProjectByProjectGuid.and.returnValue(of({ projectName: 'Test Project' }));
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
 
     mockActivatedRoute = {
       snapshot: {
@@ -57,7 +60,8 @@ describe('YearEndPerformanceUpdateComponent', () => {
         { provide: PermissionsService, useValue: mockPermissionsService },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: CodeTableServices, useValue: mockCodeTableService },
-        { provide: MatSnackBar, useValue: mockSnackBar }
+        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: MatDialog, useValue: mockDialog }
       ]
     }).compileComponents();
   });
@@ -199,6 +203,52 @@ describe('YearEndPerformanceUpdateComponent', () => {
       component.onSubmitSummary();
 
       expect(component.isSavingSummary).toBeFalse();
+    });
+
+    it('should navigate immediately when form is not dirty', () => {
+      spyOn(component, 'isFormDirty').and.returnValue(false);
+
+      component.goBack();
+
+      expect(mockDialog.open).not.toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.EDIT_PROJECT], {
+        queryParams: {
+          projectGuid: 'test-project-guid',
+          fiscalGuid: 'test-fiscal-guid',
+          tab: 'fiscal'
+        }
+      });
+    });
+
+    it('should open confirmation dialog and navigate if confirmed when form is dirty', () => {
+      spyOn(component, 'isFormDirty').and.returnValue(true);
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(true)
+      } as any);
+
+      component.goBack();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.EDIT_PROJECT], {
+        queryParams: {
+          projectGuid: 'test-project-guid',
+          fiscalGuid: 'test-fiscal-guid',
+          tab: 'fiscal'
+        }
+      });
+    });
+
+    it('should not navigate if confirmation dialog is cancelled when form is dirty', () => {
+      spyOn(component, 'isFormDirty').and.returnValue(true);
+      mockRouter.navigate.calls.reset();
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(false)
+      } as any);
+
+      component.goBack();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
   });
 

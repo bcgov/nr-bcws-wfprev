@@ -1,25 +1,27 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subscription, finalize, forkJoin } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgxCurrency } from '@dintecom/ngx-currency';
+import { Observable, Subscription, finalize, forkJoin } from 'rxjs';
+import { FiscalCloseout, ProjectFiscalExtended, YearEndActivityViewModel } from 'src/app/components/models';
+import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
+import { CodeTableServices } from 'src/app/services/code-table-services';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
-import { YearEndActivitiesComponent } from './year-end-activities/year-end-activities.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { NgxCurrency } from '@dintecom/ngx-currency';
-import { CodeTableServices } from 'src/app/services/code-table-services';
-import { ProjectFiscalExtended, FiscalCloseout, YearEndActivityViewModel } from 'src/app/components/models';
-import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
-import { MatButtonModule } from '@angular/material/button';
+import { FiscalStatuses, ModalMessages, ModalTitles, StatusManagementStatuses } from 'src/app/utils/constants';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { IconDisplayFieldComponent } from '../shared/icon-display-field/icon-display-field.component';
-import { FiscalStatuses, StatusManagementStatuses } from 'src/app/utils/constants';
+import { YearEndActivitiesComponent } from './year-end-activities/year-end-activities.component';
 
 
 
@@ -27,7 +29,7 @@ import { FiscalStatuses, StatusManagementStatuses } from 'src/app/utils/constant
   selector: 'wfprev-year-end-performance-update',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     ReactiveFormsModule,
     MatInputModule,
     MatSelectModule,
@@ -35,7 +37,7 @@ import { FiscalStatuses, StatusManagementStatuses } from 'src/app/utils/constant
     MatButtonModule,
     NgxCurrency,
     TextareaComponent,
-    MatIconModule, 
+    MatIconModule,
     MatProgressSpinnerModule,
     YearEndActivitiesComponent,
     IconDisplayFieldComponent
@@ -66,8 +68,9 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     private readonly projectService: ProjectService,
     private readonly snackbar: MatSnackBar,
     private readonly fb: FormBuilder,
-    private readonly codeTableService: CodeTableServices
-  ) {}
+    private readonly codeTableService: CodeTableServices,
+    public readonly dialog: MatDialog,
+  ) { }
 
   ngOnInit(): void {
     if (!this.permissionsService.hasAction(WFPREV_ACTIONS.CREATE_YEAR_END_REPORT)) {
@@ -89,7 +92,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
 
   initForm(): void {
     this.summaryForm = this.fb.group({
-      planFiscalStatusCode: ['', Validators.required], 
+      planFiscalStatusCode: ['', Validators.required],
       fiscalReportedSpendAmount: [0, [Validators.required, Validators.min(0)]],
       fiscalActualAmount: [0, [Validators.required, Validators.min(0)]],
       fiscalCompletedSizeHa: [0, [Validators.required, Validators.min(0)]],
@@ -151,16 +154,16 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
           console.error('Failed to load data', err);
         }
       });
-      
+
     this.subscriptions.add(sub);
   }
 
   patchForm(): void {
     let defaultStatus = this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode || '';
     if (this.workflow === 'cancel') {
-        defaultStatus = FiscalStatuses.CANCELLED;
+      defaultStatus = FiscalStatuses.CANCELLED;
     } else if (this.workflow === 'update') {
-        defaultStatus = FiscalStatuses.COMPLETE;
+      defaultStatus = FiscalStatuses.COMPLETE;
     }
 
     this.summaryForm.patchValue({
@@ -183,7 +186,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   onSubmitSummary(): void {
     if (!this.fiscalData || !this.summaryForm.valid) return;
     this.isSavingSummary = true;
-    
+
     // Update ProjectFiscal
     const updatedFiscal = {
       ...this.fiscalData,
@@ -193,8 +196,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       planFiscalStatusCode: this.summaryForm.value.planFiscalStatusCode
         ? { planFiscalStatusCode: this.summaryForm.value.planFiscalStatusCode }
         : null,
-      endorsementCode: this.fiscalData.endorsementCode 
-        ? { endorsementCode: this.fiscalData.endorsementCode.endorsementCode } 
+      endorsementCode: this.fiscalData.endorsementCode
+        ? { endorsementCode: this.fiscalData.endorsementCode.endorsementCode }
         : null
     };
 
@@ -230,7 +233,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => this.isSavingSummary = false))
       .subscribe({
         next: () => {
-          this.snackbar.open('Year End Update saved successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success'});
+          this.snackbar.open('Year End Update saved successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success' });
           this.loadActivities();
         },
         error: (err: any) => {
@@ -255,15 +258,15 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       originalActivity.activityGuid,
       payload
     ).subscribe({
-        next: (response: any) => {
-          this.snackbar.open('Activity updated successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success' });
-          this.loadActivities(); // Reload to get fresh data
-        },
-        error: (err: any) => {
-          console.error('Failed to update activity', err);
-          this.snackbar.open('Failed to update activity', 'Close', { duration: 3000, panelClass: 'snackbar-error' });
-        }
-      });
+      next: (response: any) => {
+        this.snackbar.open('Activity updated successfully', 'Close', { duration: 3000, panelClass: 'snackbar-success' });
+        this.loadActivities(); // Reload to get fresh data
+      },
+      error: (err: any) => {
+        console.error('Failed to update activity', err);
+        this.snackbar.open('Failed to update activity', 'Close', { duration: 3000, panelClass: 'snackbar-error' });
+      }
+    });
 
     this.subscriptions.add(sub);
   }
@@ -273,12 +276,40 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/' + ResourcesRoutes.EDIT_PROJECT], {
-      queryParams: {
-        projectGuid: this.projectGuid,
-        fiscalGuid: this.fiscalGuid,
-        tab: 'fiscal'
-      }
+    const navigate = () => {
+      this.router.navigate(['/' + ResourcesRoutes.EDIT_PROJECT], {
+        queryParams: {
+          projectGuid: this.projectGuid,
+          fiscalGuid: this.fiscalGuid,
+          tab: 'fiscal'
+        }
+      });
+    };
+
+    if (this.isFormDirty()) {
+      this.confirmDiscardChanges().subscribe(confirmed => {
+        if (confirmed) {
+          navigate();
+        }
+      });
+    } else {
+      navigate();
+    }
+  }
+
+  isFormDirty(): boolean {
+    return this.summaryForm.dirty || (!!this.activitiesComponent && this.activitiesComponent.isAnyDirty());
+  }
+
+  confirmDiscardChanges(): Observable<boolean> {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        indicator: 'confirm-unsave',
+        title: ModalTitles.CONFIRM_UNSAVE_TITLE,
+        message: ModalMessages.CONFIRM_UNSAVE_MESSAGE
+      },
+      width: '600px',
     });
+    return dialogRef.afterClosed();
   }
 }
