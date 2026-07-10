@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
@@ -18,16 +18,12 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
 import { ActivityModel, FiscalActivityViewModel } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
-import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
-import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { CanComponentDeactivate } from 'src/app/services/util/can-deactive.guard';
 import { Messages, ModalMessages, ModalTitles, NumericLimits } from 'src/app/utils/constants';
 import { getUtcIsoTimestamp } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../shared/expansion-indicator/expansion-indicator.component";
-import { NgxCurrency } from '@dintecom/ngx-currency';
-import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 
 
 import { FiscalActivityItemComponent } from './fiscal-activity-item/fiscal-activity-item.component';

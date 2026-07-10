@@ -33,6 +33,11 @@ export class YearEndSummaryComponent implements OnInit {
       }).subscribe({
         next: ({ closeouts, projectFiscal, activities }) => {
           const activityList = activities?._embedded?.activities ?? [];
+          activityList.sort((a: any, b: any) => {
+            const nameA = (a.activityName || '').toLowerCase();
+            const nameB = (b.activityName || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+          });
           this.summary = {
             closeout: closeouts?._embedded?.fiscalCloseouts[0] ?? undefined,
             projectFiscal,
