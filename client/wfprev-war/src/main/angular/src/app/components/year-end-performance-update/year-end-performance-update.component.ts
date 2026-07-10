@@ -122,6 +122,11 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
           this.fiscalData = responses.fiscal;
           this.projectName = responses.project?.projectName || '';
           const activities = responses.activities?._embedded?.activities || [];
+          activities.sort((a: any, b: any) => {
+                const nameA = (a.activityName || '').toLowerCase();
+                const nameB = (b.activityName || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+              });
           this.activityViews = activities.map((activity: any, index: number) => ({
             data: activity,
             isExpanded: index === 0
