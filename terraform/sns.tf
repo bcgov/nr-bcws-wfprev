@@ -2,9 +2,17 @@ resource "aws_sns_topic" "alb_alerts" {
   name = var.SNS_TOPIC_NAME
 }
 
+resource "aws_sns_topic" "health_alerts" {
+  name = "wfprev-${var.SHORTENED_ENV}-health-alert"
+}
+
 # List of emails
 locals {
   alert_emails = split(",", var.AWS_ALERT_EMAIL_LIST)
+}
+
+locals {
+  health_emails = concat(local.alert_emails, [var.SLACK_NOTIFICATION_EMAIL])
 }
 
 # Create email subscriptions for SNS topic
@@ -15,6 +23,16 @@ resource "aws_sns_topic_subscription" "alb_alerts_emails" {
   protocol  = "email"
   endpoint  = trim(each.key, " ")
 }
+
+resource "aws_sns_topic_subscription" "health_alerts_emails" {
+  for_each = toset(local.health_emails)
+
+  topic_arn = aws_sns_topic.health_alerts.arn
+  protocol  = "email"
+  endpoint  = trim(each.key, " ")
+}
+
+
 
 
 resource "aws_sns_topic_policy" "wfprev_topic_policy" {
