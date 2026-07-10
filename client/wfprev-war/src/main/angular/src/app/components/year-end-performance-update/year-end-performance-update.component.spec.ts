@@ -85,7 +85,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
     });
 
     it('should navigate back to project fiscal on goBack()', () => {
-      component.goBack();
+      component.goBack(true);
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.EDIT_PROJECT], {
         queryParams: {
           projectGuid: 'test-project-guid',
@@ -208,7 +208,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
     it('should navigate immediately when form is not dirty', () => {
       spyOn(component, 'isFormDirty').and.returnValue(false);
 
-      component.goBack();
+      component.goBack(true);
 
       expect(mockDialog.open).not.toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.EDIT_PROJECT], {
@@ -226,7 +226,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
         afterClosed: () => of(true)
       } as any);
 
-      component.goBack();
+      component.goBack(true);
 
       expect(mockDialog.open).toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/' + ResourcesRoutes.EDIT_PROJECT], {
@@ -245,7 +245,7 @@ describe('YearEndPerformanceUpdateComponent', () => {
         afterClosed: () => of(false)
       } as any);
 
-      component.goBack();
+      component.goBack(true);
 
       expect(mockDialog.open).toHaveBeenCalled();
       expect(mockRouter.navigate).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-<div class="navigate" (click)="goBack()">
+<div class="navigate" (click)="goBack(true)">
   <img alt="menu-icon" class="icon" src="/assets/menu.svg" />
   <span class="span-class">
     Return to Fiscal Activity
@@ -101,7 +101,7 @@
   </form>
 
   <div class="action-buttons">
-    <button class="secondary" (click)="goBack()">Cancel</button>
+    <button class="secondary" (click)="goBack(true)">Cancel</button>
     <button class="primary" [disabled]="!isFormValid || isSavingSummary" (click)="onSubmitSummary()">
       <mat-spinner *ngIf="isSavingSummary" diameter="20"></mat-spinner>
       <span *ngIf="!isSavingSummary">Submit Year End Update</span>

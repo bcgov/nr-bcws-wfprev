@@ -497,7 +497,7 @@
             </box>
         </element>
         <element kind="staticText" uuid="1367a273-2a93-4808-be8d-190b46adf6e1" mode="Opaque" x="6444" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-            <text>Endorsement Date</text>
+            <text>BCWS Endorsement Date</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
@@ -507,7 +507,7 @@
             </box>
         </element>
         <element kind="staticText" uuid="1367a273-2a93-4808-be8d-190b46adf6e2" mode="Opaque" x="6624" y="0" width="180" height="108" forecolor="#000000" backcolor="#FFC000" fontName="Arial" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-            <text>Approval Date</text>
+            <text>Business Area Approval Date</text>
             <box padding="4">
                 <pen lineWidth="0.0" />
                 <topPen lineWidth="0.0" />
