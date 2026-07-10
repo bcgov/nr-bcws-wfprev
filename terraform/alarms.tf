@@ -188,21 +188,3 @@ resource "aws_cloudwatch_metric_alarm" "rds_high_network_out" {
   alarm_description = "RDS Network Out traffic is high"
   alarm_actions     = [aws_sns_topic.alb_alerts.arn]
 }
-
-resource "aws_sns_topic" "alb_alerts" {
-  name = var.SNS_TOPIC_NAME
-}
-
-# List of emails
-locals {
-  alert_emails = split(",", var.AWS_ALERT_EMAIL_LIST)
-}
-
-# Create email subscriptions for SNS topic
-resource "aws_sns_topic_subscription" "alb_alerts_emails" {
-  for_each = toset(local.alert_emails)
-
-  topic_arn = aws_sns_topic.alb_alerts.arn
-  protocol  = "email"
-  endpoint  = trim(each.key, " ")
-}
