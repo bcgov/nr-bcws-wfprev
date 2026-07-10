@@ -228,6 +228,7 @@ jobs:
 
           # AWS
           AWS_ALERT_EMAIL_LIST: ${{ vars.AWS_ALERT_EMAIL_LIST }}
+          SLACK_NOTIFICATION_EMAIL: ${{ vars.SLACK_NOTIFICATION_EMAIL }}
 
           #liquibase
           COMMAND: ${{ steps.liquibaseCommand.outputs.LIQUIBASE_COMMAND }}
