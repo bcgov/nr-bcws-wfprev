@@ -18,6 +18,7 @@ import { ActivityHeaderComponent } from '../../shared/activity-header/activity-h
 import { IconDisplayFieldComponent } from '../../shared/icon-display-field/icon-display-field.component';
 import { TextareaComponent } from '../../shared/textarea/textarea.component';
 import { ActivityStatus, ActivityStatusOptions } from '../../models';
+import moment from 'moment';
 
 export const CUSTOM_DATE_FORMATS = {
   display: {
@@ -105,8 +106,8 @@ export class YearEndActivityItemComponent implements OnChanges {
         nonNegativeValidator(() => this.form)
       ]],
       activityDateRange: this.fb.group({
-        activityStartDate: [this.activity.activityStartDate || '', Validators.required],
-        activityEndDate: [this.activity.activityEndDate || '', Validators.required]
+        activityStartDate: [this.activity?.activityStartDate ? moment.utc(this.activity.activityStartDate).format('YYYY-MM-DD') : '', Validators.required],
+        activityEndDate: [this.activity?.activityEndDate ? moment.utc(this.activity.activityEndDate).format('YYYY-MM-DD') : '', Validators.required]
       }),
       isCarryForwardInd: [isCarryForwardInd],
       finalOutcomeComments: [this.activity.finalOutcomeComments || '', finalOutcomeValidators],
