@@ -15,7 +15,7 @@ export class YearEndActivitiesComponent {
   @Input() fiscalGuid: string = '';
 
   @Output() saveActivity = new EventEmitter<{ view: YearEndActivityViewModel, event: any }>();
-  @Output() filesUpdated = new EventEmitter<void>();
+  @Output() filesUpdated = new EventEmitter<{ activityGuid: string }>();
 
   @ViewChildren(YearEndActivityItemComponent) activityItems!: QueryList<YearEndActivityItemComponent>;
 

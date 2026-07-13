@@ -6,10 +6,11 @@
       <wfprev-year-end-activity-item
         [activity]="view.data"
         [index]="i"
+        [isExpanded]="view.isExpanded"
         [fiscalGuid]="fiscalGuid"
         (expandedChange)="view.isExpanded = $event"
         (save)="saveActivity.emit({ view: view, event: $event })"
-        (filesUpdated)="filesUpdated.emit()">
+        (filesUpdated)="filesUpdated.emit({ activityGuid: view.data.activityGuid })">
       </wfprev-year-end-activity-item>
     }
   </div>

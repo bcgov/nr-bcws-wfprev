@@ -79,7 +79,7 @@
 
       <!-- Activities Section -->
       <wfprev-year-end-activities [activityViews]="activityViews" [fiscalGuid]="fiscalGuid"
-        (saveActivity)="onSaveActivity($event.view, $event.event)" (filesUpdated)="onFilesUpdated()">
+        (saveActivity)="onSaveActivity($event.view, $event.event)" (filesUpdated)="onFilesUpdated($event.activityGuid)">
       </wfprev-year-end-activities>
 
     </div>
