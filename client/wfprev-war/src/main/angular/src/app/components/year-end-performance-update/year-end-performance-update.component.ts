@@ -124,7 +124,6 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (responses: any) => {
           this.fiscalData = responses.fiscal;
-          console.log('Fiscal Data:', this.fiscalData);
           this.projectName = responses.project?.projectName || '';
           const activities = responses.activities?._embedded?.activities || [];
           activities.sort((a: any, b: any) => {
