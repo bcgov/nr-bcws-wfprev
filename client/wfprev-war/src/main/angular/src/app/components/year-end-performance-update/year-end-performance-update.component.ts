@@ -60,6 +60,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
   @ViewChild(YearEndActivitiesComponent) activitiesComponent!: YearEndActivitiesComponent;
 
   private subscriptions = new Subscription();
+  private activityGuidToReExpand: string | null = null;;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -161,7 +162,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
           } else {
             this.activityViews = activities.map((activity: any, index: number) => ({
               data: activity,
-              isExpanded: index === 0
+              isExpanded: activity.activityGuid === this.activityGuidToReExpand
             }));
             this.patchForm();
           }
@@ -289,7 +290,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
     this.subscriptions.add(sub);
   }
 
-  onFilesUpdated(): void {
+  onFilesUpdated(activityGuid: string): void {
+    this.activityGuidToReExpand = activityGuid;
     this.loadActivities(true);
   }
 
