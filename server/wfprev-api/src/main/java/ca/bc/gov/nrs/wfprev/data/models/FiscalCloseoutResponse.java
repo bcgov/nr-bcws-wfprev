@@ -26,4 +26,11 @@ public class FiscalCloseoutResponse extends CommonModel<FiscalCloseoutResponse> 
     
     @NotBlank
     private String outcomeComment;
+
+    @NotBlank
+    private String submittedByName;
+
+    private String submittedByUserid;
+
+    private String submittedByGuid;
 }

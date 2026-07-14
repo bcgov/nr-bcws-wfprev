@@ -56,6 +56,16 @@ public class FiscalCloseoutEntity implements Serializable {
     private String outcomeComment;
 
     @NotNull
+    @Column(name = "submitted_by_name", length = 100, nullable = false)
+    private String submittedByName;
+
+    @Column(name = "submitted_by_userid", length = 64)
+    private String submittedByUserid;
+
+    @Column(name = "submitted_by_guid", length = 36)
+    private String submittedByGuid;
+
+    @NotNull
     @Version
     @Column(name = "revision_count", nullable = false)
     private Integer revisionCount = 0;

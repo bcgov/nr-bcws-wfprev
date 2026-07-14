@@ -27,7 +27,9 @@ public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemble
         model.setProjectPlanFiscalGuid(entity.getProjectFiscal() != null ?
                 entity.getProjectFiscal().getProjectPlanFiscalGuid().toString() : null);
         model.setOutcomeComment(entity.getOutcomeComment());
-
+        model.setSubmittedByName(entity.getSubmittedByName());
+        model.setSubmittedByUserid(entity.getSubmittedByUserid());
+        model.setSubmittedByGuid(entity.getSubmittedByGuid());
         model.setRevisionCount(entity.getRevisionCount());
         model.setCreateUser(entity.getCreateUser());
         model.setCreateDate(entity.getCreateDate());
