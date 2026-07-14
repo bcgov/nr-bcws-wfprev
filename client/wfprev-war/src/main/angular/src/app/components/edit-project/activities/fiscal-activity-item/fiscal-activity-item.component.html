@@ -247,12 +247,12 @@
   <div class="activity-files">
     @if (activityForm.value?.activityGuid && fiscalGuid) {
     <wfprev-project-files [activityGuid]="activityForm.value?.activityGuid" [isReadonly]="isReadonly"
-      [fiscalGuid]="fiscalGuid" (filesUpdated)="filesUpdated.emit()">
+      [fiscalGuid]="fiscalGuid" (filesUpdated)="filesUpdated.emit()" [showViewButton]="true">
       {{activityForm.value?.activityGuid}}
     </wfprev-project-files>
     } @else if (index === 0) {
     <wfprev-project-files [activityGuid]="activityForm.value?.activityGuid" [isReadonly]="true"
-      [isTooltipDisabled]="false" [fiscalGuid]="fiscalGuid" (filesUpdated)="filesUpdated.emit()">
+      [isTooltipDisabled]="false" [fiscalGuid]="fiscalGuid" (filesUpdated)="filesUpdated.emit()" [showViewButton]="true">
       {{activityForm.value?.activityGuid}}
     </wfprev-project-files>
     }
