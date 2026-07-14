@@ -305,18 +305,8 @@ public class ProjectFiscalService implements CommonService {
         BigDecimal expected = entity.getForecastAmount().compareTo(BigDecimal.ZERO) != 0
                 ? entity.getForecastAmount()
                 : entity.getPreviousForecastAmount();
-
-        log.info("entity.getBudgetHighRiskAmount: " + entity.getBudgetHighRiskAmount());
-        log.info("entity.getBudgetMediumRiskAmount: " + entity.getBudgetMediumRiskAmount());
-        log.info("entity.getBudgetLowRiskAmount: " + entity.getBudgetLowRiskAmount());
-        log.info("entity.getBudgetCompletedAmount: " + entity.getBudgetCompletedAmount());
-        log.info("sum: " + sum);
-
-        log.info("entity.getForecastAmount: " + entity.getForecastAmount());
-        log.info("entity.getPreviousForecastAmount: " + entity.getPreviousForecastAmount());
-        log.info("expected: " + expected);
         
-        if (sum.compareTo(expected) != 0) {
+        if (sum.compareTo(BigDecimal.ZERO) != 0 && sum.compareTo(expected) != 0) {
             throw new ValidationException("Sum must equal forecast amount");
         }
 
