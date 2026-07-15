@@ -241,8 +241,6 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       activities: activities
     };
 
-    console.log('Submitting payload:', JSON.stringify(payload));
-
     const sub = this.projectService.submitFiscalCloseout(this.projectGuid, this.fiscalGuid, payload)
       .pipe(finalize(() => this.isSavingSummary = false))
       .subscribe({
