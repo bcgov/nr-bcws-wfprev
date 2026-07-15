@@ -148,17 +148,18 @@ describe('YearEndSummaryActivityItemComponent', () => {
       component.activity = mockActivity({ isResultsReportableInd: true });
       component.fiscalGuid = 'fiscal-guid-123';
       fixture.detectChanges();
-      const el = fixture.nativeElement.querySelector('.indicator-item');
-      expect(el).toBeTruthy();
-      expect(el.textContent).toContain('RESULTS Reportable');
+      const badges = fixture.debugElement.queryAll(sel => sel.name === 'wfprev-status-badge');
+      const resultsBadge = badges.find(b => b.componentInstance.type === 'results-reportable');
+      expect(resultsBadge).toBeTruthy();
     });
 
     it('should not show when isResultsReportableInd is false', () => {
       component.activity = mockActivity({ isResultsReportableInd: false });
       component.fiscalGuid = 'fiscal-guid-123';
       fixture.detectChanges();
-      const el = fixture.nativeElement.querySelector('.indicator-item');
-      expect(el).toBeFalsy();
+      const badges = fixture.debugElement.queryAll(sel => sel.name === 'wfprev-status-badge');
+      const resultsBadge = badges.find(b => b.componentInstance.type === 'results-reportable');
+      expect(resultsBadge).toBeFalsy();
     });
   });
 

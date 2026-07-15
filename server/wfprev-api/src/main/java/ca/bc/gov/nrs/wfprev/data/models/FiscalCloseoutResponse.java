@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.hateoas.server.core.Relation;
 
+import java.util.Date;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @JsonRootName(value = "fiscalCloseout")
@@ -23,14 +25,10 @@ import org.springframework.hateoas.server.core.Relation;
 public class FiscalCloseoutResponse extends CommonModel<FiscalCloseoutResponse> {
     private String projectPlanFiscalCloseoutGuid;
     private String projectPlanFiscalGuid;
-    
     @NotBlank
     private String outcomeComment;
-
-    @NotBlank
     private String submittedByName;
-
     private String submittedByUserid;
-
     private String submittedByGuid;
+    private Date submittedTimestamp;
 }

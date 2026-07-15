@@ -1058,6 +1058,10 @@ class ProjectFiscalServiceTest {
 
         FiscalCloseoutResponse closeoutResponse = new FiscalCloseoutResponse();
         closeoutResponse.setOutcomeComment("Test outcome");
+        closeoutResponse.setSubmittedByName("Doe, John");
+        closeoutResponse.setSubmittedByUserid("IDIR\\JDOE");
+        closeoutResponse.setSubmittedByGuid(UUID.randomUUID().toString());
+        closeoutResponse.setSubmittedTimestamp(new Date());
 
         FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
                 .projectFiscal(projectFiscalModel)
@@ -1120,6 +1124,10 @@ class ProjectFiscalServiceTest {
 
         FiscalCloseoutResponse closeoutResponse = new FiscalCloseoutResponse();
         closeoutResponse.setOutcomeComment("Updated outcome");
+        closeoutResponse.setSubmittedByName("Smith, John");
+        closeoutResponse.setSubmittedByUserid("IDIR\\JSMITH");
+        closeoutResponse.setSubmittedByGuid(UUID.randomUUID().toString());
+        closeoutResponse.setSubmittedTimestamp(new Date());
 
         FiscalCloseoutSubmitRequest request = FiscalCloseoutSubmitRequest.builder()
                 .projectFiscal(projectFiscalModel)

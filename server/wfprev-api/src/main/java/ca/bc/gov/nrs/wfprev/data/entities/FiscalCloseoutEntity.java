@@ -66,6 +66,10 @@ public class FiscalCloseoutEntity implements Serializable {
     private String submittedByGuid;
 
     @NotNull
+    @Column(name = "submitted_timestamp", nullable = false)
+    private Date submittedTimestamp;
+
+    @NotNull
     @Version
     @Column(name = "revision_count", nullable = false)
     private Integer revisionCount = 0;

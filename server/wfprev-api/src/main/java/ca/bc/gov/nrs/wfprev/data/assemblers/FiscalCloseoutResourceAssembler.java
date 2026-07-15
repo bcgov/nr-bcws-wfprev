@@ -30,6 +30,7 @@ public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemble
         model.setSubmittedByName(entity.getSubmittedByName());
         model.setSubmittedByUserid(entity.getSubmittedByUserid());
         model.setSubmittedByGuid(entity.getSubmittedByGuid());
+        model.setSubmittedTimestamp(entity.getSubmittedTimestamp());
         model.setRevisionCount(entity.getRevisionCount());
         model.setCreateUser(entity.getCreateUser());
         model.setCreateDate(entity.getCreateDate());
@@ -47,7 +48,10 @@ public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemble
         }
         entity.setProjectFiscal(projectFiscalEntity);
         entity.setOutcomeComment(model.getOutcomeComment());
-
+        entity.setSubmittedByName(model.getSubmittedByName());
+        entity.setSubmittedByUserid(model.getSubmittedByUserid());
+        entity.setSubmittedByGuid(model.getSubmittedByGuid());
+        entity.setSubmittedTimestamp(model.getSubmittedTimestamp());
         entity.setRevisionCount(model.getRevisionCount());
         entity.setCreateUser(model.getCreateUser());
         entity.setCreateDate(model.getCreateDate());
@@ -59,6 +63,10 @@ public class FiscalCloseoutResourceAssembler extends RepresentationModelAssemble
 
     public FiscalCloseoutEntity updateEntity(FiscalCloseoutResponse model, FiscalCloseoutEntity existingEntity) {
         existingEntity.setOutcomeComment(model.getOutcomeComment());
+        existingEntity.setSubmittedByName(model.getSubmittedByName());
+        existingEntity.setSubmittedByUserid(model.getSubmittedByUserid());
+        existingEntity.setSubmittedByGuid(model.getSubmittedByGuid());
+        existingEntity.setSubmittedTimestamp(model.getSubmittedTimestamp());
         existingEntity.setRevisionCount(model.getRevisionCount());
         existingEntity.setUpdateUser(model.getUpdateUser());
         existingEntity.setUpdateDate(model.getUpdateDate());

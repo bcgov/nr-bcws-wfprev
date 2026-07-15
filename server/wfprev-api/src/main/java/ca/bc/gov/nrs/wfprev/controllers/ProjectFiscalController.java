@@ -44,6 +44,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 @RestController
 @Slf4j
 @RequestMapping(value = "/projects/{projectId}/projectFiscals")
@@ -386,6 +388,11 @@ public class ProjectFiscalController extends CommonController {
         model.setRevisionCount(0);
         model.setUpdateUser(getWebAdeAuthentication().getUserId());
         model.setOutcomeComment(resource.getOutcomeComment());
+        model.setSubmittedByName(String.format("%s, %s", getWebAdeAuthentication().getFamilyName(),
+                getWebAdeAuthentication().getGivenName()));
+        model.setSubmittedByUserid(getWebAdeAuthentication().getUserId());
+        model.setSubmittedByGuid(getWebAdeAuthentication().getUserGuid());
+        model.setSubmittedTimestamp(new Date());
         return model;
     }
 
@@ -469,6 +476,11 @@ public class ProjectFiscalController extends CommonController {
             request.getCloseout().setCreateUser(request.getCloseout().getCreateUser() == null ? getWebAdeAuthentication().getUserId() : request.getCloseout().getCreateUser());
             request.getCloseout().setUpdateUser(getWebAdeAuthentication().getUserId());
             request.getCloseout().setRevisionCount(request.getCloseout().getRevisionCount() != null ? request.getCloseout().getRevisionCount() : 0);
+            request.getCloseout().setSubmittedByName(String.format("%s, %s", getWebAdeAuthentication().getFamilyName(),
+                    getWebAdeAuthentication().getGivenName()));
+            request.getCloseout().setSubmittedByUserid(getWebAdeAuthentication().getUserId());
+            request.getCloseout().setSubmittedByGuid(getWebAdeAuthentication().getUserGuid());
+            request.getCloseout().setSubmittedTimestamp(new Date());
         }
 
         if (request.getProjectFiscal() != null) {

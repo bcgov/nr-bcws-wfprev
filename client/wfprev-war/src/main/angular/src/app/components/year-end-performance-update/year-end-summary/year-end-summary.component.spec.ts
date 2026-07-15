@@ -4,6 +4,7 @@ import { YearEndSummaryComponent } from './year-end-summary.component';
 import { ProjectService } from 'src/app/services/project-services';
 import { YearEndActivityViewModel } from '../../models';
 import { of, throwError } from 'rxjs';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({ selector: 'wfprev-year-end-summary-activity-list', template: '', standalone: true })
 class MockYearEndSummaryActivityListComponent {
@@ -11,7 +12,7 @@ class MockYearEndSummaryActivityListComponent {
   @Input() fiscalGuid!: string;
 }
 
-const mockCloseout = { outcomeComment: 'Great outcome.' };
+const mockCloseout = { outcomeComment: 'Great outcome.', submittedByName: 'John Doe' };
 const mockProjectFiscal = {
   fiscalReportedSpendAmount: 10000,
   fiscalActualAmount: 9500,
@@ -32,6 +33,7 @@ describe('YearEndSummaryComponent', () => {
   let component: YearEndSummaryComponent;
   let fixture: ComponentFixture<YearEndSummaryComponent>;
   let projectServiceSpy: jasmine.SpyObj<ProjectService>;
+  let tokenServiceSpy: jasmine.SpyObj<TokenService>;
 
   beforeEach(async () => {
     projectServiceSpy = jasmine.createSpyObj('ProjectService', [
@@ -43,11 +45,14 @@ describe('YearEndSummaryComponent', () => {
     projectServiceSpy.getAllFiscalCloseouts.and.returnValue(of(mockForkJoinResponse.closeouts) as any);
     projectServiceSpy.getProjectFiscalByProjectPlanFiscalGuid.and.returnValue(of(mockForkJoinResponse.projectFiscal) as any);
     projectServiceSpy.getFiscalActivities.and.returnValue(of(mockForkJoinResponse.activities) as any);
+    tokenServiceSpy = jasmine.createSpyObj('TokenService', ['getUserFullName']);
+    tokenServiceSpy.getUserFullName.and.returnValue('Jane Smith');
 
     await TestBed.configureTestingModule({
       imports: [YearEndSummaryComponent],
       providers: [
-        { provide: ProjectService, useValue: projectServiceSpy }
+        { provide: ProjectService, useValue: projectServiceSpy },
+        { provide: TokenService, useValue: tokenServiceSpy }
       ]
     })
       .overrideComponent(YearEndSummaryComponent, {
@@ -177,6 +182,36 @@ describe('YearEndSummaryComponent', () => {
       expect(el).toBeTruthy();
       expect(el.componentInstance.fiscalGuid).toBe('fiscal-1');
       expect(el.componentInstance.activities.length).toBe(2);
+    });
+  });
+
+  describe('submittedByName', () => {
+    it('should return closeout submittedByName when present', () => {
+      component.projectGuid = 'proj-1';
+      component.fiscalGuid = 'fiscal-1';
+      fixture.detectChanges();
+      expect(component.submittedByName).toBe('John Doe');
+    });
+
+    it('should fall back to tokenService when closeout is undefined', () => {
+      projectServiceSpy.getAllFiscalCloseouts.and.returnValue(
+        of({ _embedded: { fiscalCloseouts: [] } }) as any
+      );
+      component.projectGuid = 'proj-1';
+      component.fiscalGuid = 'fiscal-1';
+      fixture.detectChanges();
+      expect(component.submittedByName).toBe('Jane Smith');
+    });
+
+    it('should return empty string when neither closeout nor tokenService have a name', () => {
+      projectServiceSpy.getAllFiscalCloseouts.and.returnValue(
+        of({ _embedded: { fiscalCloseouts: [] } }) as any
+      );
+      tokenServiceSpy.getUserFullName.and.returnValue('');
+      component.projectGuid = 'proj-1';
+      component.fiscalGuid = 'fiscal-1';
+      fixture.detectChanges();
+      expect(component.submittedByName).toBe('');
     });
   });
 });
