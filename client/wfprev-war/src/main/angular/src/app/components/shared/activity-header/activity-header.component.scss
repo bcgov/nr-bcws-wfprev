@@ -40,21 +40,6 @@
     gap: 12px;
     flex: 0 0 auto; 
 
-    .indicator-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 14px;
-      font-weight: 400;
-      color: #313132;
-      white-space: nowrap;
-
-      .indicator-icon {
-        width: 24px;
-        height: 24px;
-      }
-    }
-
     .custom-badge {
       display: flex;
       align-items: center;

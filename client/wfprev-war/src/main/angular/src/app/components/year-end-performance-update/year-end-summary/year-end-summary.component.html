@@ -3,9 +3,18 @@
 
     <!-- Fiscal Totals Row -->
     <div class="summary-totals">
-      <span class="summary-metric">Final Reported Spend: <strong>${{ summary.projectFiscal.fiscalReportedSpendAmount ?? 0 }}</strong></span>
-      <span class="summary-metric">CFS Actual Spend: <strong>${{ summary.projectFiscal.fiscalActualAmount ?? 0 }}</strong></span>
-      <span class="summary-metric">Completed Hectares (Ha): <strong>{{ summary.projectFiscal.fiscalCompletedSizeHa ?? 0 }}</strong></span>
+      <div class="summary-metric">
+        <span class="metric-label">Final Reported Spend:</span>
+        <span class="metric-value">${{ summary.projectFiscal.fiscalReportedSpendAmount ?? 0 }}</span>
+      </div>
+      <div class="summary-metric">
+        <span class="metric-label">CFS Actual Spend:</span>
+        <span class="metric-value">${{ summary.projectFiscal.fiscalActualAmount ?? 0 }}</span>
+      </div>
+      <div class="summary-metric">
+        <span class="metric-label">Completed Hectares (Ha):</span>
+        <span class="metric-value">{{ summary.projectFiscal.fiscalCompletedSizeHa ?? 0 }}</span>
+      </div>
     </div>
 
     <!-- Outcomes & General Comments -->
