@@ -42,7 +42,8 @@ export class StatusBadgeComponent {
     'spatial-not-added': { icon: '/assets/no-spatial-added-icon.svg', label: 'No Spatial Added' },
     'substantially-complete': { icon: '/assets/substantially-complete.svg', label: 'Substantially Complete' },
     'warning': { icon: '/assets/warning.svg', label: 'Warning' },
-    'missing-info': { icon: '/assets/warning-red.svg', label: 'Missing info' }
+    'missing-info': { icon: '/assets/warning-red.svg', label: 'Missing info' },
+    'results-reportable': { icon: '/assets/blue-checkmark.svg', label: 'RESULTS Reportable' }
   };
 
   get displayIcon(): string | null {

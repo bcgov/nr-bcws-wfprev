@@ -3,32 +3,34 @@
   <div class="activity-header">
     <span class="activity-name">{{ activity.data.activityName }}</span>
 
-    <div class="activity-status">
+    <div class="activity-indicators">
+      @if (activity.data.isResultsReportableInd) {
+        <wfprev-status-badge type="results-reportable"></wfprev-status-badge>
+      }
       @if (statusBadgeType) {
         <wfprev-status-badge [type]="statusBadgeType"></wfprev-status-badge>
-      }
-    </div>
-
-    <div class="activity-results">
-      @if (activity.data.isResultsReportableInd) {
-        <div class="indicator-item">
-          <img src="/assets/blue-checkmark.svg" alt="RESULTS Reportable" class="indicator-icon" />
-          <span>RESULTS Reportable</span>
-        </div>
       }
     </div>
   </div>
 
   <div class="activity-metrics">
-    <span class="summary-metric">Completed Hectares (Ha): <strong>{{ activity.data.completedAreaHa ?? 0 }}</strong></span>
-    <span class="summary-metric">Final Reported Spend: <strong>${{ activity.data.reportedSpendAmount ?? 0 }}</strong></span>
-    <span class="summary-metric"></span>
+    <div class="summary-metric">
+      <span class="metric-label">Completed Hectares (Ha):</span>
+      <span class="metric-value">{{ activity.data.completedAreaHa ?? 0 }}</span>
+    </div>
+    <div class="summary-metric">
+      <span class="metric-label">Final Reported Spend:</span>
+      <span class="metric-value">${{ activity.data.reportedSpendAmount ?? 0 }}</span>
+    </div>
+    <div class="summary-metric"></div>
   </div>
 
-  <div class="final-outcome-block">
-    <div class="final-outcome-title">Final Outcome &amp; Comments (Including Reason for Deferred or Cancelled, $0 spent)</div>
-    <p class="final-outcome-content">{{ activity.data.finalOutcomeComments }}</p>
-  </div>
+  @if (activity.data.finalOutcomeComments) {
+    <div class="final-outcome-block">
+      <div class="final-outcome-title">Final Outcome &amp; Comments (Including Reason for Deferred or Cancelled, $0 spent)</div>
+      <p class="final-outcome-content">{{ activity.data.finalOutcomeComments }}</p>
+    </div>
+  }
 
   @if (activity.data.outstandingObligationsInd || activity.data.isCarryForwardInd) {
     <div class="obligation-badges">

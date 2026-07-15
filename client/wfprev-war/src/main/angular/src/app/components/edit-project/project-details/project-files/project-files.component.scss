@@ -25,7 +25,7 @@
   align-items: center;
   padding-bottom: 16px;
   .title-text {
-    padding-left: 8px;
+    padding-left: 0;
   }
 }
 button {
@@ -79,13 +79,19 @@ button.primary {
 }
 
 .files-table {
-  width: 100%;
+  width: calc(100% + 16px);
+  margin: 0 -0.5rem; // -8px margin pulls the table out, the 8px padding pushes the text back to flush
   th,
   td {
-    padding: 8px;
+    padding: 0.5rem; // 8px
     border-bottom: 1px solid #ddd;
     font-family: var(--wf-font-family-main);
     vertical-align: top;
+    color: #2D2D2D;
+    font-size: 0.875rem; // 14px (snapped from 15px to BC Small Body)
+    font-weight: 400;
+    line-height: 1em;
+    letter-spacing: 0;
   }
 
   td {
@@ -94,36 +100,39 @@ button.primary {
   }
 
   th {
-    color: #000;
-    font-size: 15px;
-    font-style: normal;
+    color: #2D2D2D;
     font-weight: 400;
-    line-height: normal;
     background-color: var(--colour-white);
     word-break: normal;
     overflow-wrap: normal;
     white-space: normal;
   }
 
-  tr:nth-child(odd) {
+  tr {
     border: 1px solid #d9d9d9;
-    background: #f2f2f2;
-  }
-
-  tr:nth-child(even) {
-    border: 1px solid #d9d9d9;
-    background-color: var(--colour-white);
+    background-color: #f2f2f2;
   }
 
   .mat-column-download,
   .mat-column-delete,
   .mat-column-view {
     text-align: center;
+    white-space: nowrap;
+    width: 60px; // Gives the action columns a fixed width
 
     .table-button {
       margin: 0 auto;
       justify-content: center;
     }
+  }
+
+
+
+  td.mat-column-fileType,
+  td.mat-column-uploadedBy,
+  td.mat-column-uploadedDate,
+  td.mat-column-polygonHectares {
+    white-space: nowrap;
   }
 
   @container table-container (max-width: 780px) {

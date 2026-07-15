@@ -1870,7 +1870,7 @@
 			<element kind="textField" uuid="f5a87843-c1fe-4740-9069-35ea627dc74e" x="20102" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalReportedSpendAmount}</expression>
 			</element>
-			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="20222" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" blankWhenNull="true" vTextAlign="Bottom">
+			<element kind="textField" uuid="9de65e6f-265f-45f8-8b40-fd2dab2d1c20" x="20222" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="$#,##0.00;$-#,##0.00" blankWhenNull="true" vTextAlign="Bottom">
 				<expression>$F{fiscalActualAmount}</expression>
 			</element>
 			<element kind="textField" uuid="f0ed5454-b045-496e-991b-c631c42296ca" x="20342" y="0" width="120" height="120" fontName="Calibri" fontSize="11.0" pattern="#,##0.##########" blankWhenNull="true" vTextAlign="Bottom">

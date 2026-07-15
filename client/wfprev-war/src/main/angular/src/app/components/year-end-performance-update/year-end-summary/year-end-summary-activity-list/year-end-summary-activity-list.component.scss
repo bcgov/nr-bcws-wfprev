@@ -1,21 +1,27 @@
 .activity-list-title {
   font-family: var(--wf-font-family-main);
-  font-size: 14px;
-  padding: 15px 0 8px 24px;
-  background-color: #fff;
-  font-weight: 400;
+  color: #2D2D2D;
+  font-size: 1rem; // 16px
+  font-weight: 700;
+  line-height: 1em;
+  padding: 1rem 1.5rem 0.5rem 1.5rem; // 16px 24px 8px 24px
+  background-color: #f9f9f9;
 }
 
 .activity-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; // 20px gap between individual activity items
   background-color: #f9f9f9;
-  margin: 0 -24px -18px;
-  padding: 8px 24px 18px;
+  margin: 0; 
+  padding: 0.5rem 1.5rem 1rem 1.5rem; // 8px 24px 16px 24px
 }
 
 .no-activities-text {
-  color: #000;
-  font-size: 16px;
+  color: #2D2D2D;
+  font-size: 1rem; // 16px
   font-weight: 400;
-  padding-left: 23px;
-  margin-top: -4px;
+  line-height: 1.5em;
+  padding-left: 1.5rem; // 24px
+  margin-top: -0.25rem; // -4px
 }
