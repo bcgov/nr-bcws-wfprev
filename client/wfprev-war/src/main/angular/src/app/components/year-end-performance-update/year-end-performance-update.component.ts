@@ -176,7 +176,7 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
 
   patchForm(): void {
     // Default Fiscal Status dropdown value to COMPLETE unless the fiscal is already CANCELLED, in which case default to CANCELLED
-    let defaultStatus = this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode === StatusManagementStatuses.CANCELLED ? StatusManagementStatuses.CANCELLED : StatusManagementStatuses.COMPLETE;
+    let defaultStatus = this.fiscalData?.planFiscalStatusCode?.planFiscalStatusCode === StatusManagementStatuses.CANCELLED || this.workflow === 'cancel' ? StatusManagementStatuses.CANCELLED : StatusManagementStatuses.COMPLETE;
 
     this.summaryForm.patchValue({
       planFiscalStatusCode: defaultStatus,
