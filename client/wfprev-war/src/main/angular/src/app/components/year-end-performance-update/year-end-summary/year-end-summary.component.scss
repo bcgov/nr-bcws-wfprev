@@ -5,49 +5,67 @@
 }
 
 .year-end-grid {
-  padding: 18px 24px;
+  padding: 1rem 0; // 16px top/bottom, 0 horizontal
 }
 
 .summary-totals {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 15px;
-  padding: 0 0 15px 24px;
+  gap: 1rem; // 16px
+  padding: 0 1.5rem; // horizontal padding directly on the section
 }
 
 .summary-metric {
   flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.5rem; // 8px gap between label and value
+}
+
+.metric-label {
   color: #474543;
-  font-size: 14px;
+  font-size: 0.875rem; // 14px
   font-weight: 400;
-  line-height: normal;
+  line-height: 1.25em;
+  white-space: nowrap; // Keeps the label on one line if possible
+}
+
+.metric-value {
+  color: #2D2D2D;
+  font-size: 1rem; // 16px
+  font-weight: 400;
+  line-height: 1.5em;
+  word-break: break-word;
 }
 
 .outcomes-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 15px 0 8px;
-  padding-left: 24px;
+  gap: 0.25rem; // 4px
+  padding: 1rem 1.5rem 0.5rem 1.5rem; // horizontal padding applied here
 }
 
 .outcomes-title {
-  font-size: 14px;
+  color: #474543;
+  font-size: 0.875rem; // 14px
   font-weight: 400;
+  line-height: 1.5em;
 }
 
 .outcomes-content {
-  color: #000;
-  font-size: 16px;
+  color: #2D2D2D;
+  font-size: 1rem; // 16px
   font-weight: 400;
+  line-height: 1.5em;
   margin: 0;
 }
 
 @container (max-width: 900px) {
   .summary-totals {
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem; // 8px
   }
 }
