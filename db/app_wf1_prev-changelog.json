@@ -2349,6 +2349,40 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_08",
+        "author": "ssylver",
+        "tagDatabase": {
+          "tag": "version_01_03_00_08"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/08/ddl/WFPREV.ddl.project_plan_fiscal_closeout_add_submitted_by.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/08/ddl/WFPREV.ddl.project_plan_fiscal_closeout_audit_add_submitted_by.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_03_00/08/ddl/WFPREV.ddl.project_plan_fiscal_closeout_trigger.sql",
+              "splitStatements": false
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }

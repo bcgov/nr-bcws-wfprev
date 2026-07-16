@@ -4,6 +4,7 @@ import { YearEndModel, YearEndActivityViewModel } from '../../models';
 import { ProjectService } from 'src/app/services/project-services';
 import { forkJoin } from 'rxjs';
 import { YearEndSummaryActivityListComponent } from './year-end-summary-activity-list/year-end-summary-activity-list.component';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'wfprev-year-end-summary',
@@ -18,7 +19,7 @@ export class YearEndSummaryComponent implements OnInit {
 
   summary: YearEndModel | undefined;
 
-  constructor(private readonly projectService: ProjectService) { }
+  constructor(private readonly projectService: ProjectService, private readonly tokenService: TokenService) { }
 
   ngOnInit() {
     this.populateYearEndSummary();
@@ -52,5 +53,9 @@ export class YearEndSummaryComponent implements OnInit {
         }
       });
     }
+  }
+
+  get submittedByName(): string {
+    return this.summary?.closeout?.submittedByName || this.tokenService.getUserFullName() || '';
   }
 }

@@ -550,5 +550,6 @@ export interface YearEndModel {
 
 export interface FiscalCloseoutModel {
   outcomeComment: string;
+  submittedByName: string;
 }
 
