@@ -1,6 +1,7 @@
 <div class="year-end-grid">
   @if (summary) {
 
+  <div class="summary-header">
     <!-- Fiscal Totals Row -->
     <div class="summary-totals">
       <div class="summary-metric">
@@ -15,20 +16,21 @@
         <span class="metric-label">Completed Hectares (Ha):</span>
         <span class="metric-value">{{ summary.projectFiscal.fiscalCompletedSizeHa ?? 0 }}</span>
       </div>
-      <div class="summary-metric">
-        <span class="metric-label">Submitted By:</span>
-        <span class="metric-value">{{ submittedByName }}</span>
-      </div>
     </div>
-
-    <!-- Outcomes & General Comments -->
-    <div class="outcomes-section">
-      <div class="outcomes-title">Outcomes &amp; General Comments</div>
-      <p class="outcomes-content">{{ summary.closeout?.outcomeComment }}</p>
+    <div class="submitted-by">
+      <p>Submitted By: {{ submittedByName }}</p>
     </div>
+  </div>
 
-    <!-- Activities -->
-    <wfprev-year-end-summary-activity-list [activities]="summary.activities" [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary-activity-list>
+  <!-- Outcomes & General Comments -->
+  <div class="outcomes-section">
+    <div class="outcomes-title">Outcomes &amp; General Comments</div>
+    <p class="outcomes-content">{{ summary.closeout?.outcomeComment }}</p>
+  </div>
+
+  <!-- Activities -->
+  <wfprev-year-end-summary-activity-list [activities]="summary.activities"
+    [fiscalGuid]="fiscalGuid"></wfprev-year-end-summary-activity-list>
 
   }
 </div>
