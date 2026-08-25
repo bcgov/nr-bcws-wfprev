@@ -42,8 +42,8 @@
     </div>
 
     <div class="row metrics-row">
-      <wfprev-icon-display-field [matIcon]="'attach_money'" [label]="'Original Cost Estimate'"
-        [value]="(activity.totalCostEstimateAmount | currency:'USD':'symbol':'1.0-0') || 'N/A'">
+      <wfprev-icon-display-field [matIcon]="'attach_money'" [label]="'Planned Spend'"
+        [value]="(activity.plannedSpendAmount | currency:'USD':'symbol':'1.0-0') || 'N/A'">
       </wfprev-icon-display-field>
 
       <div class="form-item currency-field">
