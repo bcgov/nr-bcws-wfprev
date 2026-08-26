@@ -279,7 +279,7 @@ variable "TARGET_AWS_ACCOUNT_ID" {
 
 variable "DB_POSTGRES_VERSION" {
   description = "Which version of Postgres to use"
-  default     = "17.4"
+  default     = "17.9"
   type        = string
 }
 
