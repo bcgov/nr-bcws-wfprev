@@ -1,7 +1,7 @@
-ALTER TABLE wfprev.project_plan_fiscal_closeout ADD COLUMN IF NOT EXISTS submitted_by_name VARCHAR(100) NOT NULL;
+ALTER TABLE wfprev.project_plan_fiscal_closeout ADD COLUMN IF NOT EXISTS submitted_by_name VARCHAR(100) NOT NULL DEFAULT 'app_wf1_wfprev';
 ALTER TABLE wfprev.project_plan_fiscal_closeout ADD COLUMN IF NOT EXISTS submitted_by_userid VARCHAR(64) NULL;
 ALTER TABLE wfprev.project_plan_fiscal_closeout ADD COLUMN IF NOT EXISTS submitted_by_guid VARCHAR(36) NULL;
-ALTER TABLE wfprev.project_plan_fiscal_closeout ADD COLUMN IF NOT EXISTS submitted_timestamp TIMESTAMP NOT NULL;
+ALTER TABLE wfprev.project_plan_fiscal_closeout ADD COLUMN IF NOT EXISTS submitted_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 COMMENT ON COLUMN wfprev.project_plan_fiscal_closeout.submitted_by_name IS 'Submitted By Name is the display name of the person who entered the fiscal closeout.';
 COMMENT ON COLUMN wfprev.project_plan_fiscal_closeout.submitted_by_userid IS 'Submitted By Userid is the IDIR or BCEID userid of the user that entered the fiscal closeout.';

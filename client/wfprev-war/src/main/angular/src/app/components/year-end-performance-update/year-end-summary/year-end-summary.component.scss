@@ -8,12 +8,18 @@
   padding: 1rem 0; // 16px top/bottom, 0 horizontal
 }
 
+.summary-header {
+  display: flex;
+  flex-direction: row;
+  padding: 0 1.5rem;
+}
+
 .summary-totals {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  flex-grow: 1;
   gap: 1rem; // 16px
-  padding: 0 1.5rem; // horizontal padding directly on the section
 }
 
 .summary-metric {
@@ -38,7 +44,7 @@
   font-size: 1rem; // 16px
   font-weight: 400;
   line-height: 1.5em;
-  word-break: break-word;
+  white-space: nowrap;
 }
 
 .outcomes-section {
@@ -53,6 +59,16 @@
   font-size: 0.875rem; // 14px
   font-weight: 400;
   line-height: 1.5em;
+}
+
+.submitted-by {
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+  
+  p {
+    margin: 0;
+  }
 }
 
 .outcomes-content {
