@@ -56,9 +56,12 @@
     <ng-container matColumnDef="download">
       <th mat-header-cell *matHeaderCellDef> Download </th>
       <td mat-cell *matCellDef="let file" data-label="Download">
-        <button class="table-button" mat-icon-button (click)="downloadFile(file)" [disabled]="isDownloading(file)">
-          <mat-icon svgIcon="download"></mat-icon>
-        </button>
+        <span [matTooltip]="messages.orphanBoundaryDownloadTooltip" [matTooltipDisabled]="canDownloadFile(file)">
+          <button class="table-button" mat-icon-button (click)="downloadFile(file)"
+            [disabled]="isDownloading(file) || !canDownloadFile(file)">
+            <mat-icon svgIcon="download"></mat-icon>
+          </button>
+        </span>
       </td>
     </ng-container>
     <ng-container matColumnDef="view">

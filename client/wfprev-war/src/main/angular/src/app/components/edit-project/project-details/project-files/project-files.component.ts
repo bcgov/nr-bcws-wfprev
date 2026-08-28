@@ -9,24 +9,24 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Position } from 'geojson';
-import { catchError, finalize, map, throwError } from 'rxjs';
+import { catchError, finalize, forkJoin, map, of, throwError } from 'rxjs';
 import { AddAttachmentComponent } from 'src/app/components/add-attachment/add-attachment.component';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { DetailedErrorMessageComponent } from 'src/app/components/detailed-error-message/detailed-error-message.component';
 import { ActivityBoundary, AttachmentTypeCode, FileAttachment, ProjectBoundary, ProjectFile } from 'src/app/components/models';
 import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-button.component';
 import { AttachmentService } from 'src/app/services/attachment-service';
+import { FileViewerService } from 'src/app/services/file-viewer.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
-import { FileViewerService } from 'src/app/services/file-viewer.service';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 
 @Component({
-    selector: 'wfprev-project-files',
-    standalone: true,
-    imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent, MatProgressSpinnerModule, MatIconModule],
-    templateUrl: './project-files.component.html',
-    styleUrls: ['./project-files.component.scss']
+  selector: 'wfprev-project-files',
+  standalone: true,
+  imports: [MatTableModule, MatTooltipModule, CommonModule, IconButtonComponent, MatProgressSpinnerModule, MatIconModule],
+  templateUrl: './project-files.component.html',
+  styleUrls: ['./project-files.component.scss']
 })
 export class ProjectFilesComponent implements OnInit {
   @Output() filesUpdated = new EventEmitter<void>();
@@ -104,137 +104,120 @@ export class ProjectFilesComponent implements OnInit {
       this.displayedColumns.push('delete');
     }
 
-    if (this.activityGuid && this.fiscalGuid) {
-      this.loadActivityAttachments();
-    } else if (this.projectGuid) {
-      this.loadProjectAttachments();
-    } else {
-      this.isLoading = false;
-    }
+    this.loadFiles();
   }
 
-  loadProjectAttachments(): void {
-    if (this.projectGuid) {
-      this.isLoading = true;
-      this.attachmentService.getProjectAttachments(this.projectGuid)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe({
-          next: (response: any) => {
-            // ensure the latest attachment is displayed
-            if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-              const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
-                return new Date(b.uploadedByTimestamp ?? 0).getTime() - new Date(a.uploadedByTimestamp ?? 0).getTime();
-              });
-
-              // Set initial files without boundaries
-              this.projectFiles = [...fileAttachments];
-              this.dataSource.data = [...this.projectFiles];
-
-              this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
-                next: (boundaryResponse: any) => {
-                  const boundaries = boundaryResponse?._embedded?.projectBoundary;
-
-                  if (boundaries && boundaries.length > 0) {
-                    const boundarySizeMap = new Map<string, number>();
-                    const boundaryGeometryMap = new Map<string, any>();
-                    boundaries.forEach((boundary: { projectBoundaryGuid: string; boundarySizeHa: number; boundaryGeometry: any }) => {
-                      boundarySizeMap.set(boundary.projectBoundaryGuid, boundary.boundarySizeHa);
-                      boundaryGeometryMap.set(boundary.projectBoundaryGuid, boundary.boundaryGeometry);
-                    });
-
-                    this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
-                      ...file,
-                      polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null,
-                      boundaryGeometry: file.sourceObjectUniqueId ? boundaryGeometryMap.get(file.sourceObjectUniqueId) : undefined
-                    }));
-
-                    this.dataSource.data = [...this.projectFiles];
-                  }
-                },
-                error: (error) => {
-                  console.error('Error fetching project boundaries', error);
-                }
-              });
-            } else {
-              console.error('Expected an array of project files inside _embedded.fileAttachment, but got:', response);
-              this.projectFiles = [];
-              this.dataSource.data = [];
-            }
-          },
-          error: (err) => {
-            this.snackbarService.open('Failed to load project attachments.', 'Close', {
-              duration: 5000,
-              panelClass: 'snackbar-error',
-            });
-          }
-        });
-    } else {
-      this.isLoading = false;
-    }
+  private get fileContext() {
+    return this.isActivityContext
+      ? {
+        fetchAttachments: () => this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid),
+        fetchBoundaries: () => this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid),
+        boundaryKey: 'activityBoundary',
+        guidOf: (b: any) => b?.activityBoundaryGuid,
+        geometryOf: (b: any) => b?.geometry,
+        deleteBoundary: (guid: string) => this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, guid),
+        loadErrorMessage: 'Failed to load activity attachments.',
+        boundaryErrorMessage: 'Failed to load activity boundaries:'
+      }
+      : {
+        fetchAttachments: () => this.attachmentService.getProjectAttachments(this.projectGuid),
+        fetchBoundaries: () => this.projectService.getProjectBoundaries(this.projectGuid),
+        boundaryKey: 'projectBoundary',
+        guidOf: (b: any) => b?.projectBoundaryGuid,
+        geometryOf: (b: any) => b?.boundaryGeometry,
+        deleteBoundary: (guid: string) => this.projectService.deleteProjectBoundary(this.projectGuid, guid),
+        loadErrorMessage: 'Failed to load project attachments.',
+        boundaryErrorMessage: 'Failed to load project boundaries:'
+      };
   }
 
-  loadActivityAttachments(): void {
-    if (!this.fiscalGuid || !this.activityGuid) {
+  loadFiles(): void {
+    if (this.isActivityContext) {
+      this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? this.projectGuid;
+    }
+    if (!this.projectGuid) {
       this.isLoading = false;
       return;
     }
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
 
+    const ctx = this.fileContext;
     this.isLoading = true;
-    this.attachmentService.getActivityAttachments(this.projectGuid, this.fiscalGuid, this.activityGuid)
+    let attachmentsFailed = false;
+
+    // Attachments and boundaries are fetched independently on purpose. Nesting the boundary
+    // call inside the attachment response meant that an activity with no attachments never
+    // fetched its boundaries at all - HATEOAS omits _embedded entirely for empty collections -
+    // which is exactly the case an orphaned boundary falls into.
+    forkJoin({
+      attachments: ctx.fetchAttachments().pipe(catchError(() => { attachmentsFailed = true; return of(null); })),
+      boundaries: ctx.fetchBoundaries().pipe(catchError((err: any) => {
+        console.error(ctx.boundaryErrorMessage, err);
+        return of(null);
+      }))
+    })
       .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (response: any) => {
-          if (response?._embedded?.fileAttachment && Array.isArray(response._embedded.fileAttachment)) {
-            const fileAttachments = response._embedded.fileAttachment.sort((a: FileAttachment, b: FileAttachment) => {
-              const timeA = new Date(a.uploadedByTimestamp ?? 0).getTime();
-              const timeB = new Date(b.uploadedByTimestamp ?? 0).getTime();
-              return timeB - timeA; // latest first
-            });
-
-            // Set initial files
-            this.projectFiles = [...fileAttachments];
-            this.dataSource.data = [...this.projectFiles];
-
-            // Fetch activity boundaries to enrich files with hectares
-            this.projectService.getActivityBoundaries(this.projectGuid, this.fiscalGuid, this.activityGuid).subscribe({
-              next: (boundaryResponse: any) => {
-                const boundaries = boundaryResponse?._embedded?.activityBoundary;
-
-                if (boundaries && boundaries.length > 0) {
-                  const boundarySizeMap = new Map<string, number>();
-                  const boundaryGeometryMap = new Map<string, any>();
-                  boundaries.forEach((boundary: { activityBoundaryGuid: string, boundarySizeHa: number, geometry: any }) => {
-                    boundarySizeMap.set(boundary.activityBoundaryGuid, boundary.boundarySizeHa);
-                    boundaryGeometryMap.set(boundary.activityBoundaryGuid, boundary.geometry);
-                  });
-
-                  this.projectFiles = fileAttachments.map((file: FileAttachment) => ({
-                    ...file,
-                    polygonHectares: file.sourceObjectUniqueId ? boundarySizeMap.get(file.sourceObjectUniqueId) ?? null : null,
-                    boundaryGeometry: file.sourceObjectUniqueId ? boundaryGeometryMap.get(file.sourceObjectUniqueId) : undefined
-                  }));
-
-                  this.dataSource.data = [...this.projectFiles];
-                }
-              },
-              error: (error) => {
-                console.error('Failed to load activity boundaries:', error);
-              }
-            });
-          } else {
-            console.error('Expected an array of activity files inside _embedded.fileAttachment, but got:', response);
-            this.projectFiles = [];
-            this.dataSource.data = [];
-          }
-        },
-        error: (err) => {
-          this.snackbarService.open('Failed to load activity attachments.', 'Close', {
+      .subscribe(({ attachments, boundaries }: any) => {
+        if (attachmentsFailed) {
+          this.snackbarService.open(ctx.loadErrorMessage, 'Close', {
             duration: 5000,
             panelClass: 'snackbar-error',
           });
         }
+
+        this.projectFiles = this.buildRows(
+          attachments?._embedded?.fileAttachment ?? [],
+          boundaries?._embedded?.[ctx.boundaryKey] ?? [],
+          ctx
+        );
+        this.dataSource.data = [...this.projectFiles];
       });
+  }
+
+  private buildRows(attachments: any[], boundaries: any[], ctx: any): ProjectFile[] {
+    const sorted = [...attachments].sort((a: any, b: any) =>
+      new Date(b.uploadedByTimestamp ?? 0).getTime() - new Date(a.uploadedByTimestamp ?? 0).getTime());
+
+    const boundaryByGuid = new Map<string, any>();
+    boundaries.forEach((b: any) => {
+      const guid = ctx.guidOf(b);
+      if (guid) boundaryByGuid.set(guid, b);
+    });
+
+    const claimed = new Set<string>();
+    const rows: ProjectFile[] = sorted.map((file: any) => {
+      const boundary = file.sourceObjectUniqueId ? boundaryByGuid.get(file.sourceObjectUniqueId) : undefined;
+      if (boundary) claimed.add(file.sourceObjectUniqueId);
+      return {
+        ...file,
+        polygonHectares: boundary?.boundarySizeHa ?? undefined,
+        boundaryGeometry: boundary ? ctx.geometryOf(boundary) : undefined
+      };
+    });
+
+    // Boundaries that no attachment points at. Without a row the geometry is unreachable:
+    // the delete button lives on the attachment row, so the polygon stays on the map forever
+    // with no way to remove it. Showing it lets a user clean it up themselves.
+    const orphans: ProjectFile[] = boundaries
+      .filter((b: any) => {
+        const guid = ctx.guidOf(b);
+        return guid && !claimed.has(guid);
+      })
+      .map((b: any) => this.buildOrphanBoundaryRow(b, ctx));
+
+    return [...rows, ...orphans];
+  }
+
+  private buildOrphanBoundaryRow(boundary: any, ctx: any): ProjectFile {
+    return {
+      attachmentContentTypeCode: { attachmentContentTypeCode: 'MAP', description: 'Map' },
+      sourceObjectUniqueId: ctx.guidOf(boundary),
+      polygonHectares: boundary?.boundarySizeHa ?? undefined,
+      boundaryGeometry: ctx.geometryOf(boundary),
+      uploadedByUserId: boundary?.createUser ?? boundary?.collectorName,
+      uploadedByTimestamp: boundary?.systemStartTimestamp ?? boundary?.createDate,
+      attachmentDescription: Messages.orphanBoundaryDescription,
+      isOrphanBoundary: true
+    } as ProjectFile;
   }
 
   openFileUploadModal() {
@@ -388,8 +371,15 @@ export class ProjectFilesComponent implements OnInit {
                   duration: 5000,
                   panelClass: 'snackbar-success',
                 });
-                this.loadActivityAttachments();
+                this.loadFiles();
                 this.filesUpdated.emit();
+              },
+              error: (err) => {
+                // The boundary is already saved. Without this rollback it would be stranded:
+                // no attachment means no row in the files table and no way to delete it.
+                snackRef.dismiss();
+                console.error('Failed to create activity attachment', err);
+                this.rollbackBoundary(boundaryGuid, 'activity');
               }
             });
           },
@@ -432,11 +422,15 @@ export class ProjectFilesComponent implements OnInit {
                   duration: 5000,
                   panelClass: 'snackbar-success',
                 });
-                this.loadProjectAttachments();
+                this.loadFiles();
                 this.filesUpdated.emit();
               },
               error: (err) => {
+                // See the activity path: roll the boundary back so a failed upload
+                // leaves nothing behind.
+                snackRef.dismiss();
                 console.error('Failed to create project attachment', err);
+                this.rollbackBoundary(boundaryGuid, 'project');
               }
             });
           },
@@ -480,7 +474,7 @@ export class ProjectFilesComponent implements OnInit {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
-        this.isActivityContext ? this.loadActivityAttachments() : this.loadProjectAttachments();
+        this.loadFiles();
         this.filesUpdated.emit();
       },
       error: (err) => {
@@ -527,7 +521,7 @@ export class ProjectFilesComponent implements OnInit {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
-        this.loadProjectAttachments();
+        this.loadFiles();
         this.filesUpdated.emit();
       },
       error: (error) => {
@@ -567,7 +561,7 @@ export class ProjectFilesComponent implements OnInit {
           duration: 5000,
           panelClass: 'snackbar-success',
         });
-        this.loadActivityAttachments();
+        this.loadFiles();
         this.filesUpdated.emit();
       },
       error: (error) => {
@@ -593,6 +587,12 @@ export class ProjectFilesComponent implements OnInit {
           duration: undefined,
           panelClass: 'snackbar-info',
         });
+        // An orphan row has no attachment behind it - delete the boundary on its own.
+        if (fileToDelete?.isOrphanBoundary) {
+          this.deleteOrphanBoundary(fileToDelete);
+          return;
+        }
+
         if (fileToDelete?.fileAttachmentGuid) {
 
           if (this.isActivityContext) {
@@ -613,7 +613,7 @@ export class ProjectFilesComponent implements OnInit {
                         duration: 5000,
                         panelClass: 'snackbar-success',
                       });
-                      this.loadActivityAttachments();
+                      this.loadFiles();
                     },
                     error: (err) => {
                       console.error('Failed to delete activity boundary', err);
@@ -622,7 +622,7 @@ export class ProjectFilesComponent implements OnInit {
                         panelClass: 'snackbar-warning',
                       });
                       // Still reload attachments as the file might be gone
-                      this.loadActivityAttachments();
+                      this.loadFiles();
                     }
                   });
                 } else {
@@ -631,7 +631,7 @@ export class ProjectFilesComponent implements OnInit {
                     duration: 5000,
                     panelClass: 'snackbar-success',
                   });
-                  this.loadActivityAttachments();
+                  this.loadFiles();
                 }
               },
               error: (error) => {
@@ -660,7 +660,7 @@ export class ProjectFilesComponent implements OnInit {
                         duration: 5000,
                         panelClass: 'snackbar-success',
                       });
-                      this.loadProjectAttachments();
+                      this.loadFiles();
                     },
                     error: (err) => {
                       console.error('Failed to delete project boundary', err);
@@ -668,7 +668,7 @@ export class ProjectFilesComponent implements OnInit {
                         duration: 5000,
                         panelClass: 'snackbar-warning',
                       });
-                      this.loadProjectAttachments();
+                      this.loadFiles();
                     }
                   });
                 } else {
@@ -677,7 +677,7 @@ export class ProjectFilesComponent implements OnInit {
                     duration: 5000,
                     panelClass: 'snackbar-success',
                   });
-                  this.loadProjectAttachments();
+                  this.loadFiles();
                 }
               },
               error: (error) => {
@@ -700,6 +700,87 @@ export class ProjectFilesComponent implements OnInit {
         }
       }
     });
+  }
+
+  /**
+   * Undo a half-completed spatial upload. The boundary and its attachment are two separate
+   * calls with no transaction between them, so when the second fails the first has to be
+   * removed explicitly or it becomes an orphan.
+   */
+  private rollbackBoundary(boundaryGuid: string | undefined, context: 'activity' | 'project'): void {
+    const reasons = ['The spatial file could not be attached to this record.'];
+
+    if (!boundaryGuid) {
+      this.showUploadFailure(reasons);
+      return;
+    }
+
+    const delete$ = context === 'activity'
+      ? this.projectService.deleteActivityBoundary(this.projectGuid, this.fiscalGuid, this.activityGuid, boundaryGuid)
+      : this.projectService.deleteProjectBoundary(this.projectGuid, boundaryGuid);
+
+    delete$.subscribe({
+      next: () => {
+        this.showUploadFailure(reasons);
+        this.loadFiles();
+      },
+      error: (rollbackErr: any) => {
+        // Rollback itself failed - the boundary is now orphaned. It will still show in the
+        // files table as a spatial-without-a-file row, so the user can remove it manually.
+        console.error('Failed to roll back boundary after attachment failure', rollbackErr);
+        this.showUploadFailure([...reasons, Messages.boundaryRollbackFailed]);
+        this.loadFiles();
+      }
+    });
+  }
+
+  private showUploadFailure(reasons: string[]): void {
+    this.snackbarService.openFromComponent(DetailedErrorMessageComponent, {
+      ...this.errorMessageContext,
+      data: {
+        ...this.errorMessageContext.data,
+        reasons
+      }
+    });
+  }
+
+  private deleteOrphanBoundary(fileToDelete: ProjectFile): void {
+    const guid = fileToDelete.sourceObjectUniqueId;
+    if (!guid) {
+      this.snackbarService.open('Failed to delete the spatial due to missing GUID.', 'Close', {
+        duration: 5000,
+        panelClass: 'snackbar-error',
+      });
+      return;
+    }
+
+    this.fileContext.deleteBoundary(guid).subscribe({
+      next: () => {
+        this.snackbarService.open(Messages.orphanBoundaryDeleted, 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-success',
+        });
+        this.filesUpdated.emit();
+        this.loadFiles();
+      },
+      error: (err: any) => {
+        console.error('Failed to delete orphaned boundary', err);
+        this.snackbarService.open('Failed to delete the spatial.', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-error',
+        });
+        this.loadFiles();
+      }
+    });
+  }
+
+  /**
+   * Orphan rows have no fileIdentifier - the attachment row that held it is gone and there is
+   * no file_attachment audit table to recover it from - so the file cannot be fetched even
+   * though WFDM still holds it. Disable the control rather than letting it silently no-op.
+   */
+  canDownloadFile(file: ProjectFile): boolean {
+    return !file?.isOrphanBoundary && !!file?.fileIdentifier;
   }
 
   get isActivityContext(): boolean {

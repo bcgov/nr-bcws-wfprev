@@ -120,24 +120,24 @@ describe('ProjectFilesComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should call loadProjectAttachments on initialization', () => {
-      spyOn(component, 'loadProjectAttachments');
+    it('should load files on initialization in project context', () => {
+      spyOn(component, 'loadFiles');
       component.ngOnInit();
-      expect(component.loadProjectAttachments).toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
     });
-    it('should call loadActivityAttachments when activityGuid and fiscalGuid are present', () => {
+    it('should load files on initialization in activity context', () => {
       component.activityGuid = 'activity-guid';
       component.fiscalGuid = 'fiscal-guid';
 
-      spyOn(component, 'loadActivityAttachments');
+      spyOn(component, 'loadFiles');
 
       component.ngOnInit();
 
-      expect(component.loadActivityAttachments).toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
     });
   });
 
-  describe('loadProjectAttachments', () => {
+  describe('loadFiles - project context', () => {
     it('should load project attachments successfully with boundary data', () => {
       const mockAttachmentResponse = {
         _embedded: {
@@ -154,7 +154,7 @@ describe('ProjectFilesComponent', () => {
       mockAttachmentService.getProjectAttachments.and.returnValue(of(mockAttachmentResponse));
       mockProjectService.getProjectBoundaries.and.returnValue(of(mockBoundaryResponse));
 
-      component.loadProjectAttachments();
+      component.loadFiles();
 
       expect(mockAttachmentService.getProjectAttachments).toHaveBeenCalledWith(mockProjectGuid);
       expect(mockProjectService.getProjectBoundaries).toHaveBeenCalledWith(mockProjectGuid);
@@ -176,7 +176,7 @@ describe('ProjectFilesComponent', () => {
       mockAttachmentService.getProjectAttachments.and.returnValue(of(mockAttachmentResponse));
       mockProjectService.getProjectBoundaries.and.returnValue(of(mockBoundaryResponse));
 
-      component.loadProjectAttachments();
+      component.loadFiles();
 
       expect(mockAttachmentService.getProjectAttachments).toHaveBeenCalledWith(mockProjectGuid);
       expect(mockProjectService.getProjectBoundaries).toHaveBeenCalledWith(mockProjectGuid);
@@ -189,7 +189,7 @@ describe('ProjectFilesComponent', () => {
 
       mockAttachmentService.getProjectAttachments.and.returnValue(of(mockAttachmentResponse));
 
-      component.loadProjectAttachments();
+      component.loadFiles();
 
       expect(mockAttachmentService.getProjectAttachments).toHaveBeenCalledWith(mockProjectGuid);
     });
@@ -199,7 +199,7 @@ describe('ProjectFilesComponent', () => {
         throwError(() => new Error('Failed to load attachments'))
       );
 
-      component.loadProjectAttachments();
+      component.loadFiles();
 
       expect(mockAttachmentService.getProjectAttachments).toHaveBeenCalledWith(mockProjectGuid);
       expect(mockSnackbar.open).toHaveBeenCalledWith(
@@ -222,7 +222,7 @@ describe('ProjectFilesComponent', () => {
       );
 
       spyOn(console, 'error');
-      component.loadProjectAttachments();
+      component.loadFiles();
 
       expect(mockAttachmentService.getProjectAttachments).toHaveBeenCalledWith(mockProjectGuid);
       expect(mockProjectService.getProjectBoundaries).toHaveBeenCalledWith(mockProjectGuid);
@@ -230,7 +230,7 @@ describe('ProjectFilesComponent', () => {
     });
   });
 
-  describe('loadActivityAttachments', () => {
+  describe('loadFiles - activity context', () => {
     const mockActivityGuid = 'test-activity-guid';
     const mockFiscalGuid = 'test-fiscal-guid';
 
@@ -260,7 +260,7 @@ describe('ProjectFilesComponent', () => {
       mockProjectService.getActivityBoundaries.and.returnValue(of(mockBoundaryResponse));
       mockAttachmentService.getActivityAttachments.and.returnValue(of(mockAttachmentResponse));
 
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(mockProjectService.getActivityBoundaries).toHaveBeenCalledWith(mockProjectGuid, mockFiscalGuid, mockActivityGuid);
       expect(mockAttachmentService.getActivityAttachments).toHaveBeenCalledWith(mockProjectGuid, mockFiscalGuid, mockActivityGuid);
@@ -277,7 +277,7 @@ describe('ProjectFilesComponent', () => {
       mockProjectService.getActivityBoundaries.and.returnValue(of(mockBoundaryResponse));
       mockAttachmentService.getActivityAttachments.and.returnValue(of(mockAttachmentResponse));
 
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(component.projectFiles.length).toBe(1);
       expect(component.projectFiles[0].polygonHectares).toBeUndefined();
@@ -291,10 +291,13 @@ describe('ProjectFilesComponent', () => {
       mockAttachmentService.getActivityAttachments.and.returnValue(of(mockAttachmentResponse));
 
       spyOn(console, 'error');
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(component.projectFiles.length).toBe(0);
-      expect(console.error).toHaveBeenCalled();
+      // WFPREV-1223: an absent fileAttachment array is a legitimate empty collection - HATEOAS
+      // omits _embedded entirely - not an error. It is also the state an activity is in when its
+      // only spatial record is an orphaned boundary, so it must not be treated as a failure.
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it('should show snackbar on getActivityAttachments error', () => {
@@ -305,7 +308,7 @@ describe('ProjectFilesComponent', () => {
         throwError(() => new Error('Failed to load attachments'))
       );
 
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(mockSnackbar.open).toHaveBeenCalledWith(
         'Failed to load activity attachments.',
@@ -325,7 +328,7 @@ describe('ProjectFilesComponent', () => {
       );
 
       spyOn(console, 'error');
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(console.error).toHaveBeenCalledWith('Failed to load activity boundaries:', jasmine.any(Error));
     });
@@ -335,7 +338,7 @@ describe('ProjectFilesComponent', () => {
       mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: {} }));
 
       spyOn(console, 'error');
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(component.projectFiles.length).toBe(0);
     });
@@ -344,7 +347,7 @@ describe('ProjectFilesComponent', () => {
       component.fiscalGuid = '';
       component.activityGuid = '';
 
-      component.loadActivityAttachments();
+      component.loadFiles();
 
       expect(mockProjectService.getActivityBoundaries).not.toHaveBeenCalled();
       expect(mockAttachmentService.getActivityAttachments).not.toHaveBeenCalled();
@@ -403,8 +406,8 @@ describe('ProjectFilesComponent', () => {
         afterClosed: () => of({ description }),
       } as any);
 
-      // Prevent loadProjectAttachments from being called
-      spyOn(component, 'loadProjectAttachments').and.stub();
+      // Prevent loadFiles from being called
+      spyOn(component, 'loadFiles').and.stub();
 
       component.openFileUploadModal();
       expect(component.attachmentDescription).toBe(description);
@@ -627,19 +630,15 @@ describe('ProjectFilesComponent', () => {
         sourceObjectUniqueId: 'boundary-guid'
       };
 
-      const mockBoundary = {
-        projectBoundaryGuid: 'boundary-guid',
-        systemStartTimestamp: new Date().toISOString()
-      };
-
       mockDialog.open.and.returnValue({
         afterClosed: () => of(true)
       } as any);
 
       mockAttachmentService.deleteProjectAttachment.and.returnValue(of({}));
-      mockProjectService.getProjectBoundaries.and.returnValue(of({
-        _embedded: { projectBoundary: [mockBoundary] }
-      }));
+      // The table is rebuilt from the server after a delete, so these mocks describe the
+      // state *after* both the attachment and its boundary are gone. Leaving the boundary
+      // in the response would (correctly) produce an orphan row - covered separately below.
+      mockProjectService.getProjectBoundaries.and.returnValue(of({ _embedded: {} }));
       mockProjectService.deleteProjectBoundary.and.returnValue(of({}));
       mockSnackbar.open.and.stub();
 
@@ -818,7 +817,7 @@ describe('ProjectFilesComponent', () => {
     });
   });
 
-  describe('loadActivityAttachments', () => {
+  describe('loadFiles - activity context', () => {
 
     it('should set description and call uploadFile when both are returned from modal', () => {
       const mockFile = new File(['dummy'], 'file.txt');
@@ -850,7 +849,7 @@ describe('ProjectFilesComponent', () => {
       component.uploadedBy = 'user@example.com';
 
       mockProjectService.createActivityBoundary = jasmine.createSpy().and.returnValue(of({}));
-      spyOn(component, 'loadActivityAttachments');
+      spyOn(component, 'loadFiles');
       spyOn(component.filesUpdated, 'emit');
     });
 
@@ -876,7 +875,7 @@ describe('ProjectFilesComponent', () => {
         'Close',
         jasmine.any(Object)
       );
-      expect(component.loadActivityAttachments).toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
 
@@ -909,7 +908,7 @@ describe('ProjectFilesComponent', () => {
     mockAttachmentService.deleteActivityAttachments.and.returnValue(of({}));
 
     spyOn(component.filesUpdated, 'emit');
-    spyOn(component, 'loadActivityAttachments');
+    spyOn(component, 'loadFiles');
 
     mockProjectService.getActivityBoundaries.calls.reset();
 
@@ -921,7 +920,7 @@ describe('ProjectFilesComponent', () => {
     expect(mockAttachmentService.deleteActivityAttachments).toHaveBeenCalled();
     expect(mockProjectService.getActivityBoundaries).not.toHaveBeenCalled(); // ✅ safe
     expect(component.filesUpdated.emit).toHaveBeenCalled();
-    expect(component.loadActivityAttachments).toHaveBeenCalled();
+    expect(component.loadFiles).toHaveBeenCalled();
   });
 
 
@@ -948,7 +947,7 @@ describe('ProjectFilesComponent', () => {
     mockProjectService.deleteActivityBoundary = jasmine.createSpy().and.returnValue(of({}));
 
     spyOn(component.filesUpdated, 'emit');
-    spyOn(component, 'loadActivityAttachments');
+    spyOn(component, 'loadFiles');
 
     component.projectFiles = [mockFile];
     component.dataSource.data = [mockFile];
@@ -968,7 +967,7 @@ describe('ProjectFilesComponent', () => {
         'Close',
         jasmine.any(Object)
       );
-      expect(component.loadActivityAttachments).toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
       done();
     }, 0);
   });
@@ -1017,7 +1016,7 @@ describe('ProjectFilesComponent', () => {
       _embedded: { activityBoundary: [] }
     }));
 
-    spyOn(component, 'loadActivityAttachments').and.callThrough();
+    spyOn(component, 'loadFiles').and.callThrough();
     component.deleteFile(mockFile);
 
     expect(mockAttachmentService.deleteActivityAttachments).toHaveBeenCalled();
@@ -1028,11 +1027,10 @@ describe('ProjectFilesComponent', () => {
   describe('finishWithoutGeometry', () => {
     beforeEach(() => {
       spyOn(component.filesUpdated, 'emit');
-      spyOn(component, 'loadActivityAttachments');
-      spyOn(component, 'loadProjectAttachments');
+      spyOn(component, 'loadFiles');
     });
 
-    it('should show snackbar, call loadActivityAttachments and emit event when isActivityContext is true', () => {
+    it('should show snackbar, reload files and emit event when isActivityContext is true', () => {
       component.fiscalGuid = 'fiscal-guid';
       component.activityGuid = 'activity-guid';
 
@@ -1049,13 +1047,15 @@ describe('ProjectFilesComponent', () => {
         'Close',
         jasmine.objectContaining({ duration: 5000, panelClass: 'snackbar-success' })
       );
-      expect(component.loadActivityAttachments).toHaveBeenCalled();
-      expect(component.loadProjectAttachments).not.toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
+      // the loader is context-driven now, so the meaningful assertion is which endpoint was used
+      expect(mockAttachmentService.createActivityAttachment).toHaveBeenCalled();
+      expect(mockAttachmentService.createProjectAttachment).not.toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
 
 
-    it('should show snackbar, call loadProjectAttachments and emit event when isActivityContext is false', () => {
+    it('should show snackbar, reload files and emit event when isActivityContext is false', () => {
       component.fiscalGuid = '';
       component.activityGuid = '';
 
@@ -1072,8 +1072,9 @@ describe('ProjectFilesComponent', () => {
         'Close',
         jasmine.objectContaining({ duration: 5000, panelClass: 'snackbar-success' })
       );
-      expect(component.loadProjectAttachments).toHaveBeenCalled();
-      expect(component.loadActivityAttachments).not.toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
+      expect(mockAttachmentService.createProjectAttachment).toHaveBeenCalled();
+      expect(mockAttachmentService.createActivityAttachment).not.toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
   });
@@ -1124,7 +1125,7 @@ describe('ProjectFilesComponent', () => {
       mockAttachmentService.createActivityAttachment.and.returnValue(of({}));
 
       spyOn(component.filesUpdated, 'emit');
-      spyOn(component, 'loadActivityAttachments');
+      spyOn(component, 'loadFiles');
 
       component.finishWithoutGeometry(mockFile, mockUploadResp, mockType);
 
@@ -1136,7 +1137,7 @@ describe('ProjectFilesComponent', () => {
         Messages.fileUploadSuccess, 'Close', jasmine.any(Object)
       );
 
-      expect(component.loadActivityAttachments).toHaveBeenCalled();
+      expect(component.loadFiles).toHaveBeenCalled();
       expect(component.filesUpdated.emit).toHaveBeenCalled();
     });
 
@@ -1232,4 +1233,97 @@ describe('ProjectFilesComponent', () => {
   });
 
 
+
+  describe('orphaned boundaries (WFPREV-1223)', () => {
+    const boundaryGuid = 'orphan-boundary-guid';
+
+    it('renders a boundary with no attachment as its own row, in project context', () => {
+      mockAttachmentService.getProjectAttachments.and.returnValue(of({ _embedded: {} }));
+      mockProjectService.getProjectBoundaries.and.returnValue(of({
+        _embedded: {
+          projectBoundary: [{
+            projectBoundaryGuid: boundaryGuid,
+            boundarySizeHa: 12.5,
+            boundaryGeometry: { type: 'MultiPolygon', coordinates: [] },
+            createUser: 'IDIR\SOMEONE',
+            systemStartTimestamp: '2026-01-01T00:00:00Z'
+          }]
+        }
+      }));
+
+      component.loadFiles();
+
+      expect(component.projectFiles.length).toBe(1);
+      const row = component.projectFiles[0];
+      expect(row.isOrphanBoundary).toBeTrue();
+      expect(row.sourceObjectUniqueId).toBe(boundaryGuid);
+      expect(row.polygonHectares as any).toBe(12.5);
+      expect(row.boundaryGeometry).toBeDefined();
+    });
+
+    it('reads geometry from the activity-shaped field in activity context', () => {
+      component.activityGuid = 'activity-guid';
+      component.fiscalGuid = 'fiscal-guid';
+      mockAttachmentService.getActivityAttachments.and.returnValue(of({ _embedded: {} }));
+      mockProjectService.getActivityBoundaries.and.returnValue(of({
+        _embedded: {
+          activityBoundary: [{
+            activityBoundaryGuid: boundaryGuid,
+            boundarySizeHa: 3,
+            geometry: { type: 'MultiPolygon', coordinates: [] }
+          }]
+        }
+      }));
+
+      component.loadFiles();
+
+      expect(component.projectFiles.length).toBe(1);
+      expect(component.projectFiles[0].boundaryGeometry).toBeDefined();
+    });
+
+    it('does not create an orphan row for a boundary an attachment already claims', () => {
+      mockAttachmentService.getProjectAttachments.and.returnValue(of({
+        _embedded: { fileAttachment: [{ fileAttachmentGuid: 'a', sourceObjectUniqueId: boundaryGuid }] }
+      }));
+      mockProjectService.getProjectBoundaries.and.returnValue(of({
+        _embedded: { projectBoundary: [{ projectBoundaryGuid: boundaryGuid, boundarySizeHa: 9 }] }
+      }));
+
+      component.loadFiles();
+
+      expect(component.projectFiles.length).toBe(1);
+      expect(component.projectFiles[0].isOrphanBoundary).toBeFalsy();
+      expect(component.projectFiles[0].polygonHectares as any).toBe(9);
+    });
+
+    it('disables download but allows viewing an orphan row', () => {
+      const orphan: ProjectFile = { isOrphanBoundary: true, sourceObjectUniqueId: boundaryGuid };
+      const normal: ProjectFile = { fileIdentifier: 'file-id' };
+
+      expect(component.canDownloadFile(orphan)).toBeFalse();
+      expect(component.canDownloadFile(normal)).toBeTrue();
+    });
+
+    it('deletes the boundary directly when an orphan row is removed', () => {
+      mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+      const orphan: ProjectFile = { isOrphanBoundary: true, sourceObjectUniqueId: boundaryGuid };
+
+      component.deleteFile(orphan);
+
+      expect(mockProjectService.deleteProjectBoundary).toHaveBeenCalledWith(mockProjectGuid, boundaryGuid);
+      // there is no attachment behind an orphan row, so this must not be attempted
+      expect(mockAttachmentService.deleteProjectAttachment).not.toHaveBeenCalled();
+    });
+
+    it('routes an orphan delete to the activity endpoint in activity context', () => {
+      component.activityGuid = 'activity-guid';
+      component.fiscalGuid = 'fiscal-guid';
+      mockDialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+
+      component.deleteFile({ isOrphanBoundary: true, sourceObjectUniqueId: boundaryGuid });
+
+      expect(mockProjectService.deleteActivityBoundary).toHaveBeenCalledWith(
+        mockProjectGuid, 'fiscal-guid', 'activity-guid', boundaryGuid);
+    });
+  });
 });
