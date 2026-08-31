@@ -2383,6 +2383,33 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_03_00_09",
+        "author": "sparmar",
+        "tagDatabase": {
+          "tag": "version_01_03_00_09"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_03_00/09/ddl/app_wf1_prev.ddl.activity_spatial_ind_trigger_wfprev-1223.sql",
+              "splitStatements": false
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_03_00/09/ddl/app_wf1_prev.ddl.activity_spatial_ind_backfill_wfprev-1223.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }

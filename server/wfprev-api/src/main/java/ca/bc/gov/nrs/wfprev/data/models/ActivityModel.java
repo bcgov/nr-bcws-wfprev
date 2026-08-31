@@ -3,15 +3,15 @@ package ca.bc.gov.nrs.wfprev.data.models;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import ca.bc.gov.nrs.wfprev.common.validators.ActivityDates;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import jakarta.validation.constraints.NotNull;
 import org.springframework.hateoas.server.core.Relation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
 import ca.bc.gov.nrs.wfprev.common.entities.CommonModel;
+import ca.bc.gov.nrs.wfprev.common.validators.ActivityDates;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -55,7 +55,9 @@ public class ActivityModel extends CommonModel<ActivityModel> {
     @NotNull(message = "Activity outstandingObligationsInd must not be null")
     private Boolean outstandingObligationsInd;
     private String activityComment;
-    @NotNull(message = "Activity isSpatialAddedInd must not be null")
+    // Read-only: derived from activity_boundary by the database (WFPREV-1223).
+    // Returned on reads, ignored on updates, so clients that omit it are not
+    // rejected.
     private Boolean isSpatialAddedInd;
     @NotNull(message = "Activity isPreviousCarryForwardInd must not be null")
     private Boolean isPreviousCarryForwardInd;

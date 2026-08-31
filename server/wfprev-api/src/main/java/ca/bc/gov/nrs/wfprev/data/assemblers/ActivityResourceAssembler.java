@@ -1,5 +1,11 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
+import java.util.UUID;
+
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.stereotype.Component;
+
 import ca.bc.gov.nrs.wfprev.controllers.ActivityController;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ActivityStatusCodeEntity;
@@ -10,11 +16,6 @@ import ca.bc.gov.nrs.wfprev.data.models.ActivityStatusCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.ContractPhaseCodeModel;
 import ca.bc.gov.nrs.wfprev.data.models.RiskRatingCodeModel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
-import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -81,25 +82,27 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
         ActivityModel resource = instantiateModel(entity);
 
         resource.setActivityGuid(entity.getActivityGuid().toString());
-        resource.setProjectPlanFiscalGuid(entity.getProjectPlanFiscalGuid() != null ?
-                entity.getProjectPlanFiscalGuid().toString() : null);
+        resource.setProjectPlanFiscalGuid(
+                entity.getProjectPlanFiscalGuid() != null ? entity.getProjectPlanFiscalGuid().toString() : null);
         if (entity.getActivityStatusCode() != null) {
             resource.setActivityStatusCode(toActivityStatusCodeModel(entity.getActivityStatusCode()));
         }
-        resource.setSilvicultureBaseGuid(entity.getSilvicultureBaseGuid() != null ?
-                entity.getSilvicultureBaseGuid().toString() : null);
-        resource.setSilvicultureTechniqueGuid(entity.getSilvicultureTechniqueGuid() != null ?
-                entity.getSilvicultureTechniqueGuid().toString() : null);
-        resource.setSilvicultureMethodGuid(entity.getSilvicultureMethodGuid() != null ?
-                entity.getSilvicultureMethodGuid().toString() : null);
+        resource.setSilvicultureBaseGuid(
+                entity.getSilvicultureBaseGuid() != null ? entity.getSilvicultureBaseGuid().toString() : null);
+        resource.setSilvicultureTechniqueGuid(
+                entity.getSilvicultureTechniqueGuid() != null ? entity.getSilvicultureTechniqueGuid().toString()
+                        : null);
+        resource.setSilvicultureMethodGuid(
+                entity.getSilvicultureMethodGuid() != null ? entity.getSilvicultureMethodGuid().toString() : null);
         if (entity.getRiskRatingCode() != null) {
             resource.setRiskRatingCode(toRiskRatingCodeModel(entity.getRiskRatingCode()));
         }
         if (entity.getContractPhaseCode() != null) {
             resource.setContractPhaseCode(toContractPhaseCodeModel(entity.getContractPhaseCode()));
         }
-        resource.setActivityFundingSourceGuid(entity.getActivityFundingSourceGuid() != null ?
-                entity.getActivityFundingSourceGuid().toString() : null);
+        resource.setActivityFundingSourceGuid(
+                entity.getActivityFundingSourceGuid() != null ? entity.getActivityFundingSourceGuid().toString()
+                        : null);
         resource.setActivityName(entity.getActivityName());
         resource.setActivityDescription(entity.getActivityDescription());
         resource.setActivityStartDate(entity.getActivityStartDate());
@@ -127,7 +130,7 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
 
     @Override
     public CollectionModel<ActivityModel> toCollectionModel(Iterable<? extends ActivityEntity> entities) {
-         return super.toCollectionModel(entities);
+        return super.toCollectionModel(entities);
     }
 
     private ActivityStatusCodeModel toActivityStatusCodeModel(ActivityStatusCodeEntity code) {
@@ -136,7 +139,8 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
     }
 
     private ActivityStatusCodeEntity toActivityStatusCodeEntity(ActivityStatusCodeModel code) {
-        if (code == null) return null;
+        if (code == null)
+            return null;
         ActivityStatusCodeResourceAssembler ra = new ActivityStatusCodeResourceAssembler();
         return ra.toEntity(code);
     }
@@ -147,7 +151,8 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
     }
 
     private RiskRatingCodeEntity toRiskRatingCodeEntity(RiskRatingCodeModel code) {
-        if (code == null) return null;
+        if (code == null)
+            return null;
         RiskRatingCodeResourceAssembler ra = new RiskRatingCodeResourceAssembler();
         return ra.toEntity(code);
     }
@@ -158,7 +163,8 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
     }
 
     private ContractPhaseCodeEntity toContractPhaseCodeEntity(ContractPhaseCodeModel code) {
-        if (code == null) return null;
+        if (code == null)
+            return null;
         ContractPhaseCodeResourceAssembler ra = new ContractPhaseCodeResourceAssembler();
         return ra.toEntity(code);
     }
@@ -168,49 +174,60 @@ public class ActivityResourceAssembler extends RepresentationModelAssemblerSuppo
 
         existingEntity.setProjectPlanFiscalGuid(nonNullOrDefault(
                 model.getProjectPlanFiscalGuid() != null ? UUID.fromString(model.getProjectPlanFiscalGuid()) : null,
-                existingEntity.getProjectPlanFiscalGuid()
-        ));
+                existingEntity.getProjectPlanFiscalGuid()));
         existingEntity.setActivityStatusCode(nonNullOrDefault(
                 toActivityStatusCodeEntity(model.getActivityStatusCode()),
-                existingEntity.getActivityStatusCode()
-        ));
-        existingEntity.setSilvicultureBaseGuid(model.getSilvicultureBaseGuid() != null ? UUID.fromString(model.getSilvicultureBaseGuid()) : null);
-        existingEntity.setSilvicultureTechniqueGuid(model.getSilvicultureTechniqueGuid() != null ? UUID.fromString(model.getSilvicultureTechniqueGuid()) : null);
-        existingEntity.setSilvicultureMethodGuid(model.getSilvicultureMethodGuid() != null ? UUID.fromString(model.getSilvicultureMethodGuid()) : null);
+                existingEntity.getActivityStatusCode()));
+        existingEntity.setSilvicultureBaseGuid(
+                model.getSilvicultureBaseGuid() != null ? UUID.fromString(model.getSilvicultureBaseGuid()) : null);
+        existingEntity.setSilvicultureTechniqueGuid(
+                model.getSilvicultureTechniqueGuid() != null ? UUID.fromString(model.getSilvicultureTechniqueGuid())
+                        : null);
+        existingEntity.setSilvicultureMethodGuid(
+                model.getSilvicultureMethodGuid() != null ? UUID.fromString(model.getSilvicultureMethodGuid()) : null);
         existingEntity.setRiskRatingCode(nonNullOrDefault(
                 toRiskRatingCodeEntity(model.getRiskRatingCode()),
-                existingEntity.getRiskRatingCode()
-        ));
+                existingEntity.getRiskRatingCode()));
         existingEntity.setContractPhaseCode(nonNullOrDefault(
                 toContractPhaseCodeEntity(model.getContractPhaseCode()),
-                existingEntity.getContractPhaseCode()
-        ));
+                existingEntity.getContractPhaseCode()));
         existingEntity.setActivityFundingSourceGuid(nonNullOrDefault(
-                model.getActivityFundingSourceGuid() != null ? UUID.fromString(model.getActivityFundingSourceGuid()) : null,
-                existingEntity.getActivityFundingSourceGuid()
-        ));
+                model.getActivityFundingSourceGuid() != null ? UUID.fromString(model.getActivityFundingSourceGuid())
+                        : null,
+                existingEntity.getActivityFundingSourceGuid()));
         existingEntity.setActivityName(nonNullOrDefault(model.getActivityName(), existingEntity.getActivityName()));
-        existingEntity.setActivityDescription(nonNullOrDefault(model.getActivityDescription(), existingEntity.getActivityDescription()));
-        existingEntity.setActivityStartDate(nonNullOrDefault(model.getActivityStartDate(), existingEntity.getActivityStartDate()));
-        existingEntity.setActivityEndDate(nonNullOrDefault(model.getActivityEndDate(), existingEntity.getActivityEndDate()));
-        existingEntity.setPlannedSpendAmount(nonNullOrDefault(model.getPlannedSpendAmount(), existingEntity.getPlannedSpendAmount()));
-        existingEntity.setPlannedTreatmentAreaHa(nonNullOrDefault(model.getPlannedTreatmentAreaHa(), existingEntity.getPlannedTreatmentAreaHa()));
-        existingEntity.setReportedSpendAmount(nonNullOrDefault(model.getReportedSpendAmount(), existingEntity.getReportedSpendAmount()));
-        existingEntity.setCompletedAreaHa(nonNullOrDefault(model.getCompletedAreaHa(), existingEntity.getCompletedAreaHa()));
-        existingEntity.setIsResultsReportableInd(nonNullOrDefault(model.getIsResultsReportableInd(), existingEntity.getIsResultsReportableInd()));
-        existingEntity.setOutstandingObligationsInd(nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
-        existingEntity.setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
-        existingEntity.setIsSpatialAddedInd(nonNullOrDefault(model.getIsSpatialAddedInd(), existingEntity.getIsSpatialAddedInd()));
-        existingEntity.setIsPreviousCarryForwardInd(nonNullOrDefault(model.getIsPreviousCarryForwardInd(), existingEntity.getIsPreviousCarryForwardInd()));
-        existingEntity.setIsCarryForwardInd(nonNullOrDefault(model.getIsCarryForwardInd(), existingEntity.getIsCarryForwardInd()));
-        existingEntity.setFinalOutcomeComments(nonNullOrDefault(model.getFinalOutcomeComments(), existingEntity.getFinalOutcomeComments()));
+        existingEntity.setActivityDescription(
+                nonNullOrDefault(model.getActivityDescription(), existingEntity.getActivityDescription()));
+        existingEntity.setActivityStartDate(
+                nonNullOrDefault(model.getActivityStartDate(), existingEntity.getActivityStartDate()));
+        existingEntity
+                .setActivityEndDate(nonNullOrDefault(model.getActivityEndDate(), existingEntity.getActivityEndDate()));
+        existingEntity.setPlannedSpendAmount(
+                nonNullOrDefault(model.getPlannedSpendAmount(), existingEntity.getPlannedSpendAmount()));
+        existingEntity.setPlannedTreatmentAreaHa(
+                nonNullOrDefault(model.getPlannedTreatmentAreaHa(), existingEntity.getPlannedTreatmentAreaHa()));
+        existingEntity.setReportedSpendAmount(
+                nonNullOrDefault(model.getReportedSpendAmount(), existingEntity.getReportedSpendAmount()));
+        existingEntity
+                .setCompletedAreaHa(nonNullOrDefault(model.getCompletedAreaHa(), existingEntity.getCompletedAreaHa()));
+        existingEntity.setIsResultsReportableInd(
+                nonNullOrDefault(model.getIsResultsReportableInd(), existingEntity.getIsResultsReportableInd()));
+        existingEntity.setOutstandingObligationsInd(
+                nonNullOrDefault(model.getOutstandingObligationsInd(), existingEntity.getOutstandingObligationsInd()));
+        existingEntity
+                .setActivityComment(nonNullOrDefault(model.getActivityComment(), existingEntity.getActivityComment()));
+        existingEntity.setIsPreviousCarryForwardInd(
+                nonNullOrDefault(model.getIsPreviousCarryForwardInd(), existingEntity.getIsPreviousCarryForwardInd()));
+        existingEntity.setIsCarryForwardInd(
+                nonNullOrDefault(model.getIsCarryForwardInd(), existingEntity.getIsCarryForwardInd()));
+        existingEntity.setFinalOutcomeComments(
+                nonNullOrDefault(model.getFinalOutcomeComments(), existingEntity.getFinalOutcomeComments()));
         existingEntity.setCreateUser(existingEntity.getCreateUser());
         existingEntity.setCreateDate(existingEntity.getCreateDate());
         existingEntity.setUpdateUser(model.getUpdateUser());
         existingEntity.setUpdateDate(model.getUpdateDate());
         existingEntity.setLastUpdatedTimestamp(
-            nonNullOrDefault(model.getLastUpdatedTimestamp(), existingEntity.getLastUpdatedTimestamp())
-        );
+                nonNullOrDefault(model.getLastUpdatedTimestamp(), existingEntity.getLastUpdatedTimestamp()));
         return existingEntity;
     }
 

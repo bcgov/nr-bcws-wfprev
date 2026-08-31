@@ -212,7 +212,11 @@ export interface ProjectFile {
     attachmentContentTypeCode?: string;
   };
   sourceObjectUniqueId?: string,
-  boundaryGeometry?: Geometry
+  boundaryGeometry?: Geometry,
+  // Set on rows synthesised from a boundary that no file attachment points at.
+  // The geometry exists but its uploaded file never landed (or was deleted separately),
+  // so there is nothing to download - only view and delete apply. See WFPREV-1223.
+  isOrphanBoundary?: boolean
 }
 
 export interface FeaturesResponse {

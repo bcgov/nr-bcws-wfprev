@@ -16,7 +16,7 @@ export class FileViewerService {
    * Only spatial files (kml, kmz, shp, gdb, zip) are supported and will open the spatial map dialog.
    */
   public viewFile(file: ProjectFile): void {
-    if (!file?.fileAttachmentGuid || !this.isSpatialFile(file)) {
+    if (!this.canView(file)) {
       return;
     }
 
@@ -30,6 +30,13 @@ export class FileViewerService {
   }
 
   public canView(file: ProjectFile): boolean {
+    // An orphaned boundary row has no attachment and no file name to inspect, but it does
+    // carry the geometry - which is the only thing the viewer needs. Seeing the polygon is
+    // how a user decides whether to delete it. See WFPREV-1223.
+    if (file?.isOrphanBoundary) {
+      return !!file.boundaryGeometry;
+    }
+
     if (!file?.fileAttachmentGuid) {
       return false;
     }

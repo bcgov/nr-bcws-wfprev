@@ -1,12 +1,26 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
+import java.util.Date;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import ca.bc.gov.nrs.common.wfone.rest.resource.HeaderConstants;
 import ca.bc.gov.nrs.common.wfone.rest.resource.MessageListRsrc;
 import ca.bc.gov.nrs.wfprev.common.controllers.CommonController;
 import ca.bc.gov.nrs.wfprev.data.models.ActivityBoundaryModel;
-import ca.bc.gov.nrs.wfprev.data.models.ActivityModel;
 import ca.bc.gov.nrs.wfprev.services.ActivityBoundaryService;
-import ca.bc.gov.nrs.wfprev.services.ActivityService;
 import ca.bc.gov.nrs.wfprev.services.CoordinatesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,59 +35,35 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
 
 @RestController
 @Slf4j
 @RequestMapping(value = "/projects/{projectGuid}/projectFiscals/{projectPlanFiscalGuid}/activities/{activityGuid}/activityBoundary")
 public class ActivityBoundaryController extends CommonController {
-    private final ActivityService activityService;
     private final ActivityBoundaryService activityBoundaryService;
     private final CoordinatesService coordinatesService;
 
-    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService, CoordinatesService coordinatesService, ActivityService activityService) {
+    public ActivityBoundaryController(ActivityBoundaryService activityBoundaryService,
+            CoordinatesService coordinatesService) {
         super(ActivityBoundaryController.class.getName());
         this.activityBoundaryService = activityBoundaryService;
         this.coordinatesService = coordinatesService;
-        this.activityService = activityService;
     }
 
     @GetMapping
-    @Operation(
-            summary = "Fetch all Activity Boundaries",
-            description = "Fetch all Activity Boundaries for an Activity",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"}),
-            extensions = {
+    @Operation(summary = "Fetch all Activity Boundaries", description = "Fetch all Activity Boundaries for an Activity", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }), extensions = {
                     @Extension(properties = {
                             @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
                             @ExtensionProperty(name = "throttling-tier", value = "Unlimited")
                     })
-            }
-    )
+            })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = CollectionModel.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CollectionModel.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))
     })
-    @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION,
-            required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
-    @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION,
-            required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
+    @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
+    @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
     public ResponseEntity<CollectionModel<ActivityBoundaryModel>> getAllActivityBoundaries(
             @PathVariable String projectGuid,
             @PathVariable String projectPlanFiscalGuid,
@@ -81,7 +71,8 @@ public class ActivityBoundaryController extends CommonController {
         log.debug(" >> getAllActivityBoundaries");
 
         try {
-            return ok(activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid));
+            return ok(
+                    activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid));
         } catch (RuntimeException e) {
             log.error(" ### Error while fetching Activity Boundaries", e);
             return internalServerError();
@@ -89,14 +80,10 @@ public class ActivityBoundaryController extends CommonController {
     }
 
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Fetch an Activity Boundary",
-            description = "Fetch a specific Activity Boundary by ID",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
+    @Operation(summary = "Fetch an Activity Boundary", description = "Fetch a specific Activity Boundary by ID", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
@@ -121,15 +108,11 @@ public class ActivityBoundaryController extends CommonController {
     }
 
     @PostMapping
-    @Operation(
-            summary = "Create an Activity Boundary",
-            description = "Create a new Activity Boundary for an Activity",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
+    @Operation(summary = "Create an Activity Boundary", description = "Create a new Activity Boundary for an Activity", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.CREATE_SPATIAL_UPLOAD')")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Created",
-                    content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ActivityBoundaryModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
@@ -149,14 +132,6 @@ public class ActivityBoundaryController extends CommonController {
                     projectGuid, projectPlanFiscalGuid, activityGuid, resource);
             coordinatesService.updateProjectCoordinates(projectGuid);
 
-            // Update activity spatial indicator
-            ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
-            if(activity != null) {
-                activity.setIsSpatialAddedInd(true);
-                activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
-
-            }
-
             return ResponseEntity.status(201).body(newResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while creating Activity Boundary", e);
@@ -171,11 +146,8 @@ public class ActivityBoundaryController extends CommonController {
     }
 
     @PutMapping("/{id}")
-    @Operation(
-            summary = "Update Activity Boundary",
-            description = "Update an existing Activity Boundary",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
+    @Operation(summary = "Update Activity Boundary", description = "Update an existing Activity Boundary", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.UPDATE_SPATIAL_METADATA')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -198,13 +170,6 @@ public class ActivityBoundaryController extends CommonController {
                     projectGuid, projectPlanFiscalGuid, activityGuid, resource);
             coordinatesService.updateProjectCoordinates(projectGuid);
 
-            // Update activity spatial indicator
-            ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
-            if (activity != null) {
-                activity.setIsSpatialAddedInd(true);
-                activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
-            }
-
             return updatedResource == null ? notFound() : ok(updatedResource);
         } catch (DataIntegrityViolationException e) {
             log.error(" ### DataIntegrityViolationException while updating Activity Boundary", e);
@@ -222,11 +187,8 @@ public class ActivityBoundaryController extends CommonController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Delete an Activity Boundary",
-            description = "Delete a specific Activity Boundary by ID",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV"})
-    )
+    @Operation(summary = "Delete an Activity Boundary", description = "Delete a specific Activity Boundary by ID", security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {
+            "WFPREV" }))
     @PreAuthorize("hasAuthority('WFPREV.DELETE_SPATIAL_UPLOAD')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
@@ -242,16 +204,9 @@ public class ActivityBoundaryController extends CommonController {
         log.debug(" >> deleteActivityBoundary");
 
         try {
-            activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id, deleteFiles);
+            activityBoundaryService.deleteActivityBoundary(projectGuid, projectPlanFiscalGuid, activityGuid, id,
+                    deleteFiles);
             coordinatesService.updateProjectCoordinates(projectGuid);
-
-            // Update activity spatial indicator
-            ActivityModel activity = activityService.getActivity(projectGuid, projectPlanFiscalGuid, activityGuid);
-            if(activity != null) {
-                CollectionModel<ActivityBoundaryModel> boundaries = activityBoundaryService.getAllActivityBoundaries(projectGuid, projectPlanFiscalGuid, activityGuid);
-                activity.setIsSpatialAddedInd(!boundaries.getContent().isEmpty());
-                activityService.updateActivity(projectGuid, projectPlanFiscalGuid, activity);
-            }
 
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
