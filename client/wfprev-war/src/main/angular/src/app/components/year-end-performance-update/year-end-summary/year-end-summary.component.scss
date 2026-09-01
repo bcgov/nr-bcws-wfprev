@@ -11,8 +11,8 @@
 .summary-header {
   display: flex;
   flex-direction: row;
-  align-items: flex-start; 
-  gap: 1rem; 
+  align-items: flex-start;
+  column-gap: 2rem;
   padding: 0 1.5rem;
 }
 
@@ -20,14 +20,18 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  flex: 1 1 auto; 
-  min-width: 0; 
-  gap: 1rem; // 16px
+  flex: 1 1 auto;
+  min-width: 0;
+  column-gap: 2rem;
+  row-gap: 0.5rem;
 }
 
 .summary-metric {
-  flex: 1 1 0;
-  min-width: 0;
+  // Share the row when there is room, but never shrink below the label +
+  // value. Metrics wrap onto a new line instead of compressing into each
+  // other or into "Submitted By".
+  flex: 1 1 auto;
+  min-width: max-content;
   display: flex;
   flex-direction: row;
   align-items: baseline;
@@ -43,7 +47,7 @@
 }
 
 .metric-value {
-  color: #2D2D2D;
+  color: #2d2d2d;
   font-size: 1rem; // 16px
   font-weight: 400;
   line-height: 1.5em;
@@ -66,16 +70,20 @@
 
 .submitted-by {
   display: flex;
-  flex: 0 0 auto; 
+  // Never shrinks, so it holds the top-right corner on one line while the
+  // metrics wrap; the cap only kicks in for an unusually long name.
+  flex: 0 0 auto;
+  max-width: 40%;
   justify-content: flex-end;
-  
+  text-align: right;
+
   p {
     margin: 0;
   }
 }
 
 .outcomes-content {
-  color: #2D2D2D;
+  color: #2d2d2d;
   font-size: 1rem; // 16px
   font-weight: 400;
   line-height: 1.5em;
@@ -86,5 +94,10 @@
   .summary-totals {
     flex-direction: column;
     gap: 0.5rem; // 8px
+  }
+
+  .summary-metric {
+    // Stacked one per row - no need to reserve the full label + value width
+    min-width: 0;
   }
 }
