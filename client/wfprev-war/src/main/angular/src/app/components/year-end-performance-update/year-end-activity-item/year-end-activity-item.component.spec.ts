@@ -73,6 +73,45 @@ describe('YearEndActivityItemComponent', () => {
     expect(component.form.get('reportedSpendAmount')?.value).toBe(1000);
   });
 
+  describe('Planned Spend display', () => {
+    const getPlannedSpendValue = (): string => {
+      const fields = Array.from(fixture.nativeElement.querySelectorAll('wfprev-icon-display-field')) as HTMLElement[];
+      const plannedSpendField = fields.find(
+        field => field.querySelector('.field-label')?.textContent?.trim() === 'Planned Spend'
+      );
+      return plannedSpendField?.querySelector('.field-val')?.textContent?.trim() ?? '';
+    };
+
+    const renderWithPlannedSpend = (plannedSpendAmount: any) => {
+      component.activity = { ...component.activity, plannedSpendAmount };
+      component.isExpanded = true;
+      component.ngOnChanges({
+        activity: new SimpleChange(null, component.activity, true)
+      });
+      fixture.detectChanges();
+    };
+
+    it('should display plannedSpendAmount with two decimal places', () => {
+      renderWithPlannedSpend(1234.56);
+      expect(getPlannedSpendValue()).toBe('$1,234.56');
+    });
+
+    it('should not round plannedSpendAmount to the nearest dollar', () => {
+      renderWithPlannedSpend(1234.5);
+      expect(getPlannedSpendValue()).toBe('$1,234.50');
+    });
+
+    it('should pad a whole dollar plannedSpendAmount to two decimal places', () => {
+      renderWithPlannedSpend(1000);
+      expect(getPlannedSpendValue()).toBe('$1,000.00');
+    });
+
+    it('should display N/A when plannedSpendAmount is null', () => {
+      renderWithPlannedSpend(null);
+      expect(getPlannedSpendValue()).toBe('N/A');
+    });
+  });
+
   it('should make finalOutcomeComments required when isCarryForwardInd changes to true', () => {
     component.ngOnChanges({
       activity: new SimpleChange(null, component.activity, true)

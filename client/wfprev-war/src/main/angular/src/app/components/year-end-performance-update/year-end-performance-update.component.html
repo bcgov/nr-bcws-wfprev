@@ -31,11 +31,11 @@
           </div>
 
           <wfprev-icon-display-field [matIcon]="'attach_money'" [label]="'Forecast Amount'"
-            [value]="(fiscalData?.fiscalForecastAmount | currency:'USD':'symbol':'1.0-0') || '$0'">
+            [value]="(fiscalData?.fiscalForecastAmount | currency:'USD':'symbol':'1.2-2') || '$0.00'">
           </wfprev-icon-display-field>
 
           <wfprev-icon-display-field [matIcon]="'attach_money'" [label]="'Original Cost Estimate'"
-            [value]="(fiscalData?.totalCostEstimateAmount | currency:'USD':'symbol':'1.0-0') || '$0'">
+            [value]="(fiscalData?.totalCostEstimateAmount | currency:'USD':'symbol':'1.2-2') || '$0.00'">
           </wfprev-icon-display-field>
 
           <wfprev-icon-display-field [matIcon]="'layers'" [label]="'Planned Hectares (Ha)'"
