@@ -78,6 +78,55 @@ describe('YearEndPerformanceUpdateComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    describe('fiscal metric badges', () => {
+      const getBadgeValue = (label: string): string => {
+        const fields = Array.from(fixture.nativeElement.querySelectorAll('wfprev-icon-display-field')) as HTMLElement[];
+        const badge = fields.find(
+          field => field.querySelector('.field-label')?.textContent?.trim() === label
+        );
+        return badge?.querySelector('.field-val')?.textContent?.trim() ?? '';
+      };
+
+      const renderWithFiscalData = (fiscalData: any) => {
+        mockProjectService.getProjectFiscalByProjectPlanFiscalGuid.and.returnValue(of(fiscalData));
+        fixture = TestBed.createComponent(YearEndPerformanceUpdateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+      };
+
+      it('should display Forecast Amount with two decimal places', () => {
+        renderWithFiscalData({ fiscalForecastAmount: 1234.56 } as any);
+        expect(getBadgeValue('Forecast Amount')).toBe('$1,234.56');
+      });
+
+      it('should not round Forecast Amount to the nearest dollar', () => {
+        renderWithFiscalData({ fiscalForecastAmount: 1234.5 } as any);
+        expect(getBadgeValue('Forecast Amount')).toBe('$1,234.50');
+      });
+
+      it('should display Original Cost Estimate with two decimal places', () => {
+        renderWithFiscalData({ totalCostEstimateAmount: 9876.54 } as any);
+        expect(getBadgeValue('Original Cost Estimate')).toBe('$9,876.54');
+      });
+
+      it('should not round Original Cost Estimate to the nearest dollar', () => {
+        renderWithFiscalData({ totalCostEstimateAmount: 9876.5 } as any);
+        expect(getBadgeValue('Original Cost Estimate')).toBe('$9,876.50');
+      });
+
+      it('should pad whole dollar amounts to two decimal places', () => {
+        renderWithFiscalData({ fiscalForecastAmount: 1000, totalCostEstimateAmount: 2000 } as any);
+        expect(getBadgeValue('Forecast Amount')).toBe('$1,000.00');
+        expect(getBadgeValue('Original Cost Estimate')).toBe('$2,000.00');
+      });
+
+      it('should fall back to $0.00 when amounts are not set', () => {
+        renderWithFiscalData({} as any);
+        expect(getBadgeValue('Forecast Amount')).toBe('$0.00');
+        expect(getBadgeValue('Original Cost Estimate')).toBe('$0.00');
+      });
+    });
+
     it('should initialize projectGuid, fiscalGuid, and workflow from query params', () => {
       expect(component.projectGuid).toBe('test-project-guid');
       expect(component.fiscalGuid).toBe('test-fiscal-guid');
