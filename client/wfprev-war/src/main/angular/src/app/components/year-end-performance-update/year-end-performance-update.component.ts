@@ -109,7 +109,8 @@ export class YearEndPerformanceUpdateComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoading = true;
+    // In preserve mode the page stays on screen, so the user keeps their scroll position and focus
+    this.isLoading = !preserveState;
 
     // Fetch everything we need: fiscal data, activities, closeout data, and activity statuses
     const requests = {

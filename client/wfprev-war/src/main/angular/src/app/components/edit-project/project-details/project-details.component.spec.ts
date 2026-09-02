@@ -511,6 +511,63 @@ describe('ProjectDetailsComponent', () => {
       expect(component.isProjectDescriptionDirty).toBeFalse();
     });
 
+    describe('onFilesUpdated', () => {
+      const mockResponse = {
+        latitude: 49.2827,
+        longitude: -123.1207,
+        projectDescription: 'Saved Description',
+        projectName: 'Saved Project',
+      };
+
+      beforeEach(() => {
+        routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
+        mockProjectService.getProjectByProjectGuid.and.returnValue(of(mockResponse));
+        spyOn(component, 'updateMap');
+      });
+
+      it('should keep unsaved form edits but still refresh the map', () => {
+        component.detailsForm.get('projectName')?.setValue('User typed name');
+        component.detailsForm.markAsDirty();
+
+        component.onFilesUpdated();
+
+        expect(component.detailsForm.get('projectName')?.value).toBe('User typed name');
+        expect(component.detailsForm.dirty).toBeTrue();
+        expect(component.updateMap).toHaveBeenCalledWith(49.2827, -123.1207);
+        expect(component.projectDetail).toEqual(mockResponse);
+      });
+
+      it('should keep an unsaved lat/long edit', () => {
+        component.latLong = '50.0000, -120.0000';
+        component.isLatLongDirty = true;
+
+        component.onFilesUpdated();
+
+        expect(component.latLong).toBe('50.0000, -120.0000');
+        expect(component.isLatLongDirty).toBeTrue();
+      });
+
+      it('should keep an unsaved project description edit', () => {
+        component.projectDescription = 'User typed description';
+        component.isProjectDescriptionDirty = true;
+
+        component.onFilesUpdated();
+
+        expect(component.projectDescription).toBe('User typed description');
+        expect(component.isProjectDescriptionDirty).toBeTrue();
+      });
+
+      it('should refresh the form when there are no unsaved edits', () => {
+        spyOn(component, 'populateFormWithProjectDetails');
+
+        component.onFilesUpdated();
+
+        expect(component.populateFormWithProjectDetails).toHaveBeenCalledWith(mockResponse);
+        expect(component.projectDescription).toBe('Saved Description');
+        expect(component.latLong).toBe(formatLatLong(mockResponse.latitude, mockResponse.longitude));
+      });
+    });
+
     it('should handle error response and set projectDetail to null', () => {
       routeSnapshotSpy.snapshot = { queryParamMap: { get: () => 'test-guid' } } as any;
       mockProjectService.getProjectByProjectGuid.and.returnValue(throwError(() => new Error('Error fetching data')));
