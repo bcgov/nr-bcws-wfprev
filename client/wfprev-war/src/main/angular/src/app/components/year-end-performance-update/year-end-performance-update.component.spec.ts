@@ -301,6 +301,62 @@ describe('YearEndPerformanceUpdateComponent', () => {
     });
   });
 
+  describe('preserving state on a background reload', () => {
+    beforeEach(() => {
+      mockPermissionsService.hasAction.and.returnValue(true);
+      fixture = TestBed.createComponent(YearEndPerformanceUpdateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+
+    const captureIsLoading = () => {
+      const captured: { value?: boolean } = {};
+      mockProjectService.getFiscalActivities.and.callFake(() => {
+        captured.value = component.isLoading;
+        return of({ _embedded: { activities: [] } });
+      });
+      return captured;
+    };
+
+    it('should keep the page mounted and leave the summary form alone when preserving state', () => {
+      component.summaryForm.patchValue({
+        fiscalReportedSpendAmount: 1234,
+        outcomeComment: 'user typed this',
+        acknowledgement: true
+      });
+      component.summaryForm.markAsDirty();
+      spyOn(component, 'patchForm');
+      const isLoadingDuringRequest = captureIsLoading();
+
+      component.loadActivities(true);
+
+      expect(isLoadingDuringRequest.value).toBeFalse();
+      expect(component.patchForm).not.toHaveBeenCalled();
+      expect(component.summaryForm.get('fiscalReportedSpendAmount')?.value).toBe(1234);
+      expect(component.summaryForm.get('outcomeComment')?.value).toBe('user typed this');
+      expect(component.summaryForm.get('acknowledgement')?.value).toBeTrue();
+      expect(component.summaryForm.dirty).toBeTrue();
+    });
+
+    it('should show the spinner and repatch the summary form on a full reload', () => {
+      spyOn(component, 'patchForm');
+      const isLoadingDuringRequest = captureIsLoading();
+
+      component.loadActivities();
+
+      expect(isLoadingDuringRequest.value).toBeTrue();
+      expect(component.patchForm).toHaveBeenCalled();
+    });
+
+    it('should preserve state when files are updated', () => {
+      const loadActivitiesSpy = spyOn(component, 'loadActivities');
+
+      component.onFilesUpdated('activity-1');
+
+      expect(loadActivitiesSpy).toHaveBeenCalledWith(true);
+    });
+  });
+
   describe('unauthorized user', () => {
     beforeEach(() => {
       mockPermissionsService.hasAction.and.returnValue(false);

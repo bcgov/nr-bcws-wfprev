@@ -1328,4 +1328,105 @@ describe('ActivitiesComponent', () => {
     expect(component.getActivities).not.toHaveBeenCalled();
   });
 
+
+  describe('preserving state on a background reload', () => {
+    const serverActivities = (isSpatialAddedInd = false) => ([
+      { activityGuid: 'activity-1', activityName: 'Alpha', activityDescription: 'Alpha desc', isSpatialAddedInd },
+      { activityGuid: 'activity-2', activityName: 'Bravo', activityDescription: 'Bravo desc', isSpatialAddedInd: false }
+    ]);
+
+    beforeEach(() => {
+      // Building a form runs change detection, which would render the (unmocked) file list child
+      spyOn(component.cd, 'detectChanges');
+      component.fiscalGuid = 'test-fiscal-guid';
+      mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: serverActivities() } }));
+      component.getActivities();
+    });
+
+    it('should keep unsaved edits and expansion state when preserveState is set', () => {
+      const editedView = component.activityViews[1];
+      const editedForm = editedView.form;
+      editedForm.get('activityDescription')?.setValue('user typed this');
+      editedForm.markAsDirty();
+      editedView.isExpanded = true;
+
+      mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: serverActivities(true) } }));
+      component.getActivities(undefined, true);
+
+      const view = component.activityViews[1];
+      expect(view).toBe(editedView);
+      expect(view.form).toBe(editedForm);
+      expect(view.form.get('activityDescription')?.value).toBe('user typed this');
+      expect(view.form.dirty).toBeTrue();
+      expect(view.isExpanded).toBeTrue();
+    });
+
+    it('should refresh server owned data on the preserved views', () => {
+      component.activityViews[0].form.markAsDirty();
+
+      mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: serverActivities(true) } }));
+      component.getActivities(undefined, true);
+
+      expect(component.activityViews[0].data.isSpatialAddedInd).toBeTrue();
+      expect(component.activityViews[0].form.get('isSpatialAddedInd')?.value).toBeTrue();
+    });
+
+    it('should rebuild the views and drop edits when preserveState is not set', () => {
+      const editedForm = component.activityViews[1].form;
+      editedForm.get('activityDescription')?.setValue('user typed this');
+      editedForm.markAsDirty();
+
+      component.getActivities();
+
+      expect(component.activityViews[1].form).not.toBe(editedForm);
+      expect(component.activityViews[1].form.get('activityDescription')?.value).toBe('Bravo desc');
+    });
+
+    it('should add activities that are new to the list while preserving state', () => {
+      const withNewActivity = [
+        ...serverActivities(),
+        { activityGuid: 'activity-3', activityName: 'Charlie', activityDescription: 'Charlie desc' }
+      ];
+      mockProjectService.getFiscalActivities.and.returnValue(of({ _embedded: { activities: withNewActivity } }));
+
+      component.getActivities(undefined, true);
+
+      expect(component.activityViews.length).toBe(3);
+      expect(component.activityViews[2].data.activityGuid).toBe('activity-3');
+    });
+
+    it('should keep an activity that has not been created yet', fakeAsync(() => {
+      component.addActivity();
+      tick(100);
+
+      component.getActivities(undefined, true);
+
+      expect(component.activityViews.length).toBe(3);
+      expect(component.activityViews[0].data.activityGuid).toBeUndefined();
+      expect(component.isNewActivityBeingAdded).toBeTrue();
+    }));
+
+    it('should not show the loading spinner during a preserving reload', () => {
+      let isLoadingDuringRequest: boolean | undefined;
+      mockProjectService.getFiscalActivities.and.callFake(() => {
+        isLoadingDuringRequest = component.isLoading;
+        return of({ _embedded: { activities: serverActivities() } });
+      });
+
+      component.getActivities(undefined, true);
+
+      expect(isLoadingDuringRequest).toBeFalse();
+    });
+  });
+
+  it('should preserve state and notify the parent when files change', () => {
+    const getActivitiesSpy = spyOn(component, 'getActivities');
+    spyOn(component.boundariesUpdated, 'emit');
+
+    component.onFilesChanged();
+
+    expect(component.boundariesUpdated.emit).toHaveBeenCalled();
+    expect(getActivitiesSpy).toHaveBeenCalledWith(undefined, true);
+  });
+
 });

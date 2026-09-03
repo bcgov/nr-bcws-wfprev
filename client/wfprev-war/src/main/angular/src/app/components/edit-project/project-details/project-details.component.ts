@@ -175,18 +175,26 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  loadProjectDetails(): void {
+  loadProjectDetails(preserveUnsavedChanges: boolean = false): void {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
 
     this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
       next: (data) => {
+        // A reload the user did not ask for (e.g. a file upload) must not overwrite what they have typed
+        const keepUnsavedChanges = preserveUnsavedChanges && this.isFormDirty();
+
         this.projectDetail = data;
         this.projectNameChange.emit(data.projectName);
         if (data.latitude && data.longitude) {
-          this.latLong = formatLatLong(data.latitude, data.longitude);
+          if (!keepUnsavedChanges) {
+            this.latLong = formatLatLong(data.latitude, data.longitude);
+          }
           this.updateMap(data.latitude, data.longitude);
         }
+
+        if (keepUnsavedChanges) return;
+
         this.isLatLongDirty = false;
         this.populateFormWithProjectDetails(data);
         this.originalFormValues = this.detailsForm.getRawValue();
@@ -213,7 +221,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onFilesUpdated(): void {
-    this.loadProjectDetails();
+    // Reload so the map picks up a newly uploaded boundary, but keep any unsaved detail edits
+    this.loadProjectDetails(true);
   }
 
   populateFormWithProjectDetails(data: any): void {
