@@ -183,6 +183,16 @@ describe('YearEndSummaryComponent', () => {
       expect(el.componentInstance.fiscalGuid).toBe('fiscal-1');
       expect(el.componentInstance.activities.length).toBe(2);
     });
+
+    it('should render submitted by label and value', () => {
+      component.projectGuid = 'proj-1';
+      component.fiscalGuid = 'fiscal-1';
+      fixture.detectChanges();
+      const label = fixture.nativeElement.querySelector('.submitted-by-label');
+      const value = fixture.nativeElement.querySelector('.submitted-by-value');
+      expect(label.textContent).toContain('Submitted By:');
+      expect(value.textContent).toContain('John Doe');
+    });
   });
 
   describe('submittedByName', () => {

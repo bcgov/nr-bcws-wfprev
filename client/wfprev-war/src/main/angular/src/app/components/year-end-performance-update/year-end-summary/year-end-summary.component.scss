@@ -70,6 +70,9 @@
 
 .submitted-by {
   display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.5rem; // 8px gap between label and value
   // Never shrinks, so it holds the top-right corner on one line while the
   // metrics wrap; the cap only kicks in for an unusually long name.
   flex: 0 0 auto;
@@ -77,8 +80,19 @@
   justify-content: flex-end;
   text-align: right;
 
-  p {
-    margin: 0;
+  .submitted-by-label {
+    color: #474543;
+    font-size: 0.875rem; // 14px
+    font-weight: 400;
+    line-height: 1.25em;
+    white-space: nowrap;
+  }
+
+  .submitted-by-value {
+    color: #2d2d2d;
+    font-size: 1rem; // 16px
+    font-weight: 400;
+    line-height: 1.5em;
   }
 }
 

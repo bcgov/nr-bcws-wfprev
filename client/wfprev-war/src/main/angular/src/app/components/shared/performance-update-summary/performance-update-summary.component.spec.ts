@@ -42,6 +42,10 @@ describe('PerformanceUpdateSummaryComponent', () => {
   it('should display submittedBy', () => {
     const el = fixture.nativeElement.querySelector('.submitted-by');
     expect(el.textContent).toContain('John Doe');
+    const label = fixture.nativeElement.querySelector('.submitted-by-label');
+    const value = fixture.nativeElement.querySelector('.submitted-by-value');
+    expect(label.textContent).toContain('Submitted By:');
+    expect(value.textContent).toContain('John Doe');
   });
 
   it('should display generalUpdateComment', () => {
