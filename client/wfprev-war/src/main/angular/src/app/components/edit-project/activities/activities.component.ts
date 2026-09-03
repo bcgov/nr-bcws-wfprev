@@ -182,7 +182,7 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
   }
 
 
-  getActivities(callback?: () => void): void {
+  getActivities(callback?: () => void, preserveState: boolean = false): void {
     if (!this.fiscalGuid) {
       this.isLoading = false;
       return;
@@ -191,7 +191,8 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') || '';
 
     if (this.projectGuid) {
-      this.isLoading = true;
+      // In preserve mode the list stays on screen, so open panels keep their DOM and the user keeps their place
+      this.isLoading = !preserveState;
       this.getProjectType(this.projectGuid);
 
       const sub = this.projectService.getFiscalActivities(this.projectGuid, this.fiscalGuid)
@@ -212,24 +213,14 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
               });
             }
 
-            this.isNewActivityBeingAdded = false;
+            if (preserveState) {
+              this.refreshActivityViews(activities || []);
+            } else {
+              this.isNewActivityBeingAdded = false;
 
-            this.activityViews = (activities || []).map((activity, index) => {
-              const view: FiscalActivityViewModel = {
-                data: activity,
-                originalData: JSON.parse(JSON.stringify(activity)),
-                form: this.createActivityForm(activity),
-                isExpanded: this.activityViews[index]?.isExpanded || false,
-                isDirty: false,
-                isSaving: false
-              };
-              
-              // Bind form dirty state to view
-              view.form.valueChanges.subscribe(() => {
-                view.isDirty = view.form.dirty;
-              });
-              return view;
-            });
+              this.activityViews = (activities || []).map((activity, index) =>
+                this.createActivityView(activity, this.activityViews[index]?.isExpanded || false));
+            }
 
             // do callback (e.g., scrolling, expanding panel) if provided
             if (callback) callback();
@@ -248,6 +239,50 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
     } else {
       this.isLoading = false;
     }
+  }
+
+  private createActivityView(activity: any, isExpanded: boolean): FiscalActivityViewModel {
+    const view: FiscalActivityViewModel = {
+      data: activity,
+      originalData: JSON.parse(JSON.stringify(activity)),
+      form: this.createActivityForm(activity),
+      isExpanded: isExpanded,
+      isDirty: false,
+      isSaving: false
+    };
+
+    // Bind form dirty state to view
+    view.form.valueChanges.subscribe(() => {
+      view.isDirty = view.form.dirty;
+    });
+    return view;
+  }
+
+  // Merge freshly fetched activities into the existing views instead of rebuilding them, so a reload
+  // triggered by something other than the user (e.g. a file upload) does not discard unsaved edits.
+  private refreshActivityViews(activities: any[]): void {
+    const existingViews = new Map<string, FiscalActivityViewModel>();
+    this.activityViews.forEach(view => {
+      const activityGuid = view.data?.activityGuid;
+      if (activityGuid) existingViews.set(activityGuid, view);
+    });
+
+    // An activity that has not been created yet has no guid to match on, so keep it where it was added
+    const unsavedViews = this.activityViews.filter(view => !view.data?.activityGuid);
+
+    const refreshedViews = activities.map(activity => {
+      const view = existingViews.get(activity.activityGuid);
+      if (!view) return this.createActivityView(activity, false);
+
+      view.data = activity;
+      view.originalData = JSON.parse(JSON.stringify(activity));
+      // isSpatialAddedInd is owned by the server, not the user, so it is safe to refresh on a dirty form
+      view.form.get('isSpatialAddedInd')?.setValue(activity.isSpatialAddedInd || false, { emitEvent: false });
+      return view;
+    });
+
+    this.activityViews = [...unsavedViews, ...refreshedViews];
+    this.isNewActivityBeingAdded = unsavedViews.length > 0;
   }
 
   getProjectType(projectGuid: string) {
@@ -928,7 +963,8 @@ export class ActivitiesComponent implements OnChanges, OnDestroy, CanComponentDe
 
   onFilesChanged() {
     this.boundariesUpdated.emit(); // Notify ProjectFiscalsComponent
-    this.getActivities();
+    // Preserve state: the upload happened while the user may have unsaved edits in other activities
+    this.getActivities(undefined, true);
   }
 
 
