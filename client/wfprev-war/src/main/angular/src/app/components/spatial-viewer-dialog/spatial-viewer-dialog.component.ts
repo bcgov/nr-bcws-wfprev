@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class SpatialViewerDialogComponent implements OnInit, AfterViewInit {
   public file: ProjectFile;
   private map: L.Map | undefined;
+  private geometryLayer: L.GeoJSON | undefined;
 
   constructor(
     public dialogRef: MatDialogRef<SpatialViewerDialogComponent>,
@@ -49,22 +50,32 @@ export class SpatialViewerDialogComponent implements OnInit, AfterViewInit {
     // If we have geometry, plot it
     if (this.file.boundaryGeometry && this.file.boundaryGeometry.coordinates) {
       try {
-        // Reverse coordinates from [lon, lat] to [lat, lon] for Leaflet
-        const coordinates = this.file.boundaryGeometry.coordinates[0][0].map(coord => [coord[1], coord[0]] as [number, number]);
-        
-        const polygon = L.polygon(coordinates, {
-          color: '#1A5A96', // product primary blue
-          weight: 2,
-          fillColor: '#1A5A96',
-          fillOpacity: 0.3
+        // A KML/KMZ (or shapefile) can hold many polygons, and a polygon can have holes, so
+        // the stored geometry is a MultiPolygon. Hand the whole geometry to Leaflet rather
+        // than lifting a single ring out of it - it already expects GeoJSON [lon, lat] order
+        // and draws every part and interior ring. See WFPREV-1201.
+        this.geometryLayer = this.createGeoJSON(this.file.boundaryGeometry, {
+          style: {
+            color: '#1A5A96', // product primary blue
+            weight: 2,
+            fillColor: '#1A5A96',
+            fillOpacity: 0.3
+          }
         }).addTo(this.map);
 
-        // Fit map bounds to the polygon
-        this.map.fitBounds(polygon.getBounds());
+        // Fit map bounds to every part of the geometry
+        const bounds = this.geometryLayer.getBounds();
+        if (bounds.isValid()) {
+          this.map.fitBounds(bounds);
+        }
       } catch (err) {
         console.error('Error rendering spatial geometry on map', err);
       }
     }
+  }
+
+  createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
+    return L.geoJSON(geom, options);
   }
 
   onClose(): void {
