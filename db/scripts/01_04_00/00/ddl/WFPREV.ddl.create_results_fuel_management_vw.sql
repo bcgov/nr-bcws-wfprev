@@ -13,7 +13,8 @@ SELECT p.project_name,
        END AS fiscal_year,
        fdou.org_unit_name AS forest_district_name,
        p.project_lead_email_address,
-       p.results_project_code
+       p.results_project_code,
+       ppf.results_opening_id
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou    ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf ON ppf.project_guid = p.project_guid
