@@ -1,8 +1,11 @@
-drop view if exists wfprev.results_fuel_management_vw;
+DROP VIEW IF EXISTS wfprev.results_fuel_management_vw;
 
-CREATE or REPLACE VIEW wfprev.results_fuel_management_vw AS
-select ppf.project_fiscal_name,
+CREATE OR REPLACE VIEW wfprev.results_fuel_management_vw AS
+SELECT p.project_name,
+       ppf.project_fiscal_name,
        a.activity_name,
-       case when a.is_results_reportable_ind then 'Y' else 'N' end as is_results_reportable_ind
-from wfprev.project_plan_fiscal ppf
-left join wfprev.activity a on a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid;
+       CASE WHEN a.is_results_reportable_ind THEN 'Y' ELSE 'N' END AS is_results_reportable_ind
+FROM wfprev.project p
+  LEFT JOIN wfprev.project_plan_fiscal ppf ON ppf.project_guid = p.project_guid
+  LEFT JOIN wfprev.activity a              ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
+WHERE p.project_type_code = 'FUEL_MGMT';
