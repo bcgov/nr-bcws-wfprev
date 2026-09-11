@@ -16,9 +16,11 @@ SELECT p.project_name,
        p.results_project_code,
        ppf.results_opening_id,
        NULL AS results_opening_action,
-       NULL AS results_opening_category
+       NULL AS results_opening_category,
+       ab.boundary_size_ha
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou    ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf ON ppf.project_guid = p.project_guid
   LEFT JOIN wfprev.activity a              ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
+  LEFT JOIN wfprev.activity_boundary ab    ON ab.activity_guid = a.activity_guid
 WHERE p.project_type_code = 'FUEL_MGMT';
