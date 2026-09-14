@@ -2410,6 +2410,40 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_04_00_00",
+        "author": "hwang",
+        "tagDatabase": {
+          "tag": "version_01_04_00_00"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_04_00/00/ddl/WFPREV.ddl.create.results_fuel_management_vw.sql",
+              "splitStatements": false
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/00/grants/proxy.grants.results_download_views.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/00/grants/app_wf1_prev.grants.results_download_views.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
