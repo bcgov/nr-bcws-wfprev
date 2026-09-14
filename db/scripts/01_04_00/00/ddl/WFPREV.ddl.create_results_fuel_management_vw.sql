@@ -33,7 +33,8 @@ SELECT p.project_name,
        a.planned_treatment_area_ha,
        cpc.description AS contract_phase_name,
        ppf.cfs_project_code,
-       CASE WHEN a.previous_carry_forward_ind THEN 'Y' ELSE 'N' END AS previous_carry_forward_ind
+       CASE WHEN a.previous_carry_forward_ind THEN 'Y' ELSE 'N' END AS previous_carry_forward_ind,
+       CASE WHEN a.carry_forward_ind THEN 'Y' ELSE 'N' END AS carry_forward_ind
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
