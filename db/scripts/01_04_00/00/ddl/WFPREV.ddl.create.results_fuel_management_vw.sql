@@ -76,4 +76,5 @@ FROM wfprev.project p
   LEFT JOIN wfprev.project_boundary pb              ON pb.project_guid = p.project_guid
   LEFT JOIN wfprev.file_attachment pfa              ON pfa.source_object_unique_id = pb.project_boundary_guid::text
   LEFT JOIN wfprev.file_attachment afa              ON afa.source_object_unique_id = ab.activity_boundary_guid::text
-WHERE p.project_type_code = 'FUEL_MGMT';
+WHERE p.project_type_code = 'FUEL_MGMT'
+ORDER BY p.project_guid, p.project_name, ppf.fiscal_year;
