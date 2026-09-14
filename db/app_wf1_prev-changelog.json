@@ -2429,6 +2429,13 @@
           {
             "sqlFile": {
               "dbms": "postgresql",
+              "path": "scripts/01_04_00/00/ddl/WFPREV.ddl.create.results_crx_vw.sql",
+              "splitStatements": false
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
               "endDelimiter": ";",
               "path": "scripts/01_04_00/00/grants/proxy.grants.results_download_views.sql"
             }
