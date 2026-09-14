@@ -27,7 +27,8 @@ SELECT p.project_name,
        NULL AS additional_objective_name,
        a.activity_end_date,
        a.completed_area_ha,
-       afs.funding_source_abbreviation AS funding_source_code
+       afs.funding_source_abbreviation AS funding_source_code,
+       NULL AS comment
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
