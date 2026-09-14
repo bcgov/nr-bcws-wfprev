@@ -19,12 +19,15 @@ SELECT p.project_name,
        NULL AS results_opening_category,
        ab.boundary_size_ha,
        NULL AS max_permanent_access_percent,
-       sbc.description AS activity_base_name
+       sbc.description AS activity_base_name,
+       stc.description AS technique_name
 FROM wfprev.project p
-  LEFT JOIN wfprev.forest_org_unit fdou        ON fdou.org_unit_identifier = p.forest_district_org_unit_id
-  LEFT JOIN wfprev.project_plan_fiscal ppf     ON ppf.project_guid = p.project_guid
-  LEFT JOIN wfprev.activity a                  ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
-  LEFT JOIN wfprev.activity_boundary ab        ON ab.activity_guid = a.activity_guid
-  LEFT JOIN wfprev.silviculture_base sb        ON sb.silviculture_base_guid = a.silviculture_base_guid
-  LEFT JOIN wfprev.silviculture_base_code sbc  ON sbc.silviculture_base_code = sb.silviculture_base_code
+  LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
+  LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
+  LEFT JOIN wfprev.activity a                       ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
+  LEFT JOIN wfprev.activity_boundary ab             ON ab.activity_guid = a.activity_guid
+  LEFT JOIN wfprev.silviculture_base sb             ON sb.silviculture_base_guid = a.silviculture_base_guid
+  LEFT JOIN wfprev.silviculture_base_code sbc       ON sbc.silviculture_base_code = sb.silviculture_base_code
+  LEFT JOIN wfprev.silviculture_technique st        ON st.silviculture_technique_guid = a.silviculture_technique_guid
+  LEFT JOIN wfprev.silviculture_technique_code stc  ON stc.silviculture_technique_code = st.silviculture_technique_code
 WHERE p.project_type_code = 'FUEL_MGMT';
