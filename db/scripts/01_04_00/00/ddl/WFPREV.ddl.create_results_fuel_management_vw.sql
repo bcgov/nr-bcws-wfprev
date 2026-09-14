@@ -37,7 +37,9 @@ SELECT p.project_name,
        CASE WHEN a.carry_forward_ind THEN 'Y' ELSE 'N' END AS carry_forward_ind,
        a.final_outcome_comments,
        CASE WHEN a.outstanding_obligations_ind THEN 'Y' ELSE 'N' END AS outstanding_obligations_ind,
-       a.activity_comment
+       a.activity_comment,
+       pfa.document_path AS opening_shape_file_name,
+       afa.document_path AS activity_shape_file_name
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
@@ -53,4 +55,7 @@ FROM wfprev.project p
   LEFT JOIN wfprev.objective_type_code sotc         ON sotc.objective_type_code = p.secondary_objective_type_code
   LEFT JOIN wfprev.activity_funding_source afs      ON afs.activity_funding_source_guid = a.activity_funding_source_guid
   LEFT JOIN wfprev.contract_phase_code cpc          ON cpc.contract_phase_code = a.contract_phase_code
+  LEFT JOIN wfprev.project_boundary pb              ON pb.project_guid = p.project_guid
+  LEFT JOIN wfprev.file_attachment pfa              ON pfa.source_object_unique_id = pb.project_boundary_guid::text
+  LEFT JOIN wfprev.file_attachment afa              ON afa.source_object_unique_id = ab.activity_boundary_guid::text
 WHERE p.project_type_code = 'FUEL_MGMT';
