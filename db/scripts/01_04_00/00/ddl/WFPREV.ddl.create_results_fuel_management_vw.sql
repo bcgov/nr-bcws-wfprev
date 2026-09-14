@@ -30,7 +30,8 @@ SELECT p.project_name,
        afs.funding_source_abbreviation AS funding_source_code,
        NULL AS comment,
        NULL AS tenure_number,
-       a.planned_treatment_area_ha
+       a.planned_treatment_area_ha,
+       cpc.description AS contract_phase_name
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
@@ -45,4 +46,5 @@ FROM wfprev.project p
   LEFT JOIN wfprev.objective_type_code potc         ON potc.objective_type_code = p.primary_objective_type_code
   LEFT JOIN wfprev.objective_type_code sotc         ON sotc.objective_type_code = p.secondary_objective_type_code
   LEFT JOIN wfprev.activity_funding_source afs      ON afs.activity_funding_source_guid = a.activity_funding_source_guid
+  LEFT JOIN wfprev.contract_phase_code cpc          ON cpc.contract_phase_code = a.contract_phase_code
 WHERE p.project_type_code = 'FUEL_MGMT';
