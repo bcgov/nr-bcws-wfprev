@@ -21,7 +21,7 @@ SELECT
        a.activity_name,
        CASE WHEN a.is_results_reportable_ind THEN 'Y' ELSE 'N' END AS is_results_reportable_ind,
        a.activity_description,
-       a.activity_status_code,
+       astc.description AS activity_status_name,
        CASE
          WHEN ppf.fiscal_year IS NOT NULL
          THEN ppf.fiscal_year::int::text || '/' || right((ppf.fiscal_year::int + 1)::text, 2)
@@ -62,6 +62,7 @@ FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
   LEFT JOIN wfprev.activity a                       ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
+  LEFT JOIN wfprev.activity_status_code astc        ON astc.activity_status_code = a.activity_status_code
   LEFT JOIN wfprev.activity_boundary ab             ON ab.activity_guid = a.activity_guid
   LEFT JOIN wfprev.silviculture_base sb             ON sb.silviculture_base_guid = a.silviculture_base_guid
   LEFT JOIN wfprev.silviculture_base_code sbc       ON sbc.silviculture_base_code = sb.silviculture_base_code
