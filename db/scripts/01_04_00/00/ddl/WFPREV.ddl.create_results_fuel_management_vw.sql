@@ -40,7 +40,8 @@ SELECT p.project_name,
        a.activity_comment,
        pfa.document_path AS opening_shape_file_name,
        afa.document_path AS activity_shape_file_name,
-       NULL AS forest_cover_shape_file_name
+       NULL AS forest_cover_shape_file_name,
+       NULL AS forest_cover_attributes
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
