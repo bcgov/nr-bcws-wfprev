@@ -20,7 +20,8 @@ SELECT p.project_name,
        ab.boundary_size_ha,
        NULL AS max_permanent_access_percent,
        sbc.description AS activity_base_name,
-       stc.description AS technique_name
+       stc.description AS technique_name,
+       smc.description AS method_name
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
@@ -30,4 +31,6 @@ FROM wfprev.project p
   LEFT JOIN wfprev.silviculture_base_code sbc       ON sbc.silviculture_base_code = sb.silviculture_base_code
   LEFT JOIN wfprev.silviculture_technique st        ON st.silviculture_technique_guid = a.silviculture_technique_guid
   LEFT JOIN wfprev.silviculture_technique_code stc  ON stc.silviculture_technique_code = st.silviculture_technique_code
+  LEFT JOIN wfprev.silviculture_method sm           ON sm.silviculture_method_guid = a.silviculture_method_guid
+  LEFT JOIN wfprev.silviculture_method_code smc     ON smc.silviculture_method_code = sm.silviculture_method_code
 WHERE p.project_type_code = 'FUEL_MGMT';
