@@ -1,7 +1,22 @@
 DROP VIEW IF EXISTS wfprev.results_fuel_management_vw;
 
 CREATE OR REPLACE VIEW wfprev.results_fuel_management_vw AS
-SELECT p.project_name,
+SELECT
+       -- unique_row_guid is transient and only used to satisfy repository methods.
+       -- It cannot be used to look up records in code; we don’t query by this field.
+       uuid_generate_v5(
+         wfprev.uuid_namespace(),
+         concat_ws('|',
+           coalesce(ppf.project_plan_fiscal_guid::text, 'NULL'),
+           coalesce(p.project_guid::text, 'NULL'),
+           coalesce(ppf.fiscal_year::text, 'NULL'),
+           coalesce(ppf.project_fiscal_name, 'NULL'),
+           coalesce(ppf.project_fiscal_description, 'NULL')
+         )
+       ) AS unique_row_guid,
+       p.project_guid,
+       ppf.project_plan_fiscal_guid,
+       p.project_name,
        ppf.project_fiscal_name,
        a.activity_name,
        CASE WHEN a.is_results_reportable_ind THEN 'Y' ELSE 'N' END AS is_results_reportable_ind,
