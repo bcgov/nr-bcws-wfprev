@@ -25,7 +25,8 @@ SELECT p.project_name,
        potc.description AS primary_objective_name,
        sotc.description AS secondary_objective_name,
        NULL AS additional_objective_name,
-       a.activity_end_date
+       a.activity_end_date,
+       a.completed_area_ha
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
