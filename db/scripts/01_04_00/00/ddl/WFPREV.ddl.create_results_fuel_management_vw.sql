@@ -26,7 +26,8 @@ SELECT p.project_name,
        sotc.description AS secondary_objective_name,
        NULL AS additional_objective_name,
        a.activity_end_date,
-       a.completed_area_ha
+       a.completed_area_ha,
+       afs.funding_source_abbreviation AS funding_source_code
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
@@ -40,4 +41,5 @@ FROM wfprev.project p
   LEFT JOIN wfprev.silviculture_method_code smc     ON smc.silviculture_method_code = sm.silviculture_method_code
   LEFT JOIN wfprev.objective_type_code potc         ON potc.objective_type_code = p.primary_objective_type_code
   LEFT JOIN wfprev.objective_type_code sotc         ON sotc.objective_type_code = p.secondary_objective_type_code
+  LEFT JOIN wfprev.activity_funding_source afs      ON afs.activity_funding_source_guid = a.activity_funding_source_guid
 WHERE p.project_type_code = 'FUEL_MGMT';
