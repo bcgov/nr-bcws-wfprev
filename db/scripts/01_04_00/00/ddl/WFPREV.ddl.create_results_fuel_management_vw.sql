@@ -36,7 +36,8 @@ SELECT p.project_name,
        CASE WHEN a.previous_carry_forward_ind THEN 'Y' ELSE 'N' END AS previous_carry_forward_ind,
        CASE WHEN a.carry_forward_ind THEN 'Y' ELSE 'N' END AS carry_forward_ind,
        a.final_outcome_comments,
-       CASE WHEN a.outstanding_obligations_ind THEN 'Y' ELSE 'N' END AS outstanding_obligations_ind
+       CASE WHEN a.outstanding_obligations_ind THEN 'Y' ELSE 'N' END AS outstanding_obligations_ind,
+       a.activity_comment
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
