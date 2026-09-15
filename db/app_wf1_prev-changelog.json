@@ -2422,15 +2422,15 @@
           {
             "sqlFile": {
               "dbms": "postgresql",
-              "path": "scripts/01_04_00/00/ddl/WFPREV.ddl.create.results_fuel_management_vw.sql",
-              "splitStatements": false
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/00/ddl/WFPREV.ddl.create.results_fuel_management_vw.sql"
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
-              "path": "scripts/01_04_00/00/ddl/WFPREV.ddl.create.results_crx_vw.sql",
-              "splitStatements": false
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/00/ddl/WFPREV.ddl.create.results_crx_vw.sql"
             }
           }
         ],
