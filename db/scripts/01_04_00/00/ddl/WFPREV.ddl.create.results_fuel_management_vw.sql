@@ -30,7 +30,7 @@ SELECT
        ppf.results_opening_id,
        NULL AS results_opening_action,
        NULL AS results_opening_category,
-       plb.boundary_size_ha,
+       plb.boundary_size_ha AS project_boundary_size_ha,
        NULL AS max_permanent_access_percent,
        sbc.description AS activity_base_name,
        stc.description AS technique_name,
