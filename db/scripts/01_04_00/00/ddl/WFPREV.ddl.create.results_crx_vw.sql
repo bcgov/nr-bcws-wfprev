@@ -7,11 +7,9 @@ SELECT
        uuid_generate_v5(
          wfprev.uuid_namespace(),
          concat_ws('|',
-           coalesce(ppf.project_plan_fiscal_guid::text, 'NULL'),
            coalesce(p.project_guid::text, 'NULL'),
-           coalesce(ppf.fiscal_year::text, 'NULL'),
-           coalesce(ppf.project_fiscal_name, 'NULL'),
-           coalesce(ppf.project_fiscal_description, 'NULL')
+           coalesce(ppf.project_plan_fiscal_guid::text, 'NULL'),
+           coalesce(a.activity_guid::text, 'NULL')
          )
        ) AS unique_row_guid,
        p.project_guid,
