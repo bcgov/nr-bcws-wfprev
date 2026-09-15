@@ -1,0 +1,1287 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jasperReport name="WFPREV_RESULTS_JASPER" language="java" pageWidth="5506" pageHeight="400" orientation="Landscape" columnWidth="5506" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f24d172e-684c-5ffc-9ae0-d4809144a7b8" ignorePagination="true">
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true" />
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true" />
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false" />
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true" />
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false" />
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true" />
+	<!-- First unfrozen row: rows 1 (titles) and 2 (explanations) stay visible when scrolling -->
+	<property name="net.sf.jasperreports.export.xls.freeze.row" value="3" />
+	<property name="com.jaspersoft.studio.unit." value="pixel" />
+	<field name="linkToProject" class="java.lang.String" />
+	<field name="linkToFiscalActivity" class="java.lang.String" />
+	<field name="projectName" class="java.lang.String" />
+	<field name="projectFiscalName" class="java.lang.String" />
+	<field name="activityName" class="java.lang.String" />
+	<field name="resultsReportable" class="java.lang.String" />
+	<field name="activityDescription" class="java.lang.String" />
+	<field name="activityStatusDescription" class="java.lang.String" />
+	<field name="fiscalYear" class="java.lang.String" />
+	<field name="forestDistrictOrgUnitName" class="java.lang.String" />
+	<field name="projectLeadEmailAddress" class="java.lang.String" />
+	<field name="resultsProjectCode" class="java.lang.String" />
+	<field name="resultsOpeningId" class="java.lang.String" />
+	<field name="projectBoundarySizeHa" class="java.math.BigDecimal" />
+	<field name="silvicultureBaseDescription" class="java.lang.String" />
+	<field name="silvicultureTechniqueDescription" class="java.lang.String" />
+	<field name="silvicultureMethodDescription" class="java.lang.String" />
+	<field name="primaryObjectiveTypeDescription" class="java.lang.String" />
+	<field name="secondaryObjectiveTypeDescription" class="java.lang.String" />
+	<field name="completedDate" class="java.util.Date" />
+	<field name="completedAreaHa" class="java.math.BigDecimal" />
+	<field name="fundingSourceAbbreviation" class="java.lang.String" />
+	<field name="plannedTreatmentAreaHa" class="java.math.BigDecimal" />
+	<field name="contractPhaseDescription" class="java.lang.String" />
+	<field name="cfsProjectCode" class="java.lang.String" />
+	<field name="previousCarryForward" class="java.lang.String" />
+	<field name="carryForward" class="java.lang.String" />
+	<field name="finalOutcomeComments" class="java.lang.String" />
+	<field name="outstandingObligations" class="java.lang.String" />
+	<field name="outstandingObligationsPlan" class="java.lang.String" />
+	<field name="openingSpatialFileName" class="java.lang.String" />
+	<field name="activitySpatialFileName" class="java.lang.String" />
+	<background />
+	<title />
+	<pageHeader />
+	<columnHeader height="222" splitType="Stretch">
+		<element kind="staticText" uuid="41d1b76d-2485-572a-a28d-b6d7e10caacd" mode="Opaque" x="0" y="0" width="137" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Link to Project (within
+ReMi Planner)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="1ca5d8d8-103b-5609-9e7f-2ef1ae427e23" mode="Opaque" x="137" y="0" width="153" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Link to Fiscal Activity (within
+ReMi Planner)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="d6a3b0ce-f2f2-5451-ae4e-adeee77a71dc" mode="Opaque" x="290" y="0" width="87" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Project Name]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="6b40a9cb-06c5-51d9-b442-1984bd34c01d" mode="Opaque" x="377" y="0" width="149" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Fiscal Activity Name]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="44abf3a8-5141-5f21-b4a4-9bdc46b77897" mode="Opaque" x="526" y="0" width="150" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Activity Name]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="5e849e1e-481a-521a-8858-04a62d30ec75" mode="Opaque" x="676" y="0" width="147" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[RESULTS Reportable (Y/N)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="afc07ceb-91d9-59f2-9c37-a5c40924559a" mode="Opaque" x="823" y="0" width="153" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Activity Description]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="6652e3c0-a4ff-5bfd-9d19-579ef43f0176" mode="Opaque" x="976" y="0" width="116" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Activity Status]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="52f10d95-91ea-54b4-bd1c-be6482c3f54a" mode="Opaque" x="1092" y="0" width="59" height="86" backcolor="#D9E1F2" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Fiscal
+Year]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="a32deef3-fd65-5ac3-8a26-15a2dc1ff4f3" mode="Opaque" x="1151" y="0" width="155" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Org Unit
+<style isBold="false">(ReMi: Forest District)</style>]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="4e24cc39-bbb3-537b-b1c8-140c25554c36" mode="Opaque" x="1306" y="0" width="133" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Project Lead Email]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="95c14edd-b155-5fe9-971c-7112955c9770" mode="Opaque" x="1439" y="0" width="145" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Inter-Agency No.
+Licensee Opening ID
+<style isBold="false">(ReMi: RESULTS Project
+Code)</style>]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="bc63325f-cac1-525f-ba3b-24324e522b62" mode="Opaque" x="1584" y="0" width="113" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Opening ID
+<style isBold="false">(ReMi: RESULTS ID)</style>]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="f174860b-6770-5e7b-a20c-6a54ff3fbf6d" mode="Opaque" x="1697" y="0" width="129" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Opening Action]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="2d35357f-6bf1-52fd-8b07-991e6930dd10" mode="Opaque" x="1826" y="0" width="124" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Opening Category]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="b6fa0218-1802-59b4-8a9a-bdd2dc9e63a3" mode="Opaque" x="1950" y="0" width="99" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Opening Area (Ha)
+<style isBold="false">(ReMi: Project
+Boundary Polygon
+Hectares)</style>]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="f42a6546-8f3b-573a-ae8f-440612c1b6b6" mode="Opaque" x="2049" y="0" width="67" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Max
+Permanent
+Access %]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="11de23b0-9aef-5c0c-a70e-af6bd5e5a64c" mode="Opaque" x="2116" y="0" width="123" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Activity Base]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="6a58c0c5-bb8c-5121-aa0e-edc8b76913ed" mode="Opaque" x="2239" y="0" width="75" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Technique]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="9c1552a6-614c-506e-a1e8-53137a92575b" mode="Opaque" x="2314" y="0" width="80" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Method]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="a6a30a29-b9e0-5889-b335-1b12401dba2b" mode="Opaque" x="2394" y="0" width="116" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Primary Objective]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="7f5e7655-c4a8-530e-b44b-7e69b29dad77" mode="Opaque" x="2510" y="0" width="131" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Secondary Objective
+OPTIONAL]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="59f82abb-06b8-581c-884c-2cafe72a576d" mode="Opaque" x="2641" y="0" width="97" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Additional
+Objective for
+Tracking
+OPTIONAL]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="04b5cfad-ebb3-5230-bc3e-c52782a221d3" mode="Opaque" x="2738" y="0" width="91" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Completed Date]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="beb871e9-2891-5673-8ff3-2339cb5fb047" mode="Opaque" x="2829" y="0" width="120" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Treatment Area
+<style isBold="false">(ReMi: Completed
+Hectares (ha))</style>]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="03c96eee-4659-5e0c-833d-892da3462245" mode="Opaque" x="2949" y="0" width="114" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Funding Source Code]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="b4b4bb79-d107-5701-87ce-33b8de451df3" mode="Opaque" x="3063" y="0" width="225" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Comment]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="cf9de2fd-f311-5185-88a7-171f7547ae0b" mode="Opaque" x="3288" y="0" width="69" height="86" backcolor="#FCE4D6" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Tenure
+Number
+(License,
+CP, Block)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="2ee746ea-3895-5a08-b56b-9990381756b0" mode="Opaque" x="3357" y="0" width="133" height="86" backcolor="#FCE4D6" fontName="Calibri" fontSize="10.0" bold="true" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Planned Treatment Area
+<style isBold="false">(ReMi: Planned Hectares
+(ha))</style>]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="0a075ed1-47be-5ea1-950b-7756d04330f6" mode="Opaque" x="3490" y="0" width="91" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Contract Phase]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="26d606ca-069b-57fd-928f-dd07c0235ab7" mode="Opaque" x="3581" y="0" width="53" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[CFS
+Code]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="bb8558e2-cd52-507b-bd1c-cd351abbb3d7" mode="Opaque" x="3634" y="0" width="135" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Carry over from previous
+activity]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="9fb9d818-d254-5323-afd8-4244c57193ad" mode="Opaque" x="3769" y="0" width="135" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Carry forward to a future
+fiscal activity]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="996faafd-5896-55dd-803b-3396f56f13d1" mode="Opaque" x="3904" y="0" width="91" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Final Outcome &
+Comments]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="814ad8dd-962a-5d07-b70c-36a6c843225e" mode="Opaque" x="3995" y="0" width="131" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Outstanding Obligations
+(Y/N)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="a07c8cca-1e07-556e-9e07-f72138f430d2" mode="Opaque" x="4126" y="0" width="127" height="86" backcolor="#E2EFDA" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Plan for addressing
+outstanding obligations
+and work to be carried
+forward]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="0f76ae62-8665-5045-872c-135e2c584d7e" mode="Opaque" x="4253" y="0" width="279" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Opening shape file name]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="0c57c854-7d7b-57ac-91b3-53961d1b76a4" mode="Opaque" x="4532" y="0" width="281" height="86" backcolor="#DBDBDB" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Activity shape file name (completed and planned
+activities)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="33e43023-10f2-5863-b38c-36eb3df761e0" mode="Opaque" x="4813" y="0" width="286" height="86" backcolor="#FFF2CC" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Forest Cover shape file name]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="88c662e0-ab62-54ab-8383-c6db20612892" mode="Opaque" x="5099" y="0" width="249" height="86" backcolor="#FFF2CC" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Forest Cover Attributes]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="9e28dc47-2406-58c9-9da8-fe63a63de07d" mode="Opaque" x="5348" y="0" width="158" height="86" backcolor="#FFF2CC" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Prescription]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="1.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="6278474d-d7b1-5a98-b1ed-4dccf969a1ea" mode="Opaque" x="0" y="86" width="137" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="ec888027-2969-575d-b5ec-43965448ca41" mode="Opaque" x="137" y="86" width="153" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="42dab0f4-7baf-5aba-a206-f7939c9df9d0" mode="Opaque" x="290" y="86" width="87" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="7d54c21c-7210-5843-a348-f0d0cab0b0e8" mode="Opaque" x="377" y="86" width="149" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="03c35f94-b770-5310-90de-dee704057543" mode="Opaque" x="526" y="86" width="150" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="ce673746-0f51-5e6a-a019-d24c967ac62c" mode="Opaque" x="676" y="86" width="147" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[<style isBold="true">Y</style> - yes if activity needs to be
+reported to RESULTS
+<style isBold="true">N</style> - if reporting is not required]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="58fb321c-e6e2-53f6-bed4-bbee8e4da870" mode="Opaque" x="823" y="86" width="153" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="63d26517-8219-5cea-afa7-ce421b14542c" mode="Opaque" x="976" y="86" width="116" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[In Progress
+Substantially
+Complete
+Complete
+Deferred
+Cancelled]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="40d0ce41-da80-56d5-9bf5-8782f5f6da15" mode="Opaque" x="1092" y="86" width="59" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="299ddfcb-3ed6-5b86-8059-1802192c8d4b" mode="Opaque" x="1151" y="86" width="155" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[The district in which the project
+primarily sits.]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="3516896f-72fb-54e6-a343-33f76cf82839" mode="Opaque" x="1306" y="86" width="133" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Insert if you want to know
+when submission is loaded
+into RESULTS]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="c4491d89-b428-5502-b489-dfe42f076eb1" mode="Opaque" x="1439" y="86" width="145" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Ministry generated project
+code assigned to each project
+in the allocation letters.]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="16a4c5a5-2b1f-5699-a66b-025e377bc43f" mode="Opaque" x="1584" y="86" width="113" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[RESULTS Opening ID
+(if existing)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="c6fb5825-882c-53c1-9e56-6345e1e31d91" mode="Opaque" x="1697" y="86" width="129" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[<style isBold="true">Insert</style> for New Shell
+Openings/projects
+
+<style isBold="true">Update</style> for changing
+existing openings/projects
+previously created for
+project.]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="49279ebb-b5d7-5e01-8005-d5aaa938ea56" mode="Opaque" x="1826" y="86" width="124" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[<style isBold="true" isItalic="true">NREQ</style> for Crown land
+projects with no tenure,
+<style isBold="true" isItalic="true">EXCLU</style> for activities on
+Parks, Protected Areas,
+Federal Land or Private
+Land, or <style isBold="true" isItalic="true">SPEX</style> for crown
+land projects with tenure]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="9a752c53-8297-5535-81e9-4bc1800b68ff" mode="Opaque" x="1950" y="86" width="99" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Gross Project area
+in hectare to one
+decimal place
+(Note: this is often
+larger and different
+than treatment
+area)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="b858cf02-28c7-5ba2-aaa2-45aec70dcbc0" mode="Opaque" x="2049" y="86" width="67" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Defaults to
+7% of total
+area, provide
+number
+below if
+different]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="e7545ebe-82d8-51fa-9572-b15cc4e844cd" mode="Opaque" x="2116" y="86" width="123" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Enter each activity that
+took place for the project
+on a new line.  Eg: A
+survey and planting are 2
+entries (Use LB or
+LandBase Planning for
+Prescriptions)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="10aa979c-c3ce-5f2a-bd15-5695d6e9a546" mode="Opaque" x="2239" y="86" width="75" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Select
+applicable
+technique, you
+will only see
+available
+techniques]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="c49aa9f9-d55d-567a-bb25-08c3f79b2771" mode="Opaque" x="2314" y="86" width="80" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Select
+applicable
+method, if blank
+method is not
+required]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="ba36bb46-92c5-5725-9002-7dca9b93c98e" mode="Opaque" x="2394" y="86" width="116" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Primary Objective Code
+purpose for activity.
+MUST BE FRE if
+funded by WRR
+program]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="22c63b97-d181-52c0-b203-c9c9da8a50de" mode="Opaque" x="2510" y="86" width="131" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Insert Secondary Objective
+Code]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="1d9846ae-3d66-5a07-99ed-3eae6968c5c4" mode="Opaque" x="2641" y="86" width="97" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Any other objective
+(optional)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="4f18b5ab-4cf0-5d8f-b5dd-08ea10c1c3c5" mode="Opaque" x="2738" y="86" width="91" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Formatted cells for
+date]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="d892be2f-252a-5c3e-baba-a93ebaea2a93" mode="Opaque" x="2829" y="86" width="120" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Area treated per activity
+to 1 decimal place]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="320d37b2-e332-5b86-9e02-2a582286af60" mode="Opaque" x="2949" y="86" width="114" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="645cf019-79e8-5f21-8d99-0bb6ed799090" mode="Opaque" x="3063" y="86" width="225" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[<style isBold="true">OPTIONAL</style>
+Can be used to enter contact names and
+other funders but is difficult to search in a
+report.]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="ac83beee-c853-53f2-8167-acadc21d0b83" mode="Opaque" x="3288" y="86" width="69" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Tenure
+Number used]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="a48d9955-f8b1-50f8-bcf7-52a98094d84e" mode="Opaque" x="3357" y="86" width="133" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Planned treatment area]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="bb41a285-e434-5fbc-9193-961d5dc0918e" mode="Opaque" x="3490" y="86" width="91" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="9aca9dd3-ee91-57a1-8bba-14a42075e8a9" mode="Opaque" x="3581" y="86" width="53" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="337cec6b-655a-59ea-90ff-df8dff9a1ed0" mode="Opaque" x="3634" y="86" width="135" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Y/N]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="a8bf4f8e-7dcf-55fc-bd0a-95b946c2f776" mode="Opaque" x="3769" y="86" width="135" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Y/N]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="b4b5db70-299d-5064-aa8e-1b049eebfbf6" mode="Opaque" x="3904" y="86" width="91" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="af0bf211-d651-55c3-b998-2d4a565c69df" mode="Opaque" x="3995" y="86" width="131" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Y/N]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="c3f2b958-3728-5ab8-aa8b-efd83736a878" mode="Opaque" x="4126" y="86" width="127" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="b33bd3ac-f2dc-5b2a-87f2-8b00d513cb54" mode="Opaque" x="4253" y="86" width="279" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Put shape file in associated district folder on the
+SharePoint. Opening spatial includes the entire gross
+opening area. BC Albers Projection Name convention:
+ProjectID_Opening or ProjectID_ActivityDescription]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="cde42a42-c42e-588d-a456-55e95414befc" mode="Opaque" x="4532" y="86" width="281" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" markup="styled" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Put shape file in associated district folder on the
+SharePoint. The shape file associated with <style isBold="true">ONLY</style> the
+treated area is to be attached, not opening spatial. BC
+Albers Projection Name convention: ProjectID_Opening or
+ProjectID_ActivityDescription]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="68130698-dc7e-5f73-8a98-b047bbe2c1b5" mode="Opaque" x="4813" y="86" width="286" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Type in shape file name and put shape file in associated
+district folder on the SharePoint. This is for the entire gross
+opening area, but can include multiple polygons. BC Albers
+Projection Name convention: ProjectID_Opening or
+ProjectID_ActivityDescription]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="e491a752-38db-5b01-ae0b-c24193e3f125" mode="Opaque" x="5099" y="86" width="249" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Forest Cover Attributes must be included on a
+separate document placed on the associated
+district folder on the SharePoint, the forest cover
+survey can be attached, or a separate document
+that includes all the required forest cover attributes
+for all forest cover polygons. Attached? (Y/N)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+		<element kind="staticText" uuid="5056f4a8-d0f1-576a-8dfb-90a6e69abf61" mode="Opaque" x="5348" y="86" width="158" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[If the project activities include
+Survey or Land-Base Planning,
+please attached the prescription
+within the associated district
+folder on the SharePoint.
+Attached? (Y/N)]]></text>
+			<box>
+				<topPen lineWidth="1.0" lineColor="#000000" />
+				<leftPen lineWidth="1.0" lineColor="#000000" />
+				<bottomPen lineWidth="0.0" lineColor="#000000" />
+				<rightPen lineWidth="1.0" lineColor="#000000" />
+			</box>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<element kind="textField" uuid="c71da6de-238c-5ea2-8a38-57478a264c03" mode="Opaque" x="0" y="0" width="137" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" forecolor="#3366FF" linkType="Reference" textAdjust="StretchHeight" blankWhenNull="true" underline="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{linkToProject} == null || $F{linkToProject}.trim().isEmpty() ? null : ($F{projectName} == null ? "" : $F{projectName}) + " Project Link"]]></expression>
+				<hyperlinkReferenceExpression><![CDATA[$F{linkToProject}]]></hyperlinkReferenceExpression>
+				<hyperlinkWhenExpression><![CDATA[$F{linkToProject} != null && !$F{linkToProject}.trim().isEmpty()]]></hyperlinkWhenExpression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="6b7fba8a-1278-5073-bcaa-d70e2a349a2d" mode="Opaque" x="137" y="0" width="153" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" forecolor="#3366FF" linkType="Reference" textAdjust="StretchHeight" blankWhenNull="true" underline="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{linkToFiscalActivity} == null || $F{linkToFiscalActivity}.trim().isEmpty() ? null : ($F{projectFiscalName} == null ? "" : $F{projectFiscalName}) + " Fiscal Activity Link"]]></expression>
+				<hyperlinkReferenceExpression><![CDATA[$F{linkToFiscalActivity}]]></hyperlinkReferenceExpression>
+				<hyperlinkWhenExpression><![CDATA[$F{linkToFiscalActivity} != null && !$F{linkToFiscalActivity}.trim().isEmpty()]]></hyperlinkWhenExpression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="57cb125b-feb2-555b-9be4-25e2caff7226" mode="Opaque" x="290" y="0" width="87" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{projectName}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="e4f78e30-fdf7-5720-b8f1-8425c5a42dfe" mode="Opaque" x="377" y="0" width="149" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{projectFiscalName}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="4cae9309-f04a-5593-a593-b6649b0558fc" mode="Opaque" x="526" y="0" width="150" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{activityName}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="e3cda2d5-8a2b-5132-b247-ea6806e575a8" mode="Opaque" x="676" y="0" width="147" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{resultsReportable}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="f24106b4-7d71-5404-94fd-4ea36db972b8" mode="Opaque" x="823" y="0" width="153" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{activityDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="792f0450-7ee4-50b4-9fed-7baf1e205669" mode="Opaque" x="976" y="0" width="116" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{activityStatusDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="790bb6de-a218-533d-b3da-22e8e289b446" mode="Opaque" x="1092" y="0" width="59" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{fiscalYear}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="de0444f5-39e4-5aee-b353-d8e5df1f8b32" mode="Opaque" x="1151" y="0" width="155" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{forestDistrictOrgUnitName}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="9d888db8-0ed0-5504-aa55-25c4614dab21" mode="Opaque" x="1306" y="0" width="133" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{projectLeadEmailAddress}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="1a7dfe09-fab3-5a62-80d7-e316f46c47af" mode="Opaque" x="1439" y="0" width="145" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{resultsProjectCode}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="bd780c0d-9126-5b11-a5e0-574e2642eb9b" mode="Opaque" x="1584" y="0" width="113" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{resultsOpeningId}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="118895b6-57b6-5be5-b9cf-acf00978d8d8" mode="Opaque" x="1697" y="0" width="129" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="c86eff89-0249-502c-a3a8-9d04e5132554" mode="Opaque" x="1826" y="0" width="124" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="b35fc5bf-575b-5952-9d63-68bc68679945" mode="Opaque" x="1950" y="0" width="99" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.##########" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{projectBoundarySizeHa}]]></expression>
+				<propertyExpression name="net.sf.jasperreports.export.xls.pattern"><![CDATA[$F{projectBoundarySizeHa} == null ? "#,##0" : ($F{projectBoundarySizeHa}.stripTrailingZeros().scale() <= 0 ? "#,##0" : "#,##0.##########")]]></propertyExpression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="e71f7e9e-1a3f-5e21-b3d1-5c49ee1f2553" mode="Opaque" x="2049" y="0" width="67" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="7ced2c30-cfb7-5603-992a-6f8bf3301cc2" mode="Opaque" x="2116" y="0" width="123" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{silvicultureBaseDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="23ebf47f-3cb8-54e9-b16f-d35ebb1fd2de" mode="Opaque" x="2239" y="0" width="75" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{silvicultureTechniqueDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="cd1c3b35-dc58-57c8-8fdc-69701725dbd5" mode="Opaque" x="2314" y="0" width="80" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{silvicultureMethodDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="21e159b4-5599-54ff-bb24-8546dc824e66" mode="Opaque" x="2394" y="0" width="116" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{primaryObjectiveTypeDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="d8946527-736e-5f96-9b78-91c2df4cd046" mode="Opaque" x="2510" y="0" width="131" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{secondaryObjectiveTypeDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="0c46f095-abd6-5374-8240-8a9817fdf409" mode="Opaque" x="2641" y="0" width="97" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="a40f6b43-35ac-51b5-bebf-ce69d71f0e37" mode="Opaque" x="2738" y="0" width="91" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="yyyy-MM-dd" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{completedDate}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="de7d3446-05f3-52d3-ac75-56ea5da0710d" mode="Opaque" x="2829" y="0" width="120" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.##########" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{completedAreaHa}]]></expression>
+				<propertyExpression name="net.sf.jasperreports.export.xls.pattern"><![CDATA[$F{completedAreaHa} == null ? "#,##0" : ($F{completedAreaHa}.stripTrailingZeros().scale() <= 0 ? "#,##0" : "#,##0.##########")]]></propertyExpression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="0c93ec22-e3f2-5cad-812b-a812f0963059" mode="Opaque" x="2949" y="0" width="114" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{fundingSourceAbbreviation}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="82f4bdaf-7786-5030-b1e8-48e2073f4bac" mode="Opaque" x="3063" y="0" width="225" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="79be1829-5f9b-5891-b3cc-a75180ea142f" mode="Opaque" x="3288" y="0" width="69" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="91f5c282-7d00-5f2a-9883-6575e56d0d11" mode="Opaque" x="3357" y="0" width="133" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.##########" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{plannedTreatmentAreaHa}]]></expression>
+				<propertyExpression name="net.sf.jasperreports.export.xls.pattern"><![CDATA[$F{plannedTreatmentAreaHa} == null ? "#,##0" : ($F{plannedTreatmentAreaHa}.stripTrailingZeros().scale() <= 0 ? "#,##0" : "#,##0.##########")]]></propertyExpression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="0b2fbe37-fde1-5ccc-b21d-7944fc9c98ad" mode="Opaque" x="3490" y="0" width="91" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{contractPhaseDescription}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="192b0663-fc87-59d4-ae39-f8faf96e0915" mode="Opaque" x="3581" y="0" width="53" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{cfsProjectCode}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="bf6c22e2-f164-5180-a61e-759c857a1042" mode="Opaque" x="3634" y="0" width="135" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{previousCarryForward}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="f6e27560-fced-5083-a38f-07057ea5d112" mode="Opaque" x="3769" y="0" width="135" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{carryForward}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="fcd7b31f-57f3-5ca8-a810-6c3b2a6f8973" mode="Opaque" x="3904" y="0" width="91" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{finalOutcomeComments}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="e5b9d44a-b775-5ac7-9af6-2a5ecc2b9475" mode="Opaque" x="3995" y="0" width="131" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{outstandingObligations}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="1df9bb3e-52e3-58bf-b9d6-5a6b511d8c28" mode="Opaque" x="4126" y="0" width="127" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{outstandingObligationsPlan}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="9153ae77-9e5e-5a2c-a00b-2c631b9b702c" mode="Opaque" x="4253" y="0" width="279" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{openingSpatialFileName}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="textField" uuid="c52addc9-e43e-565a-9a76-fe4f947399e9" mode="Opaque" x="4532" y="0" width="281" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{activitySpatialFileName}]]></expression>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="2f642203-7209-5471-b8e2-df7708ca9225" mode="Opaque" x="4813" y="0" width="286" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="7bac3d99-85fa-5c18-a53e-48df0660ef34" mode="Opaque" x="5099" y="0" width="249" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+			<element kind="staticText" uuid="be6a1268-e1f4-505e-a94e-89e79dacca22" mode="Opaque" x="5348" y="0" width="158" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[]]></text>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#000000" />
+					<leftPen lineWidth="0.5" lineColor="#000000" />
+					<bottomPen lineWidth="0.5" lineColor="#000000" />
+					<rightPen lineWidth="0.5" lineColor="#000000" />
+				</box>
+			</element>
+		</band>
+	</detail>
+	<columnFooter />
+	<pageFooter />
+	<summary />
+</jasperReport>
