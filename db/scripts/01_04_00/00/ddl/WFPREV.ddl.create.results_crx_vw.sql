@@ -58,8 +58,8 @@ SELECT
        NULL AS prescription
 FROM wfprev.project p
   LEFT JOIN wfprev.forest_org_unit fdou             ON fdou.org_unit_identifier = p.forest_district_org_unit_id
-  LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
-  LEFT JOIN wfprev.activity a                       ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
+  JOIN wfprev.project_plan_fiscal ppf               ON ppf.project_guid = p.project_guid
+  JOIN wfprev.activity a                            ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
   LEFT JOIN wfprev.activity_status_code astc        ON astc.activity_status_code = a.activity_status_code
   LEFT JOIN wfprev.silviculture_base sb             ON sb.silviculture_base_guid = a.silviculture_base_guid
   LEFT JOIN wfprev.silviculture_base_code sbc       ON sbc.silviculture_base_code = sb.silviculture_base_code
