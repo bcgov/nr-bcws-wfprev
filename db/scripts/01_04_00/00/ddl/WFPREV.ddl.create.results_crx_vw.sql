@@ -30,7 +30,7 @@ SELECT
        ppf.results_opening_id,
        NULL AS results_opening_action,
        NULL AS results_opening_category,
-       ab.boundary_size_ha,
+       plb.boundary_size_ha,
        NULL AS max_permanent_access_percent,
        sbc.description AS activity_base_name,
        stc.description AS technique_name,
@@ -51,8 +51,8 @@ SELECT
        a.final_outcome_comments,
        CASE WHEN a.outstanding_obligations_ind THEN 'Y' ELSE 'N' END AS outstanding_obligations_ind,
        a.activity_comment,
-       pfa.document_path AS opening_shape_file_name,
-       afa.document_path AS activity_shape_file_name,
+       plb.document_path AS opening_shape_file_name,
+       alb.document_path AS activity_shape_file_name,
        NULL AS forest_cover_shape_file_name,
        NULL AS forest_cover_attributes,
        NULL AS prescription
@@ -61,7 +61,6 @@ FROM wfprev.project p
   LEFT JOIN wfprev.project_plan_fiscal ppf          ON ppf.project_guid = p.project_guid
   LEFT JOIN wfprev.activity a                       ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
   LEFT JOIN wfprev.activity_status_code astc        ON astc.activity_status_code = a.activity_status_code
-  LEFT JOIN wfprev.activity_boundary ab             ON ab.activity_guid = a.activity_guid
   LEFT JOIN wfprev.silviculture_base sb             ON sb.silviculture_base_guid = a.silviculture_base_guid
   LEFT JOIN wfprev.silviculture_base_code sbc       ON sbc.silviculture_base_code = sb.silviculture_base_code
   LEFT JOIN wfprev.silviculture_technique st        ON st.silviculture_technique_guid = a.silviculture_technique_guid
@@ -72,8 +71,21 @@ FROM wfprev.project p
   LEFT JOIN wfprev.objective_type_code sotc         ON sotc.objective_type_code = p.secondary_objective_type_code
   LEFT JOIN wfprev.activity_funding_source afs      ON afs.activity_funding_source_guid = a.activity_funding_source_guid
   LEFT JOIN wfprev.contract_phase_code cpc          ON cpc.contract_phase_code = a.contract_phase_code
-  LEFT JOIN wfprev.project_boundary pb              ON pb.project_guid = p.project_guid
-  LEFT JOIN wfprev.file_attachment pfa              ON pfa.source_object_unique_id = pb.project_boundary_guid::text
-  LEFT JOIN wfprev.file_attachment afa              ON afa.source_object_unique_id = ab.activity_boundary_guid::text
+  LEFT JOIN LATERAL (
+    SELECT pb.project_boundary_guid, pb.boundary_size_ha, fa.document_path
+    FROM wfprev.project_boundary pb
+    JOIN wfprev.file_attachment fa ON fa.source_object_unique_id = pb.project_boundary_guid::text
+    WHERE pb.project_guid = p.project_guid
+    ORDER BY pb.system_start_timestamp DESC, pb.project_boundary_guid DESC
+    LIMIT 1
+  ) plb ON true
+  LEFT JOIN LATERAL (
+    SELECT ab.activity_boundary_guid, fa.document_path
+    FROM wfprev.activity_boundary ab
+    JOIN wfprev.file_attachment fa ON fa.source_object_unique_id = ab.activity_boundary_guid::text
+    WHERE ab.activity_guid = a.activity_guid
+    ORDER BY ab.system_start_timestamp DESC, ab.activity_boundary_guid DESC
+    LIMIT 1
+  ) alb ON true
 WHERE p.project_type_code = 'CULT_RX_FR'
 ORDER BY p.project_guid, p.project_name, ppf.fiscal_year;
