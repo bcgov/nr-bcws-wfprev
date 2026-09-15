@@ -73,6 +73,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.WildfireOrgUnitTypeCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectLocationEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
