@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.reportgenerator;
 
 import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
 import ca.bc.gov.nrs.reportgenerator.model.FuelManagementReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ResultsReportData;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -24,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -49,6 +52,143 @@ public class LocalReportGeneratorTest {
                 generateMockCulturePrescribedFireData(20), // Generate 20 rows
                 "CulturePrescribedFireReport_Mock"
         );
+    }
+
+    /**
+     * Writes target/generated-test-reports/ReMi_RESULTS_Mock_&lt;timestamp&gt;.xlsx with the FM and CRx
+     * tabs, the way the lambda assembles the RESULTS export, then checks the structure that is easy
+     * to break when editing the template.
+     */
+    @Test
+    public void generateResultsReport() throws Exception {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("jasperreports/WFPREV_RESULTS_JASPER.jrxml");
+        if (is == null) {
+            is = new FileInputStream("src/main/jasperreports/WFPREV_RESULTS_JASPER.jrxml");
+        }
+        JasperReport report = JasperCompileManager.compileReport(is);
+
+        List<JasperPrint> prints = List.of(
+                JasperFillManager.fillReport(report, new HashMap<>(),
+                        new JRBeanCollectionDataSource(generateMockResultsData(10, "FM"))),
+                JasperFillManager.fillReport(report, new HashMap<>(),
+                        new JRBeanCollectionDataSource(generateMockResultsData(5, "CRx"))));
+
+        Files.createDirectories(Paths.get(OUTPUT_DIR));
+        String xlsxPath = OUTPUT_DIR + "/ReMi_RESULTS_Mock_" + System.currentTimeMillis() + ".xlsx";
+        try (FileOutputStream os = new FileOutputStream(xlsxPath)) {
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(SimpleExporterInput.getInstance(prints));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(os));
+
+            SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
+            config.setDetectCellType(true);
+            config.setRemoveEmptySpaceBetweenRows(true);
+            config.setRemoveEmptySpaceBetweenColumns(true);
+            config.setCollapseRowSpan(true);
+            config.setWhitePageBackground(false);
+            config.setSheetNames(new String[]{"FM XLS Download", "CRx XLS Download"});
+            exporter.setConfiguration(config);
+
+            exporter.exportReport();
+        }
+        System.out.println("Generated XLSX: " + new File(xlsxPath).getAbsolutePath());
+
+        try (java.util.zip.ZipFile xlsx = new java.util.zip.ZipFile(xlsxPath)) {
+            String workbook = readEntry(xlsx, "xl/workbook.xml");
+            assertTrue(workbook.contains("name=\"FM XLS Download\""), "FM tab missing");
+            assertTrue(workbook.contains("name=\"CRx XLS Download\""), "CRx tab missing");
+            assertEquals(2, workbook.split("<sheet ").length - 1, "Only the FM and CRx tabs are expected");
+
+            for (String sheet : List.of("xl/worksheets/sheet1.xml", "xl/worksheets/sheet2.xml")) {
+                String xml = readEntry(xlsx, sheet);
+                assertTrue(xml.contains("ySplit=\"2\"") && xml.contains("state=\"frozen\""),
+                        sheet + ": rows 1 and 2 should be frozen");
+            }
+
+            String strings = readEntry(xlsx, "xl/sharedStrings.xml");
+            // Line breaks mirror where the source workbook wraps, since Calibri is narrower than BC Sans
+            assertTrue(strings.contains("Link to Project (within\nReMi Planner)"), "Row 1 titles missing");
+            assertTrue(strings.contains("The district in which the project\nprimarily sits."), "Row 2 explanations missing");
+            assertFalse(strings.contains("Reference Fields"), "Developer reference rows must not be exported");
+            assertFalse(strings.contains("&lt;style"), "Styled markup should become bold runs, not literal text");
+
+            String styles = readEntry(xlsx, "xl/styles.xml");
+            for (String colour : List.of("D9E1F2", "DBDBDB", "FCE4D6", "E2EFDA", "FFF2CC", "C6E0B4")) {
+                assertTrue(styles.contains(colour), "Fill colour " + colour + " missing");
+            }
+            assertTrue(styles.contains("Calibri"), "Calibri font missing");
+            assertFalse(styles.contains("Arial"), "Only Calibri should be used");
+        }
+    }
+
+    private static String readEntry(java.util.zip.ZipFile zip, String name) throws Exception {
+        java.util.zip.ZipEntry entry = zip.getEntry(name);
+        assertNotNull(entry, name + " not found in workbook");
+        try (InputStream in = zip.getInputStream(entry)) {
+            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        }
+    }
+
+    private List<ResultsReportData> generateMockResultsData(int count, String category) {
+        List<ResultsReportData> list = new ArrayList<>();
+        String[] statuses = {"In Progress", "Substantially Complete", "Complete", "Deferred", "Cancelled"};
+        String[][] silviculture = {
+                {"Juvenile Spacing", "Manual", "Power Saw"},
+                {"Site Preparation", "Mechanical", "Piling"},
+                {"Pruning", "Manual", null}};
+        String[] districts = {"100 Mile House District", "Cariboo-Chilcotin District", "Selkirk District"};
+
+        for (int i = 1; i <= count; i++) {
+            ResultsReportData data = new ResultsReportData();
+            String[] silv = silviculture[i % silviculture.length];
+            data.setLinkToProject("http://link.to.project/" + i);
+            data.setLinkToFiscalActivity("http://link.to.fiscal/" + i);
+            data.setProjectName(category + " Project " + i);
+            data.setProjectFiscalName("Sample " + category + " Fiscal Activity " + i);
+            data.setActivityName(silv[0] + " - " + silv[1] + (silv[2] == null ? "" : " - " + silv[2]));
+            // Row 3 leaves RESULTS Reportable blank to show there is no default "Y"
+            data.setResultsReportable(i == 3 ? null : (i % 4 == 0 ? "N" : "Y"));
+            data.setActivityDescription(i == 1
+                    ? "This is a separate treatment unit that surrounds a Special Management Area. There was no harvesting in this unit.\nThis unit will be manually thinned, pruned and subsequently abated."
+                    : "Activity description " + i);
+            data.setActivityStatusDescription(statuses[i % statuses.length]);
+            data.setFiscalYear("2026/27");
+            data.setForestDistrictOrgUnitName(districts[i % districts.length]);
+            data.setProjectLeadEmailAddress("lead" + i + "@gov.bc.ca");
+            data.setResultsProjectCode("WRCA" + String.format("%04d", 70 + i));
+            data.setResultsOpeningId(String.valueOf(1796400 + i));
+            data.setSilvicultureBaseDescription(silv[0]);
+            data.setSilvicultureTechniqueDescription(silv[1]);
+            data.setSilvicultureMethodDescription(silv[2]);
+            data.setPrimaryObjectiveTypeDescription("Wildfire Risk Reduction");
+            data.setSecondaryObjectiveTypeDescription(i % 2 == 0 ? "Ecosystem Restoration" : null);
+            data.setFundingSourceAbbreviation("WRR");
+            data.setContractPhaseDescription(i % 2 == 0 ? "Contract Awarded" : "In Planning");
+            data.setCfsProjectCode("719C" + (280 + i));
+            data.setPreviousCarryForward(i % 3 == 0 ? "Y" : "N");
+            data.setCarryForward(i % 5 == 0 ? "Y" : "N");
+            data.setFinalOutcomeComments(i % 2 == 0 ? "Outcome comments for activity " + i : null);
+            data.setOutstandingObligations(i % 2 == 0 ? "Y" : "N");
+            data.setOutstandingObligationsPlan(i % 2 == 0 ? "Plan to address obligations for activity " + i : null);
+            data.setOpeningSpatialFileName("Project" + i + "_Opening.kmz");
+            data.setActivitySpatialFileName("Project" + i + "_2026_TU" + i + "_treatment.kmz");
+            if (i == 1) {
+                data.setProjectBoundarySizeHa(new BigDecimal("261.413"));
+                data.setPlannedTreatmentAreaHa(new BigDecimal("10"));
+                data.setCompletedAreaHa(new BigDecimal("8.3"));
+            } else if (i == 2) {
+                data.setProjectBoundarySizeHa(new BigDecimal("1200.00"));
+                data.setPlannedTreatmentAreaHa(new BigDecimal("61"));
+                data.setCompletedAreaHa(null);
+            } else {
+                data.setProjectBoundarySizeHa(new BigDecimal(100 + i * 7 + ".5"));
+                data.setPlannedTreatmentAreaHa(new BigDecimal(10 + i + ".25"));
+                data.setCompletedAreaHa(new BigDecimal(i + ".1"));
+            }
+            data.setCompletedDate(i % 3 == 0 ? null : new GregorianCalendar(2027, Calendar.FEBRUARY, i).getTime());
+            list.add(data);
+        }
+        return list;
     }
 
     private void generateReport(String resourcePath, String fsPath, List<?> data, String baseFileName) throws Exception {
