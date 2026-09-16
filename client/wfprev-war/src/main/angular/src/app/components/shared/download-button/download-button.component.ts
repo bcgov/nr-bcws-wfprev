@@ -1,8 +1,8 @@
-
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { DownloadOption } from 'src/app/components/models';
 
 @Component({
     selector: 'wfprev-download-button',
@@ -13,7 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class DownloadButtonComponent {
   @Input() disabled = false;
-  @Input() formats: string[] = [];
+  @Input() formats: DownloadOption[] = [];
   @Output() download = new EventEmitter<string>();
 
   isDisabled(): boolean {

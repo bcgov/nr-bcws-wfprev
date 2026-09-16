@@ -17,7 +17,7 @@ import { ProjectFilterStateService } from 'src/app/services/project-filter-state
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedService } from 'src/app/services/shared-service';
 import { ResourcesRoutes } from 'src/app/utils';
-import { Messages } from 'src/app/utils/constants';
+import { DownloadTypes, Messages } from 'src/app/utils/constants';
 import { ProjectsListComponent } from './projects-list.component';
 
 describe('ProjectsListComponent', () => {
@@ -948,7 +948,7 @@ describe('ProjectsListComponent', () => {
       spyOn(document, 'createElement').and.callThrough();
       mockProjectService.downloadProjects.and.returnValue(of(mockBlob));
 
-      component.onDownload('csv');
+      component.onDownload(DownloadTypes.FISCAL_CSV);
       tick();
 
       const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
@@ -956,11 +956,23 @@ describe('ProjectsListComponent', () => {
       expect(bodyArg.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value' }));
     }));
 
+    it('should log an error and not call the service for the results report', fakeAsync(() => {
+      spyOn(console, 'error');
+      projectFilterStateService.set({ searchText: 'value' } as any);
+
+      component.onDownload(DownloadTypes.RESULTS_EXCEL);
+      tick();
+
+      expect(console.error).toHaveBeenCalledWith('RESULTS XLSX download is not implemented yet');
+      expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
+      expect(mockSnackBar.open).not.toHaveBeenCalled();
+    }));
+
     it('should show error message when attempting to download without filters', fakeAsync(() => {
       projectFilterStateService.clear();
       component.displayedProjects = [{ projectGuid: 'guid1' }] as any; // Presence of projects irrelevant
 
-      component.onDownload('csv');
+      component.onDownload(DownloadTypes.FISCAL_CSV);
       tick();
 
       expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
@@ -976,7 +988,7 @@ describe('ProjectsListComponent', () => {
         throwError(() => new Error('Download failed'))
       );
 
-      component.onDownload('csv');
+      component.onDownload(DownloadTypes.FISCAL_CSV);
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(

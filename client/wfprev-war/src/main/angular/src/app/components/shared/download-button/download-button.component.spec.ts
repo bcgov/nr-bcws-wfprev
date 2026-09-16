@@ -30,15 +30,29 @@ describe('DownloadButtonComponent', () => {
   it('should emit download event when onDownload is called with csv', () => {
     spyOn(component.download, 'emit');
 
-    component.onDownload('csv');
-    expect(component.download.emit).toHaveBeenCalledWith('csv');
+    component.onDownload('fiscal-csv');
+    expect(component.download.emit).toHaveBeenCalledWith('fiscal-csv');
   });
 
   it('should emit download event when onDownload is called with excel', () => {
     spyOn(component.download, 'emit');
 
-    component.onDownload('excel');
-    expect(component.download.emit).toHaveBeenCalledWith('excel');
+    component.onDownload('fiscal-xlsx');
+    expect(component.download.emit).toHaveBeenCalledWith('fiscal-xlsx');
+  });
+
+  it('should render a menu item label and value for each format', () => {
+    component.formats = [
+      { label: 'Fiscal CSV', value: 'fiscal-csv' },
+      { label: 'RESULTS XLSX', value: 'results-xlsx' }
+    ];
+    fixture.detectChanges();
+
+    fixture.debugElement.query(By.css('.download-button')).nativeElement.click();
+    fixture.detectChanges();
+
+    const items = Array.from(document.querySelectorAll('.mat-mdc-menu-item'));
+    expect(items.map(i => i.textContent?.trim())).toEqual(['Fiscal CSV', 'RESULTS XLSX']);
   });
 
   it('should disable the button when disabled input is true', () => {
