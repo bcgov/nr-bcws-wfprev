@@ -52,14 +52,6 @@ public class ReportService {
         this.xlsxReportGenerator = xlsxReportGenerator;
     }
 
-    public ReportService(FuelManagementReportRepository fuelManagementRepository,
-                         CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
-                         ProgramAreaRepository programAreaRepository,
-                         FeaturesService featuresService) {
-        this(fuelManagementRepository, culturalPrescribedFireReportRepository, programAreaRepository, featuresService,
-                new CsvReportGenerator(), new XlsxReportGenerator());
-    }
-
     public CsvReportGenerator getCsvReportGenerator() {
         return csvReportGenerator;
     }
