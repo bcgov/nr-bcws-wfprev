@@ -129,6 +129,72 @@ class ReportControllerTest {
 
     @Test
     @WithMockUser
+    void testGenerateResultsXlsxReport() throws Exception {
+        UUID guid = UUID.randomUUID();
+
+        doAnswer(inv -> {
+            OutputStream os = inv.getArgument(1);
+            os.write("test-xlsx".getBytes(StandardCharsets.UTF_8));
+            return null;
+        }).when(reportService).exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
+
+        ReportRequestModel.Project p = new ReportRequestModel.Project();
+        p.setProjectGuid(guid);
+        p.setProjectFiscalGuids(List.of());
+
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType(ReportType.RESULTS_XLSX);
+        request.setProjects(List.of(p));
+
+        String json = gson.toJson(request);
+
+        mockMvc.perform(post("/reports")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=results-report.xlsx"))
+                .andExpect(content().contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+        verify(reportService, times(1))
+                .exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
+    }
+
+    @Test
+    @WithMockUser
+    void testGenerateResultsCsvReport() throws Exception {
+        UUID guid = UUID.randomUUID();
+
+        doAnswer(inv -> {
+            OutputStream os = inv.getArgument(1);
+            os.write("test-zip".getBytes(StandardCharsets.UTF_8));
+            return null;
+        }).when(reportService).writeCsvZipFromEntities(any(ReportRequestModel.class), any(OutputStream.class));
+
+        ReportRequestModel.Project p = new ReportRequestModel.Project();
+        p.setProjectGuid(guid);
+        p.setProjectFiscalGuids(List.of());
+
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType(ReportType.RESULTS_CSV);
+        request.setProjects(List.of(p));
+
+        String json = gson.toJson(request);
+
+        mockMvc.perform(post("/reports")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=results-report.zip"))
+                .andExpect(content().contentType("application/zip"));
+
+        verify(reportService, times(1))
+                .writeCsvZipFromEntities(any(ReportRequestModel.class), any(OutputStream.class));
+    }
+
+    @Test
+    @WithMockUser
     void testGenerateReport_InvalidType() throws Exception {
         String json = "{\"reportType\":\"TXT\"}";
 
@@ -143,9 +209,9 @@ class ReportControllerTest {
 
     @Test
     @WithMockUser
-    void testGenerateReport_UnsupportedType() throws Exception {
+    void testGenerateReport_NullType() throws Exception {
         ReportRequestModel request = new ReportRequestModel();
-        request.setReportType(ReportType.RESULTS_XLSX);
+        request.setReportType(null);
 
         String json = gson.toJson(request);
 

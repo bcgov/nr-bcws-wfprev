@@ -94,31 +94,54 @@ class ReportControllerUnitTest {
     }
 
     @Test
-    void testGenerateReport_ResultsXlsx_ReturnsBadRequest() throws Exception {
+    void testGenerateReport_ResultsXlsx() throws Exception {
+        byte[] expectedBytes = "fake-results-xlsx-content".getBytes(StandardCharsets.UTF_8);
+        doAnswer(invocation -> {
+            OutputStream os = invocation.getArgument(1);
+            os.write(expectedBytes);
+            return null;
+        }).when(reportService).exportXlsx(any(ReportRequestModel.class), any(OutputStream.class));
+
         ReportRequestModel request = new ReportRequestModel();
         request.setReportType(ReportType.RESULTS_XLSX);
 
         ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("attachment; filename=results-report.xlsx", response.getHeaders().getFirst("Content-Disposition"));
+        assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                response.getHeaders().getContentType().toString());
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         response.getBody().writeTo(baos);
-        assertEquals("Only reportType=PROJECT_XLSX or PROJECT_CSV is supported.", baos.toString(StandardCharsets.UTF_8));
-        verifyNoInteractions(reportService);
+        assertArrayEquals(expectedBytes, baos.toByteArray());
+
+        verify(reportService, times(1)).exportXlsx(eq(request), any(OutputStream.class));
     }
 
     @Test
-    void testGenerateReport_ResultsCsv_ReturnsBadRequest() throws Exception {
+    void testGenerateReport_ResultsCsv() throws Exception {
+        byte[] expectedBytes = "fake-results-csv-zip-content".getBytes(StandardCharsets.UTF_8);
+        doAnswer(invocation -> {
+            OutputStream os = invocation.getArgument(1);
+            os.write(expectedBytes);
+            return null;
+        }).when(reportService).writeCsvZipFromEntities(any(ReportRequestModel.class), any(OutputStream.class));
+
         ReportRequestModel request = new ReportRequestModel();
         request.setReportType(ReportType.RESULTS_CSV);
 
         ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("attachment; filename=results-report.zip", response.getHeaders().getFirst("Content-Disposition"));
+        assertEquals("application/zip", response.getHeaders().getContentType().toString());
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         response.getBody().writeTo(baos);
-        assertEquals("Only reportType=PROJECT_XLSX or PROJECT_CSV is supported.", baos.toString(StandardCharsets.UTF_8));
-        verifyNoInteractions(reportService);
+        assertArrayEquals(expectedBytes, baos.toByteArray());
+
+        verify(reportService, times(1)).writeCsvZipFromEntities(eq(request), any(OutputStream.class));
     }
 
     @Test
@@ -131,7 +154,7 @@ class ReportControllerUnitTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         response.getBody().writeTo(baos);
-        assertEquals("Only reportType=PROJECT_XLSX or PROJECT_CSV is supported.", baos.toString(StandardCharsets.UTF_8));
+        assertEquals("Only reportType=PROJECT_XLSX, RESULTS_XLSX, PROJECT_CSV, or RESULTS_CSV is supported.", baos.toString(StandardCharsets.UTF_8));
         verifyNoInteractions(reportService);
     }
 
