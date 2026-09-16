@@ -1,0 +1,130 @@
+package ca.bc.gov.nrs.wfprev.services;
+
+import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class CsvReportGeneratorTest {
+
+    private CsvReportGenerator generator;
+
+    @BeforeEach
+    void setUp() {
+        generator = new CsvReportGenerator();
+    }
+
+    @Test
+    void generateCsvZip_emptyLists_producesEmptyZip() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        generator.generateCsvZip(Collections.emptyList(), Collections.emptyList(), out);
+
+        Set<String> entries = getZipEntries(out.toByteArray());
+        assertTrue(entries.isEmpty(), "No entries should be in the zip if both lists are empty");
+    }
+
+    @Test
+    void generateCsvZip_onlyFuel_producesFuelCsvOnly() throws Exception {
+        FuelManagementReportEntity fuel = new FuelManagementReportEntity();
+        fuel.setUniqueRowGuid(UUID.randomUUID());
+        fuel.setProjectName("Test Project");
+        fuel.setLinkToProject("https://example.com/project");
+        fuel.setFiscalPlannedProjectSizeHa(new BigDecimal("123.456"));
+        fuel.setTotalEstimatedCostAmount(new BigDecimal("5000"));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        generator.generateCsvZip(List.of(fuel), Collections.emptyList(), out);
+
+        Set<String> entries = getZipEntries(out.toByteArray());
+        assertTrue(entries.contains("fuel-management-projects.csv"));
+        assertFalse(entries.contains("cultural-prescribed-fire-projects.csv"));
+
+        String content = getZipEntryContent(out.toByteArray(), "fuel-management-projects.csv");
+        assertTrue(content.contains("Link to Project (within Prevention application)"));
+        assertTrue(content.contains("Test Project"));
+        assertTrue(content.contains("$5,000"));
+        assertTrue(content.contains("\"123.456\""));
+    }
+
+    @Test
+    void generateCsvZip_onlyCrx_producesCrxCsvOnly() throws Exception {
+        CulturalPrescribedFireReportEntity crx = new CulturalPrescribedFireReportEntity();
+        crx.setUniqueRowGuid(UUID.randomUUID());
+        crx.setProjectName("CRX Project");
+        crx.setLinkToProject("https://example.com/crx");
+        crx.setGrossProjectAreaHa(new BigDecimal("78.9"));
+        crx.setOutsideWuiInd(true);
+        crx.setEndorsementTimestamp(Date.from(Instant.parse("2025-06-01T12:00:00Z")));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        generator.generateCsvZip(Collections.emptyList(), List.of(crx), out);
+
+        Set<String> entries = getZipEntries(out.toByteArray());
+        assertFalse(entries.contains("fuel-management-projects.csv"));
+        assertTrue(entries.contains("cultural-prescribed-fire-projects.csv"));
+
+        String content = getZipEntryContent(out.toByteArray(), "cultural-prescribed-fire-projects.csv");
+        assertTrue(content.contains("Link to Project (within Prevention application)"));
+        assertTrue(content.contains("CRX Project"));
+        assertTrue(content.contains("\"78.9\""));
+        assertTrue(content.contains("2025-06-01"));
+        assertTrue(content.contains("Y")); // Outside WUI
+    }
+
+    @Test
+    void generateCsvZip_bothPresent_producesBothCsvs() throws Exception {
+        FuelManagementReportEntity fuel = new FuelManagementReportEntity();
+        fuel.setProjectName("Fuel 1");
+
+        CulturalPrescribedFireReportEntity crx = new CulturalPrescribedFireReportEntity();
+        crx.setProjectName("CRX 1");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        generator.generateCsvZip(List.of(fuel), List.of(crx), out);
+
+        Set<String> entries = getZipEntries(out.toByteArray());
+        assertTrue(entries.contains("fuel-management-projects.csv"));
+        assertTrue(entries.contains("cultural-prescribed-fire-projects.csv"));
+    }
+
+    private static Set<String> getZipEntries(byte[] zipBytes) throws IOException {
+        Set<String> names = new HashSet<>();
+        try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            ZipEntry e;
+            while ((e = zin.getNextEntry()) != null) {
+                names.add(e.getName());
+            }
+        }
+        return names;
+    }
+
+    private static String getZipEntryContent(byte[] zipBytes, String entryName) throws IOException {
+        try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            ZipEntry e;
+            while ((e = zin.getNextEntry()) != null) {
+                if (e.getName().equals(entryName)) {
+                    return new String(zin.readAllBytes(), StandardCharsets.UTF_8);
+                }
+            }
+        }
+        return null;
+    }
+}

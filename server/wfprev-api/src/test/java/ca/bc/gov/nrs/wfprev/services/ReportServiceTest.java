@@ -54,6 +54,8 @@ class ReportServiceTest {
     private ProgramAreaRepository programAreaRepo;
     private FeaturesService featuresService;
 
+    private CsvReportGenerator csvReportGenerator;
+    private XlsxReportGenerator xlsxReportGenerator;
     private ReportService service;
 
     @BeforeEach
@@ -63,10 +65,12 @@ class ReportServiceTest {
         programAreaRepo = mock(ProgramAreaRepository.class);
 
         featuresService = mock(FeaturesService.class);
-        service = new ReportService(fuelRepo, crxRepo, programAreaRepo, featuresService);
+        csvReportGenerator = new CsvReportGenerator();
+        xlsxReportGenerator = new XlsxReportGenerator();
+        service = new ReportService(fuelRepo, crxRepo, programAreaRepo, featuresService, csvReportGenerator, xlsxReportGenerator);
 
         setField(service, "baseUrl", "https://example.com");
-        setField(service, "reportGeneratorLambdaUrl", "http://invalid/override-me-in-test");
+        xlsxReportGenerator.setReportGeneratorLambdaUrl("http://invalid/override-me-in-test");
     }
 
     @Test
@@ -247,7 +251,7 @@ class ReportServiceTest {
 
         try (var ignored = start(server)) {
             String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            setField(service, "reportGeneratorLambdaUrl", url);
+            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
 
             UUID projectGuid = UUID.randomUUID();
             UUID fiscalGuid = UUID.randomUUID();
@@ -279,7 +283,7 @@ class ReportServiceTest {
         server.start();
         try {
             String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            setField(service, "reportGeneratorLambdaUrl", url);
+            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
 
             UUID proj = UUID.randomUUID();
             when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, null, "Fuel Y")));
@@ -311,7 +315,7 @@ class ReportServiceTest {
 
         try (var ignored = start(server)) {
             String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            setField(service, "reportGeneratorLambdaUrl", url);
+            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
 
             UUID proj = UUID.randomUUID();
             when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, null, "Fuel Q")));
@@ -351,7 +355,7 @@ class ReportServiceTest {
         when(crxRepo.findByProjectGuid(proj)).thenReturn(List.of(crx(proj, fiscal, "CRX Z")));
 
         // Blank URL triggers the ServiceException
-        setField(service, "reportGeneratorLambdaUrl", "");
+        xlsxReportGenerator.setReportGeneratorLambdaUrl("");
 
         ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
 
