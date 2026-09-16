@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectCulturalPrescribedFireReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class CulturalPrescribedFireReportRepositoryTest {
+class ProjectCulturalPrescribedFireReportRepositoryTest {
 
-    private CulturalPrescribedFireReportRepository repository;
+    private ProjectCulturalPrescribedFireReportRepository repository;
 
     private UUID projectGuid;
     private UUID fiscalGuid;
@@ -33,7 +33,7 @@ class CulturalPrescribedFireReportRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        repository = mock(CulturalPrescribedFireReportRepository.class);
+        repository = mock(ProjectCulturalPrescribedFireReportRepository.class);
 
         projectGuid = UUID.randomUUID();
         fiscalGuid  = UUID.randomUUID();

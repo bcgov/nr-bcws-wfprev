@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 @RepositoryRestResource(exported = false)
-public interface CulturalPrescribedFireReportRepository extends JpaRepository<ProjectCulturalPrescribedFireReportEntity, UUID> {
+public interface ProjectCulturalPrescribedFireReportRepository extends JpaRepository<ProjectCulturalPrescribedFireReportEntity, UUID> {
     List<ProjectCulturalPrescribedFireReportEntity> findByProjectGuid(UUID projectGuid);
 
     List<ProjectCulturalPrescribedFireReportEntity> findByProjectGuidAndProjectPlanFiscalGuidIn(UUID projectGuid, Collection<UUID> fiscalGuids);

@@ -10,7 +10,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
-import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectCulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 class ReportServiceTest {
 
     private ProjectFuelManagementReportRepository fuelRepo;
-    private CulturalPrescribedFireReportRepository crxRepo;
+    private ProjectCulturalPrescribedFireReportRepository crxRepo;
     private ResultsFuelManagementReportRepository resultsFuelRepo;
     private ResultsCulturalPrescribedFireReportRepository resultsCrxRepo;
     private ProgramAreaRepository programAreaRepo;
@@ -69,7 +69,7 @@ class ReportServiceTest {
     @BeforeEach
     void setup() throws Exception {
         fuelRepo = mock(ProjectFuelManagementReportRepository.class);
-        crxRepo = mock(CulturalPrescribedFireReportRepository.class);
+        crxRepo = mock(ProjectCulturalPrescribedFireReportRepository.class);
         resultsFuelRepo = mock(ResultsFuelManagementReportRepository.class);
         resultsCrxRepo = mock(ResultsCulturalPrescribedFireReportRepository.class);
         programAreaRepo = mock(ProgramAreaRepository.class);

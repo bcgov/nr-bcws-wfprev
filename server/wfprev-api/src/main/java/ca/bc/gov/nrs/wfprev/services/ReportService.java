@@ -9,7 +9,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
-import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectCulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
@@ -37,7 +37,7 @@ public class ReportService {
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
 
     private final ProjectFuelManagementReportRepository projectFuelManagementReportRepository;
-    private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
+    private final ProjectCulturalPrescribedFireReportRepository projectCulturalPrescribedFireReportRepository;
     private final ResultsFuelManagementReportRepository resultsFuelManagementReportRepository;
     private final ResultsCulturalPrescribedFireReportRepository resultsCulturalPrescribedFireReportRepository;
     private final ProgramAreaRepository programAreaRepository;
@@ -46,7 +46,7 @@ public class ReportService {
     private final XlsxReportGenerator xlsxReportGenerator;
 
     public ReportService(ProjectFuelManagementReportRepository projectFuelManagementReportRepository,
-                         CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
+                         ProjectCulturalPrescribedFireReportRepository projectCulturalPrescribedFireReportRepository,
                          ResultsFuelManagementReportRepository resultsFuelManagementReportRepository,
                          ResultsCulturalPrescribedFireReportRepository resultsCulturalPrescribedFireReportRepository,
                          ProgramAreaRepository programAreaRepository,
@@ -54,7 +54,7 @@ public class ReportService {
                          CsvReportGenerator csvReportGenerator,
                          XlsxReportGenerator xlsxReportGenerator) {
         this.projectFuelManagementReportRepository = projectFuelManagementReportRepository;
-        this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
+        this.projectCulturalPrescribedFireReportRepository = projectCulturalPrescribedFireReportRepository;
         this.resultsFuelManagementReportRepository = resultsFuelManagementReportRepository;
         this.resultsCulturalPrescribedFireReportRepository = resultsCulturalPrescribedFireReportRepository;
         this.programAreaRepository = programAreaRepository;
@@ -157,13 +157,13 @@ public class ReportService {
             List<UUID> fiscals = p.getProjectFiscalGuids();
 
             if (fiscals != null && !fiscals.isEmpty()) {
-                crx.addAll(culturalPrescribedFireReportRepository
+                crx.addAll(projectCulturalPrescribedFireReportRepository
                         .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
                 fuel.addAll(projectFuelManagementReportRepository
                         .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
             } else {
                 // Now includes rows where project_plan_fiscal_guid IS NULL
-                crx.addAll(culturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
+                crx.addAll(projectCulturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
                 fuel.addAll(projectFuelManagementReportRepository.findByProjectGuid(projectGuid));
             }
         }
