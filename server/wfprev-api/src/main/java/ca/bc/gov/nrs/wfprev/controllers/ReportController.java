@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev.controllers;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
@@ -42,11 +43,11 @@ public class ReportController {
             })
     )
     public ResponseEntity<StreamingResponseBody> generateReport(@Valid @RequestBody ReportRequestModel request) throws ServiceException, IOException, InterruptedException {
-        final String type = request.getReportType();
+        final ReportType type = request.getReportType();
         log.info("/reports start (type={})", type);
 
         try {
-            if ("XLSX".equalsIgnoreCase(type)) {
+            if (ReportType.PROJECT_XLSX.equals(type)) {
                 byte[] bytes;
                 long t0 = System.currentTimeMillis();
 
@@ -71,12 +72,12 @@ public class ReportController {
                         .contentLength(bytes.length)
                         .body(stream);
 
-            } else if ("CSV".equalsIgnoreCase(type)) {
+            } else if (ReportType.PROJECT_CSV.equals(type)) {
                 byte[] bytes;
                 long t0 = System.currentTimeMillis();
 
                 log.info("writeCsvZipFromEntities -> begin");
-                try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) {
+                try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) { // 1MB initial cap
                     reportService.writeCsvZipFromEntities(request, baos);
                     bytes = baos.toByteArray();
                 }
@@ -100,7 +101,7 @@ public class ReportController {
                 log.warn("Bad report type: {}", type);
                 return ResponseEntity.badRequest()
                         .contentType(MediaType.TEXT_PLAIN)
-                        .body(out -> out.write("Only reportType=XLSX or CSV is supported.".getBytes()));
+                        .body(out -> out.write("Only reportType=PROJECT_XLSX or PROJECT_CSV is supported.".getBytes()));
             }
         }catch (InterruptedException ie) {
             Thread.currentThread().interrupt();

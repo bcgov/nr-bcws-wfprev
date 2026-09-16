@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.wfprev;
 
 import ca.bc.gov.nrs.wfprev.controllers.ReportController;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.services.ReportService;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
@@ -26,7 +27,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,7 +77,7 @@ class ReportControllerTest {
         p.setProjectFiscalGuids(List.of()); 
 
         ReportRequestModel request = new ReportRequestModel();
-        request.setReportType("XLSX");
+        request.setReportType(ReportType.PROJECT_XLSX);
         request.setProjects(List.of(p));
 
         String json = gson.toJson(request);
@@ -110,7 +110,7 @@ class ReportControllerTest {
         p.setProjectFiscalGuids(List.of());
 
         ReportRequestModel request = new ReportRequestModel();
-        request.setReportType("CSV");
+        request.setReportType(ReportType.PROJECT_CSV);
         request.setProjects(List.of(p));
 
         String json = gson.toJson(request);
@@ -130,8 +130,22 @@ class ReportControllerTest {
     @Test
     @WithMockUser
     void testGenerateReport_InvalidType() throws Exception {
+        String json = "{\"reportType\":\"TXT\"}";
+
+        ResultActions result = mockMvc.perform(post("/reports")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(400, result.andReturn().getResponse().getStatus());
+        verifyNoInteractions(reportService);
+    }
+
+    @Test
+    @WithMockUser
+    void testGenerateReport_UnsupportedType() throws Exception {
         ReportRequestModel request = new ReportRequestModel();
-        request.setReportType("TXT");
+        request.setReportType(ReportType.RESULTS_XLSX);
 
         String json = gson.toJson(request);
 
