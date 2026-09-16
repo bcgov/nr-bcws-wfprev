@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 @RepositoryRestResource(exported = false)
-public interface FuelManagementReportRepository extends JpaRepository<ProjectFuelManagementReportEntity, UUID> {
+public interface ProjectFuelManagementReportRepository extends JpaRepository<ProjectFuelManagementReportEntity, UUID> {
     List<ProjectFuelManagementReportEntity> findByProjectGuid(UUID projectGuid);
 
     List<ProjectFuelManagementReportEntity> findByProjectGuidAndProjectPlanFiscalGuidIn(UUID projectGuid, Collection<UUID> fiscalGuids);

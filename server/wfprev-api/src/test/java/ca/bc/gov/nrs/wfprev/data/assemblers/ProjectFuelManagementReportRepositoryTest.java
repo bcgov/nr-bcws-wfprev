@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
-import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFuelManagementReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,16 +17,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class FuelManagementReportRepositoryTest {
+class ProjectFuelManagementReportRepositoryTest {
 
-    private FuelManagementReportRepository repository;
+    private ProjectFuelManagementReportRepository repository;
 
     private UUID projectGuid;
     private UUID fiscalGuid;
 
     @BeforeEach
     void setUp() {
-        repository = mock(FuelManagementReportRepository.class);
+        repository = mock(ProjectFuelManagementReportRepository.class);
 
         UUID uniqueRowGuid = UUID.randomUUID();
         projectGuid = UUID.randomUUID();

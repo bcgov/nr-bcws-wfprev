@@ -10,7 +10,7 @@ import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
 import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
-import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsFuelManagementReportRepository;
@@ -36,7 +36,7 @@ public class ReportService {
 
     private static final String FISCAL_QUERY_STRING = "&tab=fiscal&fiscalGuid=";
 
-    private final FuelManagementReportRepository fuelManagementRepository;
+    private final ProjectFuelManagementReportRepository projectFuelManagementReportRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
     private final ResultsFuelManagementReportRepository resultsFuelManagementReportRepository;
     private final ResultsCulturalPrescribedFireReportRepository resultsCulturalPrescribedFireReportRepository;
@@ -45,7 +45,7 @@ public class ReportService {
     private final CsvReportGenerator csvReportGenerator;
     private final XlsxReportGenerator xlsxReportGenerator;
 
-    public ReportService(FuelManagementReportRepository fuelManagementRepository,
+    public ReportService(ProjectFuelManagementReportRepository projectFuelManagementReportRepository,
                          CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
                          ResultsFuelManagementReportRepository resultsFuelManagementReportRepository,
                          ResultsCulturalPrescribedFireReportRepository resultsCulturalPrescribedFireReportRepository,
@@ -53,7 +53,7 @@ public class ReportService {
                          FeaturesService featuresService,
                          CsvReportGenerator csvReportGenerator,
                          XlsxReportGenerator xlsxReportGenerator) {
-        this.fuelManagementRepository = fuelManagementRepository;
+        this.projectFuelManagementReportRepository = projectFuelManagementReportRepository;
         this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
         this.resultsFuelManagementReportRepository = resultsFuelManagementReportRepository;
         this.resultsCulturalPrescribedFireReportRepository = resultsCulturalPrescribedFireReportRepository;
@@ -159,12 +159,12 @@ public class ReportService {
             if (fiscals != null && !fiscals.isEmpty()) {
                 crx.addAll(culturalPrescribedFireReportRepository
                         .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
-                fuel.addAll(fuelManagementRepository
+                fuel.addAll(projectFuelManagementReportRepository
                         .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
             } else {
                 // Now includes rows where project_plan_fiscal_guid IS NULL
                 crx.addAll(culturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
-                fuel.addAll(fuelManagementRepository.findByProjectGuid(projectGuid));
+                fuel.addAll(projectFuelManagementReportRepository.findByProjectGuid(projectGuid));
             }
         }
 
