@@ -72,7 +72,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.EndorsementCodeEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.WildfireOrgUnitEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.WildfireOrgUnitTypeCodeEntity" },
-  { "name": "ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity" },

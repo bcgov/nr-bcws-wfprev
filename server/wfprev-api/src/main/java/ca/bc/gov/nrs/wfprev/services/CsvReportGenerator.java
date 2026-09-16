@@ -2,7 +2,7 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class CsvReportGenerator {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
 
-    public void generateCsvZip(List<FuelManagementReportEntity> fuelEntities,
+    public void generateCsvZip(List<ProjectFuelManagementReportEntity> fuelEntities,
                                List<CulturalPrescribedFireReportEntity> crxEntities,
                                OutputStream zipOutStream) throws ServiceException {
         try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
@@ -38,7 +38,7 @@ public class CsvReportGenerator {
                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
                     writer.write(getFuelCsvHeader());
                     writer.newLine();
-                    for (FuelManagementReportEntity e : fuelEntities) {
+                    for (ProjectFuelManagementReportEntity e : fuelEntities) {
                         writer.write(String.join(",", getFuelCsvRow(e)));
                         writer.newLine();
                     }
@@ -381,7 +381,7 @@ public class CsvReportGenerator {
         ));
     }
 
-    private List<String> getFuelCsvRow(FuelManagementReportEntity e) {
+    private List<String> getFuelCsvRow(ProjectFuelManagementReportEntity e) {
         return List.of(
                 safe(e.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
                         e.getLinkToProject(), e.getProjectName()) : ""),

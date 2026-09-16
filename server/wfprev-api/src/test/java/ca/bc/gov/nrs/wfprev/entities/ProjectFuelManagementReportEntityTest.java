@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.entities;
 
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FuelManagementReportEntityTest {
+class ProjectFuelManagementReportEntityTest {
 
     @Test
     void testAllFields() {
@@ -18,7 +18,7 @@ class FuelManagementReportEntityTest {
         BigDecimal decimal = new BigDecimal("123.45");
         Date now = new Date();
 
-        FuelManagementReportEntity entity = new FuelManagementReportEntity();
+        ProjectFuelManagementReportEntity entity = new ProjectFuelManagementReportEntity();
 
         entity.setProjectPlanFiscalGuid(guid1);
         entity.setLinkToProject("http://example.com/project");

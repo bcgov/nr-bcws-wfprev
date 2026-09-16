@@ -2,7 +2,7 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,7 +35,7 @@ public class XlsxReportGenerator {
         return reportGeneratorLambdaUrl;
     }
 
-    public void generateXlsx(List<FuelManagementReportEntity> fuelEntities,
+    public void generateXlsx(List<ProjectFuelManagementReportEntity> fuelEntities,
                              List<CulturalPrescribedFireReportEntity> crxEntities,
                              OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
@@ -199,7 +199,7 @@ public class XlsxReportGenerator {
 
         public static class XlsxReportData {
             private List<CulturalPrescribedFireReportEntity> culturePrescribedFireReportData;
-            private List<FuelManagementReportEntity> fuelManagementReportData;
+            private List<ProjectFuelManagementReportEntity> fuelManagementReportData;
             private List<ResultsCulturalPrescribedFireReportEntity> resultsCulturePrescribedFireReportData;
             private List<ResultsFuelManagementReportEntity> resultsFuelManagementReportData;
 
@@ -211,11 +211,11 @@ public class XlsxReportGenerator {
                 this.culturePrescribedFireReportData = data;
             }
 
-            public List<FuelManagementReportEntity> getFuelManagementReportData() {
+            public List<ProjectFuelManagementReportEntity> getFuelManagementReportData() {
                 return fuelManagementReportData;
             }
 
-            public void setFuelManagementReportData(List<FuelManagementReportEntity> data) {
+            public void setFuelManagementReportData(List<ProjectFuelManagementReportEntity> data) {
                 this.fuelManagementReportData = data;
             }
 

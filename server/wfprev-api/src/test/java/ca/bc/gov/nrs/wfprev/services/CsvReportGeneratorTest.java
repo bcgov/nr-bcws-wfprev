@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class CsvReportGeneratorTest {
 
     @Test
     void generateCsvZip_onlyFuel_producesFuelCsvOnly() throws Exception {
-        FuelManagementReportEntity fuel = new FuelManagementReportEntity();
+        ProjectFuelManagementReportEntity fuel = new ProjectFuelManagementReportEntity();
         fuel.setUniqueRowGuid(UUID.randomUUID());
         fuel.setProjectName("Test Project");
         fuel.setLinkToProject("https://example.com/project");
@@ -93,7 +93,7 @@ class CsvReportGeneratorTest {
 
     @Test
     void generateCsvZip_bothPresent_producesBothCsvs() throws Exception {
-        FuelManagementReportEntity fuel = new FuelManagementReportEntity();
+        ProjectFuelManagementReportEntity fuel = new ProjectFuelManagementReportEntity();
         fuel.setProjectName("Fuel 1");
 
         CulturalPrescribedFireReportEntity crx = new CulturalPrescribedFireReportEntity();
@@ -137,8 +137,8 @@ class CsvReportGeneratorTest {
         assertFalse(entries.contains("results-cultural-prescribed-fire-projects.csv"));
 
         String content = getZipEntryContent(out.toByteArray(), "results-fuel-management-projects.csv");
-        assertTrue(content.contains("Link to Project (within Prevention application)"));
-        assertTrue(content.contains("Link to Fiscal Activity (within Prevention application)"));
+        assertTrue(content.contains("Link to Project (within within ReMi Planner)"));
+        assertTrue(content.contains("Link to Fiscal Activity (within ReMi Planner)"));
         assertTrue(content.contains("Results Fuel Project"));
         assertTrue(content.contains("Piling"));
         assertTrue(content.contains("\"45.67\""));
@@ -166,8 +166,8 @@ class CsvReportGeneratorTest {
         assertTrue(entries.contains("results-cultural-prescribed-fire-projects.csv"));
 
         String content = getZipEntryContent(out.toByteArray(), "results-cultural-prescribed-fire-projects.csv");
-        assertTrue(content.contains("Link to Project (within Prevention application)"));
-        assertTrue(content.contains("Link to Fiscal Activity (within Prevention application)"));
+        assertTrue(content.contains("Link to Project (within within ReMi Planner)"));
+        assertTrue(content.contains("Link to Fiscal Activity (within ReMi Planner)"));
         assertTrue(content.contains("Results CRX Project"));
         assertTrue(content.contains("Broadcast Burn"));
         assertTrue(content.contains("\"89.12\""));

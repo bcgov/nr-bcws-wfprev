@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Immutable
 @Table(name = "project_fuel_management_vw", schema = "wfprev")
-public class FuelManagementReportEntity implements Serializable {
+public class ProjectFuelManagementReportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

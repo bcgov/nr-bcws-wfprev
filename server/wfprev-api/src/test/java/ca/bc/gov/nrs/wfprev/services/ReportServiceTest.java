@@ -2,7 +2,7 @@ package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
@@ -383,7 +383,7 @@ class ReportServiceTest {
         UUID fiscalGuid = UUID.randomUUID();
 
         // Setup Fuel Entity with ALL fields populated
-        FuelManagementReportEntity fuelEntity = new FuelManagementReportEntity();
+        ProjectFuelManagementReportEntity fuelEntity = new ProjectFuelManagementReportEntity();
         fuelEntity.setUniqueRowGuid(UUID.randomUUID());
         fuelEntity.setProjectGuid(projectGuid);
         fuelEntity.setProjectPlanFiscalGuid(fiscalGuid);
@@ -966,8 +966,8 @@ class ReportServiceTest {
         return p;
     }
 
-    private static FuelManagementReportEntity fuel(UUID projectGuid, UUID fiscalGuid, String name) {
-        FuelManagementReportEntity e = new FuelManagementReportEntity();
+    private static ProjectFuelManagementReportEntity fuel(UUID projectGuid, UUID fiscalGuid, String name) {
+        ProjectFuelManagementReportEntity e = new ProjectFuelManagementReportEntity();
         e.setUniqueRowGuid(UUID.randomUUID());
         e.setProjectGuid(projectGuid);
         e.setProjectPlanFiscalGuid(fiscalGuid);

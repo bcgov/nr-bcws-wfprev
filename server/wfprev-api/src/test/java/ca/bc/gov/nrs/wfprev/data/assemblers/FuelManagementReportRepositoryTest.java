@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class FuelManagementReportRepositoryTest {
         projectGuid = UUID.randomUUID();
         fiscalGuid = UUID.randomUUID();
 
-        FuelManagementReportEntity mockEntity = new FuelManagementReportEntity();
+        ProjectFuelManagementReportEntity mockEntity = new ProjectFuelManagementReportEntity();
         mockEntity.setUniqueRowGuid(uniqueRowGuid);
         mockEntity.setProjectGuid(projectGuid);
         mockEntity.setProjectPlanFiscalGuid(fiscalGuid);
@@ -47,7 +47,7 @@ class FuelManagementReportRepositoryTest {
 
     @Test
     void findByProjectGuid_returnsRowsIncludingNullFiscalOnesInRealDB() {
-        List<FuelManagementReportEntity> results = repository.findByProjectGuid(projectGuid);
+        List<ProjectFuelManagementReportEntity> results = repository.findByProjectGuid(projectGuid);
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -60,7 +60,7 @@ class FuelManagementReportRepositoryTest {
 
     @Test
     void findByProjectGuidAndProjectPlanFiscalGuidIn_filtersByFiscal() {
-        List<FuelManagementReportEntity> results =
+        List<ProjectFuelManagementReportEntity> results =
                 repository.findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, List.of(fiscalGuid));
 
         assertNotNull(results);
