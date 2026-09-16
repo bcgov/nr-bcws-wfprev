@@ -4,11 +4,16 @@ import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ResultsFuelManagementReportRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,6 +38,8 @@ public class ReportService {
 
     private final FuelManagementReportRepository fuelManagementRepository;
     private final CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository;
+    private final ResultsFuelManagementReportRepository resultsFuelManagementReportRepository;
+    private final ResultsCulturalPrescribedFireReportRepository resultsCulturalPrescribedFireReportRepository;
     private final ProgramAreaRepository programAreaRepository;
     private final FeaturesService featuresService;
     private final CsvReportGenerator csvReportGenerator;
@@ -40,12 +47,16 @@ public class ReportService {
 
     public ReportService(FuelManagementReportRepository fuelManagementRepository,
                          CulturalPrescribedFireReportRepository culturalPrescribedFireReportRepository,
+                         ResultsFuelManagementReportRepository resultsFuelManagementReportRepository,
+                         ResultsCulturalPrescribedFireReportRepository resultsCulturalPrescribedFireReportRepository,
                          ProgramAreaRepository programAreaRepository,
                          FeaturesService featuresService,
                          CsvReportGenerator csvReportGenerator,
                          XlsxReportGenerator xlsxReportGenerator) {
         this.fuelManagementRepository = fuelManagementRepository;
         this.culturalPrescribedFireReportRepository = culturalPrescribedFireReportRepository;
+        this.resultsFuelManagementReportRepository = resultsFuelManagementReportRepository;
+        this.resultsCulturalPrescribedFireReportRepository = resultsCulturalPrescribedFireReportRepository;
         this.programAreaRepository = programAreaRepository;
         this.featuresService = featuresService;
         this.csvReportGenerator = csvReportGenerator;
@@ -79,10 +90,26 @@ public class ReportService {
         }
     }
 
-    private ReportDataBundle resolveReportData(ReportRequestModel request) {
-        List<FuelManagementReportEntity> fuel = new ArrayList<>();
-        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<>();
+    public static class ResultsReportDataBundle {
+        List<ResultsFuelManagementReportEntity> fuel;
+        List<ResultsCulturalPrescribedFireReportEntity> crx;
 
+        ResultsReportDataBundle(List<ResultsFuelManagementReportEntity> fuel,
+                                List<ResultsCulturalPrescribedFireReportEntity> crx) {
+            this.fuel = fuel;
+            this.crx = crx;
+        }
+
+        public List<ResultsFuelManagementReportEntity> getFuel() {
+            return fuel;
+        }
+
+        public List<ResultsCulturalPrescribedFireReportEntity> getCrx() {
+            return crx;
+        }
+    }
+
+    private List<ReportRequestModel.Project> resolveProjectsToReport(ReportRequestModel request) {
         if (request == null || ((request.getProjects() == null || request.getProjects().isEmpty()) && request.getProjectFilter() == null)) {
             throw new IllegalArgumentException("At least one project or a filter is required");
         }
@@ -109,13 +136,21 @@ public class ReportService {
                     p.setProjectFiscalGuids(fiscals.stream()
                             .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
                             .toList());
-                } else { 
+                } else {
                     p.setProjectFiscalGuids(new ArrayList<>());
                 }
-                
+
                 projectsToReport.add(p);
             }
         }
+        return projectsToReport;
+    }
+
+    private ReportDataBundle resolveReportData(ReportRequestModel request) {
+        List<FuelManagementReportEntity> fuel = new ArrayList<>();
+        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<>();
+
+        List<ReportRequestModel.Project> projectsToReport = resolveProjectsToReport(request);
 
         for (ReportRequestModel.Project p : projectsToReport) {
             UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
@@ -134,6 +169,30 @@ public class ReportService {
         }
 
         return new ReportDataBundle(fuel, crx);
+    }
+
+    private ResultsReportDataBundle resolveResultsReportData(ReportRequestModel request) {
+        List<ResultsFuelManagementReportEntity> fuel = new ArrayList<>();
+        List<ResultsCulturalPrescribedFireReportEntity> crx = new ArrayList<>();
+
+        List<ReportRequestModel.Project> projectsToReport = resolveProjectsToReport(request);
+
+        for (ReportRequestModel.Project p : projectsToReport) {
+            UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
+            List<UUID> fiscals = p.getProjectFiscalGuids();
+
+            if (fiscals != null && !fiscals.isEmpty()) {
+                crx.addAll(resultsCulturalPrescribedFireReportRepository
+                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
+                fuel.addAll(resultsFuelManagementReportRepository
+                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
+            } else {
+                crx.addAll(resultsCulturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
+                fuel.addAll(resultsFuelManagementReportRepository.findByProjectGuid(projectGuid));
+            }
+        }
+
+        return new ResultsReportDataBundle(fuel, crx);
     }
 
     private ReportDataBundle getPreparedReportData(ReportRequestModel request) {
@@ -155,15 +214,53 @@ public class ReportService {
         return data;
     }
 
+    private ResultsReportDataBundle getPreparedResultsReportData(ReportRequestModel request) {
+        ResultsReportDataBundle data = resolveResultsReportData(request);
+
+        // Remove nulls up front (defensive)
+        data.fuel.removeIf(Objects::isNull);
+        data.crx.removeIf(Objects::isNull);
+
+        // Pre-process
+        data.fuel.forEach(this::setResultsFuelManagementFields);
+        data.crx.forEach(this::setResultsCrxFields);
+
+        // If absolutely nothing to write, fail early
+        if (data.fuel.isEmpty() && data.crx.isEmpty()) {
+            throw new IllegalArgumentException("No fiscal data found for the provided projects");
+        }
+
+        return data;
+    }
+
     public void exportXlsx(ReportRequestModel request, OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
-        ReportDataBundle data = getPreparedReportData(request);
-        xlsxReportGenerator.generateXlsx(data.fuel, data.crx, outputStream);
+        if (request != null && ReportType.RESULTS_XLSX.equals(request.getReportType())) {
+            exportResultsXlsx(request, outputStream);
+        } else {
+            ReportDataBundle data = getPreparedReportData(request);
+            xlsxReportGenerator.generateXlsx(data.fuel, data.crx, outputStream);
+        }
+    }
+
+    public void exportResultsXlsx(ReportRequestModel request, OutputStream outputStream)
+            throws ServiceException, IOException, InterruptedException {
+        ResultsReportDataBundle data = getPreparedResultsReportData(request);
+        xlsxReportGenerator.generateResultsXlsx(data.fuel, data.crx, outputStream);
     }
 
     public void writeCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
-        ReportDataBundle data = getPreparedReportData(request);
-        csvReportGenerator.generateCsvZip(data.fuel, data.crx, zipOutStream);
+        if (request != null && ReportType.RESULTS_CSV.equals(request.getReportType())) {
+            writeResultsCsvZipFromEntities(request, zipOutStream);
+        } else {
+            ReportDataBundle data = getPreparedReportData(request);
+            csvReportGenerator.generateCsvZip(data.fuel, data.crx, zipOutStream);
+        }
+    }
+
+    public void writeResultsCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
+        ResultsReportDataBundle data = getPreparedResultsReportData(request);
+        csvReportGenerator.generateResultsCsvZip(data.fuel, data.crx, zipOutStream);
     }
 
     private void setFuelManagementFields(FuelManagementReportEntity entity) {
@@ -209,9 +306,42 @@ public class ReportService {
         }
     }
 
+    private void setResultsFuelManagementFields(ResultsFuelManagementReportEntity entity) {
+        String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
+        if (entity != null) {
+            if (entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+            }
+
+            if (entity.getProjectPlanFiscalGuid() != null) {
+                entity.setLinkToFiscalActivity(
+                        urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
+            }
+
+            entity.setFiscalYear(formatFiscalYearIfNumeric(entity.getFiscalYear()));
+        }
+    }
+
+    private void setResultsCrxFields(ResultsCulturalPrescribedFireReportEntity entity) {
+        String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
+        if (entity != null) {
+            if (entity.getProjectGuid() != null) {
+                entity.setLinkToProject(urlPrefix + entity.getProjectGuid());
+                if (entity.getProjectPlanFiscalGuid() != null) {
+                    entity.setLinkToFiscalActivity(
+                            urlPrefix + entity.getProjectGuid() + FISCAL_QUERY_STRING + entity.getProjectPlanFiscalGuid());
+                }
+            }
+
+            entity.setFiscalYear(formatFiscalYearIfNumeric(entity.getFiscalYear()));
+        }
+    }
+
     private String formatFiscalYearIfNumeric(String fiscalYear) {
         if (fiscalYear == null)
             return "";
+        if (fiscalYear.matches("\\d{4}/\\d{2}"))
+            return fiscalYear;
         try {
             int year = Integer.parseInt(fiscalYear);
             return year + "/" + String.format("%02d", (year + 1) % 100);

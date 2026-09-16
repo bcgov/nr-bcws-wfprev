@@ -3,6 +3,8 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +51,30 @@ public class XlsxReportGenerator {
         report.setXlsxReportData(xlsxData);
         lambdaRequest.setReports(List.of(report));
 
+        callLambdaAndWriteStream(lambdaRequest, outputStream);
+    }
+
+    public void generateResultsXlsx(List<ResultsFuelManagementReportEntity> fuelEntities,
+                                    List<ResultsCulturalPrescribedFireReportEntity> crxEntities,
+                                    OutputStream outputStream)
+            throws ServiceException, IOException, InterruptedException {
+
+        // Build Lambda request model
+        LambdaReportRequest lambdaRequest = new LambdaReportRequest();
+        LambdaReportRequest.Report report = new LambdaReportRequest.Report();
+        report.setReportType("XLSX");
+        report.setReportName("results-report");
+        LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
+        xlsxData.setResultsFuelManagementReportData(fuelEntities);
+        xlsxData.setResultsCulturePrescribedFireReportData(crxEntities);
+        report.setXlsxReportData(xlsxData);
+        lambdaRequest.setReports(List.of(report));
+
+        callLambdaAndWriteStream(lambdaRequest, outputStream);
+    }
+
+    private void callLambdaAndWriteStream(LambdaReportRequest lambdaRequest, OutputStream outputStream)
+            throws ServiceException, IOException, InterruptedException {
         // Call Lambda
         if (reportGeneratorLambdaUrl == null || reportGeneratorLambdaUrl.isBlank()) {
             throw new ServiceException("REPORT_GENERATOR_LAMBDA_URL environment variable is not set");
@@ -174,6 +200,8 @@ public class XlsxReportGenerator {
         public static class XlsxReportData {
             private List<CulturalPrescribedFireReportEntity> culturePrescribedFireReportData;
             private List<FuelManagementReportEntity> fuelManagementReportData;
+            private List<ResultsCulturalPrescribedFireReportEntity> resultsCulturePrescribedFireReportData;
+            private List<ResultsFuelManagementReportEntity> resultsFuelManagementReportData;
 
             public List<CulturalPrescribedFireReportEntity> getCulturePrescribedFireReportData() {
                 return culturePrescribedFireReportData;
@@ -189,6 +217,22 @@ public class XlsxReportGenerator {
 
             public void setFuelManagementReportData(List<FuelManagementReportEntity> data) {
                 this.fuelManagementReportData = data;
+            }
+
+            public List<ResultsCulturalPrescribedFireReportEntity> getResultsCulturePrescribedFireReportData() {
+                return resultsCulturePrescribedFireReportData;
+            }
+
+            public void setResultsCulturePrescribedFireReportData(List<ResultsCulturalPrescribedFireReportEntity> data) {
+                this.resultsCulturePrescribedFireReportData = data;
+            }
+
+            public List<ResultsFuelManagementReportEntity> getResultsFuelManagementReportData() {
+                return resultsFuelManagementReportData;
+            }
+
+            public void setResultsFuelManagementReportData(List<ResultsFuelManagementReportEntity> data) {
+                this.resultsFuelManagementReportData = data;
             }
         }
     }

@@ -3,6 +3,8 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +63,186 @@ public class CsvReportGenerator {
             log.info("Failed to generate CSV report: {}", e.getMessage(), e);
             throw new ServiceException("Failed to generate CSV report", e);
         }
+    }
+
+    public void generateResultsCsvZip(List<ResultsFuelManagementReportEntity> fuelEntities,
+                                      List<ResultsCulturalPrescribedFireReportEntity> crxEntities,
+                                      OutputStream zipOutStream) throws ServiceException {
+        try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
+
+            // Only write Results Fuel CSV if there are rows
+            if (fuelEntities != null && !fuelEntities.isEmpty()) {
+                ByteArrayOutputStream fuelCsvOut = new ByteArrayOutputStream();
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fuelCsvOut))) {
+                    writer.write(getResultsCsvHeader());
+                    writer.newLine();
+                    for (ResultsFuelManagementReportEntity e : fuelEntities) {
+                        writer.write(String.join(",", getResultsFuelCsvRow(e)));
+                        writer.newLine();
+                    }
+                }
+                addToZip(zipOut, "results-fuel-management-projects.csv", fuelCsvOut.toByteArray());
+            }
+
+            // Only write Results Cultural Prescribed CSV if there are rows
+            if (crxEntities != null && !crxEntities.isEmpty()) {
+                ByteArrayOutputStream crxCsvOut = new ByteArrayOutputStream();
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
+                    writer.write(getResultsCsvHeader());
+                    writer.newLine();
+                    for (ResultsCulturalPrescribedFireReportEntity c : crxEntities) {
+                        writer.write(String.join(",", getResultsCrxCsvRow(c)));
+                        writer.newLine();
+                    }
+                }
+                addToZip(zipOut, "results-cultural-prescribed-fire-projects.csv", crxCsvOut.toByteArray());
+            }
+        } catch (IOException e) {
+            log.info("Failed to generate Results CSV report: {}", e.getMessage(), e);
+            throw new ServiceException("Failed to generate Results CSV report", e);
+        }
+    }
+
+    private String getResultsCsvHeader() {
+        return String.join(",", List.of(
+                "Link to Project (within Prevention application)",
+                "Link to Fiscal Activity (within Prevention application)",
+                "Project Name",
+                "Project Fiscal Name",
+                "Activity Name",
+                "RESULTS Reportable (Y/N)",
+                "Activity Description",
+                "Activity Status",
+                "Fiscal Year",
+                "Forest District",
+                "Project Lead Email Address",
+                "RESULTS Project Code",
+                "RESULTS Opening ID",
+                "RESULTS Opening Action",
+                "RESULTS Opening Category",
+                "Project Boundary Size (ha)",
+                "Max Permanent Access %",
+                "Base",
+                "Technique",
+                "Method",
+                "Primary Objective",
+                "Secondary Objective",
+                "Additional Objective",
+                "Activity End Date",
+                "Completed Area (ha)",
+                "Funding Source Code",
+                "Comment",
+                "Tenure Number",
+                "Planned Treatment Area (ha)",
+                "Contract Phase",
+                "CFS Project Code",
+                "Previous Carry Forward (Y/N)",
+                "Carry Forward (Y/N)",
+                "Final Outcome Comments",
+                "Outstanding Obligations (Y/N)",
+                "Activity Comment",
+                "Opening Spatial File Name",
+                "Activity Spatial File Name",
+                "Forest Cover Spatial File Name",
+                "Forest Cover Attributes",
+                "Prescription"
+        ));
+    }
+
+    private List<String> getResultsFuelCsvRow(ResultsFuelManagementReportEntity e) {
+        return List.of(
+                safe(e.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        e.getLinkToProject(), e.getProjectName()) : ""),
+                safe(e.getProjectFiscalName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        e.getLinkToFiscalActivity(), e.getProjectFiscalName()) : ""),
+                safe(e.getProjectName()),
+                safe(e.getProjectFiscalName()),
+                safe(e.getActivityName()),
+                safe(e.getIsResultsReportableInd()),
+                safe(e.getActivityDescription()),
+                safe(e.getActivityStatusName()),
+                safe(e.getFiscalYear()),
+                safe(e.getForestDistrictName()),
+                safe(e.getProjectLeadEmailAddress()),
+                safe(e.getResultsProjectCode()),
+                safe(e.getResultsOpeningId()),
+                safe(e.getResultsOpeningAction()),
+                safe(e.getResultsOpeningCategory()),
+                safe(e.getProjectBoundarySizeHa() != null ? formatHectares(e.getProjectBoundarySizeHa()) : ""),
+                safe(e.getMaxPermanentAccessPercent() != null ? formatHectares(e.getMaxPermanentAccessPercent()) : ""),
+                safe(e.getActivityBaseName()),
+                safe(e.getTechniqueName()),
+                safe(e.getMethodName()),
+                safe(e.getPrimaryObjectiveName()),
+                safe(e.getSecondaryObjectiveName()),
+                safe(e.getAdditionalObjectiveName()),
+                safe(e.getActivityEndDate() != null ? DATE_FORMAT.format(e.getActivityEndDate().toInstant()) : ""),
+                safe(e.getCompletedAreaHa() != null ? formatHectares(e.getCompletedAreaHa()) : ""),
+                safe(e.getFundingSourceCode()),
+                safe(e.getComment()),
+                safe(e.getTenureNumber()),
+                safe(e.getPlannedTreatmentAreaHa() != null ? formatHectares(e.getPlannedTreatmentAreaHa()) : ""),
+                safe(e.getContractPhaseName()),
+                safe(e.getCfsProjectCode()),
+                safe(e.getPreviousCarryForwardInd()),
+                safe(e.getCarryForwardInd()),
+                safe(e.getFinalOutcomeComments()),
+                safe(e.getOutstandingObligationsInd()),
+                safe(e.getActivityComment()),
+                safe(e.getOpeningShapeFileName()),
+                safe(e.getActivityShapeFileName()),
+                safe(e.getForestCoverShapeFileName()),
+                safe(e.getForestCoverAttributes()),
+                safe(e.getPrescription())
+        );
+    }
+
+    private List<String> getResultsCrxCsvRow(ResultsCulturalPrescribedFireReportEntity c) {
+        return List.of(
+                safe(c.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
+                        c.getLinkToProject(), c.getProjectName()) : ""),
+                safe(c.getProjectFiscalName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Fiscal Activity Link\")",
+                        c.getLinkToFiscalActivity(), c.getProjectFiscalName()) : ""),
+                safe(c.getProjectName()),
+                safe(c.getProjectFiscalName()),
+                safe(c.getActivityName()),
+                safe(c.getIsResultsReportableInd()),
+                safe(c.getActivityDescription()),
+                safe(c.getActivityStatusName()),
+                safe(c.getFiscalYear()),
+                safe(c.getForestDistrictName()),
+                safe(c.getProjectLeadEmailAddress()),
+                safe(c.getResultsProjectCode()),
+                safe(c.getResultsOpeningId()),
+                safe(c.getResultsOpeningAction()),
+                safe(c.getResultsOpeningCategory()),
+                safe(c.getProjectBoundarySizeHa() != null ? formatHectares(c.getProjectBoundarySizeHa()) : ""),
+                safe(c.getMaxPermanentAccessPercent() != null ? formatHectares(c.getMaxPermanentAccessPercent()) : ""),
+                safe(c.getActivityBaseName()),
+                safe(c.getTechniqueName()),
+                safe(c.getMethodName()),
+                safe(c.getPrimaryObjectiveName()),
+                safe(c.getSecondaryObjectiveName()),
+                safe(c.getAdditionalObjectiveName()),
+                safe(c.getActivityEndDate() != null ? DATE_FORMAT.format(c.getActivityEndDate().toInstant()) : ""),
+                safe(c.getCompletedAreaHa() != null ? formatHectares(c.getCompletedAreaHa()) : ""),
+                safe(c.getFundingSourceCode()),
+                safe(c.getComment()),
+                safe(c.getTenureNumber()),
+                safe(c.getPlannedTreatmentAreaHa() != null ? formatHectares(c.getPlannedTreatmentAreaHa()) : ""),
+                safe(c.getContractPhaseName()),
+                safe(c.getCfsProjectCode()),
+                safe(c.getPreviousCarryForwardInd()),
+                safe(c.getCarryForwardInd()),
+                safe(c.getFinalOutcomeComments()),
+                safe(c.getOutstandingObligationsInd()),
+                safe(c.getActivityComment()),
+                safe(c.getOpeningShapeFileName()),
+                safe(c.getActivityShapeFileName()),
+                safe(c.getForestCoverShapeFileName()),
+                safe(c.getForestCoverAttributes()),
+                safe(c.getPrescription())
+        );
     }
 
     private void addToZip(ZipOutputStream zipOut, String fileName, byte[] content) throws IOException {

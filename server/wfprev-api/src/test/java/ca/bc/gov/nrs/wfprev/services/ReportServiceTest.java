@@ -5,11 +5,16 @@ import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.FuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
+import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.FuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ResultsFuelManagementReportRepository;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +41,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,6 +57,8 @@ class ReportServiceTest {
 
     private FuelManagementReportRepository fuelRepo;
     private CulturalPrescribedFireReportRepository crxRepo;
+    private ResultsFuelManagementReportRepository resultsFuelRepo;
+    private ResultsCulturalPrescribedFireReportRepository resultsCrxRepo;
     private ProgramAreaRepository programAreaRepo;
     private FeaturesService featuresService;
 
@@ -62,12 +70,14 @@ class ReportServiceTest {
     void setup() throws Exception {
         fuelRepo = mock(FuelManagementReportRepository.class);
         crxRepo = mock(CulturalPrescribedFireReportRepository.class);
+        resultsFuelRepo = mock(ResultsFuelManagementReportRepository.class);
+        resultsCrxRepo = mock(ResultsCulturalPrescribedFireReportRepository.class);
         programAreaRepo = mock(ProgramAreaRepository.class);
 
         featuresService = mock(FeaturesService.class);
         csvReportGenerator = new CsvReportGenerator();
         xlsxReportGenerator = new XlsxReportGenerator();
-        service = new ReportService(fuelRepo, crxRepo, programAreaRepo, featuresService, csvReportGenerator, xlsxReportGenerator);
+        service = new ReportService(fuelRepo, crxRepo, resultsFuelRepo, resultsCrxRepo, programAreaRepo, featuresService, csvReportGenerator, xlsxReportGenerator);
 
         setField(service, "baseUrl", "https://example.com");
         xlsxReportGenerator.setReportGeneratorLambdaUrl("http://invalid/override-me-in-test");
@@ -978,6 +988,285 @@ class ReportServiceTest {
         return e;
     }
 
+    private static ResultsFuelManagementReportEntity resultsFuel(UUID projectGuid, UUID fiscalGuid, String name) {
+        ResultsFuelManagementReportEntity e = new ResultsFuelManagementReportEntity();
+        e.setUniqueRowGuid(UUID.randomUUID());
+        e.setProjectGuid(projectGuid);
+        e.setProjectPlanFiscalGuid(fiscalGuid);
+        e.setProjectName(name);
+        e.setProjectFiscalName("Fiscal " + name);
+        e.setFiscalYear("2024/25");
+        return e;
+    }
+
+    private static ResultsCulturalPrescribedFireReportEntity resultsCrx(UUID projectGuid, UUID fiscalGuid, String name) {
+        ResultsCulturalPrescribedFireReportEntity e = new ResultsCulturalPrescribedFireReportEntity();
+        e.setUniqueRowGuid(UUID.randomUUID());
+        e.setProjectGuid(projectGuid);
+        e.setProjectPlanFiscalGuid(fiscalGuid);
+        e.setProjectName(name);
+        e.setProjectFiscalName("Fiscal " + name);
+        e.setFiscalYear("2024/25");
+        return e;
+    }
+
+    @Test
+    void resolveResultsReportData_noFiscalGuids_usesFindByProjectGuid() throws Exception {
+        UUID proj = UUID.randomUUID();
+
+        when(resultsFuelRepo.findByProjectGuid(proj))
+                .thenReturn(List.of(resultsFuel(proj, null, "Results Fuel N")));
+        when(resultsCrxRepo.findByProjectGuid(proj))
+                .thenReturn(List.of(resultsCrx(proj, null, "Results CRX N")));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+        req.setReportType(ReportType.RESULTS_CSV);
+
+        service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
+
+        verify(resultsFuelRepo, times(1)).findByProjectGuid(proj);
+        verify(resultsCrxRepo, times(1)).findByProjectGuid(proj);
+        verify(resultsFuelRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+        verify(resultsCrxRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+    }
+
+    @Test
+    void resolveResultsReportData_withFiscalGuids_usesFindByProjectGuidAndFiscal() throws Exception {
+        UUID proj = UUID.randomUUID();
+        UUID fiscal = UUID.randomUUID();
+        List<UUID> fiscals = List.of(fiscal);
+
+        when(resultsFuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+                .thenReturn(List.of(resultsFuel(proj, fiscal, "Results Fuel F")));
+        when(resultsCrxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+                .thenReturn(List.of(resultsCrx(proj, fiscal, "Results CRX F")));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, fiscals)));
+        req.setReportType(ReportType.RESULTS_CSV);
+
+        service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
+
+        verify(resultsFuelRepo, times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
+        verify(resultsCrxRepo, times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
+        verify(resultsFuelRepo, never()).findByProjectGuid(proj);
+        verify(resultsCrxRepo, never()).findByProjectGuid(proj);
+    }
+
+    @Test
+    void resolveResultsReportData_withFilters_usesFeaturesService() throws Exception {
+        ReportRequestModel req = new ReportRequestModel();
+        req.setReportType(ReportType.RESULTS_CSV);
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(List.of("2024"));
+        req.setProjectFilter(params);
+
+        UUID proj = UUID.randomUUID();
+        UUID fiscal = UUID.randomUUID();
+
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectGuid(proj);
+
+        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
+        fiscalEntity.setProjectPlanFiscalGuid(fiscal);
+
+        when(featuresService.findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any()))
+                .thenReturn(List.of(entity));
+        when(featuresService.findFilteredProjectFiscals(eq(proj), eq(List.of("2024")), any(), any()))
+                .thenReturn(List.of(fiscalEntity));
+
+        when(resultsFuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+                .thenReturn(List.of(resultsFuel(proj, fiscal, "Results Fuel Filtered")));
+        when(resultsCrxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+                .thenReturn(Collections.emptyList());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeCsvZipFromEntities(req, out);
+
+        verify(featuresService).findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any());
+        verify(featuresService).findFilteredProjectFiscals(eq(proj), eq(List.of("2024")), any(), any());
+        verify(resultsFuelRepo).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal)));
+    }
+
+    @Test
+    void writeCsvZip_results_onlyFuel_present_writesOneCsv() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
+
+        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel A")));
+        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+        req.setReportType(ReportType.RESULTS_CSV);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeCsvZipFromEntities(req, out);
+
+        Set<String> entries = zipEntries(out.toByteArray());
+        assertTrue(entries.contains("results-fuel-management-projects.csv"));
+        assertFalse(entries.contains("results-cultural-prescribed-fire-projects.csv"));
+    }
+
+    @Test
+    void writeCsvZip_results_onlyCrx_present_writesOneCsv() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
+
+        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX A")));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+        req.setReportType(ReportType.RESULTS_CSV);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeCsvZipFromEntities(req, out);
+
+        Set<String> entries = zipEntries(out.toByteArray());
+        assertFalse(entries.contains("results-fuel-management-projects.csv"));
+        assertTrue(entries.contains("results-cultural-prescribed-fire-projects.csv"));
+    }
+
+    @Test
+    void writeCsvZip_results_noData_throwsIllegalArgument() {
+        UUID projectGuid = UUID.randomUUID();
+        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+        req.setReportType(ReportType.RESULTS_CSV);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.writeCsvZipFromEntities(req, new ByteArrayOutputStream())
+        );
+        assertTrue(ex.getMessage().toLowerCase().contains("no fiscal data"));
+    }
+
+    @Test
+    void exportXlsx_results_success_writesReturnedBytes() throws Exception {
+        byte[] xlsxBytes = "test-results-xlsx-contents".getBytes(StandardCharsets.UTF_8);
+        String payload = lambdaResponseWithSingleFile(
+                "results-report.xlsx",
+                Base64.getEncoder().encodeToString(xlsxBytes)
+        );
+
+        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/lambda", (HttpExchange ex) -> {
+            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
+            ex.getResponseHeaders().add("Content-Type", "application/json");
+            ex.sendResponseHeaders(200, response.length);
+            try (OutputStream os = ex.getResponseBody()) {
+                os.write(response);
+            }
+        });
+
+        try (var ignored = start(server)) {
+            String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
+            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
+
+            UUID projectGuid = UUID.randomUUID();
+            UUID fiscalGuid = UUID.randomUUID();
+            when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel X")));
+            when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX X")));
+
+            ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+            req.setReportType(ReportType.RESULTS_XLSX);
+
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                service.exportXlsx(req, out);
+                assertArrayEquals(xlsxBytes, out.toByteArray(),
+                        "Should write exactly the XLSX bytes returned by Lambda for results");
+            }
+        }
+    }
+
+    @Test
+    void writeCsvZip_results_includesLinksAndFormattedFiscalYear() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        UUID fiscalGuid = UUID.randomUUID();
+
+        ResultsFuelManagementReportEntity fuelEntity = resultsFuel(projectGuid, fiscalGuid, "Fuel Results Project");
+        fuelEntity.setFiscalYear("2024");
+
+        ResultsCulturalPrescribedFireReportEntity crxEntity = resultsCrx(projectGuid, fiscalGuid, "CRX Results Project");
+        crxEntity.setFiscalYear("2025/26");
+
+        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuelEntity));
+        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crxEntity));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+        req.setReportType(ReportType.RESULTS_CSV);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeCsvZipFromEntities(req, out);
+
+        try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(out.toByteArray()))) {
+            ZipEntry entry;
+            while ((entry = zin.getNextEntry()) != null) {
+                byte[] content = zin.readAllBytes();
+                String csv = new String(content, StandardCharsets.UTF_8);
+                String[] lines = csv.split("\\r?\\n");
+
+                if (entry.getName().contains("fuel")) {
+                    String row = lines[1];
+                    String expectedProjectLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "\"\", \"\"Fuel Results Project Project Link\"\")\"";
+                    String expectedFiscalLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "&tab=fiscal&fiscalGuid=" + fiscalGuid + "\"\", \"\"Fiscal Fuel Results Project Fiscal Activity Link\"\")\"";
+
+                    assertTrue(row.contains(expectedProjectLink));
+                    assertTrue(row.contains(expectedFiscalLink));
+                    assertTrue(row.contains("2024/25"));
+                } else if (entry.getName().contains("cultural")) {
+                    String row = lines[1];
+                    String expectedProjectLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "\"\", \"\"CRX Results Project Project Link\"\")\"";
+                    String expectedFiscalLink = "\"=HYPERLINK(\"\"https://example.com/edit-project?projectGuid=" + projectGuid + "&tab=fiscal&fiscalGuid=" + fiscalGuid + "\"\", \"\"Fiscal CRX Results Project Fiscal Activity Link\"\")\"";
+
+                    assertTrue(row.contains(expectedProjectLink));
+                    assertTrue(row.contains(expectedFiscalLink));
+                    assertTrue(row.contains("2025/26"));
+                }
+            }
+        }
+    }
+
+    @Test
+    void exportResultsXlsx_directCall_works() throws Exception {
+        byte[] xlsxBytes = "direct-results-xlsx".getBytes(StandardCharsets.UTF_8);
+        String payload = lambdaResponseWithSingleFile("results.xlsx", Base64.getEncoder().encodeToString(xlsxBytes));
+
+        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/lambda", (HttpExchange ex) -> {
+            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
+            ex.getResponseHeaders().add("Content-Type", "application/json");
+            ex.sendResponseHeaders(200, response.length);
+            try (OutputStream os = ex.getResponseBody()) { os.write(response); }
+        });
+
+        try (var ignored = start(server)) {
+            xlsxReportGenerator.setReportGeneratorLambdaUrl("http://localhost:" + server.getAddress().getPort() + "/lambda");
+            UUID projectGuid = UUID.randomUUID();
+            when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct")));
+            when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+
+            ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            service.exportResultsXlsx(req, out);
+            assertArrayEquals(xlsxBytes, out.toByteArray());
+        }
+    }
+
+    @Test
+    void writeResultsCsvZipFromEntities_directCall_works() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct CSV")));
+        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        service.writeResultsCsvZipFromEntities(req, out);
+
+        Set<String> entries = zipEntries(out.toByteArray());
+        assertTrue(entries.contains("results-fuel-management-projects.csv"));
+    }
+
     private static AutoCloseable start(HttpServer server) {
         server.start();
         return () -> server.stop(0);
@@ -993,5 +1282,4 @@ class ReportServiceTest {
                 "  ]\n" +
                 "}";
     }
-
 }

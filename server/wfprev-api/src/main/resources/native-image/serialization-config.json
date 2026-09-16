@@ -120,5 +120,6 @@
   { "name": "ca.bc.gov.nrs.wfprev.services.XlsxReportGenerator$LambdaReportRequest$XlsxReportData" },
   { "name": "ca.bc.gov.nrs.wfprev.services.XlsxReportGenerator$LambdaReportResponse" },
   { "name": "ca.bc.gov.nrs.wfprev.services.XlsxReportGenerator$LambdaReportResponse$File" },
-  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$ReportDataBundle" }
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$ReportDataBundle" },
+  { "name": "ca.bc.gov.nrs.wfprev.services.ReportService$ResultsReportDataBundle" }
 ]
