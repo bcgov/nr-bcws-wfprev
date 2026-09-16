@@ -368,6 +368,11 @@ export interface LayerSettings {
 
 export type ReportType = 'csv' | 'xlsx';
 
+export interface DownloadOption {
+  label: string;
+  value: string;
+}
+
 export interface ReportProject {
   projectGuid: string;
   projectFiscalGuids?: string[];

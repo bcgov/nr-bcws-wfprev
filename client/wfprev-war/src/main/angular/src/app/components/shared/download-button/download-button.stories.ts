@@ -1,5 +1,6 @@
 import { Meta, StoryObj, moduleMetadata } from '@storybook/angular';
 import { action } from 'storybook/actions';
+import { DownloadOptions } from 'src/app/utils/constants';
 import { DownloadButtonComponent } from './download-button.component';
 
 export default {
@@ -21,6 +22,7 @@ type Story = StoryObj<DownloadButtonComponent>;
 export const Default: Story = {
   args: {
     disabled: false,
+    formats: DownloadOptions,
     download: action('download'),
   },
 };
@@ -28,6 +30,7 @@ export const Default: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
+    formats: DownloadOptions,
     download: action('download'),
   },
 };

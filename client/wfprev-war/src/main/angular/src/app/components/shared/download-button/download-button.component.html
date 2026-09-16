@@ -10,11 +10,11 @@
 </button>
 
 <mat-menu #menu="matMenu" xPosition="before">
-  @for (format of formats; track format) {
+  @for (format of formats; track format.value) {
     <button
       mat-menu-item
-      (click)="onDownload(format)">
-      {{ format.toUpperCase() }}
+      (click)="onDownload(format.value)">
+      {{ format.label }}
     </button>
   }
 </mat-menu>
