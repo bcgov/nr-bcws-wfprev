@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
@@ -70,7 +70,7 @@ class XlsxReportGeneratorTest {
             generator.setReportGeneratorLambdaUrl(url);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            generator.generateXlsx(List.of(new ProjectFuelManagementReportEntity()), List.of(new CulturalPrescribedFireReportEntity()), out);
+            generator.generateXlsx(List.of(new ProjectFuelManagementReportEntity()), List.of(new ProjectCulturalPrescribedFireReportEntity()), out);
 
             assertArrayEquals(expectedBytes, out.toByteArray());
         } finally {

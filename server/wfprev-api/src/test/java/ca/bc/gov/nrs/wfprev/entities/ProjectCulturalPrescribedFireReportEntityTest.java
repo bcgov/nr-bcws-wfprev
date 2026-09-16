@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.entities;
 
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CulturalPrescribedFireReportEntityTest {
+class ProjectCulturalPrescribedFireReportEntityTest {
 
     @Test
     void testAllFields() {
@@ -18,7 +18,7 @@ class CulturalPrescribedFireReportEntityTest {
         BigDecimal decimal = new BigDecimal("123.45");
         Date now = new Date();
 
-        CulturalPrescribedFireReportEntity entity = new CulturalPrescribedFireReportEntity();
+        ProjectCulturalPrescribedFireReportEntity entity = new ProjectCulturalPrescribedFireReportEntity();
 
         entity.setProjectPlanFiscalGuid(guid1);
         entity.setLinkToProject("http://example.com/project");

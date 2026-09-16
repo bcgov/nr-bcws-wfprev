@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
@@ -511,7 +511,7 @@ class ReportServiceTest {
         fuelEntity.setOutstandingObligations("1/3");
         fuelEntity.setCarriedForward("0/3");
 
-        CulturalPrescribedFireReportEntity crxEntity = new CulturalPrescribedFireReportEntity();
+        ProjectCulturalPrescribedFireReportEntity crxEntity = new ProjectCulturalPrescribedFireReportEntity();
         crxEntity.setUniqueRowGuid(UUID.randomUUID());
         crxEntity.setProjectGuid(projectGuid);
         crxEntity.setProjectPlanFiscalGuid(fiscalGuid);
@@ -977,8 +977,8 @@ class ReportServiceTest {
         return e;
     }
 
-    private static CulturalPrescribedFireReportEntity crx(UUID projectGuid, UUID fiscalGuid, String name) {
-        CulturalPrescribedFireReportEntity e = new CulturalPrescribedFireReportEntity();
+    private static ProjectCulturalPrescribedFireReportEntity crx(UUID projectGuid, UUID fiscalGuid, String name) {
+        ProjectCulturalPrescribedFireReportEntity e = new ProjectCulturalPrescribedFireReportEntity();
         e.setUniqueRowGuid(UUID.randomUUID());
         e.setProjectGuid(projectGuid);
         e.setProjectPlanFiscalGuid(fiscalGuid);

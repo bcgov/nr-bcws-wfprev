@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
@@ -28,7 +28,7 @@ public class CsvReportGenerator {
             .withZone(ZoneId.systemDefault());
 
     public void generateCsvZip(List<ProjectFuelManagementReportEntity> fuelEntities,
-                               List<CulturalPrescribedFireReportEntity> crxEntities,
+                               List<ProjectCulturalPrescribedFireReportEntity> crxEntities,
                                OutputStream zipOutStream) throws ServiceException {
         try (ZipOutputStream zipOut = new ZipOutputStream(zipOutStream)) {
 
@@ -52,7 +52,7 @@ public class CsvReportGenerator {
                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(crxCsvOut))) {
                     writer.write(getCrxCsvHeader());
                     writer.newLine();
-                    for (CulturalPrescribedFireReportEntity c : crxEntities) {
+                    for (ProjectCulturalPrescribedFireReportEntity c : crxEntities) {
                         writer.write(String.join(",", getCrxCsvRow(c)));
                         writer.newLine();
                     }
@@ -650,7 +650,7 @@ public class CsvReportGenerator {
         ));
     }
 
-    private List<String> getCrxCsvRow(CulturalPrescribedFireReportEntity c) {
+    private List<String> getCrxCsvRow(ProjectCulturalPrescribedFireReportEntity c) {
         return List.of(
                 safe(c.getProjectName() != null ? String.format("=HYPERLINK(\"%s\", \"%s Project Link\")",
                         c.getLinkToProject(), c.getProjectName()) : ""),

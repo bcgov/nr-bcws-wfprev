@@ -75,7 +75,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity" },
-  { "name": "ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectLocationEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},

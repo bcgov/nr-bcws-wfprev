@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.services;
 
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
@@ -68,7 +68,7 @@ class CsvReportGeneratorTest {
 
     @Test
     void generateCsvZip_onlyCrx_producesCrxCsvOnly() throws Exception {
-        CulturalPrescribedFireReportEntity crx = new CulturalPrescribedFireReportEntity();
+        ProjectCulturalPrescribedFireReportEntity crx = new ProjectCulturalPrescribedFireReportEntity();
         crx.setUniqueRowGuid(UUID.randomUUID());
         crx.setProjectName("CRX Project");
         crx.setLinkToProject("https://example.com/crx");
@@ -96,7 +96,7 @@ class CsvReportGeneratorTest {
         ProjectFuelManagementReportEntity fuel = new ProjectFuelManagementReportEntity();
         fuel.setProjectName("Fuel 1");
 
-        CulturalPrescribedFireReportEntity crx = new CulturalPrescribedFireReportEntity();
+        ProjectCulturalPrescribedFireReportEntity crx = new ProjectCulturalPrescribedFireReportEntity();
         crx.setProjectName("CRX 1");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

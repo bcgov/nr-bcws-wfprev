@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Immutable
 @Table(name = "project_crx_vw", schema = "wfprev")
-public class CulturalPrescribedFireReportEntity implements Serializable {
+public class ProjectCulturalPrescribedFireReportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

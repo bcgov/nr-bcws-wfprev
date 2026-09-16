@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.CulturalPrescribedFireReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class CulturalPrescribedFireReportRepositoryTest {
     private UUID projectGuid;
     private UUID fiscalGuid;
 
-    private CulturalPrescribedFireReportEntity mockEntity;
+    private ProjectCulturalPrescribedFireReportEntity mockEntity;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +38,7 @@ class CulturalPrescribedFireReportRepositoryTest {
         projectGuid = UUID.randomUUID();
         fiscalGuid  = UUID.randomUUID();
 
-        mockEntity = new CulturalPrescribedFireReportEntity();
+        mockEntity = new ProjectCulturalPrescribedFireReportEntity();
         mockEntity.setUniqueRowGuid(UUID.randomUUID());
         mockEntity.setProjectGuid(projectGuid);
         mockEntity.setProjectPlanFiscalGuid(fiscalGuid);
@@ -63,13 +63,13 @@ class CulturalPrescribedFireReportRepositoryTest {
 
     @Test
     void findByProjectGuid_returnsExpectedRows() {
-        List<CulturalPrescribedFireReportEntity> results =
+        List<ProjectCulturalPrescribedFireReportEntity> results =
                 repository.findByProjectGuid(projectGuid);
 
         assertNotNull(results, "Result list should not be null");
         assertFalse(results.isEmpty(), "Result list should not be empty");
 
-        CulturalPrescribedFireReportEntity e = results.get(0);
+        ProjectCulturalPrescribedFireReportEntity e = results.get(0);
         assertNotNull(e.getUniqueRowGuid(), "unique_row_guid should be present");
         assertEquals(projectGuid, e.getProjectGuid(), "Project GUID should match");
         assertEquals("Test Cultural Report", e.getProjectName(), "Project name should match");
@@ -80,14 +80,14 @@ class CulturalPrescribedFireReportRepositoryTest {
 
     @Test
     void findByProjectGuidAndProjectPlanFiscalGuidIn_returnsExpectedRows() {
-        List<CulturalPrescribedFireReportEntity> results =
+        List<ProjectCulturalPrescribedFireReportEntity> results =
                 repository.findByProjectGuidAndProjectPlanFiscalGuidIn(
                         projectGuid, Collections.singleton(fiscalGuid));
 
         assertNotNull(results, "Result list should not be null");
         assertFalse(results.isEmpty(), "Result list should not be empty");
 
-        CulturalPrescribedFireReportEntity e = results.get(0);
+        ProjectCulturalPrescribedFireReportEntity e = results.get(0);
         assertEquals(fiscalGuid, e.getProjectPlanFiscalGuid(), "Fiscal GUID should match");
         assertEquals("Test Cultural Report", e.getProjectName(), "Project name should match");
 
@@ -98,7 +98,7 @@ class CulturalPrescribedFireReportRepositoryTest {
 
     @Test
     void findByProjectGuidAndProjectPlanFiscalGuidIn_emptyCollection_returnsEmpty() {
-        List<CulturalPrescribedFireReportEntity> results =
+        List<ProjectCulturalPrescribedFireReportEntity> results =
                 repository.findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, Collections.emptyList());
 
         assertNotNull(results, "Result list should not be null");

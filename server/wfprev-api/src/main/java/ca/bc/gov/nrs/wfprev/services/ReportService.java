@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
@@ -73,10 +73,10 @@ public class ReportService {
 
     public static class ReportDataBundle {
         List<ProjectFuelManagementReportEntity> fuel;
-        List<CulturalPrescribedFireReportEntity> crx;
+        List<ProjectCulturalPrescribedFireReportEntity> crx;
 
         ReportDataBundle(List<ProjectFuelManagementReportEntity> fuel,
-                         List<CulturalPrescribedFireReportEntity> crx) {
+                         List<ProjectCulturalPrescribedFireReportEntity> crx) {
             this.fuel = fuel;
             this.crx = crx;
         }
@@ -85,7 +85,7 @@ public class ReportService {
             return fuel;
         }
 
-        public List<CulturalPrescribedFireReportEntity> getCrx() {
+        public List<ProjectCulturalPrescribedFireReportEntity> getCrx() {
             return crx;
         }
     }
@@ -148,7 +148,7 @@ public class ReportService {
 
     private ReportDataBundle resolveReportData(ReportRequestModel request) {
         List<ProjectFuelManagementReportEntity> fuel = new ArrayList<>();
-        List<CulturalPrescribedFireReportEntity> crx = new ArrayList<>();
+        List<ProjectCulturalPrescribedFireReportEntity> crx = new ArrayList<>();
 
         List<ReportRequestModel.Project> projectsToReport = resolveProjectsToReport(request);
 
@@ -285,7 +285,7 @@ public class ReportService {
         }
     }
 
-    private void setCrxFields(CulturalPrescribedFireReportEntity entity) {
+    private void setCrxFields(ProjectCulturalPrescribedFireReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
         if (entity != null) {
             if (entity.getProjectGuid() != null) {

@@ -1,7 +1,7 @@
 package ca.bc.gov.nrs.wfprev.services;
 
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
-import ca.bc.gov.nrs.wfprev.data.entities.CulturalPrescribedFireReportEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
@@ -36,7 +36,7 @@ public class XlsxReportGenerator {
     }
 
     public void generateXlsx(List<ProjectFuelManagementReportEntity> fuelEntities,
-                             List<CulturalPrescribedFireReportEntity> crxEntities,
+                             List<ProjectCulturalPrescribedFireReportEntity> crxEntities,
                              OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
 
@@ -198,16 +198,16 @@ public class XlsxReportGenerator {
         }
 
         public static class XlsxReportData {
-            private List<CulturalPrescribedFireReportEntity> culturePrescribedFireReportData;
+            private List<ProjectCulturalPrescribedFireReportEntity> culturePrescribedFireReportData;
             private List<ProjectFuelManagementReportEntity> fuelManagementReportData;
             private List<ResultsCulturalPrescribedFireReportEntity> resultsCulturePrescribedFireReportData;
             private List<ResultsFuelManagementReportEntity> resultsFuelManagementReportData;
 
-            public List<CulturalPrescribedFireReportEntity> getCulturePrescribedFireReportData() {
+            public List<ProjectCulturalPrescribedFireReportEntity> getCulturePrescribedFireReportData() {
                 return culturePrescribedFireReportData;
             }
 
-            public void setCulturePrescribedFireReportData(List<CulturalPrescribedFireReportEntity> data) {
+            public void setCulturePrescribedFireReportData(List<ProjectCulturalPrescribedFireReportEntity> data) {
                 this.culturePrescribedFireReportData = data;
             }
 
