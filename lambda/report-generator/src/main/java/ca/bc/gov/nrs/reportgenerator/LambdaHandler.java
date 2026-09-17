@@ -75,9 +75,9 @@ public class LambdaHandler implements RequestStreamHandler {
             if (data == null) continue;
             List<JasperPrint> prints = new ArrayList<>();
             List<String> sheetNames = new ArrayList<>();
-            if (data.getFuelManagementReportData() != null && !data.getFuelManagementReportData().isEmpty()) {
+            if (data.getProjectFuelManagementReportData() != null && !data.getProjectFuelManagementReportData().isEmpty()) {
                 try {
-                    JRDataSource fuelDataSource = new JRBeanCollectionDataSource(data.getFuelManagementReportData());
+                    JRDataSource fuelDataSource = new JRBeanCollectionDataSource(data.getProjectFuelManagementReportData());
                     JasperPrint fuelPrint = JasperFillManager.getInstance(repo.getContext())
                         .fillFromRepo("WFPREV_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), fuelDataSource);
                     prints.add(fuelPrint);

@@ -7,7 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
-import ca.bc.gov.nrs.reportgenerator.model.FuelManagementReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectFuelManagementReportData;
 import ca.bc.gov.nrs.reportgenerator.model.LambdaEvent;
 import ca.bc.gov.nrs.reportgenerator.model.Report;
 import ca.bc.gov.nrs.reportgenerator.model.ReportType;
@@ -45,7 +45,7 @@ class LambdaHandlerTest {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         XlsxReportData xlsxData = new XlsxReportData();
-        xlsxData.setFuelManagementReportData(List.of(new FuelManagementReportData()));
+        xlsxData.setProjectFuelManagementReportData(List.of(new ProjectFuelManagementReportData()));
         Report report = new Report();
         report.setReportType(ReportType.XLSX);
         report.setReportName("fuel-management-report");
@@ -74,7 +74,7 @@ class LambdaHandlerTest {
         report1.setXlsxReportData(xlsxData1);
 
         XlsxReportData xlsxData2 = new XlsxReportData();
-        xlsxData2.setFuelManagementReportData(List.of(new FuelManagementReportData()));
+        xlsxData2.setProjectFuelManagementReportData(List.of(new ProjectFuelManagementReportData()));
         Report report2 = new Report();
         report2.setReportType(ReportType.XLSX);
         report2.setReportName("fuel-management-report");

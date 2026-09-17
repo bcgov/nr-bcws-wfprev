@@ -6,7 +6,7 @@ import java.util.List;
 @RegisterForReflection
 public class XlsxReportData {
   private List<CulturePrescribedFireReportData> culturePrescribedFireReportData;
-  private List<FuelManagementReportData> fuelManagementReportData;
+  private List<ProjectFuelManagementReportData> projectFuelManagementReportData;
 
   // Getters and setters
   public List<CulturePrescribedFireReportData> getCulturePrescribedFireReportData() {
@@ -17,11 +17,11 @@ public class XlsxReportData {
       this.culturePrescribedFireReportData = culturePrescribedFireReportData;
   }
 
-  public List<FuelManagementReportData> getFuelManagementReportData() {
-      return fuelManagementReportData;
+  public List<ProjectFuelManagementReportData> getProjectFuelManagementReportData() {
+      return projectFuelManagementReportData;
   }
 
-  public void setFuelManagementReportData(List<FuelManagementReportData> fuelManagementReportData) {
-      this.fuelManagementReportData = fuelManagementReportData;
+  public void setProjectFuelManagementReportData(List<ProjectFuelManagementReportData> projectFuelManagementReportData) {
+      this.projectFuelManagementReportData = projectFuelManagementReportData;
   }
 }
