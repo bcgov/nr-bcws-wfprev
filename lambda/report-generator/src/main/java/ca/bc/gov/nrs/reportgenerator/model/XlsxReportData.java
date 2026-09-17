@@ -8,6 +8,7 @@ public class XlsxReportData {
   private List<ProjectCulturePrescribedFireReportData> projectCulturePrescribedFireReportData;
   private List<ProjectFuelManagementReportData> projectFuelManagementReportData;
   private List<ResultsFuelManagementReportData> resultsFuelManagementReportData;
+  private List<ResultsCulturePrescribedFireReportData> resultsCulturePrescribedFireReportData;
 
   // Getters and setters
   public List<ProjectCulturePrescribedFireReportData> getProjectCulturePrescribedFireReportData() {
@@ -32,5 +33,13 @@ public class XlsxReportData {
 
   public void setResultsFuelManagementReportData(List<ResultsFuelManagementReportData> resultsFuelManagementReportData) {
       this.resultsFuelManagementReportData = resultsFuelManagementReportData;
+  }
+
+  public List<ResultsCulturePrescribedFireReportData> getResultsCulturePrescribedFireReportData() {
+      return resultsCulturePrescribedFireReportData;
+  }
+
+  public void setResultsCulturePrescribedFireReportData(List<ResultsCulturePrescribedFireReportData> resultsCulturePrescribedFireReportData) {
+      this.resultsCulturePrescribedFireReportData = resultsCulturePrescribedFireReportData;
   }
 }

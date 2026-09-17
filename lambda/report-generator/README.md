@@ -28,6 +28,9 @@ The Lambda handler expects an input JSON payload structured as follows:
 				"projectCulturePrescribedFireReportData": [
 					{ /* fields for ProjectCulturePrescribedFireReportData */ }
 				],
+				"resultsCulturePrescribedFireReportData": [
+					{ /* fields for ResultsCulturePrescribedFireReportData */ }
+				],
 				"projectFuelManagementReportData": [
 					{ /* fields for ProjectFuelManagementReportData */ }
 				],
@@ -57,6 +60,7 @@ The Lambda handler expects an input JSON payload structured as follows:
 - `reportName`: Used as the output filename (e.g., `culture-prescribed-fire-report.xlsx`).
 - `xlsxReportData`: Contains lists of report data objects for each supported sheet type.
 	- `projectCulturePrescribedFireReportData`: List of objects for the "Culture Prescribed Fire" sheet.
+	- `resultsCulturePrescribedFireReportData`: List of objects for the "Results Culture Prescribed Fire" sheet.
 	- `projectFuelManagementReportData`: List of objects for the "Fuel Management" sheet.
 	- `resultsFuelManagementReportData`: List of objects for the "Results Fuel Management" sheet.
 

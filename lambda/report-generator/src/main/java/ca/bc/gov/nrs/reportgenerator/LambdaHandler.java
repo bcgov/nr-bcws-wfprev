@@ -108,6 +108,17 @@ public class LambdaHandler implements RequestStreamHandler {
                     LOG.error("Error filling Culture Prescribed Fire Jasper report", e);
                 }
             }
+            if (data.getResultsCulturePrescribedFireReportData() != null && !data.getResultsCulturePrescribedFireReportData().isEmpty()) {
+                try {
+                    JRDataSource resultsCultureDataSource = new JRBeanCollectionDataSource(data.getResultsCulturePrescribedFireReportData());
+                    JasperPrint resultsCulturePrint = JasperFillManager.getInstance(repo.getContext())
+                        .fillFromRepo("WFPREV_RESULTS_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), resultsCultureDataSource);
+                    prints.add(resultsCulturePrint);
+                    sheetNames.add("Results CRx XLS Download");
+                } catch (Exception e) {
+                    LOG.error("Error filling Results Culture Prescribed Fire Jasper report", e);
+                }
+            }
             if (prints.isEmpty()) continue;
 
             ByteArrayOutputStream xlsxOut = new ByteArrayOutputStream();
