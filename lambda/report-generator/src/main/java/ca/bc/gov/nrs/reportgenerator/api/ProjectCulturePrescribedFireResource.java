@@ -20,9 +20,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import ca.bc.gov.nrs.reportgenerator.service.JasperReportService;
 import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 
-@Path("/culture-prescribed-fire")
-public class CulturePrescribedFireResource {
-    private static final Logger LOG = Logger.getLogger(CulturePrescribedFireResource.class);
+@Path("/project-culture-prescribed-fire")
+public class ProjectCulturePrescribedFireResource {
+    private static final Logger LOG = Logger.getLogger(ProjectCulturePrescribedFireResource.class);
 
     private static final String TEST_REPORT_NAME = "WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper";
 

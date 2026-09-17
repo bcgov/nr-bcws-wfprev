@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.*;
 import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 
 @QuarkusTest
-public class CulturePrescribedFireResourceTest {
+public class ProjectCulturePrescribedFireResourceTest {
     @Test
     public void testGenerateXlsx() {
             ProjectCulturePrescribedFireReportData sample = new ProjectCulturePrescribedFireReportData();
@@ -67,7 +67,7 @@ public class CulturePrescribedFireResourceTest {
                 .contentType(ContentType.JSON)
                 .body(Collections.singletonList(sample))
             .when()
-                .post("/culture-prescribed-fire")
+                .post("/project-culture-prescribed-fire")
             .then()
                 .statusCode(200)
                 .contentType(ExtendedMediaType.APPLICATION_XLSX)
