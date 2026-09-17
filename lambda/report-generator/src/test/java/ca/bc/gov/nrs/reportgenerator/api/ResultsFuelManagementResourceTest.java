@@ -20,7 +20,6 @@ public class ResultsFuelManagementResourceTest {
     @Test
     public void testGenerateXlsx() {
         ResultsFuelManagementReportData sample = new ResultsFuelManagementReportData();
-        sample.setUniqueRowGuid(UUID.randomUUID());
         sample.setProjectGuid(UUID.randomUUID());
         sample.setProjectPlanFiscalGuid(UUID.randomUUID());
         sample.setLinkToProject("http://example.com/project");

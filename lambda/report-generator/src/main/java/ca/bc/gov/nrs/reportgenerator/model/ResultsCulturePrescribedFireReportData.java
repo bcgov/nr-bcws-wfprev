@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @RegisterForReflection
-public class ResultsFuelManagementReportData {
+public class ResultsCulturePrescribedFireReportData {
 
     private UUID projectGuid;
     private UUID projectPlanFiscalGuid;

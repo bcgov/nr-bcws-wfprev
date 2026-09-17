@@ -8,11 +8,11 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ResultsFuelManagementReportDataTest {
+class ResultsCulturePrescribedFireReportDataTest {
 
     @Test
     void testGettersAndSetters() {
-        ResultsFuelManagementReportData data = new ResultsFuelManagementReportData();
+        ResultsCulturePrescribedFireReportData data = new ResultsCulturePrescribedFireReportData();
 
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
