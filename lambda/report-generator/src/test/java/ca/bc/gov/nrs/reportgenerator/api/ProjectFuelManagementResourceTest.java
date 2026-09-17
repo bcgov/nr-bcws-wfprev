@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.*;
 import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 
 @QuarkusTest
-public class FuelManagementResourceTest {
+public class ProjectFuelManagementResourceTest {
     @Test
     public void testGenerateXlsx() {
             ProjectFuelManagementReportData sample = new ProjectFuelManagementReportData();
@@ -66,7 +66,7 @@ public class FuelManagementResourceTest {
                 .contentType(ContentType.JSON)
                 .body(Collections.singletonList(sample))
             .when()
-                .post("/fuel-management")
+                .post("/project-fuel-management")
             .then()
                 .statusCode(200)
                 .contentType(ExtendedMediaType.APPLICATION_XLSX)

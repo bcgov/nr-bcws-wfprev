@@ -20,9 +20,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import ca.bc.gov.nrs.reportgenerator.service.JasperReportService;
 import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 
-@Path("/fuel-management")
-public class FuelManagementResource {
-    private static final Logger LOG = Logger.getLogger(FuelManagementResource.class);
+@Path("/project-fuel-management")
+public class ProjectFuelManagementResource {
+    private static final Logger LOG = Logger.getLogger(ProjectFuelManagementResource.class);
 
     private static final String TEST_REPORT_NAME = "WFPREV_FUEL_MANAGEMENT_JASPER.jasper";
 
