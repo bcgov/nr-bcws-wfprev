@@ -30,6 +30,9 @@ The Lambda handler expects an input JSON payload structured as follows:
 				],
 				"projectFuelManagementReportData": [
 					{ /* fields for ProjectFuelManagementReportData */ }
+				],
+				"resultsFuelManagementReportData": [
+					{ /* fields for ResultsFuelManagementReportData */ }
 				]
 			}
 		},
@@ -39,6 +42,9 @@ The Lambda handler expects an input JSON payload structured as follows:
 			"xlsxReportData": {
 				"projectFuelManagementReportData": [
 					{ /* fields for ProjectFuelManagementReportData */ }
+				],
+				"resultsFuelManagementReportData": [
+					{ /* fields for ResultsFuelManagementReportData */ }
 				]
 			}
 		}
@@ -50,8 +56,9 @@ The Lambda handler expects an input JSON payload structured as follows:
 - `reportType`: Type of report (currently only `XLSX` is supported).
 - `reportName`: Used as the output filename (e.g., `culture-prescribed-fire-report.xlsx`).
 - `xlsxReportData`: Contains lists of report data objects for each supported sheet type.
-	- `culturePrescribedFireReportData`: List of objects for the "Culture Prescribed Fire" sheet.
-	- `fuelManagementReportData`: List of objects for the "Fuel Management" sheet.
+	- `projectCulturePrescribedFireReportData`: List of objects for the "Culture Prescribed Fire" sheet.
+	- `projectFuelManagementReportData`: List of objects for the "Fuel Management" sheet.
+	- `resultsFuelManagementReportData`: List of objects for the "Results Fuel Management" sheet.
 
 See the model classes in `src/main/java/ca/bc/gov/nrs/reportgenerator/model/` for all available fields.
 

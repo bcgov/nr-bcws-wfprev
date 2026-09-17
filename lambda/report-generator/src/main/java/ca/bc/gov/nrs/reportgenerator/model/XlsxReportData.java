@@ -7,6 +7,7 @@ import java.util.List;
 public class XlsxReportData {
   private List<ProjectCulturePrescribedFireReportData> projectCulturePrescribedFireReportData;
   private List<ProjectFuelManagementReportData> projectFuelManagementReportData;
+  private List<ResultsFuelManagementReportData> resultsFuelManagementReportData;
 
   // Getters and setters
   public List<ProjectCulturePrescribedFireReportData> getProjectCulturePrescribedFireReportData() {
@@ -23,5 +24,13 @@ public class XlsxReportData {
 
   public void setProjectFuelManagementReportData(List<ProjectFuelManagementReportData> projectFuelManagementReportData) {
       this.projectFuelManagementReportData = projectFuelManagementReportData;
+  }
+
+  public List<ResultsFuelManagementReportData> getResultsFuelManagementReportData() {
+      return resultsFuelManagementReportData;
+  }
+
+  public void setResultsFuelManagementReportData(List<ResultsFuelManagementReportData> resultsFuelManagementReportData) {
+      this.resultsFuelManagementReportData = resultsFuelManagementReportData;
   }
 }

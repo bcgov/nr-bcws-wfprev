@@ -86,6 +86,17 @@ public class LambdaHandler implements RequestStreamHandler {
                     LOG.error("Error filling Fuel Management Jasper report", e);
                 }
             }
+            if (data.getResultsFuelManagementReportData() != null && !data.getResultsFuelManagementReportData().isEmpty()) {
+                try {
+                    JRDataSource resultsFuelDataSource = new JRBeanCollectionDataSource(data.getResultsFuelManagementReportData());
+                    JasperPrint resultsFuelPrint = JasperFillManager.getInstance(repo.getContext())
+                        .fillFromRepo("WFPREV_RESULTS_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), resultsFuelDataSource);
+                    prints.add(resultsFuelPrint);
+                    sheetNames.add("Results FM XLS Download");
+                } catch (Exception e) {
+                    LOG.error("Error filling Results Fuel Management Jasper report", e);
+                }
+            }
             if (data.getProjectCulturePrescribedFireReportData() != null && !data.getProjectCulturePrescribedFireReportData().isEmpty()) {
                 try {
                     JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getProjectCulturePrescribedFireReportData());
