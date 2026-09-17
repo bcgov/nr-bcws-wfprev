@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.reportgenerator.api;
 
-import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectCulturePrescribedFireReportData;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 public class CulturePrescribedFireResourceTest {
     @Test
     public void testGenerateXlsx() {
-            CulturePrescribedFireReportData sample = new CulturePrescribedFireReportData();
+            ProjectCulturePrescribedFireReportData sample = new ProjectCulturePrescribedFireReportData();
             sample.setLinkToFiscalActivity("http://example.com/activity");
             sample.setProjectFiscalName("Test Project");
             sample.setProjectFiscalDescription("Test Description");

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectCulturePrescribedFireReportData;
 import ca.bc.gov.nrs.reportgenerator.model.ProjectFuelManagementReportData;
 import ca.bc.gov.nrs.reportgenerator.model.LambdaEvent;
 import ca.bc.gov.nrs.reportgenerator.model.Report;
@@ -23,7 +23,7 @@ class LambdaHandlerTest {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         XlsxReportData xlsxData = new XlsxReportData();
-        xlsxData.setCulturePrescribedFireReportData(List.of(new CulturePrescribedFireReportData()));
+        xlsxData.setProjectCulturePrescribedFireReportData(List.of(new ProjectCulturePrescribedFireReportData()));
         Report report = new Report();
         report.setReportType(ReportType.XLSX);
         report.setReportName("culture-prescribed-fire-report");
@@ -67,7 +67,7 @@ class LambdaHandlerTest {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         XlsxReportData xlsxData1 = new XlsxReportData();
-        xlsxData1.setCulturePrescribedFireReportData(List.of(new CulturePrescribedFireReportData()));
+        xlsxData1.setProjectCulturePrescribedFireReportData(List.of(new ProjectCulturePrescribedFireReportData()));
         Report report1 = new Report();
         report1.setReportType(ReportType.XLSX);
         report1.setReportName("culture-prescribed-fire-report");

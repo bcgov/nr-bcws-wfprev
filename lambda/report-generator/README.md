@@ -25,8 +25,8 @@ The Lambda handler expects an input JSON payload structured as follows:
 			"reportType": "XLSX",
 			"reportName": "culture-prescribed-fire-report",
 			"xlsxReportData": {
-				"culturePrescribedFireReportData": [
-					{ /* fields for CulturePrescribedFireReportData */ }
+				"projectCulturePrescribedFireReportData": [
+					{ /* fields for ProjectCulturePrescribedFireReportData */ }
 				],
 				"projectFuelManagementReportData": [
 					{ /* fields for ProjectFuelManagementReportData */ }

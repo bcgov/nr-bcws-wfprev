@@ -86,9 +86,9 @@ public class LambdaHandler implements RequestStreamHandler {
                     LOG.error("Error filling Fuel Management Jasper report", e);
                 }
             }
-            if (data.getCulturePrescribedFireReportData() != null && !data.getCulturePrescribedFireReportData().isEmpty()) {
+            if (data.getProjectCulturePrescribedFireReportData() != null && !data.getProjectCulturePrescribedFireReportData().isEmpty()) {
                 try {
-                    JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getCulturePrescribedFireReportData());
+                    JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getProjectCulturePrescribedFireReportData());
                     JasperPrint culturePrint = JasperFillManager.getInstance(repo.getContext())
                         .fillFromRepo("WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), cultureDataSource);
                     prints.add(culturePrint);

@@ -1,6 +1,6 @@
 package ca.bc.gov.nrs.reportgenerator;
 
-import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectCulturePrescribedFireReportData;
 import ca.bc.gov.nrs.reportgenerator.model.ProjectFuelManagementReportData;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -259,8 +259,8 @@ public class LocalReportGeneratorTest {
         return list;
     }
 
-    private List<CulturePrescribedFireReportData> generateMockCulturePrescribedFireData(int count) {
-        List<CulturePrescribedFireReportData> list = new ArrayList<>();
+    private List<ProjectCulturePrescribedFireReportData> generateMockCulturePrescribedFireData(int count) {
+        List<ProjectCulturePrescribedFireReportData> list = new ArrayList<>();
         Random random = new Random();
         String[] regions = {"Cariboo", "Coastal", "Kamloops", "Kootenay", "Northwest", "Prince George", "Southeast", "Peace"};
         String[] statuses = {"INITIATED", "PLANNED", "ON_TRACK", "DELAYED", "COMPLETED", "CANCELLED"};
@@ -268,7 +268,7 @@ public class LocalReportGeneratorTest {
         String[] fundingStreams = {"Stream A", "Stream B", "Stream C"};
 
         for (int i = 1; i <= count; i++) {
-            CulturePrescribedFireReportData data = new CulturePrescribedFireReportData();
+            ProjectCulturePrescribedFireReportData data = new ProjectCulturePrescribedFireReportData();
             data.setProjectFiscalName("2025/26 - CRX - Burn " + i);
             data.setProjectFiscalDescription("Cultural burning activity for site " + i);
             data.setFiscalYear("2025/2026");

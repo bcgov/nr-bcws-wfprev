@@ -5,16 +5,16 @@ import java.util.List;
 
 @RegisterForReflection
 public class XlsxReportData {
-  private List<CulturePrescribedFireReportData> culturePrescribedFireReportData;
+  private List<ProjectCulturePrescribedFireReportData> projectCulturePrescribedFireReportData;
   private List<ProjectFuelManagementReportData> projectFuelManagementReportData;
 
   // Getters and setters
-  public List<CulturePrescribedFireReportData> getCulturePrescribedFireReportData() {
-      return culturePrescribedFireReportData;
+  public List<ProjectCulturePrescribedFireReportData> getProjectCulturePrescribedFireReportData() {
+      return projectCulturePrescribedFireReportData;
   }
 
-  public void setCulturePrescribedFireReportData(List<CulturePrescribedFireReportData> culturePrescribedFireReportData) {
-      this.culturePrescribedFireReportData = culturePrescribedFireReportData;
+  public void setProjectCulturePrescribedFireReportData(List<ProjectCulturePrescribedFireReportData> projectCulturePrescribedFireReportData) {
+      this.projectCulturePrescribedFireReportData = projectCulturePrescribedFireReportData;
   }
 
   public List<ProjectFuelManagementReportData> getProjectFuelManagementReportData() {

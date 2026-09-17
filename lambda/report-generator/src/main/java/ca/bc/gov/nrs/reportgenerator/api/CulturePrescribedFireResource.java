@@ -5,7 +5,7 @@ import org.jboss.logging.Logger;
 import java.util.HashMap;
 import java.util.List;
 
-import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectCulturePrescribedFireReportData;
 import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -35,7 +35,7 @@ public class CulturePrescribedFireResource {
     @POST
     @Consumes("application/json")
     @Produces(ExtendedMediaType.APPLICATION_XLSX)
-    public Response generateXlsx(List<CulturePrescribedFireReportData> fields) {
+    public Response generateXlsx(List<ProjectCulturePrescribedFireReportData> fields) {
         LOG.info("Received XLSX generation request with fields: " + fields);
         try {
             JRDataSource dataSource = new JRBeanCollectionDataSource(fields);

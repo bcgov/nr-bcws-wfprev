@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @RegisterForReflection
-public class CulturePrescribedFireReportData {
+public class ProjectCulturePrescribedFireReportData {
     private String linkToFiscalActivity;
     private String projectFiscalName;
     private String projectFiscalDescription;
