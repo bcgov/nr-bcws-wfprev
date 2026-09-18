@@ -1,0 +1,71 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals'
+body:
+  type: json
+  content: |-
+    {
+      "projectGuid": "{{projectGuid}}",
+      "proposalTypeCode": "NEW", 
+      "activityCategoryCode": "PLN_DEV", 
+      "fiscalYear": 2023,
+      "projectPlanStatusCode": "ACTIVE",
+      "planFiscalStatusCode": {
+        "planFiscalStatusCode": "DRAFT"
+      },
+      "endorsementCode": {
+        "endorsementCode": "NOT_ENDORS"
+      },
+      "projectFiscalName": "Fiscal Project 1",
+      "projectFiscalDescription": "This is a test project fiscal description.",
+      "businessAreaComment": "Test comment",
+      "estimatedClwrrAllocAmount": 1000.00,
+      "fiscalAncillaryFundAmount": 300.00,
+      "fiscalPlannedProjectSizeHa": 10.5,
+      "fiscalPlannedCostPerHaAmt": 500.00,
+      "fiscalReportedSpendAmount": 0.00,
+      "fiscalActualAmount": 0.00,
+      "fiscalCompletedSizeHa": 0.0,
+      "fiscalActualCostPerHaAmt": 0.0,
+      "firstNationsDelivPartInd": true,
+      "firstNationsEngagementInd": false,
+      "firstNationsPartner": "Test Partner",
+      "resultsNumber": "RN123456",
+      "resultsOpeningId": "RO12345",
+      "resultsContactEmail": "contact@example.com",
+      "submittedByName": "Test User",
+      "submittedByUserGuid": "123e4567-e89",
+      "submittedByUserUserid": "testuser",
+      "submissionTimestamp": "2024-01-01T12:00:00Z",
+      "isApprovedInd": false,
+      "isDelayedInd": false,
+      "fiscalForecastAmount": 1800.00,
+      "ancillaryFundingProvider": "Provider01",
+      "endorsementEvalTimestamp": "2024-07-03T12:00:00Z",
+      "endorserName": "John Francis",
+      "endorsementComment": "This project has been not been endorsed",
+      "approvalDate": "2024-07-03",
+      "approverName": "Samantha Lavine",
+      "approvedComment": "This project has been reviewed and approved by Samantha",
+      "approvedTimestamp": "2024-07-03T12:00:00Z" 
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Parse the response JSON
+      const response = pm.response.json();
+      
+      // Check if the access token exists in the response
+      if (response.projectPlanFiscalGuid) {
+          // Save the token to an environment variable
+          pm.environment.set("projectPlanFiscalGuid", response.projectPlanFiscalGuid);
+          console.log("Project Fiscal Guid saved successfully!");
+      } else {
+          console.error("Failed to set project Fiscal guid:", response);
+      }
+      
+      pm.test("Status code is 201", function() {
+          pm.response.to.have.status(201);
+      })

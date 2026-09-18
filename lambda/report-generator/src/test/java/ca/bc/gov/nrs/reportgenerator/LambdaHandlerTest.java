@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import ca.bc.gov.nrs.reportgenerator.model.CulturePrescribedFireReportData;
-import ca.bc.gov.nrs.reportgenerator.model.FuelManagementReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectCulturePrescribedFireReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ProjectFuelManagementReportData;
 import ca.bc.gov.nrs.reportgenerator.model.LambdaEvent;
 import ca.bc.gov.nrs.reportgenerator.model.Report;
 import ca.bc.gov.nrs.reportgenerator.model.ReportType;
@@ -23,7 +23,7 @@ class LambdaHandlerTest {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         XlsxReportData xlsxData = new XlsxReportData();
-        xlsxData.setCulturePrescribedFireReportData(List.of(new CulturePrescribedFireReportData()));
+        xlsxData.setProjectCulturePrescribedFireReportData(List.of(new ProjectCulturePrescribedFireReportData()));
         Report report = new Report();
         report.setReportType(ReportType.XLSX);
         report.setReportName("culture-prescribed-fire-report");
@@ -45,7 +45,7 @@ class LambdaHandlerTest {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         XlsxReportData xlsxData = new XlsxReportData();
-        xlsxData.setFuelManagementReportData(List.of(new FuelManagementReportData()));
+        xlsxData.setProjectFuelManagementReportData(List.of(new ProjectFuelManagementReportData()));
         Report report = new Report();
         report.setReportType(ReportType.XLSX);
         report.setReportName("fuel-management-report");
@@ -67,14 +67,14 @@ class LambdaHandlerTest {
         LambdaHandler handler = new LambdaHandler();
         LambdaEvent event = new LambdaEvent();
         XlsxReportData xlsxData1 = new XlsxReportData();
-        xlsxData1.setCulturePrescribedFireReportData(List.of(new CulturePrescribedFireReportData()));
+        xlsxData1.setProjectCulturePrescribedFireReportData(List.of(new ProjectCulturePrescribedFireReportData()));
         Report report1 = new Report();
         report1.setReportType(ReportType.XLSX);
         report1.setReportName("culture-prescribed-fire-report");
         report1.setXlsxReportData(xlsxData1);
 
         XlsxReportData xlsxData2 = new XlsxReportData();
-        xlsxData2.setFuelManagementReportData(List.of(new FuelManagementReportData()));
+        xlsxData2.setProjectFuelManagementReportData(List.of(new ProjectFuelManagementReportData()));
         Report report2 = new Report();
         report2.setReportType(ReportType.XLSX);
         report2.setReportName("fuel-management-report");

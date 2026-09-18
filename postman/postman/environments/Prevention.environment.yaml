@@ -1,0 +1,54 @@
+name: Prevention
+values:
+  - key: REST_CLIENT_URL
+    value: ''
+    description: 'Base URL for the OAuth token endpoint (e.g. https://loginproxy.gov.bc.ca/auth/realms/standard)'
+    enabled: true
+  - key: REST_CLIENT_ID
+    value: ''
+    description: 'OAuth2 client ID for Basic auth token request'
+    enabled: true
+  - key: REST_CLIENT_SECRET
+    value: ''
+    description: 'OAuth2 client secret for Basic auth token request'
+    enabled: true
+  - key: LOCAL_API_URL
+    value: 'http://localhost:8080/wfprev-api'
+    description: 'Base URL for the WF Prevention API'
+    enabled: true
+  - key: accessToken
+    value: ''
+    description: 'Bearer token — populated automatically by the Save Token request'
+    enabled: true
+  - key: projectGuid
+    value: ''
+    description: 'Project GUID — populated automatically by Create Project'
+    enabled: true
+  - key: projectPlanFiscalGuid
+    value: ''
+    description: 'Project fiscal GUID — populated automatically by Create Project Fiscal'
+    enabled: true
+  - key: projectFileAttachmentGuid
+    value: ''
+    description: 'Project attachment GUID — populated automatically by Create Project Attachment'
+    enabled: true
+  - key: projectBoundaryGuid
+    value: ''
+    description: 'Project boundary GUID — populated automatically by Create Project Boundary'
+    enabled: true
+  - key: evaluationCriteriaSummaryGuid
+    value: ''
+    description: 'Evaluation criteria summary GUID — populated automatically by Create Project Evaluation Criteria Summary'
+    enabled: true
+  - key: activityGuid
+    value: ''
+    description: 'Activity GUID — populated automatically by Create Activity'
+    enabled: true
+  - key: activityFileAttachmentGuid
+    value: ''
+    description: 'Activity attachment GUID — populated automatically by Create Activity Attachment'
+    enabled: true
+  - key: activityBoundaryGuid
+    value: ''
+    description: 'Activity boundary GUID — populated automatically by Create Activity Boundary'
+    enabled: true

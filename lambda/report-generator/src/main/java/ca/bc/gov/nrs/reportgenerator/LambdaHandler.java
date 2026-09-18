@@ -75,9 +75,9 @@ public class LambdaHandler implements RequestStreamHandler {
             if (data == null) continue;
             List<JasperPrint> prints = new ArrayList<>();
             List<String> sheetNames = new ArrayList<>();
-            if (data.getFuelManagementReportData() != null && !data.getFuelManagementReportData().isEmpty()) {
+            if (data.getProjectFuelManagementReportData() != null && !data.getProjectFuelManagementReportData().isEmpty()) {
                 try {
-                    JRDataSource fuelDataSource = new JRBeanCollectionDataSource(data.getFuelManagementReportData());
+                    JRDataSource fuelDataSource = new JRBeanCollectionDataSource(data.getProjectFuelManagementReportData());
                     JasperPrint fuelPrint = JasperFillManager.getInstance(repo.getContext())
                         .fillFromRepo("WFPREV_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), fuelDataSource);
                     prints.add(fuelPrint);
@@ -86,15 +86,37 @@ public class LambdaHandler implements RequestStreamHandler {
                     LOG.error("Error filling Fuel Management Jasper report", e);
                 }
             }
-            if (data.getCulturePrescribedFireReportData() != null && !data.getCulturePrescribedFireReportData().isEmpty()) {
+            if (data.getResultsFuelManagementReportData() != null && !data.getResultsFuelManagementReportData().isEmpty()) {
                 try {
-                    JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getCulturePrescribedFireReportData());
+                    JRDataSource resultsFuelDataSource = new JRBeanCollectionDataSource(data.getResultsFuelManagementReportData());
+                    JasperPrint resultsFuelPrint = JasperFillManager.getInstance(repo.getContext())
+                        .fillFromRepo("WFPREV_RESULTS_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), resultsFuelDataSource);
+                    prints.add(resultsFuelPrint);
+                    sheetNames.add("Results FM XLS Download");
+                } catch (Exception e) {
+                    LOG.error("Error filling Results Fuel Management Jasper report", e);
+                }
+            }
+            if (data.getProjectCulturePrescribedFireReportData() != null && !data.getProjectCulturePrescribedFireReportData().isEmpty()) {
+                try {
+                    JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getProjectCulturePrescribedFireReportData());
                     JasperPrint culturePrint = JasperFillManager.getInstance(repo.getContext())
                         .fillFromRepo("WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), cultureDataSource);
                     prints.add(culturePrint);
                     sheetNames.add("CRx XLS Download");
                 } catch (net.sf.jasperreports.engine.JRException e) {
                     LOG.error("Error filling Culture Prescribed Fire Jasper report", e);
+                }
+            }
+            if (data.getResultsCulturePrescribedFireReportData() != null && !data.getResultsCulturePrescribedFireReportData().isEmpty()) {
+                try {
+                    JRDataSource resultsCultureDataSource = new JRBeanCollectionDataSource(data.getResultsCulturePrescribedFireReportData());
+                    JasperPrint resultsCulturePrint = JasperFillManager.getInstance(repo.getContext())
+                        .fillFromRepo("WFPREV_RESULTS_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), resultsCultureDataSource);
+                    prints.add(resultsCulturePrint);
+                    sheetNames.add("Results CRx XLS Download");
+                } catch (Exception e) {
+                    LOG.error("Error filling Results Culture Prescribed Fire Jasper report", e);
                 }
             }
             if (prints.isEmpty()) continue;

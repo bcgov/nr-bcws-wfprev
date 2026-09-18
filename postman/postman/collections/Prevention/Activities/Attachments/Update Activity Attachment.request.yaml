@@ -1,0 +1,29 @@
+$kind: http-request
+order: 2000
+method: PUT
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments/{{activityFileAttachmentGuid}}'
+body:
+  type: json
+  content: |-
+    {
+      "fileAttachmentGuid": "{{activityFileAttachmentGuid}}",
+      "sourceObjectNameCode": {
+        "sourceObjectNameCode": "TREATMENT_ACTIVITY"
+      },
+      "sourceObjectUniqueId": "{{activityGuid}}",
+      "documentPath": "/files/uploads/2026/document1.pdf",
+      "fileIdentifier": "document-2026-001",
+      "wildfireYear": 2026,
+      "attachmentContentTypeCode": {
+        "attachmentContentTypeCode": "DOCUMENT"
+      },
+      "attachmentDescription": "Wildfire assessment report description has been updated",
+      "attachmentReadOnlyInd": true
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      })

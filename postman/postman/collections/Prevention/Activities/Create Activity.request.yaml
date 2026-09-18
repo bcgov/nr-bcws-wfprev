@@ -1,0 +1,54 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities'
+body:
+  type: json
+  content: |-
+    {
+      "projectPlanFiscalGuid": "{{projectPlanFiscalGuid}}",
+      "activityStatusCode": {
+        "activityStatusCode": "ACTIVE"
+      },
+      "silvicultureBaseGuid": "aa0a073b-f729-4b3b-9128-810010662772",
+      "silvicultureTechniqueGuid": "6be605c1-1b9e-4205-b843-92ad662d5176",
+      "silvicultureMethodGuid": "74ec0cbf-ff97-4583-ac29-b86f4fe77c24",
+      "riskRatingCode": {
+        "riskRatingCode": "LOW_RISK"
+      },
+      "contractPhaseCode": {
+        "contractPhaseCode": "AWARDED"
+      },
+      "activityFundingSourceGuid": "2141ef38-0a0d-422e-a990-6e9d3d2a4bc8",
+      "activityName": "Test Silviculture Activity",
+      "activityDescription": "This is a test activity for silviculture operations",
+      "activityStartDate": "2025-04-01",
+      "activityEndDate": "2025-09-30",
+      "plannedSpendAmount": 100000.00,
+      "plannedTreatmentAreaHa": 125.5000,
+      "reportedSpendAmount": 0.00,
+      "completedAreaHa": 0.0000,
+      "isResultsReportableInd": true,
+      "outstandingObligationsInd": false,
+      "activityComment": "Initial test activity creation",
+      "isSpatialAddedInd": false
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Parse the response JSON
+      const response = pm.response.json();
+      
+      // Check if the access token exists in the response
+      if (response.activityGuid) {
+          // Save the token to an environment variable
+          pm.environment.set("activityGuid", response.activityGuid);
+          console.log("Activity Guid saved successfully!");
+      } else {
+          console.error("Failed to set Activity Guid:", response);
+      }
+      
+      pm.test("Status code is 201", function() {
+          pm.response.to.have.status(201);
+      })

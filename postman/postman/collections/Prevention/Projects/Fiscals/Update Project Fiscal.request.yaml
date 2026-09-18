@@ -1,0 +1,60 @@
+$kind: http-request
+order: 2000
+method: PUT
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}'
+body:
+  type: json
+  content: |-
+    {
+      "projectPlanFiscalGuid": "{{projectPlanFiscalGuid}}",
+      "projectGuid": "{{projectGuid}}",
+      "proposalTypeCode": "CARRYOVER",
+      "activityCategoryCode": "RX_DEV",
+      "fiscalYear": 2024,
+      "projectPlanStatusCode": "ACTIVE",
+      "planFiscalStatusCode": {
+        "planFiscalStatusCode": "PROPOSED"
+      },
+      "endorsementCode": {
+        "endorsementCode": "ENDORSED"
+      },
+      "projectFiscalName": "Fiscal Project 1",
+      "projectFiscalDescription": "This is a test project fiscal description.",
+      "businessAreaComment": "Test comment",
+      "estimatedClwrrAllocAmount": 1000.00,
+      "fiscalForecastAmount": 300.00,
+      "fiscalAncillaryFundAmount": 300.00,
+      "fiscalPlannedProjectSizeHa": 10.5,
+      "fiscalPlannedCostPerHaAmt": 500.00,
+      "fiscalReportedSpendAmount": 0.00,
+      "fiscalActualAmount": 0.00,
+      "fiscalCompletedSizeHa": 0.0,
+      "fiscalActualCostPerHaAmt": 0.0,
+      "firstNationsDelivPartInd": true,
+      "firstNationsEngagementInd": false,
+      "firstNationsPartner": "Test Partner",
+      "resultsNumber": "RN123456",
+      "resultsOpeningId": "RO12345",
+      "resultsContactEmail": "contact@example.com",
+      "submittedByName": "Test User",
+      "submittedByUserGuid": "123e4567-e89",
+      "submittedByUserUserid": "testuser",
+      "submissionTimestamp": "2024-01-01T12:00:00Z",
+      "isApprovedInd": true,
+      "isDelayedInd": false,
+      "ancillaryFundingProvider": "Provider01",
+      "endorsementEvalTimestamp": "2024-07-04T12:00:00Z",
+      "endorserName": "Jimmy Brooke",
+      "endorsementComment": "This project has been now very much been endorsed",
+      "approvalDate": "2024-07-04",
+      "approverName": "April Muamba",
+      "approvedComment": "This project has been reviewed and approved by April",
+      "approvedTimestamp": "2024-07-03T12:00:00Z" 
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      })
