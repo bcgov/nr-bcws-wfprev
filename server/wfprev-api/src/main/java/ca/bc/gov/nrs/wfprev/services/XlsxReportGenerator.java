@@ -46,8 +46,8 @@ public class XlsxReportGenerator {
         report.setReportType("XLSX");
         report.setReportName("project-report");
         LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
-        xlsxData.setFuelManagementReportData(fuelEntities);
-        xlsxData.setCulturePrescribedFireReportData(crxEntities);
+        xlsxData.setProjectFuelManagementReportData(fuelEntities);
+        xlsxData.setProjectCulturePrescribedFireReportData(crxEntities);
         report.setXlsxReportData(xlsxData);
         lambdaRequest.setReports(List.of(report));
 
@@ -198,25 +198,25 @@ public class XlsxReportGenerator {
         }
 
         public static class XlsxReportData {
-            private List<ProjectCulturalPrescribedFireReportEntity> culturePrescribedFireReportData;
-            private List<ProjectFuelManagementReportEntity> fuelManagementReportData;
+            private List<ProjectCulturalPrescribedFireReportEntity> projectCulturePrescribedFireReportData;
+            private List<ProjectFuelManagementReportEntity> projectFuelManagementReportData;
             private List<ResultsCulturalPrescribedFireReportEntity> resultsCulturePrescribedFireReportData;
             private List<ResultsFuelManagementReportEntity> resultsFuelManagementReportData;
 
-            public List<ProjectCulturalPrescribedFireReportEntity> getCulturePrescribedFireReportData() {
-                return culturePrescribedFireReportData;
+            public List<ProjectCulturalPrescribedFireReportEntity> getProjectCulturePrescribedFireReportData() {
+                return projectCulturePrescribedFireReportData;
             }
 
-            public void setCulturePrescribedFireReportData(List<ProjectCulturalPrescribedFireReportEntity> data) {
-                this.culturePrescribedFireReportData = data;
+            public void setProjectCulturePrescribedFireReportData(List<ProjectCulturalPrescribedFireReportEntity> data) {
+                this.projectCulturePrescribedFireReportData = data;
             }
 
-            public List<ProjectFuelManagementReportEntity> getFuelManagementReportData() {
-                return fuelManagementReportData;
+            public List<ProjectFuelManagementReportEntity> getProjectFuelManagementReportData() {
+                return projectFuelManagementReportData;
             }
 
-            public void setFuelManagementReportData(List<ProjectFuelManagementReportEntity> data) {
-                this.fuelManagementReportData = data;
+            public void setProjectFuelManagementReportData(List<ProjectFuelManagementReportEntity> data) {
+                this.projectFuelManagementReportData = data;
             }
 
             public List<ResultsCulturalPrescribedFireReportEntity> getResultsCulturePrescribedFireReportData() {
