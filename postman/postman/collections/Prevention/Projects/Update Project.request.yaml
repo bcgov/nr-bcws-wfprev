@@ -1,0 +1,59 @@
+$kind: http-request
+order: 2000
+method: PUT
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}'
+body:
+  type: json
+  content: |-
+    {
+        "projectGuid": "{{projectGuid}}",
+        "projectTypeCode": {
+            "projectTypeCode": "FUEL_MGMT"
+        },
+        "siteUnitName": "Vancouver Forest Unit",
+        "forestAreaCode": {
+            "forestAreaCode": "COAST"
+        },
+        "generalScopeCode": {
+            "generalScopeCode": "SL_ACT"
+        },
+        "projectStatusCode": {
+            "projectStatusCode": "ARCHIVED"
+        },
+        "programAreaGuid": "27602cd9-4b6e-9be0-e063-690a0a0afb50",
+      "projectName": "Test 3",
+        "projectLead": "Jane Smith",
+        "projectLeadEmailAddress": "jane.smith@example.com",
+        "projectDescription": "This is a comprehensive forest management project focusing on sustainable practices",
+        "closestCommunityName": "Vancouver",
+        "totalEstimatedCostAmount": 177000.00,
+        "totalForecastAmount": 125000.00,
+        "totalPlannedProjectSizeHa": 500.00,
+        "totalPlannedCostPerHectare": 200.00,
+        "totalActualAmount": 0.00,
+        "isMultiFiscalYearProj": false,
+        "forestRegionOrgUnitId": 1001,
+        "forestDistrictOrgUnitId": 2001,
+        "fireCentreOrgUnitId": 3001,
+        "bcParksRegionOrgUnitId": 4001,
+        "bcParksSectionOrgUnitId": 5001,
+        "primaryObjectiveTypeCode": {
+            "objectiveTypeCode": "RECONCIL"
+        },
+        "secondaryObjectiveTypeCode": {
+            "objectiveTypeCode": "HAZ_ABATE"
+        },
+       "secondaryObjectiveRationale": "Rationale test",
+       "tertiaryObjectiveTypeCode": {
+            "objectiveTypeCode": "FOR_HEALTH"
+        },
+        "latitude": 53.916943, 
+        "longitude": -122.749443 
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      })

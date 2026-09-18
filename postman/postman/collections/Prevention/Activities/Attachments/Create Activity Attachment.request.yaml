@@ -1,0 +1,40 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/attachments'
+body:
+  type: json
+  content: |-
+    {
+      "sourceObjectNameCode": {
+        "sourceObjectNameCode": "TREATMENT_ACTIVITY"
+      },
+      "sourceObjectUniqueId": "{{activityGuid}}",
+      "documentPath": "/files/uploads/2025/document1.pdf",
+      "fileIdentifier": "document-2025-001",
+      "wildfireYear": 2025,
+      "attachmentContentTypeCode": {
+        "attachmentContentTypeCode": "KML"
+      },
+      "attachmentDescription": "Wildfire attachment report description",
+      "attachmentReadOnlyInd": false
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Parse the response JSON
+      const response = pm.response.json();
+      
+      // Check if the access token exists in the response
+      if (response.fileAttachmentGuid) {
+          // Save the token to an environment variable
+          pm.environment.set("activityFileAttachmentGuid", response.fileAttachmentGuid);
+          console.log("activityFileAttachmentGuid saved successfully!");
+      } else {
+          console.error("Failed to set activityFileAttachmentGuid:", response);
+      }
+      
+      pm.test("Status code is 201", function() {
+          pm.response.to.have.status(201);
+      })

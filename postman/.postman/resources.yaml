@@ -1,0 +1,11 @@
+workspace:
+  id: 037b9a9d-e411-4ac6-92f1-7cdcf0c9bff3
+
+localResources:
+  collections:
+    - ../Prevention.postman_collection.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections: {}

@@ -1,0 +1,48 @@
+$kind: http-request
+order: 2000
+method: PUT
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectBoundary/{{projectBoundaryGuid}}'
+body:
+  type: json
+  content: |-
+    {
+      "projectBoundaryGuid": "{{projectBoundaryGuid}}",
+      "projectGuid": "{{projectGuid}}",
+      "systemStartTimestamp": "2027-02-01",
+      "systemEndTimestamp": "2027-11-30",
+      "mappingLabel": "Updated test mapping label",
+      "collectionDate": "2027-02-10",
+      "collectionMethod": "Updated test collection method",
+      "collectorName": "Updated_user",
+      "boundarySizeHa": 300.7500,
+      "boundaryComment": "Updated test project boundary comment",
+      "boundaryGeometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+            [
+                [
+                    [-125.0000, 50.0000],
+                    [-125.0001, 50.0001],
+                    [-125.0002, 50.0000],
+                    [-125.0000, 50.0000]
+                ]
+            ],
+            [
+                [
+                    [-126.0000, 51.0000],
+                    [-126.0001, 51.0001],
+                    [-126.0002, 51.0000],
+                    [-126.0000, 51.0000]
+                ]
+            ]
+        ]
+    },
+      "locationGeometry": [-125.0002, 50.0000]
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      })

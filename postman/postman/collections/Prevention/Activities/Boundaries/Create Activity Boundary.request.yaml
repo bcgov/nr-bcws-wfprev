@@ -1,0 +1,51 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary'
+body:
+  type: json
+  content: |-
+    {
+      "activityGuid": "{{activityGuid}}",
+      "systemStartTimestamp": "2026-01-01",
+      "systemEndTimestamp": "2026-12-31",
+      "plannedSpendAmount": 200000.00,
+      "mappingLabel": "Test mapping label",
+      "collectionDate": "2026-01-15",
+      "collectionMethod": "Test collection method",
+      "collectorName": "Test_user",
+      "boundarySizeHa": 200.5000,
+      "boundaryComment": "Test activity boundary comment",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+        [
+         [-124.0000, 49.0000],
+            [-124.0001, 49.0001],
+            [-124.0002, 49.0000],
+            [-124.0000, 49.0000]
+       ]
+       ]
+        ]
+      }
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Parse the response JSON
+      const response = pm.response.json();
+      
+      // Check if the access token exists in the response
+      if (response.activityBoundaryGuid) {
+          // Save the token to an environment variable
+          pm.environment.set("activityBoundaryGuid", response.activityBoundaryGuid);
+          console.log("Activity Boundary Guid saved successfully!");
+      } else {
+          console.error("Failed to set Activity Boundary Guid:", response);
+      }
+      
+      pm.test("Status code is 201", function() {
+          pm.response.to.have.status(201);
+      })

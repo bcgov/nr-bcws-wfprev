@@ -1,0 +1,71 @@
+$kind: http-request
+order: 1000
+method: POST
+url: '{{LOCAL_API_URL}}/projects'
+body:
+  type: json
+  content: |-
+    {
+        "projectTypeCode": {
+            "projectTypeCode": "FUEL_MGMT"
+        },
+        "siteUnitName": "Vancouver Forest Unit",
+        "forestAreaCode": {
+            "forestAreaCode": "WEST"
+        },
+        "generalScopeCode": {
+            "generalScopeCode": "SL_ACT"
+        },
+        "projectStatusCode": {
+            "projectStatusCode": "ACTIVE"
+        },
+        "programAreaGuid": "27602cd9-4b6e-9be0-e063-690a0a0afb50",
+      "projectName": "Sample Forest Management Project",
+        "projectLead": "Jane Smith",
+        "projectLeadEmailAddress": "jane.smith@example.com",
+        "projectDescription": "This is a comprehensive forest management project focusing on sustainable practices",
+        "closestCommunityName": "Vancouver",
+        "totalEstimatedCostAmount": 100000.00,
+        "totalForecastAmount": 95000.00,
+        "totalPlannedProjectSizeHa": 500.00,
+        "totalPlannedCostPerHectare": 200.00,
+        "totalActualAmount": 0.00,
+        "isMultiFiscalYearProj": false,
+        "forestRegionOrgUnitId": 1001,
+        "forestDistrictOrgUnitId": 2001,
+        "fireCentreOrgUnitId": 3001,
+        "bcParksRegionOrgUnitId": 4001,
+        "bcParksSectionOrgUnitId": 5001,
+        "primaryObjectiveTypeCode": {
+            "objectiveTypeCode": "CRIT_INFRA"
+        },
+        "secondaryObjectiveTypeCode": {
+            "objectiveTypeCode": "WRR"
+        },
+      "secondaryObjectiveRationale": "Rationale test",
+       "tertiaryObjectiveTypeCode": {
+            "objectiveTypeCode": "ECO_REST"
+        },
+        "latitude": 49.246292, 
+        "longitude": -123.116226, 
+        "lastUpdatedTimestamp": "2025-08-29T20:13:13.913+00:00"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Parse the response JSON
+      const response = pm.response.json();
+      
+      // Check if the access token exists in the response
+      if (response.projectGuid) {
+          // Save the token to an environment variable
+          pm.environment.set("projectGuid", response.projectGuid);
+          console.log("Project Guid saved successfully!");
+      } else {
+          console.error("Failed to set project guid:", response);
+      }
+      
+      pm.test("Status code is 201", function() {
+          pm.response.to.have.status(201);
+      })

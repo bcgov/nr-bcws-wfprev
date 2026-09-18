@@ -1,0 +1,11 @@
+$kind: http-request
+order: 5000
+method: DELETE
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}/activityBoundary/{{activityBoundaryGuid}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 204", function() {
+          pm.response.to.have.status(204);
+      })

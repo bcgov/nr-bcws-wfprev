@@ -1,0 +1,43 @@
+$kind: http-request
+order: 2000
+method: PUT
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/projectFiscals/{{projectPlanFiscalGuid}}/activities/{{activityGuid}}'
+body:
+  type: json
+  content: |-
+    {
+      "activityGuid": "{{activityGuid}}",
+      "projectPlanFiscalGuid": "{{projectPlanFiscalGuid}}",
+      "activityStatusCode": {
+        "activityStatusCode": "COMPLETED"
+      },
+      "silvicultureBaseGuid": "3bcf99c5-0891-4bbf-bdf5-2161c1b38d91",
+      "silvicultureTechniqueGuid": "970a3b25-03ba-42fd-b68e-c9272a707d0a",
+      "silvicultureMethodGuid": "1a230400-564c-4d42-9b61-2c2f5be65d13",
+      "riskRatingCode": {
+        "riskRatingCode": "HIGH_RISK"
+      },
+      "contractPhaseCode": {
+        "contractPhaseCode": "MULT_BID"
+      },
+      "activityFundingSourceGuid": "04543243-28ed-4a2b-8935-5f91acdb608c",
+      "activityName": "Updated Silviculture Activity",
+      "activityDescription": "This is an updated test activity for silviculture operations",
+      "activityStartDate": "2026-05-01",
+      "activityEndDate": "2026-10-31",
+      "plannedSpendAmount": 150000.00,
+      "plannedTreatmentAreaHa": 135.7500,
+      "reportedSpendAmount": 50000.00,
+      "completedAreaHa": 120.5000,
+      "isResultsReportableInd": false,
+      "outstandingObligationsInd": true,
+      "activityComment": "Updated activity after completion",
+      "isSpatialAddedInd": true
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      })

@@ -1,0 +1,11 @@
+$kind: http-request
+order: 6000
+method: GET
+url: '{{LOCAL_API_URL}}/codes/forestRegionCodes'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      })

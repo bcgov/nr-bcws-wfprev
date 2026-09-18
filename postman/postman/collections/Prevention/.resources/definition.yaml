@@ -1,0 +1,8 @@
+$kind: collection
+name: Prevention
+description: WF Prevention API — projects, activities, and reference codes.
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{accessToken}}'
