@@ -130,7 +130,7 @@ public class ReportService {
         return projectsToReport;
     }
 
-    private ProjectReportDataBundle resolveReportData(ReportRequestModel request) {
+    private ProjectReportDataBundle resolveProjectReportData(ReportRequestModel request) {
         List<ProjectFuelManagementReportEntity> fuel = new ArrayList<>();
         List<ProjectCulturalPrescribedFireReportEntity> crx = new ArrayList<>();
 
@@ -179,16 +179,16 @@ public class ReportService {
         return new ResultsReportDataBundle(fuel, crx);
     }
 
-    private ProjectReportDataBundle getPreparedReportData(ReportRequestModel request) {
-        ProjectReportDataBundle data = resolveReportData(request);
+    private ProjectReportDataBundle getPreparedProjectReportData(ReportRequestModel request) {
+        ProjectReportDataBundle data = resolveProjectReportData(request);
 
         // Remove nulls up front (defensive)
         data.fuel.removeIf(Objects::isNull);
         data.crx.removeIf(Objects::isNull);
 
         // Pre-process
-        data.fuel.forEach(this::setFuelManagementFields);
-        data.crx.forEach(this::setCrxFields);
+        data.fuel.forEach(this::setProjectFuelManagementFields);
+        data.crx.forEach(this::setProjectCrxFields);
 
         // If absolutely nothing to write, fail early
         if (data.fuel.isEmpty() && data.crx.isEmpty()) {
@@ -222,9 +222,14 @@ public class ReportService {
         if (request != null && ReportType.RESULTS_XLSX.equals(request.getReportType())) {
             exportResultsXlsx(request, outputStream);
         } else {
-            ProjectReportDataBundle data = getPreparedReportData(request);
-            xlsxReportGenerator.generateXlsx(data.fuel, data.crx, outputStream);
+            exportProjectXlsx(request, outputStream);
         }
+    }
+
+    public void exportProjectXlsx(ReportRequestModel request, OutputStream outputStream)
+            throws ServiceException, IOException, InterruptedException {
+        ProjectReportDataBundle data = getPreparedProjectReportData(request);
+        xlsxReportGenerator.generateXlsx(data.fuel, data.crx, outputStream);
     }
 
     public void exportResultsXlsx(ReportRequestModel request, OutputStream outputStream)
@@ -237,9 +242,13 @@ public class ReportService {
         if (request != null && ReportType.RESULTS_CSV.equals(request.getReportType())) {
             writeResultsCsvZipFromEntities(request, zipOutStream);
         } else {
-            ProjectReportDataBundle data = getPreparedReportData(request);
-            csvReportGenerator.generateCsvZip(data.fuel, data.crx, zipOutStream);
+            writeProjectCsvZipFromEntities(request, zipOutStream);
         }
+    }
+
+    public void writeProjectCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
+        ProjectReportDataBundle data = getPreparedProjectReportData(request);
+        csvReportGenerator.generateCsvZip(data.fuel, data.crx, zipOutStream);
     }
 
     public void writeResultsCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
@@ -247,7 +256,7 @@ public class ReportService {
         csvReportGenerator.generateResultsCsvZip(data.fuel, data.crx, zipOutStream);
     }
 
-    private void setFuelManagementFields(ProjectFuelManagementReportEntity entity) {
+    private void setProjectFuelManagementFields(ProjectFuelManagementReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
         if (entity != null) {
             if (entity.getProjectGuid() != null) {
@@ -269,7 +278,7 @@ public class ReportService {
         }
     }
 
-    private void setCrxFields(ProjectCulturalPrescribedFireReportEntity entity) {
+    private void setProjectCrxFields(ProjectCulturalPrescribedFireReportEntity entity) {
         String urlPrefix = baseUrl + PROJECT_URL_PREFIX;
         if (entity != null) {
             if (entity.getProjectGuid() != null) {
