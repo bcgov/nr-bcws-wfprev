@@ -1,12 +1,12 @@
 $kind: http-request
 order: 2000
 method: POST
-url: '{{LOCAL_API_URL}}/reports'
+url: "{{LOCAL_API_URL}}/reports"
 body:
   type: json
   content: |-
     {
-      "reportType": "xlsx",
+      "reportType": "PROJECT_XLSX",
       "projects": [
         {
           "projectGuid": "{{projectGuid}}",
@@ -16,8 +16,8 @@ body:
     }
 scripts:
   - type: afterResponse
-    language: text/javascript
     code: |-
       pm.test("Status code is 200", function () {
           pm.response.to.have.status(200);
       });
+    language: text/javascript
