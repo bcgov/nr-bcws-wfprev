@@ -71,22 +71,14 @@ public class ReportService {
         return xlsxReportGenerator;
     }
 
-    public static class ReportDataBundle {
+    public static class ProjectReportDataBundle {
         List<ProjectFuelManagementReportEntity> fuel;
         List<ProjectCulturalPrescribedFireReportEntity> crx;
 
-        ReportDataBundle(List<ProjectFuelManagementReportEntity> fuel,
-                         List<ProjectCulturalPrescribedFireReportEntity> crx) {
+        ProjectReportDataBundle(List<ProjectFuelManagementReportEntity> fuel,
+                                List<ProjectCulturalPrescribedFireReportEntity> crx) {
             this.fuel = fuel;
             this.crx = crx;
-        }
-
-        public List<ProjectFuelManagementReportEntity> getFuel() {
-            return fuel;
-        }
-
-        public List<ProjectCulturalPrescribedFireReportEntity> getCrx() {
-            return crx;
         }
     }
 
@@ -98,14 +90,6 @@ public class ReportService {
                                 List<ResultsCulturalPrescribedFireReportEntity> crx) {
             this.fuel = fuel;
             this.crx = crx;
-        }
-
-        public List<ResultsFuelManagementReportEntity> getFuel() {
-            return fuel;
-        }
-
-        public List<ResultsCulturalPrescribedFireReportEntity> getCrx() {
-            return crx;
         }
     }
 
@@ -146,7 +130,7 @@ public class ReportService {
         return projectsToReport;
     }
 
-    private ReportDataBundle resolveReportData(ReportRequestModel request) {
+    private ProjectReportDataBundle resolveReportData(ReportRequestModel request) {
         List<ProjectFuelManagementReportEntity> fuel = new ArrayList<>();
         List<ProjectCulturalPrescribedFireReportEntity> crx = new ArrayList<>();
 
@@ -168,7 +152,7 @@ public class ReportService {
             }
         }
 
-        return new ReportDataBundle(fuel, crx);
+        return new ProjectReportDataBundle(fuel, crx);
     }
 
     private ResultsReportDataBundle resolveResultsReportData(ReportRequestModel request) {
@@ -195,8 +179,8 @@ public class ReportService {
         return new ResultsReportDataBundle(fuel, crx);
     }
 
-    private ReportDataBundle getPreparedReportData(ReportRequestModel request) {
-        ReportDataBundle data = resolveReportData(request);
+    private ProjectReportDataBundle getPreparedReportData(ReportRequestModel request) {
+        ProjectReportDataBundle data = resolveReportData(request);
 
         // Remove nulls up front (defensive)
         data.fuel.removeIf(Objects::isNull);
@@ -238,7 +222,7 @@ public class ReportService {
         if (request != null && ReportType.RESULTS_XLSX.equals(request.getReportType())) {
             exportResultsXlsx(request, outputStream);
         } else {
-            ReportDataBundle data = getPreparedReportData(request);
+            ProjectReportDataBundle data = getPreparedReportData(request);
             xlsxReportGenerator.generateXlsx(data.fuel, data.crx, outputStream);
         }
     }
@@ -253,7 +237,7 @@ public class ReportService {
         if (request != null && ReportType.RESULTS_CSV.equals(request.getReportType())) {
             writeResultsCsvZipFromEntities(request, zipOutStream);
         } else {
-            ReportDataBundle data = getPreparedReportData(request);
+            ProjectReportDataBundle data = getPreparedReportData(request);
             csvReportGenerator.generateCsvZip(data.fuel, data.crx, zipOutStream);
         }
     }
