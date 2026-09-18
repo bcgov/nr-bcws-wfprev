@@ -63,7 +63,7 @@ class ReportControllerTest {
 
     @Test
     @WithMockUser
-    void testGenerateXlsxReport() throws Exception {
+    void testGenerateProjectXlsxReport() throws Exception {
         UUID guid = UUID.randomUUID();
         
         doAnswer(inv -> {
@@ -96,7 +96,7 @@ class ReportControllerTest {
 
     @Test
     @WithMockUser
-    void testGenerateCsvReport() throws Exception {
+    void testGenerateProjectCsvReport() throws Exception {
         UUID guid = UUID.randomUUID();
         
         doAnswer(inv -> {
