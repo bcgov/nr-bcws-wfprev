@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,10 +53,12 @@ class XlsxReportGeneratorTest {
     void generateXlsx_success_writesDecodedBytes() throws Exception {
         byte[] expectedBytes = "mock-excel-binary-data".getBytes(StandardCharsets.UTF_8);
         String base64 = Base64.getEncoder().encodeToString(expectedBytes);
-        String jsonPayload = "{\"files\":[{\"filename\":\"report.xlsx\",\"content\":\"" + base64 + "\"}]}";
+        String jsonPayload = "{\"files\":[{\"filename\":\"ReMi_Fiscal.xlsx\",\"content\":\"" + base64 + "\"}]}";
+        AtomicReference<String> requestBody = new AtomicReference<>();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/lambda", (HttpExchange exchange) -> {
+            requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             byte[] response = jsonPayload.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().add("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, response.length);
@@ -73,6 +76,7 @@ class XlsxReportGeneratorTest {
             generator.generateXlsx(List.of(new ProjectFuelManagementReportEntity()), List.of(new ProjectCulturalPrescribedFireReportEntity()), out);
 
             assertArrayEquals(expectedBytes, out.toByteArray());
+            assertTrue(requestBody.get().contains("\"reportName\":\"ReMi_Fiscal\""));
         } finally {
             server.stop(0);
         }
@@ -154,10 +158,12 @@ class XlsxReportGeneratorTest {
     void generateResultsXlsx_success_writesDecodedBytes() throws Exception {
         byte[] expectedBytes = "mock-results-excel-binary-data".getBytes(StandardCharsets.UTF_8);
         String base64 = Base64.getEncoder().encodeToString(expectedBytes);
-        String jsonPayload = "{\"files\":[{\"filename\":\"results-report.xlsx\",\"content\":\"" + base64 + "\"}]}";
+        String jsonPayload = "{\"files\":[{\"filename\":\"ReMi_RESULTS.xlsx\",\"content\":\"" + base64 + "\"}]}";
+        AtomicReference<String> requestBody = new AtomicReference<>();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/lambda", (HttpExchange exchange) -> {
+            requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             byte[] response = jsonPayload.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().add("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, response.length);
@@ -179,6 +185,7 @@ class XlsxReportGeneratorTest {
             );
 
             assertArrayEquals(expectedBytes, out.toByteArray());
+            assertTrue(requestBody.get().contains("\"reportName\":\"ReMi_RESULTS\""));
         } finally {
             server.stop(0);
         }

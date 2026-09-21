@@ -44,7 +44,7 @@ public class XlsxReportGenerator {
         LambdaReportRequest lambdaRequest = new LambdaReportRequest();
         LambdaReportRequest.Report report = new LambdaReportRequest.Report();
         report.setReportType("XLSX");
-        report.setReportName("project-report");
+        report.setReportName("ReMi_Fiscal");
         LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
         xlsxData.setProjectFuelManagementReportData(fuelEntities);
         xlsxData.setProjectCulturePrescribedFireReportData(crxEntities);
@@ -63,7 +63,7 @@ public class XlsxReportGenerator {
         LambdaReportRequest lambdaRequest = new LambdaReportRequest();
         LambdaReportRequest.Report report = new LambdaReportRequest.Report();
         report.setReportType("XLSX");
-        report.setReportName("results-report");
+        report.setReportName("ReMi_RESULTS");
         LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
         xlsxData.setResultsFuelManagementReportData(fuelEntities);
         xlsxData.setResultsCulturePrescribedFireReportData(crxEntities);

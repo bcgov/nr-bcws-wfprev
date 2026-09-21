@@ -958,9 +958,9 @@ describe('ProjectsListComponent', () => {
     }));
 
     [
-      { type: DownloadTypes.FISCAL_CSV, reportType: 'PROJECT_CSV', fileName: 'projects.zip' },
-      { type: DownloadTypes.FISCAL_EXCEL, reportType: 'PROJECT_XLSX', fileName: 'projects.xlsx' },
-      { type: DownloadTypes.RESULTS_EXCEL, reportType: 'RESULTS_XLSX', fileName: 'results.xlsx' }
+      { type: DownloadTypes.FISCAL_CSV, reportType: 'PROJECT_CSV', fileName: 'ReMi_Fiscal.zip' },
+      { type: DownloadTypes.FISCAL_EXCEL, reportType: 'PROJECT_XLSX', fileName: 'ReMi_Fiscal.xlsx' },
+      { type: DownloadTypes.RESULTS_EXCEL, reportType: 'RESULTS_XLSX', fileName: 'ReMi_RESULTS.xlsx' }
     ].forEach(({ type, reportType, fileName }) => {
       it(`should request ${reportType} and save it as ${fileName} for ${type}`, fakeAsync(() => {
         projectFilterStateService.set({ searchText: 'value' } as any);

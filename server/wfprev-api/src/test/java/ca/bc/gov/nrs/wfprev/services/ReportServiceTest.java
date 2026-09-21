@@ -245,7 +245,7 @@ class ReportServiceTest {
     void exportXlsx_success_writesReturnedBytes() throws Exception {
         byte[] xlsxBytes = "test-xlsx-contents".getBytes(StandardCharsets.UTF_8);
         String payload = lambdaResponseWithSingleFile(
-                "project-report.xlsx",
+                "ReMi_Fiscal.xlsx",
                 Base64.getEncoder().encodeToString(xlsxBytes)
         );
 
@@ -1145,7 +1145,7 @@ class ReportServiceTest {
     void exportXlsx_results_success_writesReturnedBytes() throws Exception {
         byte[] xlsxBytes = "test-results-xlsx-contents".getBytes(StandardCharsets.UTF_8);
         String payload = lambdaResponseWithSingleFile(
-                "results-report.xlsx",
+                "ReMi_RESULTS.xlsx",
                 Base64.getEncoder().encodeToString(xlsxBytes)
         );
 

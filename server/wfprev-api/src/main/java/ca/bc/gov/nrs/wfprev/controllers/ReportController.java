@@ -66,7 +66,7 @@ public class ReportController {
                     log.info("stream -> write end");
                 };
 
-                String filename = ReportType.RESULTS_XLSX.equals(type) ? "results-report.xlsx" : "project-report.xlsx";
+                String filename = ReportType.RESULTS_XLSX.equals(type) ? "ReMi_RESULTS.xlsx" : "ReMi_Fiscal.xlsx";
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
@@ -93,7 +93,7 @@ public class ReportController {
                     log.info("stream(zip) -> write end");
                 };
 
-                String filename = ReportType.RESULTS_CSV.equals(type) ? "results-report.zip" : "project-report.zip";
+                String filename = ReportType.RESULTS_CSV.equals(type) ? "results-report.zip" : "ReMi_Fiscal.zip";
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)

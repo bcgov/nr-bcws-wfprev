@@ -739,7 +739,7 @@ export class ProjectsListComponent implements OnInit {
         const url = globalThis.URL.createObjectURL(blob);
         const a = globalThis.document.createElement('a');
         const ext = body.reportType.endsWith('XLSX') ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
-        const fileName = body.reportType.startsWith('RESULTS') ? 'results' : 'projects';
+        const fileName = body.reportType.startsWith('RESULTS') ? 'ReMi_RESULTS' : 'ReMi_Fiscal';
         a.download = `${fileName}.${ext}`;
         a.href = url;
         a.click();

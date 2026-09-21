@@ -57,7 +57,7 @@ class ReportControllerUnitTest {
         ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("attachment; filename=project-report.xlsx", response.getHeaders().getFirst("Content-Disposition"));
+        assertEquals("attachment; filename=ReMi_Fiscal.xlsx", response.getHeaders().getFirst("Content-Disposition"));
         assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 response.getHeaders().getContentType().toString());
 
@@ -83,7 +83,7 @@ class ReportControllerUnitTest {
         ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("attachment; filename=project-report.zip", response.getHeaders().getFirst("Content-Disposition"));
+        assertEquals("attachment; filename=ReMi_Fiscal.zip", response.getHeaders().getFirst("Content-Disposition"));
         assertEquals("application/zip", response.getHeaders().getContentType().toString());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -108,7 +108,7 @@ class ReportControllerUnitTest {
         ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("attachment; filename=results-report.xlsx", response.getHeaders().getFirst("Content-Disposition"));
+        assertEquals("attachment; filename=ReMi_RESULTS.xlsx", response.getHeaders().getFirst("Content-Disposition"));
         assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 response.getHeaders().getContentType().toString());
 
