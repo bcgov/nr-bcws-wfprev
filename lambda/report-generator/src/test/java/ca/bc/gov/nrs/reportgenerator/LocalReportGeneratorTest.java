@@ -251,6 +251,17 @@ public class LocalReportGeneratorTest {
         // Assert files exist
         assertTrue(Files.exists(Paths.get(pdfPath)));
         assertTrue(Files.exists(Paths.get(xlsxPath)));
+
+        // Headers and data use Calibri 10, the same as the RESULTS export
+        try (java.util.zip.ZipFile xlsx = new java.util.zip.ZipFile(xlsxPath)) {
+            String styles = readEntry(xlsx, "xl/styles.xml");
+            assertFalse(styles.contains("Arial"), "Only Calibri should be used");
+            java.util.regex.Matcher sizes = java.util.regex.Pattern.compile("<sz val=\"([^\"]+)\"/>").matcher(styles);
+            while (sizes.find()) {
+                // "11" is the workbook's built-in default font; everything the report writes is "10.0"
+                assertTrue(List.of("10.0", "11").contains(sizes.group(1)), "Unexpected font size " + sizes.group(1));
+            }
+        }
     }
 
     private List<ProjectFuelManagementReportData> generateMockFuelManagementData(int count) {
