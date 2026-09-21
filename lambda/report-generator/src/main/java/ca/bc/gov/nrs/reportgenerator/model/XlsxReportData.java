@@ -5,23 +5,41 @@ import java.util.List;
 
 @RegisterForReflection
 public class XlsxReportData {
-  private List<CulturePrescribedFireReportData> culturePrescribedFireReportData;
-  private List<FuelManagementReportData> fuelManagementReportData;
+  private List<ProjectCulturePrescribedFireReportData> projectCulturePrescribedFireReportData;
+  private List<ProjectFuelManagementReportData> projectFuelManagementReportData;
+  private List<ResultsFuelManagementReportData> resultsFuelManagementReportData;
+  private List<ResultsCulturePrescribedFireReportData> resultsCulturePrescribedFireReportData;
 
   // Getters and setters
-  public List<CulturePrescribedFireReportData> getCulturePrescribedFireReportData() {
-      return culturePrescribedFireReportData;
+  public List<ProjectCulturePrescribedFireReportData> getProjectCulturePrescribedFireReportData() {
+      return projectCulturePrescribedFireReportData;
   }
 
-  public void setCulturePrescribedFireReportData(List<CulturePrescribedFireReportData> culturePrescribedFireReportData) {
-      this.culturePrescribedFireReportData = culturePrescribedFireReportData;
+  public void setProjectCulturePrescribedFireReportData(List<ProjectCulturePrescribedFireReportData> projectCulturePrescribedFireReportData) {
+      this.projectCulturePrescribedFireReportData = projectCulturePrescribedFireReportData;
   }
 
-  public List<FuelManagementReportData> getFuelManagementReportData() {
-      return fuelManagementReportData;
+  public List<ProjectFuelManagementReportData> getProjectFuelManagementReportData() {
+      return projectFuelManagementReportData;
   }
 
-  public void setFuelManagementReportData(List<FuelManagementReportData> fuelManagementReportData) {
-      this.fuelManagementReportData = fuelManagementReportData;
+  public void setProjectFuelManagementReportData(List<ProjectFuelManagementReportData> projectFuelManagementReportData) {
+      this.projectFuelManagementReportData = projectFuelManagementReportData;
+  }
+
+  public List<ResultsFuelManagementReportData> getResultsFuelManagementReportData() {
+      return resultsFuelManagementReportData;
+  }
+
+  public void setResultsFuelManagementReportData(List<ResultsFuelManagementReportData> resultsFuelManagementReportData) {
+      this.resultsFuelManagementReportData = resultsFuelManagementReportData;
+  }
+
+  public List<ResultsCulturePrescribedFireReportData> getResultsCulturePrescribedFireReportData() {
+      return resultsCulturePrescribedFireReportData;
+  }
+
+  public void setResultsCulturePrescribedFireReportData(List<ResultsCulturePrescribedFireReportData> resultsCulturePrescribedFireReportData) {
+      this.resultsCulturePrescribedFireReportData = resultsCulturePrescribedFireReportData;
   }
 }

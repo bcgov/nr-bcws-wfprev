@@ -1,0 +1,133 @@
+$kind: http-request
+order: 2000
+method: PUT
+url: '{{LOCAL_API_URL}}/projects/{{projectGuid}}/evaluationCriteriaSummary/{{evaluationCriteriaSummaryGuid}}'
+body:
+  type: json
+  content: |-
+    {
+      "evaluationCriteriaSummaryGuid": "{{evaluationCriteriaSummaryGuid}}",
+      "projectGuid": "{{projectGuid}}",
+      "wuiRiskClassCode": {
+        "wuiRiskClassCode": "WUI_RC_2"
+      },
+      "localWuiRiskClassCode": {
+        "wuiRiskClassCode": "WUI_RC_4"
+      },
+      "wuiRiskClassComment": "Updated comment: new risk observed near development",
+      "localWuiRiskClassRationale": "Updated rationale: slope and exposure increased",
+      "isOutsideWuiInd": true,
+      "totalFilterScore": 10,
+      "evaluationCriteriaSectionSummaries": [
+        {
+          "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_COARSE_FLT}}",
+          "evaluationCriteriaSectionCode": {
+            "evaluationCriteriaSectionCode": "COARSE_FLT"
+          },
+          "evaluationCriteriaSummaryGuid": "{{evaluationCriteriaSummaryGuid}}",
+          "filterSectionScore": 6,
+          "filterSectionComment": "Large fuel break present - UPDATED"
+        },
+        {
+          "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+          "evaluationCriteriaSectionCode": {
+            "evaluationCriteriaSectionCode": "MEDIUM_FLT"
+          },
+          "evaluationCriteriaSummaryGuid": "{{evaluationCriteriaSummaryGuid}}",
+          "filterSectionScore": 21,
+          "filterSectionComment": "Moderate surface fuel load changed - UPDATED",
+          "evaluationCriteriaSelected": [
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_0}}",
+              "evaluationCriteriaGuid": "daa765c8-1905-40d1-a94a-c91d0bd476f2",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": true
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_1}}",
+              "evaluationCriteriaGuid": "eec68da8-809c-48d3-a1d2-53af176ddafa",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_2}}",
+              "evaluationCriteriaGuid": "69e48af3-f77a-4767-b377-13952dcf0b11",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_3}}",
+              "evaluationCriteriaGuid": "31ec7389-b25f-4a0f-b6b5-f8e95d3f9736",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": true
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_4}}",
+              "evaluationCriteriaGuid": "7d8b4cda-c349-433d-a356-0662acb6476b",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_5}}",
+              "evaluationCriteriaGuid": "6060336c-322c-4e41-bc6c-7bc666970f1e",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_6}}",
+              "evaluationCriteriaGuid": "3e71df16-11e9-4c1d-aced-8f07c4ecbf70",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_MEDIUM_FLT_7}}",
+              "evaluationCriteriaGuid": "bfd21320-3fcf-4943-adca-122a6a610892",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_MEDIUM_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            }
+          ]
+        },
+        {
+          "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}",
+          "evaluationCriteriaSectionCode": {
+            "evaluationCriteriaSectionCode": "FINE_FLT"
+          },
+          "evaluationCriteriaSummaryGuid": "{{evaluationCriteriaSummaryGuid}}",
+          "filterSectionScore": 3,
+          "filterSectionComment": "Dry grasses near interface changed - UPDATED",
+          "evaluationCriteriaSelected": [
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_FINE_FLT_0}}",
+              "evaluationCriteriaGuid": "fb3f8f6f-c649-4026-9b01-b73ceb1d0a89",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_FINE_FLT_1}}",
+              "evaluationCriteriaGuid": "ae0c2f78-a2ff-4acb-a1b2-e2d334ec9cae",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}",
+              "isEvaluationCriteriaSelectedInd": true
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_FINE_FLT_2}}",
+              "evaluationCriteriaGuid": "e569f9a7-5e87-4b8d-969b-fc38350b6877",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}",
+              "isEvaluationCriteriaSelectedInd": true
+            },
+            {
+              "evaluationCriteriaSelectedGuid": "{{evaluationCriteriaSelectedGuid_FINE_FLT_3}}",
+              "evaluationCriteriaGuid": "2c86d28f-5869-4409-932d-4af4b1820b34",
+              "evaluationCriteriaSectionSummaryGuid": "{{evaluationCriteriaSectionSummaryGuid_FINE_FLT}}",
+              "isEvaluationCriteriaSelectedInd": false
+            }
+          ]
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function() {
+          pm.response.to.have.status(200);
+      });

@@ -1,0 +1,43 @@
+$kind: http-request
+order: 1000
+method: GET
+url: '{{REST_CLIENT_URL}}/oauth2/v1/oauth/token?disableDeveloperFilter=true&response_type=token&grant_type=client_credentials'
+queryParams:
+  - key: disableDeveloperFilter
+    value: 'true'
+  - key: response_type
+    value: token
+  - key: grant_type
+    value: client_credentials
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: '{{REST_CLIENT_ID}}'
+    - key: password
+      value: '{{REST_CLIENT_SECRET}}'
+scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      // Use Buffer to encode credentials to Base64
+      const clientId = pm.environment.get("REST_CLIENT_ID");
+      const clientSecret = pm.environment.get("REST_CLIENT_SECRET");
+      const encodedCredentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+      
+      // Set the encoded credentials in the environment
+      pm.environment.set("btoaEncodedCredentials", encodedCredentials);
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Parse the response JSON
+      const response = pm.response.json();
+      
+      // Check if the access token exists in the response
+      if (response.access_token) {
+          // Save the token to an environment variable
+          pm.environment.set("accessToken", response.access_token);
+          console.log("Access token saved successfully!");
+      } else {
+          console.error("Failed to retrieve access token:", response);
+      }

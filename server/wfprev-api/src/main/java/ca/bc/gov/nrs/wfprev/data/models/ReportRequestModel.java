@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 public class ReportRequestModel {
-    private String reportType;
+    private ReportType reportType;
     private FeatureQueryParams projectFilter;
     private List<Project> projects;
 

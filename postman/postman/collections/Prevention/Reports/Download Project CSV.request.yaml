@@ -1,0 +1,23 @@
+$kind: http-request
+order: 1000
+method: POST
+url: "{{LOCAL_API_URL}}/reports"
+body:
+  type: json
+  content: |-
+    {
+      "reportType": "PROJECT_CSV",
+      "projects": [
+        {
+          "projectGuid": "{{projectGuid}}",
+          "projectFiscalGuids": ["{{projectPlanFiscalGuid}}"]
+        }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+    language: text/javascript
