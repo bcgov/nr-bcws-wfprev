@@ -261,6 +261,10 @@ public class LocalReportGeneratorTest {
                 // "11" is the workbook's built-in default font; everything the report writes is "10.0"
                 assertTrue(List.of("10.0", "11").contains(sizes.group(1)), "Unexpected font size " + sizes.group(1));
             }
+
+            String sheet = readEntry(xlsx, "xl/worksheets/sheet1.xml");
+            assertTrue(sheet.contains("ySplit=\"1\"") && sheet.contains("state=\"frozen\""),
+                    "Row 1 column titles should be frozen");
         }
     }
 

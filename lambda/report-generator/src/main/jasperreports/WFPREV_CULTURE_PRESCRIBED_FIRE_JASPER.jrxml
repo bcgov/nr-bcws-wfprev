@@ -6,7 +6,8 @@
     <property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true" />
     <property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false" />
     <property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false" />
-    <property name="net.sf.jasperreports.export.xls.freeze.row" value="1" />
+    <!-- First unfrozen row: the row 1 column titles stay visible when scrolling -->
+    <property name="net.sf.jasperreports.export.xls.freeze.row" value="2" />
     <property name="com.jaspersoft.studio.unit." value="pixel" />
     <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel" />
     <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel" />
