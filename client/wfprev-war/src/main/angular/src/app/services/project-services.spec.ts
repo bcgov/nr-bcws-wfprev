@@ -891,7 +891,7 @@ describe('ProjectService', () => {
 
   it('should download projects and return blob', () => {
     const body: ReportRequest = {
-      reportType: 'csv',
+      reportType: 'PROJECT_CSV',
       projects: [
         { projectGuid: 'guid1' },
         { projectGuid: 'guid2' }
@@ -913,7 +913,7 @@ describe('ProjectService', () => {
 
   it('should handle error when downloading projects', () => {
     const body: ReportRequest = {
-      reportType: 'csv',
+      reportType: 'PROJECT_CSV',
       projects: [
         { projectGuid: 'guid1' },
         { projectGuid: 'guid2' }

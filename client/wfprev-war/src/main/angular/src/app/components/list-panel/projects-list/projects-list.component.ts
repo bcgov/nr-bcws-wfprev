@@ -21,7 +21,7 @@ import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { getActiveMap, ResourcesRoutes } from 'src/app/utils';
-import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadOptions, DownloadReportTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ReportRequest } from '../../models';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
@@ -57,7 +57,7 @@ export class ProjectsListComponent implements OnInit {
   selectedProjectGuid: string | null = null;
   getFiscalYearDisplay = getFiscalYearDisplay;
   expandedPanels: Record<string, boolean> = {};
-  formats = [DownloadTypes.CSV, DownloadTypes.EXCEL];
+  formats = DownloadOptions;
   totalItems = 0;
   pageNumber = 1;
   pageRowCount = 20;
@@ -707,7 +707,7 @@ export class ProjectsListComponent implements OnInit {
     const sanitize = (arr: any[]) => arr.filter(v => v !== '__ALL__');
 
     const body: ReportRequest = {
-      reportType: type === DownloadTypes.EXCEL ? 'xlsx' : 'csv'
+      reportType: DownloadReportTypes[type]
     };
 
     const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
@@ -738,8 +738,9 @@ export class ProjectsListComponent implements OnInit {
         snackRef.dismiss();
         const url = globalThis.URL.createObjectURL(blob);
         const a = globalThis.document.createElement('a');
-        const ext = body.reportType === 'xlsx' ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
-        a.download = `projects.${ext}`;
+        const ext = body.reportType.endsWith('XLSX') ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
+        const fileName = body.reportType.startsWith('RESULTS') ? 'results' : 'projects';
+        a.download = `${fileName}.${ext}`;
         a.href = url;
         a.click();
         globalThis.URL.revokeObjectURL(url);

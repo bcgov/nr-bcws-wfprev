@@ -1,3 +1,5 @@
+import { DownloadOption, ReportType } from 'src/app/components/models';
+
 export const Messages = {
   activityCreatedFailure: 'Activity Created Failed',
   activityCreatedSuccess: 'Activity Created Successfully',
@@ -220,8 +222,21 @@ export const EvaluationCriteriaSectionCodes = {
 };
 
 export const DownloadTypes = {
-  CSV: 'csv',
-  EXCEL: 'xlsx'
+  FISCAL_CSV: 'fiscal-csv',
+  FISCAL_EXCEL: 'fiscal-xlsx',
+  RESULTS_EXCEL: 'results-xlsx'
+};
+
+export const DownloadOptions: DownloadOption[] = [
+  { label: 'Fiscal CSV', value: DownloadTypes.FISCAL_CSV },
+  { label: 'Fiscal XLSX', value: DownloadTypes.FISCAL_EXCEL },
+  { label: 'RESULTS XLSX', value: DownloadTypes.RESULTS_EXCEL }
+];
+
+export const DownloadReportTypes: Record<string, ReportType> = {
+  [DownloadTypes.FISCAL_CSV]: 'PROJECT_CSV',
+  [DownloadTypes.FISCAL_EXCEL]: 'PROJECT_XLSX',
+  [DownloadTypes.RESULTS_EXCEL]: 'RESULTS_XLSX'
 };
 
 export const DownloadFileExtensions = {

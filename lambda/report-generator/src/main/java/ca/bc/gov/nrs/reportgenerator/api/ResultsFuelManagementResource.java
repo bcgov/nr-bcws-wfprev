@@ -24,7 +24,7 @@ import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 public class ResultsFuelManagementResource {
     private static final Logger LOG = Logger.getLogger(ResultsFuelManagementResource.class);
 
-    private static final String TEST_REPORT_NAME = "WFPREV_RESULTS_FUEL_MANAGEMENT_JASPER.jasper";
+    private static final String TEST_REPORT_NAME = "WFPREV_RESULTS_JASPER.jasper";
 
     @Inject
     ReadOnlyStreamingService repo;

@@ -366,7 +366,12 @@ export interface LayerSettings {
   openmaps: string;
 }
 
-export type ReportType = 'csv' | 'xlsx';
+export type ReportType = 'PROJECT_CSV' | 'PROJECT_XLSX' | 'RESULTS_CSV' | 'RESULTS_XLSX';
+
+export interface DownloadOption {
+  label: string;
+  value: string;
+}
 
 export interface ReportProject {
   projectGuid: string;

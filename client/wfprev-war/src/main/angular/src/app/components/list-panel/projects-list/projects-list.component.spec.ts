@@ -17,7 +17,7 @@ import { ProjectFilterStateService } from 'src/app/services/project-filter-state
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedService } from 'src/app/services/shared-service';
 import { ResourcesRoutes } from 'src/app/utils';
-import { Messages } from 'src/app/utils/constants';
+import { DownloadTypes, Messages } from 'src/app/utils/constants';
 import { ProjectsListComponent } from './projects-list.component';
 
 describe('ProjectsListComponent', () => {
@@ -948,19 +948,43 @@ describe('ProjectsListComponent', () => {
       spyOn(document, 'createElement').and.callThrough();
       mockProjectService.downloadProjects.and.returnValue(of(mockBlob));
 
-      component.onDownload('csv');
+      component.onDownload(DownloadTypes.FISCAL_CSV);
       tick();
 
       const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+      expect(bodyArg.reportType).toBe('PROJECT_CSV');
       expect(bodyArg.projects).toBeUndefined();
       expect(bodyArg.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value' }));
     }));
+
+    [
+      { type: DownloadTypes.FISCAL_CSV, reportType: 'PROJECT_CSV', fileName: 'projects.zip' },
+      { type: DownloadTypes.FISCAL_EXCEL, reportType: 'PROJECT_XLSX', fileName: 'projects.xlsx' },
+      { type: DownloadTypes.RESULTS_EXCEL, reportType: 'RESULTS_XLSX', fileName: 'results.xlsx' }
+    ].forEach(({ type, reportType, fileName }) => {
+      it(`should request ${reportType} and save it as ${fileName} for ${type}`, fakeAsync(() => {
+        projectFilterStateService.set({ searchText: 'value' } as any);
+        const anchor = document.createElement('a');
+        spyOn(anchor, 'click');
+        spyOn(document, 'createElement').and.returnValue(anchor);
+        spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
+        mockProjectService.downloadProjects.and.returnValue(of(new Blob(['test data'])));
+
+        component.onDownload(type);
+        tick();
+
+        const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+        expect(bodyArg.reportType).toBe(reportType);
+        expect(anchor.download).toBe(fileName);
+        expect(anchor.click).toHaveBeenCalled();
+      }));
+    });
 
     it('should show error message when attempting to download without filters', fakeAsync(() => {
       projectFilterStateService.clear();
       component.displayedProjects = [{ projectGuid: 'guid1' }] as any; // Presence of projects irrelevant
 
-      component.onDownload('csv');
+      component.onDownload(DownloadTypes.FISCAL_CSV);
       tick();
 
       expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
@@ -976,7 +1000,7 @@ describe('ProjectsListComponent', () => {
         throwError(() => new Error('Download failed'))
       );
 
-      component.onDownload('csv');
+      component.onDownload(DownloadTypes.FISCAL_CSV);
       tick();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
