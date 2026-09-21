@@ -952,21 +952,33 @@ describe('ProjectsListComponent', () => {
       tick();
 
       const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+      expect(bodyArg.reportType).toBe('PROJECT_CSV');
       expect(bodyArg.projects).toBeUndefined();
       expect(bodyArg.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value' }));
     }));
 
-    it('should log an error and not call the service for the results report', fakeAsync(() => {
-      spyOn(console, 'error');
-      projectFilterStateService.set({ searchText: 'value' } as any);
+    [
+      { type: DownloadTypes.FISCAL_CSV, reportType: 'PROJECT_CSV', fileName: 'projects.zip' },
+      { type: DownloadTypes.FISCAL_EXCEL, reportType: 'PROJECT_XLSX', fileName: 'projects.xlsx' },
+      { type: DownloadTypes.RESULTS_EXCEL, reportType: 'RESULTS_XLSX', fileName: 'results.xlsx' }
+    ].forEach(({ type, reportType, fileName }) => {
+      it(`should request ${reportType} and save it as ${fileName} for ${type}`, fakeAsync(() => {
+        projectFilterStateService.set({ searchText: 'value' } as any);
+        const anchor = document.createElement('a');
+        spyOn(anchor, 'click');
+        spyOn(document, 'createElement').and.returnValue(anchor);
+        spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
+        mockProjectService.downloadProjects.and.returnValue(of(new Blob(['test data'])));
 
-      component.onDownload(DownloadTypes.RESULTS_EXCEL);
-      tick();
+        component.onDownload(type);
+        tick();
 
-      expect(console.error).toHaveBeenCalledWith('RESULTS XLSX download is not implemented yet');
-      expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
-      expect(mockSnackBar.open).not.toHaveBeenCalled();
-    }));
+        const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
+        expect(bodyArg.reportType).toBe(reportType);
+        expect(anchor.download).toBe(fileName);
+        expect(anchor.click).toHaveBeenCalled();
+      }));
+    });
 
     it('should show error message when attempting to download without filters', fakeAsync(() => {
       projectFilterStateService.clear();

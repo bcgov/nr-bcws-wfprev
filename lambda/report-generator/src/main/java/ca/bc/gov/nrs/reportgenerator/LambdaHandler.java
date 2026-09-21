@@ -90,9 +90,9 @@ public class LambdaHandler implements RequestStreamHandler {
                 try {
                     JRDataSource resultsFuelDataSource = new JRBeanCollectionDataSource(data.getResultsFuelManagementReportData());
                     JasperPrint resultsFuelPrint = JasperFillManager.getInstance(repo.getContext())
-                        .fillFromRepo("WFPREV_RESULTS_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), resultsFuelDataSource);
+                        .fillFromRepo("WFPREV_RESULTS_JASPER.jasper", new HashMap<>(), resultsFuelDataSource);
                     prints.add(resultsFuelPrint);
-                    sheetNames.add("Results FM XLS Download");
+                    sheetNames.add("FM XLS Download");
                 } catch (Exception e) {
                     LOG.error("Error filling Results Fuel Management Jasper report", e);
                 }
@@ -112,9 +112,9 @@ public class LambdaHandler implements RequestStreamHandler {
                 try {
                     JRDataSource resultsCultureDataSource = new JRBeanCollectionDataSource(data.getResultsCulturePrescribedFireReportData());
                     JasperPrint resultsCulturePrint = JasperFillManager.getInstance(repo.getContext())
-                        .fillFromRepo("WFPREV_RESULTS_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), resultsCultureDataSource);
+                        .fillFromRepo("WFPREV_RESULTS_JASPER.jasper", new HashMap<>(), resultsCultureDataSource);
                     prints.add(resultsCulturePrint);
-                    sheetNames.add("Results CRx XLS Download");
+                    sheetNames.add("CRx XLS Download");
                 } catch (Exception e) {
                     LOG.error("Error filling Results Culture Prescribed Fire Jasper report", e);
                 }

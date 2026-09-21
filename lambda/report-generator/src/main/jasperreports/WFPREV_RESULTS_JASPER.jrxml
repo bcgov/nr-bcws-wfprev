@@ -14,33 +14,33 @@
 	<field name="projectName" class="java.lang.String" />
 	<field name="projectFiscalName" class="java.lang.String" />
 	<field name="activityName" class="java.lang.String" />
-	<field name="resultsReportable" class="java.lang.String" />
+	<field name="isResultsReportableInd" class="java.lang.String" />
 	<field name="activityDescription" class="java.lang.String" />
-	<field name="activityStatusDescription" class="java.lang.String" />
+	<field name="activityStatusName" class="java.lang.String" />
 	<field name="fiscalYear" class="java.lang.String" />
-	<field name="forestDistrictOrgUnitName" class="java.lang.String" />
+	<field name="forestDistrictName" class="java.lang.String" />
 	<field name="projectLeadEmailAddress" class="java.lang.String" />
 	<field name="resultsProjectCode" class="java.lang.String" />
 	<field name="resultsOpeningId" class="java.lang.String" />
 	<field name="projectBoundarySizeHa" class="java.math.BigDecimal" />
-	<field name="silvicultureBaseDescription" class="java.lang.String" />
-	<field name="silvicultureTechniqueDescription" class="java.lang.String" />
-	<field name="silvicultureMethodDescription" class="java.lang.String" />
-	<field name="primaryObjectiveTypeDescription" class="java.lang.String" />
-	<field name="secondaryObjectiveTypeDescription" class="java.lang.String" />
-	<field name="completedDate" class="java.util.Date" />
+	<field name="activityBaseName" class="java.lang.String" />
+	<field name="techniqueName" class="java.lang.String" />
+	<field name="methodName" class="java.lang.String" />
+	<field name="primaryObjectiveName" class="java.lang.String" />
+	<field name="secondaryObjectiveName" class="java.lang.String" />
+	<field name="activityEndDate" class="java.util.Date" />
 	<field name="completedAreaHa" class="java.math.BigDecimal" />
-	<field name="fundingSourceAbbreviation" class="java.lang.String" />
+	<field name="fundingSourceCode" class="java.lang.String" />
 	<field name="plannedTreatmentAreaHa" class="java.math.BigDecimal" />
-	<field name="contractPhaseDescription" class="java.lang.String" />
+	<field name="contractPhaseName" class="java.lang.String" />
 	<field name="cfsProjectCode" class="java.lang.String" />
-	<field name="previousCarryForward" class="java.lang.String" />
-	<field name="carryForward" class="java.lang.String" />
+	<field name="previousCarryForwardInd" class="java.lang.String" />
+	<field name="carryForwardInd" class="java.lang.String" />
 	<field name="finalOutcomeComments" class="java.lang.String" />
-	<field name="outstandingObligations" class="java.lang.String" />
-	<field name="outstandingObligationsPlan" class="java.lang.String" />
-	<field name="openingSpatialFileName" class="java.lang.String" />
-	<field name="activitySpatialFileName" class="java.lang.String" />
+	<field name="outstandingObligationsInd" class="java.lang.String" />
+	<field name="activityComment" class="java.lang.String" />
+	<field name="openingShapeFileName" class="java.lang.String" />
+	<field name="activityShapeFileName" class="java.lang.String" />
 	<background />
 	<title />
 	<pageHeader />
@@ -953,7 +953,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="e3cda2d5-8a2b-5132-b247-ea6806e575a8" mode="Opaque" x="676" y="0" width="147" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{resultsReportable}]]></expression>
+				<expression><![CDATA[$F{isResultsReportableInd}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -971,7 +971,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="792f0450-7ee4-50b4-9fed-7baf1e205669" mode="Opaque" x="976" y="0" width="116" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{activityStatusDescription}]]></expression>
+				<expression><![CDATA[$F{activityStatusName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -989,7 +989,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="de0444f5-39e4-5aee-b353-d8e5df1f8b32" mode="Opaque" x="1151" y="0" width="155" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{forestDistrictOrgUnitName}]]></expression>
+				<expression><![CDATA[$F{forestDistrictName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1062,7 +1062,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="7ced2c30-cfb7-5603-992a-6f8bf3301cc2" mode="Opaque" x="2116" y="0" width="123" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{silvicultureBaseDescription}]]></expression>
+				<expression><![CDATA[$F{activityBaseName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1071,7 +1071,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="23ebf47f-3cb8-54e9-b16f-d35ebb1fd2de" mode="Opaque" x="2239" y="0" width="75" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{silvicultureTechniqueDescription}]]></expression>
+				<expression><![CDATA[$F{techniqueName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1080,7 +1080,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="cd1c3b35-dc58-57c8-8fdc-69701725dbd5" mode="Opaque" x="2314" y="0" width="80" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{silvicultureMethodDescription}]]></expression>
+				<expression><![CDATA[$F{methodName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1089,7 +1089,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="21e159b4-5599-54ff-bb24-8546dc824e66" mode="Opaque" x="2394" y="0" width="116" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{primaryObjectiveTypeDescription}]]></expression>
+				<expression><![CDATA[$F{primaryObjectiveName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1098,7 +1098,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="d8946527-736e-5f96-9b78-91c2df4cd046" mode="Opaque" x="2510" y="0" width="131" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{secondaryObjectiveTypeDescription}]]></expression>
+				<expression><![CDATA[$F{secondaryObjectiveName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1116,7 +1116,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="a40f6b43-35ac-51b5-bebf-ce69d71f0e37" mode="Opaque" x="2738" y="0" width="91" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="yyyy-MM-dd" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{completedDate}]]></expression>
+				<expression><![CDATA[$F{activityEndDate}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1135,7 +1135,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="0c93ec22-e3f2-5cad-812b-a812f0963059" mode="Opaque" x="2949" y="0" width="114" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{fundingSourceAbbreviation}]]></expression>
+				<expression><![CDATA[$F{fundingSourceCode}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1172,7 +1172,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="0b2fbe37-fde1-5ccc-b21d-7944fc9c98ad" mode="Opaque" x="3490" y="0" width="91" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{contractPhaseDescription}]]></expression>
+				<expression><![CDATA[$F{contractPhaseName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1190,7 +1190,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="bf6c22e2-f164-5180-a61e-759c857a1042" mode="Opaque" x="3634" y="0" width="135" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{previousCarryForward}]]></expression>
+				<expression><![CDATA[$F{previousCarryForwardInd}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1199,7 +1199,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="f6e27560-fced-5083-a38f-07057ea5d112" mode="Opaque" x="3769" y="0" width="135" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{carryForward}]]></expression>
+				<expression><![CDATA[$F{carryForwardInd}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1217,7 +1217,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="e5b9d44a-b775-5ac7-9af6-2a5ecc2b9475" mode="Opaque" x="3995" y="0" width="131" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{outstandingObligations}]]></expression>
+				<expression><![CDATA[$F{outstandingObligationsInd}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1226,7 +1226,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="1df9bb3e-52e3-58bf-b9d6-5a6b511d8c28" mode="Opaque" x="4126" y="0" width="127" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{outstandingObligationsPlan}]]></expression>
+				<expression><![CDATA[$F{activityComment}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1235,7 +1235,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="9153ae77-9e5e-5a2c-a00b-2c631b9b702c" mode="Opaque" x="4253" y="0" width="279" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{openingSpatialFileName}]]></expression>
+				<expression><![CDATA[$F{openingShapeFileName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1244,7 +1244,7 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="c52addc9-e43e-565a-9a76-fe4f947399e9" mode="Opaque" x="4532" y="0" width="281" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{activitySpatialFileName}]]></expression>
+				<expression><![CDATA[$F{activityShapeFileName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />

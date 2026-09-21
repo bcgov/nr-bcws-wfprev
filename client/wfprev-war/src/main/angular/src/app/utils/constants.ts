@@ -1,4 +1,4 @@
-import { DownloadOption } from 'src/app/components/models';
+import { DownloadOption, ReportType } from 'src/app/components/models';
 
 export const Messages = {
   activityCreatedFailure: 'Activity Created Failed',
@@ -232,6 +232,12 @@ export const DownloadOptions: DownloadOption[] = [
   { label: 'Fiscal XLSX', value: DownloadTypes.FISCAL_EXCEL },
   { label: 'RESULTS XLSX', value: DownloadTypes.RESULTS_EXCEL }
 ];
+
+export const DownloadReportTypes: Record<string, ReportType> = {
+  [DownloadTypes.FISCAL_CSV]: 'PROJECT_CSV',
+  [DownloadTypes.FISCAL_EXCEL]: 'PROJECT_XLSX',
+  [DownloadTypes.RESULTS_EXCEL]: 'RESULTS_XLSX'
+};
 
 export const DownloadFileExtensions = {
   CSV: 'zip',

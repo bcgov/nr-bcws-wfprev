@@ -24,7 +24,7 @@ import ca.bc.gov.nrs.reportgenerator.ExtendedMediaType;
 public class ResultsCulturePrescribedFireResource {
     private static final Logger LOG = Logger.getLogger(ResultsCulturePrescribedFireResource.class);
 
-    private static final String TEST_REPORT_NAME = "WFPREV_RESULTS_CULTURE_PRESCRIBED_FIRE_JASPER.jasper";
+    private static final String TEST_REPORT_NAME = "WFPREV_RESULTS_JASPER.jasper";
 
     @Inject
     ReadOnlyStreamingService repo;

@@ -2,7 +2,10 @@ package ca.bc.gov.nrs.reportgenerator;
 
 import ca.bc.gov.nrs.reportgenerator.model.ProjectCulturePrescribedFireReportData;
 import ca.bc.gov.nrs.reportgenerator.model.ProjectFuelManagementReportData;
-import ca.bc.gov.nrs.reportgenerator.model.ResultsReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ResultsCulturePrescribedFireReportData;
+import ca.bc.gov.nrs.reportgenerator.model.ResultsFuelManagementReportData;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -71,7 +74,7 @@ public class LocalReportGeneratorTest {
                 JasperFillManager.fillReport(report, new HashMap<>(),
                         new JRBeanCollectionDataSource(generateMockResultsData(10, "FM"))),
                 JasperFillManager.fillReport(report, new HashMap<>(),
-                        new JRBeanCollectionDataSource(generateMockResultsData(5, "CRx"))));
+                        new JRBeanCollectionDataSource(toCulturePrescribedFireData(generateMockResultsData(5, "CRx")))));
 
         Files.createDirectories(Paths.get(OUTPUT_DIR));
         String xlsxPath = OUTPUT_DIR + "/ReMi_RESULTS_Mock_" + System.currentTimeMillis() + ".xlsx";
@@ -129,8 +132,14 @@ public class LocalReportGeneratorTest {
         }
     }
 
-    private List<ResultsReportData> generateMockResultsData(int count, String category) {
-        List<ResultsReportData> list = new ArrayList<>();
+    // Both RESULTS beans carry the same fields, so the CRx tab reuses the mock rows, converted the same
+    // way the lambda deserializes its request.
+    private List<ResultsCulturePrescribedFireReportData> toCulturePrescribedFireData(List<ResultsFuelManagementReportData> rows) {
+        return new ObjectMapper().convertValue(rows, new TypeReference<List<ResultsCulturePrescribedFireReportData>>() {});
+    }
+
+    private List<ResultsFuelManagementReportData> generateMockResultsData(int count, String category) {
+        List<ResultsFuelManagementReportData> list = new ArrayList<>();
         String[] statuses = {"In Progress", "Substantially Complete", "Complete", "Deferred", "Cancelled"};
         String[][] silviculture = {
                 {"Juvenile Spacing", "Manual", "Power Saw"},
@@ -139,7 +148,7 @@ public class LocalReportGeneratorTest {
         String[] districts = {"100 Mile House District", "Cariboo-Chilcotin District", "Selkirk District"};
 
         for (int i = 1; i <= count; i++) {
-            ResultsReportData data = new ResultsReportData();
+            ResultsFuelManagementReportData data = new ResultsFuelManagementReportData();
             String[] silv = silviculture[i % silviculture.length];
             data.setLinkToProject("http://link.to.project/" + i);
             data.setLinkToFiscalActivity("http://link.to.fiscal/" + i);
@@ -147,31 +156,31 @@ public class LocalReportGeneratorTest {
             data.setProjectFiscalName("Sample " + category + " Fiscal Activity " + i);
             data.setActivityName(silv[0] + " - " + silv[1] + (silv[2] == null ? "" : " - " + silv[2]));
             // Row 3 leaves RESULTS Reportable blank to show there is no default "Y"
-            data.setResultsReportable(i == 3 ? null : (i % 4 == 0 ? "N" : "Y"));
+            data.setIsResultsReportableInd(i == 3 ? null : (i % 4 == 0 ? "N" : "Y"));
             data.setActivityDescription(i == 1
                     ? "This is a separate treatment unit that surrounds a Special Management Area. There was no harvesting in this unit.\nThis unit will be manually thinned, pruned and subsequently abated."
                     : "Activity description " + i);
-            data.setActivityStatusDescription(statuses[i % statuses.length]);
+            data.setActivityStatusName(statuses[i % statuses.length]);
             data.setFiscalYear("2026/27");
-            data.setForestDistrictOrgUnitName(districts[i % districts.length]);
+            data.setForestDistrictName(districts[i % districts.length]);
             data.setProjectLeadEmailAddress("lead" + i + "@gov.bc.ca");
             data.setResultsProjectCode("WRCA" + String.format("%04d", 70 + i));
             data.setResultsOpeningId(String.valueOf(1796400 + i));
-            data.setSilvicultureBaseDescription(silv[0]);
-            data.setSilvicultureTechniqueDescription(silv[1]);
-            data.setSilvicultureMethodDescription(silv[2]);
-            data.setPrimaryObjectiveTypeDescription("Wildfire Risk Reduction");
-            data.setSecondaryObjectiveTypeDescription(i % 2 == 0 ? "Ecosystem Restoration" : null);
-            data.setFundingSourceAbbreviation("WRR");
-            data.setContractPhaseDescription(i % 2 == 0 ? "Contract Awarded" : "In Planning");
+            data.setActivityBaseName(silv[0]);
+            data.setTechniqueName(silv[1]);
+            data.setMethodName(silv[2]);
+            data.setPrimaryObjectiveName("Wildfire Risk Reduction");
+            data.setSecondaryObjectiveName(i % 2 == 0 ? "Ecosystem Restoration" : null);
+            data.setFundingSourceCode("WRR");
+            data.setContractPhaseName(i % 2 == 0 ? "Contract Awarded" : "In Planning");
             data.setCfsProjectCode("719C" + (280 + i));
-            data.setPreviousCarryForward(i % 3 == 0 ? "Y" : "N");
-            data.setCarryForward(i % 5 == 0 ? "Y" : "N");
+            data.setPreviousCarryForwardInd(i % 3 == 0 ? "Y" : "N");
+            data.setCarryForwardInd(i % 5 == 0 ? "Y" : "N");
             data.setFinalOutcomeComments(i % 2 == 0 ? "Outcome comments for activity " + i : null);
-            data.setOutstandingObligations(i % 2 == 0 ? "Y" : "N");
-            data.setOutstandingObligationsPlan(i % 2 == 0 ? "Plan to address obligations for activity " + i : null);
-            data.setOpeningSpatialFileName("Project" + i + "_Opening.kmz");
-            data.setActivitySpatialFileName("Project" + i + "_2026_TU" + i + "_treatment.kmz");
+            data.setOutstandingObligationsInd(i % 2 == 0 ? "Y" : "N");
+            data.setActivityComment(i % 2 == 0 ? "Plan to address obligations for activity " + i : null);
+            data.setOpeningShapeFileName("Project" + i + "_Opening.kmz");
+            data.setActivityShapeFileName("Project" + i + "_2026_TU" + i + "_treatment.kmz");
             if (i == 1) {
                 data.setProjectBoundarySizeHa(new BigDecimal("261.413"));
                 data.setPlannedTreatmentAreaHa(new BigDecimal("10"));
@@ -185,7 +194,7 @@ public class LocalReportGeneratorTest {
                 data.setPlannedTreatmentAreaHa(new BigDecimal(10 + i + ".25"));
                 data.setCompletedAreaHa(new BigDecimal(i + ".1"));
             }
-            data.setCompletedDate(i % 3 == 0 ? null : new GregorianCalendar(2027, Calendar.FEBRUARY, i).getTime());
+            data.setActivityEndDate(i % 3 == 0 ? null : new GregorianCalendar(2027, Calendar.FEBRUARY, i).getTime());
             list.add(data);
         }
         return list;
