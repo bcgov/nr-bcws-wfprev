@@ -22,7 +22,6 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-import ca.bc.gov.nrs.reportgenerator.service.JasperReportService;
 import ca.bc.gov.nrs.reportgenerator.model.LambdaEvent;
 import ca.bc.gov.nrs.reportgenerator.model.Report;
 import ca.bc.gov.nrs.reportgenerator.model.XlsxReportData;
@@ -36,19 +35,22 @@ public class LambdaHandler implements RequestStreamHandler {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    JasperReportService jasperReportService;
-
-    @Inject
     ReadOnlyStreamingService repo;
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         LambdaEvent event;
-        String inputJson = new String(input.readAllBytes());
-        LOG.info("Received request to generate reports: " + inputJson);
+        byte[] payload = input.readAllBytes();
+        String inputJson = new String(payload);
         try {
             // Try to parse as wrapper object first
             JsonNode root = mapper.readTree(inputJson);
+            // Scheduled keep-warm ping from EventBridge (terraform/lambda.tf): nothing to generate
+            if (root.path("warmup").asBoolean(false)) {
+                LOG.debug("Warm-up ping");
+                mapper.writeValue(output, Map.of("statusCode", 200, "body", "{\"warmup\":true}"));
+                return;
+            }
             if (root.has("body")) {
                 String bodyJson = root.get("body").asText();
                 event = mapper.readValue(bodyJson, LambdaEvent.class);
@@ -56,7 +58,7 @@ public class LambdaHandler implements RequestStreamHandler {
                 event = mapper.readValue(inputJson, LambdaEvent.class);
             }
         } catch (Exception e) {
-            LOG.error("Failed to deserialize input", e);
+            LOG.error("Failed to deserialize " + payload.length + "-byte input", e);
             writeErrorResponse(output, "Invalid input: " + e.getMessage());
             return;
         }
@@ -68,10 +70,14 @@ public class LambdaHandler implements RequestStreamHandler {
             return;
         }
 
+        // Log a summary only: the rows hold user data (emails, names) and run to hundreds of KB
+        LOG.infof("Received request to generate %d report(s), payload %d bytes", event.getReports().size(), payload.length);
+
         // Generate XLSX files for each report
         List<Map<String, String>> files = new ArrayList<>();
         for (Report report : event.getReports()) {
             XlsxReportData data = report.getXlsxReportData();
+            LOG.infof("Report '%s': %s", report.getReportName(), data == null ? "no xlsxReportData" : rowCounts(data));
             if (data == null) continue;
             List<JasperPrint> prints = new ArrayList<>();
             List<String> sheetNames = new ArrayList<>();
@@ -171,6 +177,17 @@ public class LambdaHandler implements RequestStreamHandler {
         response.put("isBase64Encoded", false);
 
         mapper.writeValue(output, response);
+    }
+
+    private static String rowCounts(XlsxReportData data) {
+        return "rows projectFuelManagement=" + size(data.getProjectFuelManagementReportData())
+            + ", projectCulturePrescribedFire=" + size(data.getProjectCulturePrescribedFireReportData())
+            + ", resultsFuelManagement=" + size(data.getResultsFuelManagementReportData())
+            + ", resultsCulturePrescribedFire=" + size(data.getResultsCulturePrescribedFireReportData());
+    }
+
+    private static int size(List<?> rows) {
+        return rows == null ? 0 : rows.size();
     }
 
     private void writeErrorResponse(OutputStream output, String message) throws IOException {

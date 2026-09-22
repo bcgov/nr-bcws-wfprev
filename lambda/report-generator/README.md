@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This application is designed to generate PDF and other report formats for wildfire prevention and fuel management, using JasperReports templates. It exposes a REST API for report generation and is intended to be used as a sidecar or microservice in larger workflows.
+This application generates XLSX reports for wildfire prevention and fuel management, using JasperReports templates. It runs as an AWS Lambda function that the WFPREV API calls through a Function URL. It has no HTTP endpoints of its own.
 
 
 ## JasperReports
@@ -66,6 +66,12 @@ The Lambda handler expects an input JSON payload structured as follows:
 
 See the model classes in `src/main/java/ca/bc/gov/nrs/reportgenerator/model/` for all available fields.
 
+### Warm-up event
+
+An EventBridge schedule (`terraform/lambda.tf`) sends `{"warmup": true}` every 5 minutes to keep one
+instance warm, because a cold start takes most of the API Gateway's 30-second limit. The handler
+returns `{"statusCode": 200, "body": "{\"warmup\":true}"}` straight away, without touching Jasper.
+
 Build with `Dockerfile.lambda` for AWS Lambda deployment.
 
 This project uses [Quarkus](https://quarkus.io/), the Supersonic Subatomic Java Framework, and JasperReports for report generation.
@@ -83,13 +89,10 @@ The following dependencies are required to build and run this application:
 ### Maven/Quarkus dependencies (see `pom.xml`):
 - `io.quarkiverse.jasperreports:quarkus-jasperreports`
 - `io.quarkus:quarkus-arc`
-- `io.quarkus:quarkus-rest`
-- `io.quarkus:quarkus-smallrye-openapi`
-- `io.quarkus:quarkus-hibernate-orm`
-- `io.quarkus:quarkus-hibernate-orm-panache`
-- `io.quarkus:quarkus-jdbc-h2`
-- `io.quarkus:quarkus-rest-jackson`
-- `org.projectlombok:lombok` (provided)
+- `io.quarkus:quarkus-amazon-lambda`
+
+Keep this list short. Every extension adds to the native binary and to cold-start time, and the
+Lambda has only 10 seconds to initialise.
 
 ## Building and Running with Quarkus CLI
 
@@ -157,17 +160,26 @@ java -jar target/quarkus-app/quarkus-run.jar
 
 ## Notes
 
-- The application exposes its API on port 8080 by default.
-- For development, the Quarkus Dev UI is available at [http://localhost:8080/q/dev/](http://localhost:8080/q/dev/).
 - For more information on Quarkus CLI, see [Quarkus CLI Guide](https://quarkus.io/guides/cli-tooling).
 - For JasperReports usage, see [Quarkus JasperReports Guide](https://docs.quarkiverse.io/quarkus-jasperreports/dev/index.html).
 
 ## Testing
 
-Unit tests for Lambda and REST endpoints are in `src/test/java/ca/bc/gov/nrs/reportgenerator/`. Run tests with:
+Unit tests for the Lambda handler and the templates are in `src/test/java/ca/bc/gov/nrs/reportgenerator/`.
+`LocalReportGeneratorTest` compiles and fills all three `.jrxml` templates and writes sample XLSX files to
+`target/generated-test-reports/`. Run tests with:
 ```shell
 ./mvnw test
 ```
+
+To run the native Lambda locally, use the Lambda Runtime Interface Emulator (`aws-lambda-rie`) in this folder as the entrypoint:
+```shell
+docker build -f src/main/docker/Dockerfile.lambda -t report-generator-lambda .
+docker run --rm -p 9000:8080 -v "$PWD/aws-lambda-rie:/aws-lambda-rie:ro" \
+	--entrypoint /aws-lambda-rie report-generator-lambda /var/task/bootstrap
+curl -d '{"warmup":true}' http://localhost:9000/2015-03-31/functions/function/invocations
+```
+To test end to end, point the API's `REPORT_GENERATOR_LAMBDA_URL` at that invocations URL.
 
 ## Troubleshooting: Downloading XLSX from Lambda Response
 When invoking the Lambda handler (e.g., via Postman, AWS Console, or API Gateway), the response is a JSON object with the following structure (for multiple files):
