@@ -43,8 +43,8 @@ describe('DownloadButtonComponent', () => {
 
   it('should render a menu item label and value for each format', () => {
     component.formats = [
-      { label: 'Fiscal CSV', value: 'fiscal-csv' },
-      { label: 'RESULTS XLSX', value: 'results-xlsx' }
+      { label: 'Fiscal (CSV)', value: 'fiscal-csv' },
+      { label: 'RESULTS (XLSX + Spatial)', value: 'results-xlsx' }
     ];
     fixture.detectChanges();
 
@@ -52,7 +52,7 @@ describe('DownloadButtonComponent', () => {
     fixture.detectChanges();
 
     const items = Array.from(document.querySelectorAll('.mat-mdc-menu-item'));
-    expect(items.map(i => i.textContent?.trim())).toEqual(['Fiscal CSV', 'RESULTS XLSX']);
+    expect(items.map(i => i.textContent?.trim())).toEqual(['Fiscal (CSV)', 'RESULTS (XLSX + Spatial)']);
   });
 
   it('should disable the button when disabled input is true', () => {

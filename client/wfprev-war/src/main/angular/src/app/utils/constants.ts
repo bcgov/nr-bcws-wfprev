@@ -228,9 +228,9 @@ export const DownloadTypes = {
 };
 
 export const DownloadOptions: DownloadOption[] = [
-  { label: 'Fiscal CSV', value: DownloadTypes.FISCAL_CSV },
-  { label: 'Fiscal XLSX', value: DownloadTypes.FISCAL_EXCEL },
-  { label: 'RESULTS XLSX', value: DownloadTypes.RESULTS_EXCEL }
+  { label: 'Fiscal (CSV)', value: DownloadTypes.FISCAL_CSV },
+  { label: 'Fiscal (XLSX)', value: DownloadTypes.FISCAL_EXCEL },
+  { label: 'RESULTS (XLSX + Spatial)', value: DownloadTypes.RESULTS_EXCEL }
 ];
 
 export const DownloadReportTypes: Record<string, ReportType> = {
