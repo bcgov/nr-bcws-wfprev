@@ -178,6 +178,40 @@ mat-icon,
   border-radius: 2px;
 }
 
+// SMK basemap switcher: lay the basemap previews out in one row instead of wrapping them into rows. A map too
+// narrow for the row scrolls it sideways. .smk-map-frame outranks SMK's own rule, which it injects after this
+// stylesheet.
+.smk-map-frame .smk-base-maps-panel .smk-body {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+// ...and size the side panel to the row while it shows it, on the main map and the mini maps. On the main map the
+// side panel is shared with the Layers panel, which keeps its minimum width from map.component.scss.
+.smk-map-frame .smk-sidepanel:has(> .smk-base-maps-panel) {
+  min-width: 0;
+  width: max-content;
+  max-width: 100%;
+}
+
+// Mini maps (MiniMapService) stay hidden until they show their view, then fade in rather than appear at once. Only
+// the fade in is animated: a fade out as the map is created would show SMK's starting view of BC.
+.wf-mini-map {
+  transition: opacity 400ms ease-in;
+
+  &.wf-mini-map-loading {
+    opacity: 0;
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
   background-color: white !important;
   padding: 8px 12px;

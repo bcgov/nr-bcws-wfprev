@@ -10,6 +10,8 @@ export function OutWildfiresLayerConfig(ls: LayerSettings) {
       useClustering: false,
       useHeatmap: false,
       visible: false,
+      // Only this fire year's fires (MapService.installCurrentFireYearPatch)
+      currentFireYearOnly: true,
       dataUrl:
         ls.wfnewsApiBaseUrl +
         '/publicPublishedIncident/features?stageOfControl=OUT',

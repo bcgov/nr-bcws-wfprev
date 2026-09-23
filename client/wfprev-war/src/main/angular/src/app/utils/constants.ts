@@ -252,3 +252,21 @@ export const BC_BOUNDS: L.LatLngBoundsLiteral = [
   [47.60393449638617, -139.1782824917356], // south, west
   [60.593907018763396, -110.35337939457779] // north, east
 ];
+
+export interface Basemap {
+  id: string;
+  title: string;
+  order: number;
+  previewUrl: string;
+}
+
+// Only BCWS-approved basemap sources may be used on any map. The ids and titles are SMK 1.0.39's
+// built-in base-map registry entries, used by the main map and the mini maps (MiniMapService), which are all
+// SMK maps.
+export const BASEMAPS: Basemap[] = [
+  { id: 'topographic-v2', title: 'Topographic', order: 1, previewUrl: 'assets/basemaps/topographic-v2.png' },
+  { id: 'bc-basemap-hillshade', title: 'BC (Hillshade)', order: 2, previewUrl: 'assets/basemaps/bc-basemap-hillshade.png' },
+  { id: 'imagery-v2', title: 'Imagery', order: 3, previewUrl: 'assets/basemaps/imagery-v2.png' },
+];
+
+export const DEFAULT_BASEMAP_ID = 'topographic-v2';

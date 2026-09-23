@@ -66,20 +66,6 @@
   display: none !important;
 }
 
-::ng-deep .smk-tool-LayersTool span {
-  display: none;
-}
-
-::ng-deep .smk-tool-LayersTool::after {
-  content: "All Layers";
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 2px 0 4px;
-  font-size: inherit;
-  font-weight: inherit;
-  color: inherit;
-}
-
 :host ::ng-deep .smk-panel .smk-display-layer .smk-item[title^="id: IdentifyListTool--"] {
   display: none !important;
 }

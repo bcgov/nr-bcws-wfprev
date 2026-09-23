@@ -8,6 +8,7 @@ import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resi
 import { Subject } from 'rxjs';
 import { ResourcesRoutes } from './utils';
 import { TokenService } from './services/token.service';
+import { SmkService } from './services/smk.service';
 import { AppComponent } from './app.component';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -52,7 +53,7 @@ describe('AppComponent', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: TokenService, useClass: MockTokenService },
         { provide: MatDialog, useValue: {} },
-  
+        { provide: SmkService, useValue: jasmine.createSpyObj('SmkService', ['preload']) },
       ],
     }).compileComponents();
 
@@ -63,6 +64,10 @@ describe('AppComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should preload SMK for the maps', () => {
+    expect(TestBed.inject(SmkService).preload).toHaveBeenCalled();
   });
 
   describe('goHome', () => {

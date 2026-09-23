@@ -10,8 +10,8 @@ import '@maplibre/maplibre-gl-leaflet';
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { Project, ProjectLocation } from 'src/app/components/models';
 import { ResizablePanelComponent } from 'src/app/components/resizable-panel/resizable-panel.component';
-import { BC_BOUNDS } from 'src/app/utils/constants';
 import { ProjectService } from 'src/app/services/project-services';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-map',
@@ -42,6 +42,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   } as const;
 
   private isMapReady = false;
+  private destroyed = false;
+  private readonly subscriptions = new Subscription();
   private markersClusterGroup: L.MarkerClusterGroup | null = null;
   private readonly projectMarkerMap = new Map<string, L.Marker>();
   private activeMarker: L.Marker | null = null;
@@ -66,15 +68,26 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private readonly projectService: ProjectService
   ) { }
 
-  // promise will not be awaited by angular if void is not returned
   ngOnDestroy(): void {
-    (async () => {
-      try {
-        await this.mapService.destroySMK();
-      } catch (err) {
-        console.error('Error destroying SMK:', err);
+    this.destroyed = true;
+    this.subscriptions.unsubscribe();
+    this.removeOwnLayers();
+    // Keep the SMK map for the next visit instead of rebuilding it
+    this.mapService.detachSMK();
+  }
+
+  // Take this page's markers, boundaries and legend off the SMK map; the next visit adds its own
+  private removeOwnLayers(): void {
+    const map: L.Map | undefined = this.mapService.getSMKInstance()?.$viewer?.map;
+    if (!map) return;
+
+    map.closePopup();
+    for (const layer of [this.markersClusterGroup, this.projectBoundaryLayer, this.activityBoundaryLayer]) {
+      if (layer && map.hasLayer(layer)) {
+        map.removeLayer(layer);
       }
-    })();
+    }
+    this.legendControl?.remove();
   }
 
   ngAfterViewInit(): void {
@@ -88,18 +101,24 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.mapService.setContainerId('map');
 
     // Handle open/close project popups
-    this.sharedService.mapCommand$.subscribe(({ action, project }) => {
+    this.subscriptions.add(this.sharedService.mapCommand$.subscribe(({ action, project }) => {
       if (action === this.MAP_COMMANDS.CLOSE) {
         this.closePopupForProject(project);
       } else if (action === this.MAP_COMMANDS.OPEN) {
         this.openPopupForProject(project);
       }
-    });
+    }));
 
     this.initMap().then(() => {
       const smk = this.mapService.getSMKInstance();
       const map = smk?.$viewer?.map;
       if (!map) return;
+
+      // The page was left while the map was still being created
+      if (this.destroyed) {
+        this.mapService.detachSMK();
+        return;
+      }
 
       if (map['_loaded']) {
         this.setupMarkersAndLayers(map);
@@ -107,9 +126,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         map.whenReady(() => this.setupMarkersAndLayers(map));
       }
     });
-    
+
     // Handle selected project to open popup
-    this.sharedService.selectedProject$.subscribe((project) => {
+    this.subscriptions.add(this.sharedService.selectedProject$.subscribe((project) => {
       if (!project && this.selectedProject) {
         const previous = this.selectedProject;
         this.selectedProject = undefined;
@@ -122,13 +141,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       if (project) {
         this.openPopupForProject(project);
       }
-    });
+    }));
   }
 
   setupMarkersAndLayers(map: L.Map): void {
-    const bcBounds: L.LatLngBoundsExpression = BC_BOUNDS;
-    map.fitBounds(bcBounds);
-
     const legendHelper = new LeafletLegendService();
     this.legendControl = legendHelper.addLegend(map, this.fiscalColorMap);
 
@@ -148,38 +164,73 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const currentFilters = this.sharedService.currentFilters || {};
     this.fetchAndUpdateProjectLocations(currentFilters);
 
-    this.sharedService.filters$.subscribe((filters) => {
+    this.subscriptions.add(this.sharedService.filters$.subscribe((filters) => {
       if (!this.isMapReady) return;
       this.fetchAndUpdateProjectLocations(filters || {});
-    });
+    }));
   }
 
   private async initMap(): Promise<void> {
     try {
       const container = this.mapContainer.nativeElement;
+      const location = this.startingLocation();
+
+      // Back on the map page: reuse the map from the last visit, with its basemap, layers and view
+      const parked = this.mapService.reattachSMK(container);
+      if (parked) {
+        if (location) {
+          parked.$viewer.setView(location);
+        }
+        return;
+      }
 
       // Basemap config — viewer & tools, no layers
       const baseConfig = await this.mapConfigService.getBaseConfig();
+      const config = this.buildMapConfig([baseConfig]);
+      if (location) {
+        // SMK opens on this instead of all of BC
+        config.push({ viewer: { location } });
+      }
 
       await this.mapService.createSMK({
         id: this.mapIndex,
         containerSel: container,
-        config: this.buildMapConfig([baseConfig]),
+        config,
       });
 
-      const smk = this.mapService.getSMKInstance();
-      const map: L.Map | undefined = smk?.$viewer?.map;
-      if (!map) return;
+      if (!this.mapService.getSMKInstance()?.$viewer?.map) return;
 
-      // Fetch layers after basemap renders and inject into live SMK instance
-      const layersConfig = await this.mapConfigService.getLayersConfig();
-      // return only fires for current year - no filter for fire_year in news /features endpoint
-      await this.mapService.filterWildfireLayersByCurrentYear(layersConfig);
-      await this.mapService.addLayersToExistingSMKInstance(layersConfig);
-
+      // Not waited for: the project markers and boundaries go on the map without waiting for these layers
+      this.loadLayers();
     } catch (error) {
       console.error('Error loading map:', error);
     }
+  }
+
+  // Fetch layers after basemap renders and inject into live SMK instance
+  private async loadLayers(): Promise<void> {
+    try {
+      const layersConfig = await this.mapConfigService.getLayersConfig();
+      await this.mapService.addLayersToExistingSMKInstance(layersConfig);
+    } catch (error) {
+      console.error('Error loading map layers:', error);
+    }
+  }
+
+  /**
+   * The area to open on, from the bbox query parameter (west,south,east,north) that the fiscal map's Full Page
+   * button sends, as an SMK viewer location: an extent, then the top-left and bottom-right padding in pixels.
+   */
+  private startingLocation(): { extent: (number | number[])[] } | undefined {
+    const bbox = this.route.snapshot.queryParamMap.get('bbox');
+    if (!bbox) return undefined;
+
+    const extent = bbox.split(',').map(Number.parseFloat);
+    if (extent.length !== 4 || extent.some(n => !Number.isFinite(n))) {
+      console.warn('Invalid bbox query parameter:', bbox);
+      return undefined;
+    }
+    return { extent: [...extent, [20, 20], [20, 20]] };
   }
 
   private buildMapConfig(baseConfig: any): object[] {

@@ -14,9 +14,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { Project } from 'src/app/components/models';
-import { BC_BOUNDS } from 'src/app/utils/constants';
 import { TokenService } from 'src/app/services/token.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
+import { SharedService } from 'src/app/services/shared-service';
 
 class MockAppConfigService {
   getConfig() {
@@ -138,6 +138,8 @@ describe('MapComponent', () => {
   let mapConfigServiceMock: jasmine.SpyObj<MapConfigService>;
   let mapServiceMock: jasmine.SpyObj<MapService>;
   let mapContainer: jasmine.SpyObj<ElementRef>;
+  // The page's bbox query parameter
+  let bboxParam: string | null;
 
   beforeAll(() => jasmine.getEnv().allowRespy(true));
   const createMockSMKInstance = () => ({
@@ -177,8 +179,9 @@ describe('MapComponent', () => {
     });
 
     mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig', 'getBaseConfig', 'getLayersConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'createProjectBoundaryLayer', 'createActivityBoundaryLayer', 'addLayersToExistingSMKInstance', 'filterWildfireLayersByCurrentYear']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'detachSMK', 'reattachSMK', 'createProjectBoundaryLayer', 'createActivityBoundaryLayer', 'addLayersToExistingSMKInstance']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
+    bboxParam = null;
 
     mapConfigServiceMock.getMapConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
     mapConfigServiceMock.getBaseConfig.and.returnValue(Promise.resolve({ theme: 'testTheme' }));
@@ -205,10 +208,7 @@ describe('MapComponent', () => {
           useValue: {
             snapshot: {
               queryParamMap: {
-                get: (key: string) => {
-                  if (key === 'bbox') return '10,20,30,40';
-                  return null;
-                }
+                get: (key: string) => (key === 'bbox' ? bboxParam : null)
               }
             }
           }
@@ -248,6 +248,25 @@ describe('MapComponent', () => {
 
 
   describe('initMap', () => {
+    it('should reuse the parked SMK map, keeping its layers and view, instead of creating a new one', fakeAsync(() => {
+      const container = document.createElement('div');
+      mapContainer.nativeElement = container;
+      component.mapContainer = mapContainer;
+      const smk = createMockSMKInstance();
+      (smk.$viewer.map as any)['_loaded'] = true;
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+      mapServiceMock.reattachSMK.and.returnValue(smk);
+
+      component.ngAfterViewInit();
+      flush();
+
+      expect(mapServiceMock.reattachSMK).toHaveBeenCalledWith(container);
+      expect(mapServiceMock.createSMK).not.toHaveBeenCalled();
+      expect(mapServiceMock.addLayersToExistingSMKInstance).not.toHaveBeenCalled();
+      expect(smk.$viewer.map.fitBounds).not.toHaveBeenCalled();
+      expect(smk.$viewer.map.addLayer).toHaveBeenCalled();
+    }));
+
     it('should call createSMK before addLayersToExistingInstance', fakeAsync(() => {
     mapContainer.nativeElement = document.createElement('div');
     component.mapContainer = mapContainer;
@@ -274,6 +293,22 @@ describe('MapComponent', () => {
     expect(callOrder).toEqual(['createSMK', 'addLayers']);
   }));
 
+  it('should put the project markers on the map without waiting for the layers to load', fakeAsync(() => {
+    mapContainer.nativeElement = document.createElement('div');
+    component.mapContainer = mapContainer;
+    const smk = createMockSMKInstance();
+    mapServiceMock.getSMKInstance.and.returnValue(smk);
+    // The layers never finish loading
+    mapConfigServiceMock.getLayersConfig.and.returnValue(new Promise(() => {}));
+
+    component.ngAfterViewInit();
+    tick();
+
+    expect(component.createMarkerClusterGroup).toHaveBeenCalled();
+    expect(smk.$viewer.map.addLayer).toHaveBeenCalled();
+    expect(mapServiceMock.addLayersToExistingSMKInstance).not.toHaveBeenCalled();
+  }));
+
   it('should handle errors from getLayersConfig gracefully', fakeAsync(() => {
     mapContainer.nativeElement = document.createElement('div');
     component.mapContainer = mapContainer;
@@ -286,7 +321,7 @@ describe('MapComponent', () => {
     tick();
     flush();
 
-    expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Layers Load Error');
+    expect(console.error).toHaveBeenCalledWith('Error loading map layers:', 'Layers Load Error');
   }));
 
   it('should handle errors from addLayersToExistingInstance gracefully', fakeAsync(() => {
@@ -302,7 +337,7 @@ describe('MapComponent', () => {
     tick();
     flush();
 
-    expect(console.error).toHaveBeenCalledWith('Error loading map:', 'Layer injection failed');
+    expect(console.error).toHaveBeenCalledWith('Error loading map layers:', 'Layer injection failed');
   }));
 });
 
@@ -356,39 +391,49 @@ describe('MapComponent', () => {
   });
 
   describe('ngOnDestroy', () => {
-    it('should destroy SMK instance and clear it from the map service', () => {
-      const destroySpy = jasmine.createSpy('destroy');
-      const smkMock = {
-        destroy: destroySpy,
-        $viewer: { map: {} }
-      };
-
-      mapServiceMock.getSMKInstance.and.returnValue(smkMock);
-
-      component.ngOnDestroy();
-
-      expect(mapServiceMock.destroySMK).toHaveBeenCalled();
-    });
-
-    it('should only call clearSMKInstance if smk has no destroy method', () => {
-      const smkMock = {
-        $viewer: { map: {} }
-      };
-
-      mapServiceMock.getSMKInstance.and.returnValue(smkMock);
+    it('should take its own layers off the map and park the SMK map for the next visit', () => {
+      const smk = createMockSMKInstance();
+      const map = smk.$viewer.map;
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+      const markers = {} as any;
+      const projectBoundaries = {} as any;
+      const activityBoundaries = {} as any;
+      (component as any).markersClusterGroup = markers;
+      (component as any).projectBoundaryLayer = projectBoundaries;
+      (component as any).activityBoundaryLayer = activityBoundaries;
+      component.legendControl = jasmine.createSpyObj('Control', ['remove']);
+      map.hasLayer.and.returnValue(true);
 
       component.ngOnDestroy();
 
-      expect(mapServiceMock.destroySMK).toHaveBeenCalled();
+      expect(map.closePopup).toHaveBeenCalled();
+      expect(map.removeLayer).toHaveBeenCalledWith(markers);
+      expect(map.removeLayer).toHaveBeenCalledWith(projectBoundaries);
+      expect(map.removeLayer).toHaveBeenCalledWith(activityBoundaries);
+      expect(component.legendControl!.remove).toHaveBeenCalled();
+      expect(mapServiceMock.detachSMK).toHaveBeenCalled();
+      expect(mapServiceMock.destroySMK).not.toHaveBeenCalled();
     });
 
-    it('should do nothing if no smk instance exists', () => {
+    it('should still park the map when no SMK instance exists', () => {
       mapServiceMock.getSMKInstance.and.returnValue(null);
 
-      component.ngOnDestroy();
-
-      expect(mapServiceMock.destroySMK).toHaveBeenCalled();
+      expect(() => component.ngOnDestroy()).not.toThrow();
+      expect(mapServiceMock.detachSMK).toHaveBeenCalled();
     });
+
+    it('should stop reacting to project selection once destroyed', fakeAsync(() => {
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+      component.ngAfterViewInit();
+      flush();
+      const openPopup = spyOn(component, 'openPopupForProject');
+
+      component.ngOnDestroy();
+      TestBed.inject(SharedService).selectProject(createMockProject());
+
+      expect(openPopup).not.toHaveBeenCalled();
+    }));
   });
 
   describe('Marker popup behavior', () => {
@@ -420,6 +465,7 @@ describe('MapComponent', () => {
         getZoom: jasmine.createSpy('getZoom').and.returnValue(10),
         hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
         removeLayer: jasmine.createSpy('removeLayer'),
+        closePopup: jasmine.createSpy('closePopup'),
       };
 
       const mockClusterGroup = {
@@ -594,8 +640,8 @@ describe('MapComponent', () => {
     });
   });
 
-  describe('zoom + fitBounds', () => {
-    it('calls fitBounds when available', fakeAsync(() => {
+  describe('starting view', () => {
+    it('keeps the starting view SMK gives a new map, of BC', fakeAsync(() => {
       mapContainer.nativeElement = document.createElement('div');
       component.mapContainer = mapContainer;
 
@@ -608,7 +654,57 @@ describe('MapComponent', () => {
       component.ngAfterViewInit();
       tick();
 
-      expect((smk.$viewer.map as any).fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
+      expect((smk.$viewer.map as any).fitBounds).not.toHaveBeenCalled();
+      const config = mapServiceMock.createSMK.calls.mostRecent().args[0].config;
+      expect(config.some((c: any) => c?.viewer?.location)).toBeFalse();
+    }));
+
+    it('opens a new map on the bbox from the Full Page button, padded, without fitting it after', fakeAsync(() => {
+      bboxParam = '-123.5,48.4,-123.3,48.6';
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+      const smk = createMockSMKInstance();
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+
+      component.ngAfterViewInit();
+      tick();
+
+      const config = mapServiceMock.createSMK.calls.mostRecent().args[0].config;
+      expect(config[config.length - 1]).toEqual({
+        viewer: { location: { extent: [-123.5, 48.4, -123.3, 48.6, [20, 20], [20, 20]] } },
+      });
+      expect(smk.$viewer.map.fitBounds).not.toHaveBeenCalled();
+    }));
+
+    it('moves a reused map to the bbox', fakeAsync(() => {
+      bboxParam = '-123.5,48.4,-123.3,48.6';
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+      const smk: any = createMockSMKInstance();
+      smk.$viewer.setView = jasmine.createSpy('setView');
+      mapServiceMock.getSMKInstance.and.returnValue(smk);
+      mapServiceMock.reattachSMK.and.returnValue(smk);
+
+      component.ngAfterViewInit();
+      flush();
+
+      expect(smk.$viewer.setView).toHaveBeenCalledWith({ extent: [-123.5, 48.4, -123.3, 48.6, [20, 20], [20, 20]] });
+      expect(mapServiceMock.createSMK).not.toHaveBeenCalled();
+    }));
+
+    it('ignores a bbox that is not four numbers, and opens on BC', fakeAsync(() => {
+      spyOn(console, 'warn');
+      bboxParam = '-123.5,48.4,,48.6';
+      mapContainer.nativeElement = document.createElement('div');
+      component.mapContainer = mapContainer;
+      mapServiceMock.getSMKInstance.and.returnValue(createMockSMKInstance());
+
+      component.ngAfterViewInit();
+      tick();
+
+      const config = mapServiceMock.createSMK.calls.mostRecent().args[0].config;
+      expect(config.some((c: any) => c?.viewer?.location)).toBeFalse();
+      expect(console.warn).toHaveBeenCalledWith('Invalid bbox query parameter:', '-123.5,48.4,,48.6');
     }));
   });
 
@@ -623,6 +719,7 @@ describe('MapComponent', () => {
         addLayer: jasmine.createSpy(),
         removeLayer: jasmine.createSpy(),
         closePopup: jasmine.createSpy(),
+        hasLayer: jasmine.createSpy().and.returnValue(false),
       };
       mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mockMap } });
       (component as any).markersClusterGroup = {
@@ -824,7 +921,7 @@ describe('MapComponent', () => {
     let mapMock: any;
 
     beforeEach(() => {
-      mapMock = { closePopup: jasmine.createSpy('closePopup') };
+      mapMock = { closePopup: jasmine.createSpy('closePopup'), hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false), removeLayer: jasmine.createSpy('removeLayer') };
       mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mapMock } });
     });
 
@@ -882,7 +979,7 @@ describe('MapComponent', () => {
 
   describe('updateProjectMarkersFromLocations() teardown before clear', () => {
     it('unbinds/closes popups and removes listeners for each marker before clearing cluster', () => {
-      const mapMock = { addLayer: () => { }, removeLayer: () => { }, closePopup: () => { } };
+      const mapMock = { addLayer: () => { }, removeLayer: () => { }, closePopup: () => { }, hasLayer: () => false };
       mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mapMock } });
 
       const m1 = jasmine.createSpyObj<L.Marker>('Marker', ['unbindPopup', 'closePopup', 'off']);
@@ -918,6 +1015,7 @@ describe('MapComponent', () => {
         addLayer: jasmine.createSpy('addLayer'),
         removeLayer: jasmine.createSpy('removeLayer'),
         closePopup: jasmine.createSpy('closePopup'),
+        hasLayer: jasmine.createSpy('hasLayer').and.returnValue(false),
       };
       mapServiceMock.getSMKInstance.and.returnValue({ $viewer: { map: mapMock } });
 

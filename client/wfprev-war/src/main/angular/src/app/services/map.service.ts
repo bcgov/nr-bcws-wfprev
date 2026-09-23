@@ -5,20 +5,27 @@ import { TokenService } from './token.service';
 import { StyleSpecification } from 'maplibre-gl';
 import * as L from 'leaflet';
 import { AppConfigService } from './app-config.service';
+import { SmkService } from './smk.service';
+import { baseMapsToolConfig } from './map-config.service/map.config';
 import '@maplibre/maplibre-gl-leaflet';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
   private mapIndex: number = 0;
-  baseMapIds: string[] = [];
-  private readonly smkBaseUrl = `${globalThis.location.protocol}//${globalThis.location.host}/assets/smk/`;
   private containerId?: string;
   private smkInstance: any = null;
   private readonly apiBaseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api`;
   private mapContainer: HTMLElement | null = null;
+  private patched?: Promise<void>;
+  // The element the SMK map was created in, the token its layers were created with, and the off-screen holder
+  // the map waits in while the map page isn't shown (see detachSMK)
+  private smkFrame: HTMLElement | null = null;
+  private smkToken?: string | null;
+  private parking: HTMLElement | null = null;
 
   constructor(private readonly tokenService: TokenService,
-    private readonly appConfigService: AppConfigService
+    private readonly appConfigService: AppConfigService,
+    private readonly smkService: SmkService
   ) { }
 
   getMapIndex(): number {
@@ -42,11 +49,23 @@ export class MapService {
     return (L as any).maplibreGL(options);
   }
 
-  async createSMK(option: any): Promise<any> {
-    const SMK = (globalThis as any)['SMK'];
-
+  /**
+   * Creates an SMK map, with our patches installed. Used for the main map and the mini maps (MiniMapService).
+   *
+   * SMK creates maps one at a time, each waiting on the one before it (SMK.BOOT), so once one map fails to
+   * initialize every later one fails with it. Earlier failures are ignored, so that each map stands on its own.
+   */
+  async initSMK(option: any): Promise<any> {
     await this.patch();
+    const SMK = (globalThis as any)['SMK'];
+    SMK.BOOT = (SMK.BOOT ?? Promise.resolve()).catch(() => undefined);
+    return SMK.INIT({
+      baseUrl: this.smkService.baseUrl,
+      ...option,
+    });
+  }
 
+  async createSMK(option: any): Promise<any> {
     try {
       // Ensure option.config exists and is an array
       if (!option.config) {
@@ -58,7 +77,7 @@ export class MapService {
       // Push the configuration
       option.config.push({
         tools: [
-          { type: 'baseMaps' },
+          baseMapsToolConfig(),
           {
             type: 'bespoke',
             instance: 'full-extent',
@@ -74,10 +93,7 @@ export class MapService {
       });
 
       // Initialize SMK
-      const smk = await SMK.INIT({
-        baseUrl: this.smkBaseUrl,
-        ...option,
-      });
+      const smk = await this.initSMK(option);
 
       // only show Ministry of Forests Regions layer by default
       const viewer = smk?.$viewer;
@@ -96,6 +112,8 @@ export class MapService {
       }
 
       this.smkInstance = smk;
+      this.smkFrame = typeof option.containerSel === 'string' ? document.querySelector(option.containerSel) : option.containerSel;
+      this.smkToken = this.tokenService.getOauthToken?.();
 
       return smk;
     } catch (error) {
@@ -104,77 +122,123 @@ export class MapService {
     }
   }
 
-  public async patch(): Promise<any> {
-    try {
-      const SMK = (globalThis as any)['SMK'];
-      SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk: any, tool: any) => {
-        const viewer = smk?.$viewer;
-        if (!viewer) return;
-        const bounds = BC_BOUNDS;
-        viewer.map.fitBounds(bounds, { animate: true });
-      });
+  /**
+   * Keeps the SMK map alive when the map page is left. Its frame (the element SMK was created in) waits in an
+   * off-screen holder, at its current size, so the next visit can reattach it instead of creating a new map.
+   */
+  detachSMK(): void {
+    const frame = this.smkFrame;
+    if (!this.smkInstance || !frame) return;
 
-
-      console.log('start patching SMK');
-
-      // Create a DIV for a temporary map.
-      // This map is used to ensure that SMK is completely loaded before monkey-patching
-      const temp = document.createElement('div');
-      temp.style.display = 'none';
-      temp.style.visibility = 'hidden';
-      temp.style.position = 'absolute';
-      temp.style.left = '-5000px';
-      temp.style.top = '-5000px';
-      temp.style.right = '-4000px';
-      temp.style.bottom = '-4000px';
-      document.body.appendChild(temp);
-
-      console.log('patching');
-
-      // Await the initialization of SMK
-      const smk = await SMK.INIT({
-        id: 999,
-        containerSel: temp,
-        baseUrl: this.smkBaseUrl,
-        config: 'show-tool=bespoke',
-      });
-
-      this.installAuthenticatedLegendPatch(SMK);
-
-      this.defineOpenStreetMapLayer();
-      smk.destroy();
-      temp.remove();
-
-      // Patch the SMK Viewer functionality
-      SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
-        const prototype = SMK.TYPE.Viewer.leaflet.prototype;
-        setTimeout(() => {
-          prototype.map.invalidateSize({ animate: false });
-        }, 500);
-      };
-
-      const oldInit = SMK.TYPE.Viewer.leaflet.prototype.initialize;
-      SMK.TYPE.Viewer.leaflet.prototype.initialize = function (smk: any) {
-        // Call the existing initializer
-        oldInit.apply(this, arguments);
-
-        // Set the maximum bounds that can be panned to.
-        const L = window['L'];
-        const maxBounds = L.latLngBounds([
-          L.latLng(90, -180),
-          L.latLng(0, -90),
-        ]);
-        this.map.setMaxBounds(maxBounds);
-        this.map.setMaxZoom(19);
-      };
-
-      console.log('done patching SMK');
-
-      return;
-    } catch (error) {
-      console.error('Error occurred during patching:', error);
-      throw error; // Re-throw the error to propagate it to the caller
+    if (!this.parking) {
+      this.parking = document.createElement('div');
+      Object.assign(this.parking.style, { position: 'fixed', left: '-10000px', top: '0', visibility: 'hidden', pointerEvents: 'none' });
+      document.body.appendChild(this.parking);
     }
+
+    // A zero-sized map would confuse SMK and Leaflet while it waits; keep the size it was shown at
+    const { width, height } = frame.getBoundingClientRect();
+    Object.assign(frame.style, { width: `${width}px`, height: `${height}px` });
+    // Other pages also have an element with this id
+    frame.dataset['parkedId'] = frame.id;
+    frame.removeAttribute('id');
+    this.parking.appendChild(frame);
+  }
+
+  /**
+   * Puts a parked SMK map back in the map page, in place of the page's empty map container, and returns the SMK
+   * instance. Returns null, so the caller creates a new map, if there is nothing parked, or if the auth token has
+   * changed since the map's layers were created with it.
+   */
+  reattachSMK(container: HTMLElement): any {
+    const frame = this.smkFrame;
+    if (!this.smkInstance || !frame || !this.parking || frame.parentElement !== this.parking) return null;
+
+    if (this.smkToken !== this.tokenService.getOauthToken?.()) {
+      try {
+        this.smkInstance.destroy?.();
+      } catch (error) {
+        console.error('Error occurred during SMK destruction:', error);
+      }
+      frame.remove();
+      this.clearSMKInstance();
+      this.smkFrame = null;
+      return null;
+    }
+
+    container.replaceWith(frame);
+    frame.id = frame.dataset['parkedId'] ?? container.id;
+    delete frame.dataset['parkedId'];
+    frame.style.width = '';
+    frame.style.height = '';
+    this.mapContainer = frame;
+    this.smkInstance.$viewer?.map?.invalidateSize({ animate: false });
+    return this.smkInstance;
+  }
+
+  /** Loads SMK and installs our patches to it, once per session. Every map waits on the same promise. */
+  public patch(): Promise<void> {
+    this.patched ??= this.installPatches().catch(error => {
+      console.error('Error occurred during patching:', error);
+      this.patched = undefined;
+      throw error;
+    });
+    return this.patched;
+  }
+
+  private async installPatches(): Promise<void> {
+    const SMK = await this.smkService.load();
+
+    // SMK fades each new map in over a second, and SMK.INIT doesn't resolve until the fade ends, so every map took
+    // a second longer to be ready. The fade is the only jQuery animation there is: jQuery comes with smk.js and the
+    // app doesn't use it. With jQuery's animations off, a map shows as soon as it's ready.
+    const jQuery = (globalThis as any).jQuery;
+    if (jQuery?.fx) {
+      jQuery.fx.off = true;
+    }
+
+    SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk: any, tool: any) => {
+      const viewer = smk?.$viewer;
+      if (!viewer) return;
+      const bounds = BC_BOUNDS;
+      viewer.map.fitBounds(bounds, { animate: true });
+    });
+
+    this.installAuthenticatedLegendPatch(SMK);
+    this.installCurrentFireYearPatch(SMK);
+
+    // SMK waits 200ms before showing or hiding layers, so that a run of visibility changes is handled at once. Every
+    // map waited for it as it was created, and so did each layer turned on in the layers panel. Changes made together
+    // are still handled at once. (SMK reads a delay of 0 as none given.)
+    const refreshLayers = SMK.TYPE.Viewer.leaflet.prototype.refreshLayers;
+    if (typeof refreshLayers === 'function') {
+      SMK.TYPE.Viewer.leaflet.prototype.refreshLayers = function (delay?: number) {
+        return refreshLayers.call(this, delay || 1);
+      };
+    }
+
+    // Patch the SMK Viewer functionality
+    SMK.TYPE.Viewer.leaflet.prototype.mapResized = () => {
+      const prototype = SMK.TYPE.Viewer.leaflet.prototype;
+      setTimeout(() => {
+        prototype.map.invalidateSize({ animate: false });
+      }, 500);
+    };
+
+    const oldInit = SMK.TYPE.Viewer.leaflet.prototype.initialize;
+    SMK.TYPE.Viewer.leaflet.prototype.initialize = function (smk: any) {
+      // Call the existing initializer
+      oldInit.apply(this, arguments);
+
+      // Set the maximum bounds that can be panned to.
+      const L = window['L'];
+      const maxBounds = L.latLngBounds([
+        L.latLng(90, -180),
+        L.latLng(0, -90),
+      ]);
+      this.map.setMaxBounds(maxBounds);
+      this.map.setMaxZoom(19);
+    };
   }
 
   async destroySMK(): Promise<void> {
@@ -201,21 +265,6 @@ export class MapService {
     return structuredClone(obj);
   }
 
-  defineOpenStreetMapLayer() {
-    const osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    const L = window['L'];
-    const osm = L.tileLayer(osmUrl, {
-      maxZoom: 19,
-    });
-    this.baseMapIds.push('openstreetmap');
-    (globalThis as any)['SMK'].TYPE.Viewer.prototype.basemap['openstreetmap'] = {
-      title: 'OpenStreetMap',
-      create() {
-        return [osm];
-      }
-    };
-  }
-
   getSMKInstance() {
     return this.smkInstance;
   }
@@ -227,62 +276,52 @@ export class MapService {
     return m < 3 ? y - 1 : y; // Jan/Feb/Mar => previous year
   }
 
-  async filterWildfireLayersByCurrentYear(option: any) {
-    const currentFireYear = this.getCurrentFireYear();
+  /**
+   * Keeps only the current fire year's fires on the wildfire layers (`currentFireYearOnly` in their config), which
+   * the wfnews API can't filter by year. SMK fetches a vector layer's data as it creates the layer, when the layer is
+   * first shown, so the data is fetched and filtered then, and a layer that's never turned on is never downloaded.
+   */
+  installCurrentFireYearPatch(SMK: any) {
+    const VectorLeaflet = SMK.TYPE?.Layer?.['vector']?.['leaflet'];
+    const create = VectorLeaflet?.create;
+    if (typeof create !== 'function' || VectorLeaflet['__fireYearPatched']) return;
+    VectorLeaflet['__fireYearPatched'] = true;
 
-    // Only apply filtering to these wildfire layer IDs
-    const wildfireLayerIds = new Set([
-      'active-wildfires-out-of-control',
-      'active-wildfires-holding',
-      'active-wildfires-under-control',
-      'active-wildfires-out',
-    ]);
+    const service = this;
+    VectorLeaflet.create = async function (this: any, layers: any[], ...rest: any[]) {
+      const config = layers?.[0]?.config;
+      if (config?.currentFireYearOnly && config.dataUrl && !config.dataUrl.startsWith('blob:')) {
+        config.dataUrl = await service.currentFireYearDataUrl(config.dataUrl, config.header);
+      }
+      return create.call(this, layers, ...rest);
+    };
+  }
 
-    const configBlocks = Array.isArray(option?.config) ? option.config : [];
+  /**
+   * A blob URL of the GeoJSON at the URL, keeping only the current fire year's features. The URL itself if the GeoJSON
+   * can't be read, so the layer still shows every fire rather than none.
+   */
+  async currentFireYearDataUrl(url: string, headers?: Record<string, string>): Promise<string> {
+    try {
+      const res = await fetch(url, { headers: headers ?? {} });
+      if (!res.ok) return url;
 
-    // Walk through each config block that might contain layers
-    await Promise.all(
-      configBlocks.map(async (block: any) => {
-        if (!Array.isArray(block?.layers)) return;
+      const featureCollection = await res.json();
+      if (!Array.isArray(featureCollection?.features)) return url;
 
-        await Promise.all(
-          block.layers.map(async (layer: any) => {
-            // Skip non-vector, non-wildfire, or misconfigured layers
-            if (!layer || layer.type !== 'vector' || !wildfireLayerIds.has(layer.id) || !layer.dataUrl) return;
+      const currentFireYear = this.getCurrentFireYear();
+      const features = featureCollection.features.filter((f: any) => {
+        const props = f?.properties || f?.attributes || f;
+        const yearValue = props?.fire_year ?? props?.FIRE_YEAR ?? props?.fireYear;
+        const yearNumber = typeof yearValue === 'string' ? Number.parseInt(yearValue, 10) : yearValue;
+        return yearNumber === currentFireYear;
+      });
 
-            try {
-              // Fetch the original GeoJSON, keeping headers (e.g. API key)
-              const res = await fetch(layer.dataUrl, { headers: layer.header || {} });
-              if (!res.ok) return; // fallback: leave layer untouched
-
-              const featureCollection = await res.json();
-              const features = Array.isArray(featureCollection?.features) ? featureCollection.features : null;
-              if (!features) return;
-
-              // Keep only features matching the current fire year
-              const filteredFeatures = features.filter((f: any) => {
-                const props = f?.properties || f?.attributes || f;
-                const yearValue = props?.fire_year ?? props?.FIRE_YEAR ?? props?.fireYear;
-                const yearNumber = typeof yearValue === 'string' ? Number.parseInt(yearValue, 10) : yearValue;
-                return Number.isFinite(yearNumber) && yearNumber === currentFireYear;
-              });
-
-              // Replace original features with the filtered set
-              const filteredFeatureCollection = { ...featureCollection, features: filteredFeatures };
-
-              // Convert to blob URL so SMK will reload from it
-              const blob = new Blob([JSON.stringify(filteredFeatureCollection)], { type: 'application/json' });
-              layer.dataUrl = URL.createObjectURL(blob);
-
-              // No need for headers when using blob URLs
-              delete layer.header;
-            } catch {
-              // On any error, leave the original layer untouched
-            }
-          })
-        );
-      })
-    );
+      const blob = new Blob([JSON.stringify({ ...featureCollection, features })], { type: 'application/json' });
+      return URL.createObjectURL(blob);
+    } catch {
+      return url;
+    }
   }
 
   installAuthenticatedLegendPatch(SMK: any) {
@@ -569,20 +608,8 @@ export class MapService {
       viewer.changedLayerVisibility();
     });
 
-    // Create the actual Leaflet layers
-    for (const layerConfig of mapState.layers) {
-      try {
-        const id = layerConfig.id;
-        const layerObj = viewer.layerId[id];
-        if (layerObj && typeof viewer.createViewerLayer === 'function') {
-          await viewer.createViewerLayer(id, [layerObj], layerConfig);
-        }
-      } catch (err) {
-        console.error(`Failed to create viewer layer ${layerConfig?.id}:`, err);
-      }
-    }
-
-    // Apply visibility and render
+    // Apply visibility and render. SMK creates a layer on the map when it's first shown (updateLayersVisible), so
+    // the hidden layers cost nothing until they're turned on.
     const dc = viewer.displayContext?.layers;
     if (dc) {
       dc.setItemVisible('ministry-of-forests-regions', true);

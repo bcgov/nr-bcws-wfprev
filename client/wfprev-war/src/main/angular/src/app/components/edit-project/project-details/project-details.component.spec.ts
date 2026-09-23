@@ -10,6 +10,7 @@ import { of, throwError } from 'rxjs'; // Import 'of' from RxJS
 import { EvaluationCriteriaSummaryModel, ProjectFiscal } from 'src/app/components/models';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { ProjectService } from 'src/app/services/project-services';
+import { MiniMap, MiniMapService } from 'src/app/services/mini-map.service';
 import { BC_BOUNDS, CodeTableKeys } from 'src/app/utils/constants';
 import * as toolUtils from 'src/app/utils/tools';
 import { formatLatLong } from 'src/app/utils/tools';
@@ -32,6 +33,12 @@ const mockApplicationConfig = {
     authScopes: 'TEST.*',
   },
 };
+
+// A 1° square with its south-west corner at the point
+const square = (west: number, south: number) => ({
+  type: 'Polygon',
+  coordinates: [[[west, south], [west + 1, south], [west + 1, south + 1], [west, south + 1], [west, south]]]
+});
 
 const mockBounds = jasmine.createSpyObj('LatLngBounds', ['isValid']);
 mockBounds.isValid.and.returnValue(true);
@@ -71,8 +78,12 @@ describe('ProjectDetailsComponent', () => {
   let fixture: ComponentFixture<ProjectDetailsComponent>;
   let mockSnackbar: jasmine.SpyObj<MatSnackBar>;
   let mockProjectService: jasmine.SpyObj<ProjectService>;
+  let miniMapService: jasmine.SpyObj<MiniMapService>;
 
   beforeEach(async () => {
+    miniMapService = jasmine.createSpyObj('MiniMapService', ['create', 'destroy']);
+    // Tests that need a map provide one; the rest never get past creating it
+    miniMapService.create.and.returnValue(new Promise(() => { }));
     mockProjectService = jasmine.createSpyObj('ProjectService', [
       'updateProject',
       'getProjectByProjectGuid',
@@ -108,6 +119,7 @@ describe('ProjectDetailsComponent', () => {
       ],
       providers: [
         { provide: ProjectService, useValue: mockProjectService },
+        { provide: MiniMapService, useValue: miniMapService },
         { provide: MatSnackBar, useValue: mockSnackbar },
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: OAuthService, useClass: MockOAuthService }, // Provide MockOAuthService
@@ -177,12 +189,14 @@ describe('ProjectDetailsComponent', () => {
 
   describe('Map Initialization', () => {
     let mapSpy: jasmine.SpyObj<L.Map>;
+    let miniMap: MiniMap;
     let markerSpy: jasmine.SpyObj<L.Marker>;
     let geoJsonLayerSpy: jasmine.SpyObj<L.GeoJSON>;
     let projectServiceSpy: jasmine.SpyObj<ProjectService>;
 
     beforeEach(() => {
       mapSpy = jasmine.createSpyObj('L.Map', ['setView', 'addLayer', 'remove', 'invalidateSize', 'fitBounds', 'removeLayer']);
+      miniMap = { smk: {}, map: mapSpy, leaflet: L };
       markerSpy = jasmine.createSpyObj('L.Marker', ['addTo']);
       geoJsonLayerSpy = jasmine.createSpyObj('L.GeoJSON', ['addTo', 'getBounds']);
       projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getProjectBoundaries', 'getProjectFiscalsByProjectGuid', 'getFiscalActivities', 'getActivityBoundaries']);
@@ -194,7 +208,7 @@ describe('ProjectDetailsComponent', () => {
 
       // Provide the service to the component
       component['projectService'] = projectServiceSpy;
-      spyOn(component, 'createMap').and.returnValue(mapSpy as unknown as L.Map);
+      spyOn(component, 'createMap').and.returnValue(Promise.resolve(miniMap));
       spyOn(component, 'createMarker').and.returnValue(markerSpy);
       spyOn(component, 'createGeoJSON').and.returnValue(geoJsonLayerSpy);
 
@@ -298,11 +312,115 @@ describe('ProjectDetailsComponent', () => {
 
 
 
-    it('should initialize map with default BC bounds if map is not defined', fakeAsync(() => {
+    it('should open the map on BC when the project has nothing to show', async () => {
+      await component.initMap();
+
+      const view = await (component.createMap as jasmine.Spy).calls.mostRecent().args[1];
+      expect(view).toEqual({ bounds: BC_BOUNDS });
+    });
+
+    it('should create an SMK mini map in the map container', fakeAsync(() => {
       component.initMap();
       tick();
-      expect(component.createMap).toHaveBeenCalled();
-      expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
+      expect(component.createMap).toHaveBeenCalledWith(component.mapHost.nativeElement, jasmine.any(Promise));
+      expect(component['map']).toBe(mapSpy);
+    }));
+
+    it('should open the map on the project and activity boundaries once they have loaded', async () => {
+      let finishLoading!: () => void;
+      component['activityBoundariesLoaded'] = new Promise<void>(resolve => finishLoading = resolve);
+      component['projectBoundaryGeometry'] = square(-125, 49);
+
+      await component.initMap();
+      const view = (component.createMap as jasmine.Spy).calls.mostRecent().args[1];
+      component['allActivityBoundaries'] = [{ fiscalYear: 2024, boundary: [{ geometry: square(-120, 52) }] }];
+      finishLoading();
+
+      expect(await view).toEqual({ bounds: [[49, -125], [53, -119]] });
+      // SMK opens the map there; nothing moves it afterwards
+      expect(mapSpy.fitBounds).not.toHaveBeenCalled();
+      expect(mapSpy.setView).not.toHaveBeenCalled();
+    });
+
+    it('should open the map on the project location when there are no boundaries', async () => {
+      component.projectDetail = { latitude: 49.553209, longitude: -119.965887 };
+
+      await component.initMap();
+
+      const view = await (component.createMap as jasmine.Spy).calls.mostRecent().args[1];
+      expect(view).toEqual({ center: [49.553209, -119.965887], zoom: 13 });
+    });
+
+    it('should re-apply the view, without animating, when the map is shown again', () => {
+      component['map'] = mapSpy;
+      component['projectBoundaryGeometry'] = square(-125, 49);
+
+      component.refreshMap();
+
+      expect(mapSpy.invalidateSize).toHaveBeenCalled();
+      expect(mapSpy.fitBounds).toHaveBeenCalledWith([[49, -125], [50, -124]], { padding: [0, 0], animate: false });
+    });
+
+    it('should draw on the map with SMK\'s Leaflet', fakeAsync(() => {
+      const smkLeaflet = { ...L, marker: jasmine.createSpy('marker').and.returnValue(markerSpy) };
+      (component.createMap as jasmine.Spy).and.returnValue(Promise.resolve({ ...miniMap, leaflet: smkLeaflet }));
+      (component.createMarker as jasmine.Spy).and.callThrough();
+      component['map'] = undefined;
+      component.initMap();
+      tick();
+
+      component.createMarker([49.5, -119.9]);
+
+      expect(smkLeaflet.marker).toHaveBeenCalledWith([49.5, -119.9], undefined);
+    }));
+
+    it('should mark the project location and boundary that loaded while the map was being created', fakeAsync(() => {
+      component.projectDetail = { latitude: 49.553209, longitude: -119.965887 };
+      component['projectBoundaryGeometry'] = square(-125, 49);
+      component['map'] = undefined;
+
+      component.initMap();
+      tick();
+
+      expect(component.createMarker).toHaveBeenCalledWith([49.553209, -119.965887], jasmine.any(Object));
+      expect(component.createGeoJSON).toHaveBeenCalledWith(square(-125, 49), jasmine.any(Object));
+      expect(projectServiceSpy.getProjectBoundaries).not.toHaveBeenCalled();
+    }));
+
+    it('should draw the activity boundaries that loaded while the map was being created', fakeAsync(() => {
+      const render = spyOn(component, 'renderActivityBoundaries');
+      component['allActivityBoundaries'] = [{ fiscalYear: 2024, boundary: [] }];
+
+      component.initMap();
+      tick();
+
+      expect(render).toHaveBeenCalled();
+    }));
+
+    it('should remove a map that was still being created when the page was left', fakeAsync(() => {
+      let finishCreating!: (created: MiniMap) => void;
+      (component.createMap as jasmine.Spy).and.returnValue(new Promise(resolve => finishCreating = resolve));
+      component['map'] = undefined;
+
+      component.initMap();
+      component.ngOnDestroy();
+      finishCreating(miniMap);
+      tick();
+
+      expect(miniMapService.destroy).toHaveBeenCalledWith(miniMap);
+      expect(component['map']).toBeUndefined();
+    }));
+
+    it('should log rather than throw when the map cannot be created', fakeAsync(() => {
+      const consoleError = spyOn(console, 'error');
+      (component.createMap as jasmine.Spy).and.returnValue(Promise.reject(new Error('SMK failed')));
+      component['map'] = undefined;
+
+      component.initMap();
+      tick();
+
+      expect(consoleError).toHaveBeenCalledWith('Error loading map:', jasmine.any(Error));
+      expect(component['map']).toBeUndefined();
     }));
 
     it('should initialize the map when initMap is called and map does not exist', fakeAsync(() => {
@@ -310,13 +428,15 @@ describe('ProjectDetailsComponent', () => {
       component.initMap();
       tick();
       expect(component.createMap).toHaveBeenCalled();
-      expect(mapSpy.fitBounds).toHaveBeenCalledWith(BC_BOUNDS);
+      expect(component['isMapReady']).toBeTrue();
     }));
 
-    it('should update the map view with the new latitude and longitude', () => {
+    it('should move the map, without animating, to a new latitude and longitude', () => {
       component['map'] = mapSpy;
+      component['projectGuid'] = 'some-guid';
+      component.projectDetail = { latitude: 49.553209, longitude: -119.965887 };
       component.updateMap(49.553209, -119.965887);
-      expect(mapSpy.setView).toHaveBeenCalledWith([49.553209, -119.965887], 13);
+      expect(mapSpy.setView).toHaveBeenCalledWith([49.553209, -119.965887], 13, { animate: false });
     });
 
     it('should add a marker when updating the map view', () => {
@@ -350,19 +470,21 @@ describe('ProjectDetailsComponent', () => {
 
 
 
-    it('should clean up the map on component destroy', () => {
-      component['map'] = mapSpy; // Assign the mock map to the component
+    it('should clean up the map on component destroy', fakeAsync(() => {
+      component.initMap();
+      tick();
+
       component.ngOnDestroy(); // Trigger the lifecycle hook
 
-      expect(mapSpy.remove).toHaveBeenCalled(); // Ensure the map was removed
-    });
+      expect(miniMapService.destroy).toHaveBeenCalledWith(miniMap); // Ensure the map was removed
+    }));
 
     it('should do nothing when ngOnDestroy is called if map is not initialized', () => {
       component['map'] = undefined; // Ensure the map is not initialized
       component.ngOnDestroy(); // Trigger the lifecycle hook
 
-      // No errors should occur, and no calls should be made
-      expect(mapSpy.remove).not.toHaveBeenCalled();
+      // No errors should occur, and there is no map to remove
+      expect(miniMapService.destroy).toHaveBeenCalledWith(undefined);
     });
   });
 
@@ -1018,6 +1140,25 @@ describe('ProjectDetailsComponent', () => {
 
     expect(component['allActivityBoundaries'].length).toBe(1);
     expect(component['renderActivityBoundaries']).toHaveBeenCalled();
+  });
+
+  it('should finish loading activity boundaries for a project with no fiscals', async () => {
+    component.projectGuid = 'test-guid';
+
+    await component.getAllActivitiesBoundaries();
+
+    expect(mockProjectService.getFiscalActivities).not.toHaveBeenCalled();
+    expect(component['allActivityBoundaries']).toEqual([]);
+  });
+
+  it('should finish loading activity boundaries when they fail to load', async () => {
+    const consoleError = spyOn(console, 'error');
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(throwError(() => new Error('offline')));
+    component.projectGuid = 'test-guid';
+
+    await component.getAllActivitiesBoundaries();
+
+    expect(consoleError).toHaveBeenCalledWith('Error fetching project fiscals:', jasmine.any(Error));
   });
 
   describe('Dropdown dependencies', () => {
