@@ -1,8 +1,10 @@
-import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
+import { applicationConfig, moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 import { SpatialViewerDialogComponent } from './spatial-viewer-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProjectFile } from '../models';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { TokenService } from 'src/app/services/token.service';
 
 const mockFileWithGeometry: ProjectFile = {
   fileName: 'test-spatial-file.zip',
@@ -61,6 +63,19 @@ const meta: Meta<SpatialViewerDialogComponent> = {
         {
           provide: MAT_DIALOG_DATA,
           useValue: { file: mockFileWithGeometry },
+        },
+      ],
+    }),
+    // The map is a real SMK mini map. Its services are app-wide and need these; nothing here calls the API.
+    applicationConfig({
+      providers: [
+        {
+          provide: AppConfigService,
+          useValue: { getConfig: () => ({ rest: {} }) },
+        },
+        {
+          provide: TokenService,
+          useValue: { getOauthToken: () => null },
         },
       ],
     }),

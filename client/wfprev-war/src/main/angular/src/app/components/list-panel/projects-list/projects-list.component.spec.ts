@@ -11,7 +11,6 @@ import { of, throwError } from 'rxjs';
 import { CreateNewProjectDialogComponent } from 'src/app/components/create-new-project-dialog/create-new-project-dialog.component';
 import { FeaturesResponse } from 'src/app/components/models';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import { MapService } from 'src/app/services/map.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 import { ProjectService } from 'src/app/services/project-services';
@@ -68,7 +67,6 @@ describe('ProjectsListComponent', () => {
   let mockCodeTableService: jasmine.SpyObj<CodeTableServices>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockRouter: jasmine.SpyObj<Router>;
-  let mockMapService: jasmine.SpyObj<MapService>;
   let mockSharedService: any;
 
   beforeEach(async () => {
@@ -103,7 +101,6 @@ describe('ProjectsListComponent', () => {
     mockCodeTableService.getFireCentres.and.returnValue(of([]));
     mockCodeTableService.fetchCodeTable.and.returnValue(of({ _embedded: {} }));
 
-    mockMapService = jasmine.createSpyObj('MapService', ['destroySMK', 'getMapIndex', 'setMapIndex', 'setContainerId']);
 
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockDialog.open.and.returnValue({
@@ -165,7 +162,6 @@ describe('ProjectsListComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: {} },
-        { provide: MapService, useValue: mockMapService },
         { provide: SharedService, useValue: mockSharedService },
         { provide: PermissionsService, useClass: MockPermissionsService },
         { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService }

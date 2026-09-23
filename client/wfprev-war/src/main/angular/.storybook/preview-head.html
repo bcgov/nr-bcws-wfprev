@@ -1,0 +1,8 @@
+<!--
+  SMK looks for its base URL on its own <script> tag, which Storybook's bundle of the global scripts doesn't have,
+  and without one it fails to create any map. Every map passes SMK its own base URL (SmkService.baseUrl); this only
+  gets SMK past that lookup, for the spatial viewer's SMK mini map.
+-->
+<script>
+  window.SMK = { BASE_URL: '/assets/smk/' };
+</script>

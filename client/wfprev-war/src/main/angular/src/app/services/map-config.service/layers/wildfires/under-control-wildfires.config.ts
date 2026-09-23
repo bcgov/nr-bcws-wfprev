@@ -9,6 +9,8 @@ export function UnderControlWildfiresLayerConfig(ls: LayerSettings) {
       isQueryable: true,
       useClustering: false,
       visible: false,
+      // Only this fire year's fires (MapService.installCurrentFireYearPatch)
+      currentFireYearOnly: true,
       dataUrl:
         ls.wfnewsApiBaseUrl +
         '/publicPublishedIncident/features?stageOfControl=UNDR_CNTRL',

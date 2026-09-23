@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { SmkService } from 'src/app/services/smk.service';
 import { TokenService } from 'src/app/services/token.service';
 import { ResourcesRoutes } from 'src/app/utils';
 
@@ -18,7 +19,8 @@ export class AppComponent implements OnInit {
     protected router: Router,
     protected appConfigService: AppConfigService,
     protected tokenService: TokenService,
-    protected dialog: MatDialog
+    protected dialog: MatDialog,
+    private readonly smkService: SmkService
   ) {
   }
 
@@ -29,6 +31,8 @@ export class AppComponent implements OnInit {
         `SHA: ${config.application.buildId || 'unknown'}`,
         `Run Number: ${config.application.buildNumber || '0'}`);
     }
+    // Every map needs SMK's modules; load them while the browser is idle rather than when the first map opens
+    this.smkService.preload();
   }
 
   goHome(): void {

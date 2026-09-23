@@ -7,7 +7,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import L from 'leaflet';
-import { forkJoin, map, Observable } from 'rxjs';
+import { defaultIfEmpty, forkJoin, map, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { FiscalYearProjectsComponent } from 'src/app/components/edit-project/project-details/fiscal-year-projects/fiscal-year-projects.component';
 import { ProjectFilesComponent } from 'src/app/components/edit-project/project-details/project-files/project-files.component';
@@ -29,6 +29,7 @@ import { InputFieldComponent } from 'src/app/components/shared/input-field/input
 import { EvaluationCriteriaComponent } from 'src/app/components/edit-project/project-details/evaluation-criteria/evaluation-criteria.component';
 import { TimestampComponent } from 'src/app/components/shared/timestamp/timestamp.component';
 import { TokenService } from 'src/app/services/token.service';
+import { MiniMap, MiniMapService, MiniMapView, boundsOf, showView } from 'src/app/services/mini-map.service';
 import { TextareaComponent } from 'src/app/components/shared/textarea/textarea.component';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 @Component({
@@ -47,10 +48,22 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   @Output() projectNameChange = new EventEmitter<string>();
 
   private map: L.Map | undefined;
-  private readonly activityBoundaryGroup: L.LayerGroup = L.layerGroup();
+  // SMK's copy of Leaflet once the map exists; everything drawn on the map is built with it (see MiniMap.leaflet)
+  private leaflet: typeof L = L;
+  private miniMap: MiniMap | undefined;
+  // Created with the map
+  private activityBoundaryGroup: L.LayerGroup | undefined;
   private marker: L.Marker | undefined;
   private isMapReady = false;
+  private destroyed = false;
   boundaryLayer: L.GeoJSON | null = null;
+  // The latest project boundary, drawn as boundaryLayer once the map exists
+  private projectBoundaryGeometry: any = null;
+  // Settle once the first load of the project, its boundary and its activity boundaries is done. The map is created
+  // meanwhile, and opens on them.
+  private projectLoaded: Promise<void> = Promise.resolve();
+  private projectBoundaryLoaded: Promise<void> = Promise.resolve();
+  private activityBoundariesLoaded: Promise<void> = Promise.resolve();
   projectGuid = '';
   messages = Messages;
   detailsForm: FormGroup = this.fb.group({});
@@ -94,7 +107,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     public dialog: MatDialog,
     public tokenService: TokenService,
     private readonly permissionsService: PermissionsService,
-    public cd: ChangeDetectorRef
+    public cd: ChangeDetectorRef,
+    private readonly miniMapService: MiniMapService
   ) { }
 
   ngOnInit(): void {
@@ -103,7 +117,7 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
     this.initializeForm();
     this.loadCodeTables();
-    this.loadProjectDetails();
+    this.projectLoaded = this.loadProjectDetails();
     this.setupDropdownDependencies();
     this.detailsForm.get('projectName')?.valueChanges.subscribe(() => {
       const control = this.detailsForm.get('projectName');
@@ -121,19 +135,14 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
   refreshMap(): void {
     if (this.map) {
       this.map.invalidateSize();
-      // Re-apply zoom/center after size invalidation to fix issues with hidden map initialization
-      if (this.boundaryLayer && this.boundaryLayer.getBounds().isValid()) {
-        this.map.fitBounds(this.boundaryLayer.getBounds());
-      } else if (this.projectDetail?.latitude && this.projectDetail?.longitude) {
-        this.map.setView([this.projectDetail.latitude, this.projectDetail.longitude], 13);
-      }
+      // Re-apply the view after size invalidation to fix issues with hidden map initialization
+      this.showMapView();
     }
   }
 
   ngOnDestroy(): void {
-    if (this.map) {
-      this.map.remove(); // Clean up the map
-    }
+    this.destroyed = true;
+    this.miniMapService.destroy(this.miniMap); // Clean up the map
   }
 
   refreshFiscalData(): void {
@@ -175,42 +184,53 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  loadProjectDetails(preserveUnsavedChanges: boolean = false): void {
+  /** Resolves once the project has loaded, or failed to. */
+  loadProjectDetails(preserveUnsavedChanges: boolean = false): Promise<void> {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
-    if (!this.projectGuid) return;
+    if (!this.projectGuid) return Promise.resolve();
 
-    this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
+    return new Promise(resolve => this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe({
       next: (data) => {
-        // A reload the user did not ask for (e.g. a file upload) must not overwrite what they have typed
-        const keepUnsavedChanges = preserveUnsavedChanges && this.isFormDirty();
-
-        this.projectDetail = data;
-        this.projectNameChange.emit(data.projectName);
-        if (data.latitude && data.longitude) {
-          if (!keepUnsavedChanges) {
-            this.latLong = formatLatLong(data.latitude, data.longitude);
-          }
-          this.updateMap(data.latitude, data.longitude);
+        try {
+          this.applyProjectDetails(data, preserveUnsavedChanges);
+        } finally {
+          resolve();
         }
-
-        if (keepUnsavedChanges) return;
-
-        this.isLatLongDirty = false;
-        this.populateFormWithProjectDetails(data);
-        this.originalFormValues = this.detailsForm.getRawValue();
-        this.projectDescription = data.projectDescription;
-        this.isProjectDescriptionDirty = false;
-        this.latLongForm.patchValue({
-          latitude: data.latitude,
-          longitude: data.longitude,
-        });
       },
       error: (err) => {
         console.error('Error fetching project details:', err);
         this.projectDetail = null;
+        resolve();
       },
+    }));
+  }
+
+  private applyProjectDetails(data: any, preserveUnsavedChanges: boolean): void {
+    // A reload the user did not ask for (e.g. a file upload) must not overwrite what they have typed
+    const keepUnsavedChanges = preserveUnsavedChanges && this.isFormDirty();
+
+    this.projectDetail = data;
+    this.projectNameChange.emit(data.projectName);
+    if (data.latitude && data.longitude) {
+      if (!keepUnsavedChanges) {
+        this.latLong = formatLatLong(data.latitude, data.longitude);
+      }
+      this.updateMap(data.latitude, data.longitude);
+    }
+
+    if (keepUnsavedChanges) return;
+
+    this.isLatLongDirty = false;
+    this.populateFormWithProjectDetails(data);
+    this.originalFormValues = this.detailsForm.getRawValue();
+    this.projectDescription = data.projectDescription;
+    this.isProjectDescriptionDirty = false;
+    this.latLongForm.patchValue({
+      latitude: data.latitude,
+      longitude: data.longitude,
     });
   }
+
   private callValidateLatLong(value: string) {
     return validateLatLong(value);
   }
@@ -277,65 +297,95 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
+  /** Marks the project location, and reloads the project boundary. The map then shows them. */
   updateMap(latitude: number, longitude: number): void {
+    this.markProjectLocation(latitude, longitude);
+    this.projectBoundaryLoaded = this.loadProjectBoundary();
+  }
+
+  private markProjectLocation(latitude: number, longitude: number): void {
     if (this.map) {
       if (this.marker) {
         this.map.removeLayer(this.marker);
       }
       const teardropIcon = getBluePinIcon();
       this.marker = this.createMarker([latitude, longitude], { icon: teardropIcon }).addTo(this.map);
-
-      this.map.setView([latitude, longitude], 13); // Update the map view
-    }
-
-    if (this.projectGuid) {
-      this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
-        next: (boundaryResponse) => {
-          const boundaries = boundaryResponse?._embedded?.projectBoundary;
-
-          // Remove old boundary layer if it exists
-          if (this.boundaryLayer && this.map) {
-            this.map.removeLayer(this.boundaryLayer);
-            this.boundaryLayer = null;
-          }
-
-          if (boundaries && boundaries.length > 0) {
-            const latestBoundary = boundaries.sort((a: any, b: any) =>
-              new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
-            )[0];
-
-            const boundaryGeometry = latestBoundary.boundaryGeometry;
-
-            if (boundaryGeometry && this.map) {
-              // Create new GeoJSON layer
-              this.boundaryLayer = this.createGeoJSON(boundaryGeometry, {
-                style: {
-                  color: '#000000',
-                  weight: 3,
-                  opacity: 1,
-                  fillOpacity: 0
-                }
-              }).addTo(this.map);
-
-              // Fit the map view to the new boundary
-              if (this.boundaryLayer?.getBounds()?.isValid()) {
-                this.map.fitBounds(this.boundaryLayer.getBounds());
-              }
-            }
-          }
-        },
-        error: (error) => {
-          console.error('Error fetching project boundaries', error);
-        }
-      });
     }
   }
 
+  // Resolves once the latest project boundary has loaded, or failed to
+  private loadProjectBoundary(): Promise<void> {
+    if (!this.projectGuid) return Promise.resolve();
+
+    return new Promise(resolve => this.projectService.getProjectBoundaries(this.projectGuid).subscribe({
+      next: (boundaryResponse) => {
+        const boundaries = boundaryResponse?._embedded?.projectBoundary;
+        const latestBoundary = boundaries?.length > 0
+          ? boundaries.sort((a: any, b: any) =>
+            new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+          )[0]
+          : null;
+        this.projectBoundaryGeometry = latestBoundary?.boundaryGeometry ?? null;
+
+        if (this.map) {
+          this.drawProjectBoundary();
+          this.showMapView();
+        }
+        resolve();
+      },
+      error: (error) => {
+        console.error('Error fetching project boundaries', error);
+        resolve();
+      }
+    }));
+  }
+
+  private drawProjectBoundary(): void {
+    if (!this.map) return;
+
+    // Remove old boundary layer if it exists
+    if (this.boundaryLayer) {
+      this.map.removeLayer(this.boundaryLayer);
+      this.boundaryLayer = null;
+    }
+
+    if (this.projectBoundaryGeometry) {
+      this.boundaryLayer = this.createGeoJSON(this.projectBoundaryGeometry, {
+        style: {
+          color: '#000000',
+          weight: 3,
+          opacity: 1,
+          fillOpacity: 0
+        }
+      }).addTo(this.map);
+    }
+  }
+
+  /** The project boundary and activity boundaries, the project location when there are none, and otherwise BC. */
+  mapView(): MiniMapView {
+    const bounds = boundsOf([
+      this.projectBoundaryGeometry,
+      ...this.allActivityBoundaries.flatMap(entry => (entry.boundary ?? []).map((ab: any) => ab.geometry)),
+    ]);
+    if (bounds) {
+      return { bounds };
+    }
+    if (this.projectDetail?.latitude && this.projectDetail?.longitude) {
+      return { center: [this.projectDetail.latitude, this.projectDetail.longitude], zoom: 13 };
+    }
+    return { bounds: BC_BOUNDS };
+  }
+
+  private showMapView(): void {
+    if (this.map) {
+      showView(this.map, this.mapView());
+    }
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
+      this.activityBoundariesLoaded = this.getAllActivitiesBoundaries();
       this.initMap();
-      this.getAllActivitiesBoundaries();
     });
   }
 
@@ -346,25 +396,35 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     return `${latitude}, ${longitude}`;
   }
 
-  initMap(): void {
+  async initMap(): Promise<void> {
     const container = this.mapHost?.nativeElement;
     if (!container) {
       return;
     }
-    const defaultBounds: L.LatLngBoundsExpression = BC_BOUNDS;
 
     if (!this.map) {
-      this.map = this.createMap(container, { zoomControl: false });
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(this.map);
-      this.activityBoundaryGroup.addTo(this.map);
+      let miniMap: MiniMap;
+      try {
+        miniMap = await this.createMap(container, this.mapDataLoaded().then(() => this.mapView()));
+      } catch (error) {
+        console.error('Error loading map:', error);
+        return;
+      }
+
+      // The page was left while the map was being created
+      if (this.destroyed) {
+        this.miniMapService.destroy(miniMap);
+        return;
+      }
+      this.miniMap = miniMap;
+      this.map = miniMap.map;
+      this.leaflet = miniMap.leaflet;
+      this.activityBoundaryGroup = this.leaflet.layerGroup().addTo(this.map);
 
       if (this.projectDetail?.latitude && this.projectDetail?.longitude) {
-        this.updateMap(this.projectDetail.latitude, this.projectDetail.longitude);
-      } else {
-        this.map.fitBounds(defaultBounds); // Default view for the BC region
+        this.markProjectLocation(this.projectDetail.latitude, this.projectDetail.longitude);
       }
+      this.drawProjectBoundary();
       const legendHelper = new LeafletLegendService();
       legendHelper.addLegend(this.map, this.fiscalColorMap);
     }
@@ -372,6 +432,13 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.allActivityBoundaries.length > 0) {
       this.renderActivityBoundaries();
     }
+  }
+
+  // Settles once the first load of everything the map shows is done
+  private async mapDataLoaded(): Promise<void> {
+    // Loading the project starts loading its boundary
+    await this.projectLoaded;
+    await Promise.all([this.projectBoundaryLoaded, this.activityBoundariesLoaded]);
   }
 
   patchFormValues(data: any): void {
@@ -707,14 +774,27 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     return null;
   }
 
-  getAllActivitiesBoundaries(): void {
-    if (!this.projectGuid) return;
-    this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
-      this.handleFiscalsResponse(data)
-    );
+  /** Resolves once the activity boundaries have loaded, or failed to. */
+  getAllActivitiesBoundaries(): Promise<void> {
+    if (!this.projectGuid) return Promise.resolve();
+    return new Promise(resolve => this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe({
+      next: data => {
+        try {
+          this.handleFiscalsResponse(data).then(resolve);
+        } catch (err) {
+          console.error('Error fetching project fiscals:', err);
+          resolve();
+        }
+      },
+      error: err => {
+        console.error('Error fetching project fiscals:', err);
+        resolve();
+      }
+    }));
   }
 
-  private handleFiscalsResponse(data: any): void {
+  // Resolves once the fiscals' activity boundaries have loaded, or failed to
+  private handleFiscalsResponse(data: any): Promise<void> {
     this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
       (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
     );
@@ -735,9 +815,21 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
       )
     );
 
-    forkJoin(activityRequests).subscribe(allActivityArrays =>
-      this.handleActivitiesResponse(allActivityArrays.flat())
-    );
+    // forkJoin of no requests completes without a value
+    return new Promise(resolve => forkJoin(activityRequests).pipe(defaultIfEmpty([] as any[][])).subscribe({
+      next: allActivityArrays => {
+        try {
+          this.handleActivitiesResponse(allActivityArrays.flat()).then(resolve);
+        } catch (err) {
+          console.error('Error fetching fiscal activities:', err);
+          resolve();
+        }
+      },
+      error: err => {
+        console.error('Error fetching fiscal activities:', err);
+        resolve();
+      }
+    }));
   }
 
 
@@ -750,18 +842,26 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }));
   }
 
-  private handleActivitiesResponse(allActivities: any[]): void {
-    if (allActivities.length === 0) return;
-
+  private handleActivitiesResponse(allActivities: any[]): Promise<void> {
     const boundaryRequests = allActivities.map(activity =>
       this.projectService
         .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
         .pipe(map(boundary => this.mapActivityBoundary(boundary, activity)))
     );
 
-    forkJoin(boundaryRequests).subscribe(allResults =>
-      this.handleBoundariesResponse(allResults)
-    );
+    return new Promise(resolve => forkJoin(boundaryRequests).pipe(defaultIfEmpty([])).subscribe({
+      next: allResults => {
+        try {
+          this.handleBoundariesResponse(allResults);
+        } finally {
+          resolve();
+        }
+      },
+      error: err => {
+        console.error('Error fetching activity boundaries:', err);
+        resolve();
+      }
+    }));
   }
 
   private mapActivityBoundary(boundary: any, activity: any): any {
@@ -800,11 +900,12 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     this.allActivityBoundaries = dedupedResults;
     if (this.isMapReady) {
       this.renderActivityBoundaries();
+      this.showMapView();
     }
   }
 
   renderActivityBoundaries(): void {
-    if (!this.isMapReady || !this.map) return;
+    if (!this.isMapReady || !this.map || !this.activityBoundaryGroup) return;
 
     this.activityBoundaryGroup.clearLayers();
 
@@ -812,8 +913,6 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     const currentFiscalYear = new Date().getMonth() >= 3
     ? new Date().getFullYear()
     : new Date().getFullYear() - 1;
-    const allBounds: L.LatLngBounds[] = [];
-
     for (const entry of this.allActivityBoundaries) {
       const fiscalYear = entry.fiscalYear;
       const color = this.getFiscalYearColor(fiscalYear, currentFiscalYear);
@@ -836,17 +935,8 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
           });
 
           layer.addTo(this.activityBoundaryGroup);
-
-          const bounds = layer.getBounds();
-          if (bounds?.isValid()) {
-            allBounds.push(bounds);
-          }
         }
       }
-    }
-    if (allBounds.length > 0) {
-      const combinedBounds = allBounds.reduce((acc, b) => acc.extend(b), allBounds[0]);
-      this.map.fitBounds(combinedBounds);
     }
   }
 
@@ -969,15 +1059,15 @@ export class ProjectDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     return hasProjectPolygon || hasActivityPolygons;
   }
 
-  createMap(element: any, options: L.MapOptions): L.Map {
-    return L.map(element, options);
+  createMap(container: HTMLElement, view?: Promise<MiniMapView>): Promise<MiniMap> {
+    return this.miniMapService.create(container, view);
   }
 
   createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
-    return L.marker(latlng, options);
+    return this.leaflet.marker(latlng, options);
   }
 
   createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
-    return L.geoJSON(geom, options);
+    return this.leaflet.geoJSON(geom, options);
   }
 }

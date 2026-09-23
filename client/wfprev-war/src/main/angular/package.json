@@ -26,7 +26,7 @@
     "@angular/router": "21.2.14",
     "@dintecom/ngx-currency": "21.0.1",
     "@maplibre/maplibre-gl-leaflet": "0.1.3",
-    "@qqnluaq/smk": "1.0.35",
+    "@qqnluaq/smk": "1.0.39",
     "@tmcw/togeojson": "7.0.0",
     "@turf/turf": "7.2.0",
     "@types/leaflet": "1.9.12",

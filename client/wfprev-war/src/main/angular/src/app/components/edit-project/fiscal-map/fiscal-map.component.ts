@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import * as L from 'leaflet';
-import { forkJoin, map, Subscription } from 'rxjs';
+import { firstValueFrom, forkJoin, map } from 'rxjs';
 import { FileAttachment } from 'src/app/components/models';
+import { MiniMap, MiniMapService, MiniMapView, boundsOf } from 'src/app/services/mini-map.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { ResourcesRoutes } from 'src/app/utils';
 import { LeafletLegendService, createFullPageControl, getBluePinIcon } from 'src/app/utils/tools';
@@ -31,9 +32,16 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     readonly projectService: ProjectService,
     readonly route: ActivatedRoute,
     protected router: Router,
+    private readonly miniMapService: MiniMapService,
   ) {}
 
   map: L.Map | undefined;
+  // SMK's copy of Leaflet once the map exists; everything drawn on the map is built with it (see MiniMap.leaflet)
+  private leaflet: typeof L = L;
+  private miniMap: MiniMap | undefined;
+  private destroyed = false;
+  // Settles once what the map shows has loaded; the map opens on it
+  private mapData: Promise<void> = Promise.resolve();
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -45,8 +53,9 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       this.map.invalidateSize();
     }
   }
-  private activityBoundaryGroup: L.LayerGroup = this.createLayerGroup();
-  private projectBoundaryGroup: L.LayerGroup = this.createLayerGroup();
+  // Created with the map
+  private activityBoundaryGroup: L.LayerGroup | undefined;
+  private projectBoundaryGroup: L.LayerGroup | undefined;
 
   projectGuid = '';
   projectFiscals: any[] = [];
@@ -55,11 +64,9 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
   projectBoundary: any[] = [];
   projectLatitude = '';
   projectLongitude = '';
-  private dataSubscription = new Subscription();
 
   ngOnInit(): void{
-    this.getProjectBoundary();
-    this.getAllActivitiesBoundaries();
+    this.mapData = this.loadMapData();
   }
 
   ngAfterViewInit(): void {
@@ -67,86 +74,90 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       this.initMap();
     });
   }
-  
+
   ngOnDestroy(): void {
-    if (this.map) {
-      this.map.remove();
-    }
-    this.dataSubscription.unsubscribe();
+    this.destroyed = true;
+    this.miniMapService.destroy(this.miniMap);
   }
 
-  getProjectCoordinates() {
-    this.dataSubscription.add(
-      this.projectService.getProjectByProjectGuid(this.projectGuid).subscribe(project => {
-        if (project.latitude && project.longitude && this.map) {
-          this.projectLatitude = project.latitude;
-          this.projectLongitude = project.longitude;
-          if (this.map) {
-            const lat = Number.parseFloat(this.projectLatitude);
-            const lng = Number.parseFloat(this.projectLongitude);
-    
-            const teardropIcon = getBluePinIcon()
-            this.createMarker([lat, lng], { icon: teardropIcon }).addTo(this.map);
-    
-            this.map.setView([lat, lng], 14); 
-          }
-        }
-      })
-    );
-  }
-
-  getProjectBoundary() {
-    this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
-    if (this.projectGuid) {
-      this.dataSubscription.add(
-        this.projectService.getProjectBoundaries(this.projectGuid).subscribe((data) => {
-          const boundaries = data?._embedded?.projectBoundary ?? [];
-          if (boundaries.length > 0) {
-            // Sort boundaries by systemStartTimestamp descending and pick the latest
-            const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
-              new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
-            )[0];
-    
-            this.projectBoundary = [latestBoundary]; 
-  
-          if (this.map) {
-            this.plotProjectBoundary(this.projectBoundary);
-          }
-        }
-      })
-      );
-    }
-  }
-  
-  getAllActivitiesBoundaries(): void {
+  /**
+   * Loads what the map shows: the project boundary and the activity boundaries, and the project location when there
+   * are neither. Never rejects; whatever fails to load is left out.
+   */
+  async loadMapData(): Promise<void> {
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
-  
-    this.dataSubscription.add(
-      this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid).subscribe(data =>
-        this.handleFiscalsResponse(data)
-      )
-    );
+
+    await Promise.all([this.getProjectBoundary(), this.getAllActivitiesBoundaries()]);
+    if (this.projectBoundary.length === 0 && this.allActivityBoundaries.length === 0) {
+      await this.getProjectCoordinates();
+    }
   }
-  
-  private handleFiscalsResponse(data: any): void {
-    this.projectFiscals = (data._embedded?.projectFiscals ?? []).sort(
+
+  async getProjectCoordinates(): Promise<void> {
+    try {
+      const project = await firstValueFrom(this.projectService.getProjectByProjectGuid(this.projectGuid));
+      if (project?.latitude && project?.longitude) {
+        this.projectLatitude = project.latitude;
+        this.projectLongitude = project.longitude;
+      }
+    } catch (error) {
+      console.error('Error loading the project location:', error);
+    }
+  }
+
+  private plotProjectLocation(): void {
+    const lat = Number.parseFloat(this.projectLatitude);
+    const lng = Number.parseFloat(this.projectLongitude);
+
+    const teardropIcon = getBluePinIcon()
+    this.createMarker([lat, lng], { icon: teardropIcon }).addTo(this.map!);
+  }
+
+  async getProjectBoundary(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.projectService.getProjectBoundaries(this.projectGuid));
+      const boundaries = data?._embedded?.projectBoundary ?? [];
+      if (boundaries.length > 0) {
+        // Sort boundaries by systemStartTimestamp descending and pick the latest
+        const latestBoundary = boundaries.sort((a: { systemStartTimestamp: string | number | Date; }, b: { systemStartTimestamp: string | number | Date; }) =>
+          new Date(b.systemStartTimestamp).getTime() - new Date(a.systemStartTimestamp).getTime()
+        )[0];
+
+        this.projectBoundary = [latestBoundary];
+      }
+    } catch (error) {
+      console.error('Error loading the project boundary:', error);
+    }
+  }
+
+  async getAllActivitiesBoundaries(): Promise<void> {
+    try {
+      const fiscals = await firstValueFrom(this.projectService.getProjectFiscalsByProjectGuid(this.projectGuid));
+      const activities = await this.handleFiscalsResponse(fiscals);
+      const boundaries = await this.handleActivitiesResponse(activities);
+      this.handleBoundariesResponse(boundaries);
+    } catch (error) {
+      console.error('Error loading the activity boundaries:', error);
+    }
+  }
+
+  // Every activity of every fiscal
+  private handleFiscalsResponse(data: any): Promise<any[]> {
+    this.projectFiscals = (data?._embedded?.projectFiscals ?? []).sort(
       (a: { fiscalYear: number }, b: { fiscalYear: number }) => a.fiscalYear - b.fiscalYear
     );
-  
+
     const activityRequests = this.projectFiscals.map(fiscal =>
       this.projectService.getFiscalActivities(this.projectGuid, fiscal.projectPlanFiscalGuid).pipe(
         map(response => this.mapFiscalActivities(response, fiscal))
       )
     );
-  
-    this.dataSubscription.add(
-      forkJoin(activityRequests).subscribe(allActivityArrays =>
-        this.handleActivitiesResponse(allActivityArrays.flat())
-      )
-    );
+
+    // forkJoin of no requests completes without a value
+    return firstValueFrom(forkJoin(activityRequests).pipe(map(arrays => arrays.flat())), { defaultValue: [] });
   }
-  
+
   private mapFiscalActivities(response: any, fiscal: any): any[] {
     const activities = response?._embedded?.activities ?? [];
     return activities.map((activity: any) => ({
@@ -155,13 +166,9 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       projectPlanFiscalGuid: fiscal.projectPlanFiscalGuid
     }));
   }
-  
-  private handleActivitiesResponse(allActivities: any[]): void {
-    if (allActivities.length === 0) {
-      this.getProjectCoordinates();
-      return;
-    }
-  
+
+  // The boundaries of each activity
+  private handleActivitiesResponse(allActivities: any[]): Promise<any[]> {
     const boundaryRequests = allActivities.map(activity =>
       this.projectService
         .getActivityBoundaries(this.projectGuid, activity.projectPlanFiscalGuid, activity.activityGuid)
@@ -169,14 +176,10 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           map(boundary => this.mapActivityBoundary(boundary, activity))
         )
     );
-  
-    this.dataSubscription.add(
-      forkJoin(boundaryRequests).subscribe(allResults =>
-        this.handleBoundariesResponse(allResults)
-      )
-    );
+
+    return firstValueFrom(forkJoin(boundaryRequests), { defaultValue: [] });
   }
-  
+
   private mapActivityBoundary(boundary: any, activity: any): any {
     return boundary ? {
       activityGuid: activity.activityGuid,
@@ -184,18 +187,17 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       boundary: boundary?._embedded?.activityBoundary
     } : null;
   }
-  
+
   private handleBoundariesResponse(results: any[]): void {
     // Filter out nulls or empty boundary arrays
     const validResults = results.filter(r => r?.boundary && r.boundary.length > 0);
-    this.activityBoundaryGroup.clearLayers(); // clears old activity polygons at first place
     // For each activity, keep only the latest boundary
     const dedupedResults: any[] = [];
     const seenActivityGuids = new Set<string>();
-  
+
     for (const result of validResults) {
       const { activityGuid, fiscalYear, boundary } = result;
-  
+
       if (seenActivityGuids.has(activityGuid)) continue;
       seenActivityGuids.add(activityGuid);
       // Get the latest boundary for this activity based on systemStartTimestamp
@@ -204,35 +206,22 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           ? current
           : latest;
       });
-  
+
       dedupedResults.push({
         activityGuid,
         fiscalYear,
         boundary: [latestBoundary], // preserve original structure
       });
     }
-  
+
     this.allActivityBoundaries = dedupedResults;
-  
-    const hasActivityPolygons = this.allActivityBoundaries.length > 0;
-    const hasProjectPolygons = this.projectBoundary?.length > 0;
-  
-    if (hasActivityPolygons && this.map) {
-      this.plotActivityBoundariesOnMap(this.allActivityBoundaries);
-    }
-  
-    if (!hasActivityPolygons && !hasProjectPolygons) {
-      this.getProjectCoordinates();
-    }
   }
-  
+
   plotActivityBoundariesOnMap(boundaries: any[]): void {
-    const allFiscalPolygons: L.Layer[] = [];
-  
     for (const boundaryEntry of boundaries) {
       const fiscalYear = boundaryEntry.fiscalYear;
       let color = '';
-  
+
       if (fiscalYear < this.currentFiscalYear) {
         color = this.fiscalColorMap.past;
       } else if (fiscalYear === this.currentFiscalYear) {
@@ -240,11 +229,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
       } else {
         color = this.fiscalColorMap.future;
       }
-  
+
       for (const item of boundaryEntry.boundary) {
         const geometry = item.geometry;
         if (!geometry) continue;
-  
+
         const geoJsonOptions: L.GeoJSONOptions = {
           style: {
             color,
@@ -252,12 +241,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
             fillOpacity: 0.1
           }
         };
-  
+
         const addToMap = (geom: any) => {
-          const layer = this.createGeoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup);
-          allFiscalPolygons.push(layer); //  Track all layers
+          this.createGeoJSON(geom, geoJsonOptions).addTo(this.activityBoundaryGroup!);
         };
-      
+
         if (geometry.type === 'GeometryCollection') {
           for (const subGeom of geometry.geometries) {
             addToMap(subGeom);
@@ -267,37 +255,15 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         }
       }
     };
-  
-    const allLayers: L.Layer[] = [...allFiscalPolygons];
-    // Add project boundary as well
-    for (const item of this.projectBoundary) {
-      const geometry = item.boundaryGeometry;
-      if (!geometry) return;
-    
-      const layer = this.createGeoJSON(geometry, {
-        style: {
-          color: '#3f3f3f',
-          weight: 2,
-          fillOpacity: 0.1,
-        }
-      });
-      allLayers.push(layer);
-    };
-    
-    if (allLayers.length > 0) {
-      const group = this.createFeatureGroup(allLayers);
-      this.map!.fitBounds(group.getBounds(), { padding: [20, 20] });
-    }
   }
 
   plotProjectBoundary(boundary: any[]): void {
-    this.projectBoundaryGroup.clearLayers();
-    const layers: L.Layer[] = [];
-  
+    this.projectBoundaryGroup?.clearLayers();
+
     for (const item of boundary) {
       const geometry = item.boundaryGeometry;
       if (!geometry) return;
-  
+
       const geoJsonOptions: L.GeoJSONOptions = {
         style: {
           color: '#3f3f3f',
@@ -305,12 +271,11 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
           fillOpacity: 0.1
         }
       };
-  
+
       const addToMap = (geom: any) => {
-        const layer = this.createGeoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup);
-        layers.push(layer);
+        this.createGeoJSON(geom, geoJsonOptions).addTo(this.projectBoundaryGroup!);
       };
-  
+
       if (geometry.type === 'GeometryCollection') {
         for (const subGeom of geometry.geometries) {
           addToMap(subGeom);
@@ -319,74 +284,78 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
         addToMap(geometry);
       }
     };
-  
-    if (layers.length > 0 && this.map) {
-      const group = this.createFeatureGroup(layers);
-      this.map.fitBounds(group.getBounds(), { padding: [20, 20] });
-    }
   }
-  
 
-  initMap(): void {
+  // Every activity and project boundary, or the project location when there are none. Otherwise the map stays on
+  // SMK's view of BC.
+  initialView(): MiniMapView | undefined {
+    const bounds = this.boundaryBounds();
+    if (bounds) {
+      return { bounds, padding: 20 };
+    }
+    if (this.projectLatitude && this.projectLongitude) {
+      return { center: [Number.parseFloat(this.projectLatitude), Number.parseFloat(this.projectLongitude)], zoom: 14 };
+    }
+    return undefined;
+  }
+
+  private boundaryBounds(): L.LatLngBoundsLiteral | undefined {
+    return boundsOf([
+      ...this.allActivityBoundaries.flatMap(entry => (entry.boundary ?? []).map((item: any) => item.geometry)),
+      ...this.projectBoundary.map(item => item.boundaryGeometry),
+    ]);
+  }
+
+  async initMap(): Promise<void> {
     const mapContainer = document.getElementById('fiscalMap');
-    if (mapContainer && (mapContainer as any)._leaflet_id != null) {
-      (mapContainer as any)._leaflet_id = null;
+    if (!mapContainer) return;
+
+    let miniMap: MiniMap;
+    try {
+      // The map is created while the boundaries load, and opens on them
+      miniMap = await this.createMap(mapContainer, this.mapData.then(() => this.initialView()));
+    } catch (error) {
+      console.error('Error loading map:', error);
+      return;
     }
 
-    this.map = this.createMap('fiscalMap', {
-      center: [49.00005, -124.0001], // Center of the boundary
-      zoom: 14,
-      zoomControl: true,
-    });
+    // The page was left while the map was being created
+    if (this.destroyed) {
+      this.miniMapService.destroy(miniMap);
+      return;
+    }
+    this.miniMap = miniMap;
+    this.map = miniMap.map;
+    this.leaflet = miniMap.leaflet;
 
-    (this.map.zoomControl).setPosition('topright');
-
-    this.createTileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
-
-    this.activityBoundaryGroup.addTo(this.map);
-    this.projectBoundaryGroup.addTo(this.map);
+    this.activityBoundaryGroup = this.createLayerGroup().addTo(this.map);
+    this.projectBoundaryGroup = this.createLayerGroup().addTo(this.map);
 
     const legendHelper = new LeafletLegendService();
     legendHelper.addLegend(this.map, this.fiscalColorMap);
-    const bcBounds = L.latLngBounds([48.3, -139.1], [60, -114]);
-    this.map.fitBounds(bcBounds, { padding: [20, 20] });
     createFullPageControl(() => this.openFullMap()).addTo(this.map);
+
+    if (this.projectBoundary.length > 0) {
+      this.plotProjectBoundary(this.projectBoundary);
+    }
+    if (this.allActivityBoundaries.length > 0) {
+      this.plotActivityBoundariesOnMap(this.allActivityBoundaries);
+    }
+    if (this.projectLatitude && this.projectLongitude) {
+      this.plotProjectLocation();
+    }
   }
 
   openFullMap(): void {
-    const latLngs: L.LatLng[] = [];
     // handle this based on following steps and scenarios.
-    // 1. Add activity boundaries
-    if (this.allActivityBoundaries) {
-      for (const entry of this.allActivityBoundaries) {
-        if (!entry.boundary) continue;
+    // 1-2. Activity and project boundaries
+    const boundaryBounds = this.boundaryBounds();
 
-        for (const item of entry.boundary) {
-          const geometry = item.geometry;
-          const layer = this.createGeoJSON(geometry);
-          const layerBounds = layer.getBounds();
-          latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
-        }
-      }
-    }
-  
-    // 2. Add project boundaries
-    if (this.projectBoundary) {
-      for (const item of this.projectBoundary) {
-        const geometry = item.boundaryGeometry;
-        const layer = this.createGeoJSON(geometry);
-        const layerBounds = layer.getBounds();
-        latLngs.push(layerBounds.getSouthWest(), layerBounds.getNorthEast());
-      }
-    }
-  
     let urlTree: UrlTree;
   
     // 3. If there are any polygons, use combined bounds
-    if (latLngs.length > 0) {
-      const bounds = L.latLngBounds(latLngs);
+    if (boundaryBounds) {
+      const bounds = L.latLngBounds(boundaryBounds);
       const bbox = [
         bounds.getWest().toFixed(6),
         bounds.getSouth().toFixed(6),
@@ -424,28 +393,20 @@ export class FiscalMapComponent implements AfterViewInit, OnDestroy, OnInit {
     window.open(fullUrl, '_blank');
   }
 
-  createMap(id: string, options: any): L.Map {
-    return L.map(id, options);
-  }
-
-  createTileLayer(url: string, options?: any): L.TileLayer {
-    return L.tileLayer(url, options);
+  createMap(container: HTMLElement, view?: Promise<MiniMapView | undefined>): Promise<MiniMap> {
+    return this.miniMapService.create(container, view);
   }
 
   createGeoJSON(geom: any, options?: any): L.GeoJSON {
-    return L.geoJSON(geom, options);
+    return this.leaflet.geoJSON(geom, options);
   }
 
   createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
-    return L.marker(latlng, options);
-  }
-
-  createFeatureGroup(layers?: L.Layer[]): L.FeatureGroup {
-    return L.featureGroup(layers);
+    return this.leaflet.marker(latlng, options);
   }
 
   createLayerGroup(): L.LayerGroup {
-    return L.layerGroup();
+    return this.leaflet.layerGroup();
   }
   
   
