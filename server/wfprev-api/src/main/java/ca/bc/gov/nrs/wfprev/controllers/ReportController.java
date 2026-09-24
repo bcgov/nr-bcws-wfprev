@@ -101,11 +101,39 @@ public class ReportController {
                         .contentLength(bytes.length)
                         .body(stream);
 
+            } else if (ReportType.RESULTS_SPATIAL.equals(type)) {
+                byte[] bytes;
+                boolean hasFiles;
+                long t0 = System.currentTimeMillis();
+
+                log.info("exportResultsSpatialZip -> begin");
+                try (var baos = new java.io.ByteArrayOutputStream(1 << 20)) { // 1MB initial cap
+                    hasFiles = reportService.exportResultsSpatialZip(request, baos);
+                    bytes = baos.toByteArray();
+                }
+                long t1 = System.currentTimeMillis();
+                log.info("exportResultsSpatialZip -> end ({} ms, {} bytes, hasFiles={})", (t1 - t0), bytes.length, hasFiles);
+
+                if (!hasFiles) {
+                    return ResponseEntity.noContent().build();
+                }
+
+                StreamingResponseBody stream = out -> {
+                    out.write(bytes);
+                    out.flush();
+                };
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ReMi_RESULTS_Spatial.zip")
+                        .contentType(MediaType.parseMediaType("application/zip"))
+                        .contentLength(bytes.length)
+                        .body(stream);
+
             } else {
                 log.warn("Bad report type: {}", type);
                 return ResponseEntity.badRequest()
                         .contentType(MediaType.TEXT_PLAIN)
-                        .body(out -> out.write("Only reportType=PROJECT_XLSX, RESULTS_XLSX, PROJECT_CSV, or RESULTS_CSV is supported.".getBytes()));
+                        .body(out -> out.write("Only reportType=PROJECT_XLSX, RESULTS_XLSX, PROJECT_CSV, RESULTS_CSV, or RESULTS_SPATIAL is supported.".getBytes()));
             }
         }catch (InterruptedException ie) {
             Thread.currentThread().interrupt();

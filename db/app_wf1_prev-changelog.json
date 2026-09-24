@@ -2451,6 +2451,47 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_04_00_01",
+        "author": "sparmar",
+        "tagDatabase": {
+          "tag": "version_01_04_00_01"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/01/ddl/WFPREV.ddl.replace.results_fuel_management_vw_add_activity_guid.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/01/ddl/WFPREV.ddl.replace.results_crx_vw_add_activity_guid.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/01/grants/proxy.grants.results_download_views.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/01/grants/app_wf1_prev.grants.results_download_views.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }

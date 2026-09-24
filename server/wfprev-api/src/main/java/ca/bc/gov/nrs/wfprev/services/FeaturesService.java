@@ -10,10 +10,12 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +28,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,9 @@ public class FeaturesService implements CommonService {
     private static final String CREATE_DATE = "createDate";
     private static final String UPDATE_DATE = "updateDate";
     private static final String REVISION_COUNT = "revisionCount";
+
+    /** Most values bound to one IN clause; larger lists are queried in chunks of this size. */
+    public static final int IN_CLAUSE_CHUNK_SIZE = 1000;
 
 
     public Map<String, Object> getAllFeatures(FeatureQueryParams params, int pageNumber, int pageRowCount) throws ServiceException {
@@ -331,7 +337,57 @@ public class FeaturesService implements CommonService {
 
         // Filter by project GUID
         predicates.add(cb.equal(fiscal.get("project").get(PROJECT_GUID), projectGuid));
+        addFiscalFilterPredicates(cb, fiscal, predicates, fiscalYears, activityCategoryCodes, planFiscalStatusCodes);
 
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        return entityManager.createQuery(query).getResultList();
+    }
+
+    /**
+     * Batched form of {@link #findFilteredProjectFiscals}: the GUIDs of the matching fiscals of all the given
+     * projects, keyed by project GUID. Projects with no matching fiscal are absent from the map. The project
+     * GUIDs are queried in chunks to keep each query's bind parameters bounded.
+     */
+    public Map<UUID, List<UUID>> findFilteredProjectFiscalGuids(
+            Collection<UUID> projectGuids,
+            List<String> fiscalYears,
+            List<String> activityCategoryCodes,
+            List<String> planFiscalStatusCodes
+    ) {
+        Map<UUID, List<UUID>> fiscalGuidsByProject = new HashMap<>();
+        List<UUID> guids = new ArrayList<>(projectGuids);
+        for (int from = 0; from < guids.size(); from += IN_CLAUSE_CHUNK_SIZE) {
+            List<UUID> chunk = guids.subList(from, Math.min(from + IN_CLAUSE_CHUNK_SIZE, guids.size()));
+
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Tuple> query = cb.createTupleQuery();
+            Root<ProjectFiscalEntity> fiscal = query.from(ProjectFiscalEntity.class);
+            Path<UUID> projectGuid = fiscal.get("project").get(PROJECT_GUID);
+
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(projectGuid.in(chunk));
+            addFiscalFilterPredicates(cb, fiscal, predicates, fiscalYears, activityCategoryCodes, planFiscalStatusCodes);
+
+            query.multiselect(projectGuid, fiscal.get(PROJECT_PLAN_FISCAL_GUID));
+            query.where(cb.and(predicates.toArray(new Predicate[0])));
+
+            for (Tuple row : entityManager.createQuery(query).getResultList()) {
+                fiscalGuidsByProject.computeIfAbsent(row.get(0, UUID.class), k -> new ArrayList<>())
+                        .add(row.get(1, UUID.class));
+            }
+        }
+        return fiscalGuidsByProject;
+    }
+
+    private void addFiscalFilterPredicates(
+            CriteriaBuilder cb,
+            Root<ProjectFiscalEntity> fiscal,
+            List<Predicate> predicates,
+            List<String> fiscalYears,
+            List<String> activityCategoryCodes,
+            List<String> planFiscalStatusCodes
+    ) {
         // Fiscal year filter
         if (fiscalYears != null && !fiscalYears.isEmpty()) {
             List<Predicate> fiscalYearPredicates = new ArrayList<>();
@@ -358,10 +414,6 @@ public class FeaturesService implements CommonService {
                     .in(planFiscalStatusCodes)
             );
         }
-
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
-
-        return entityManager.createQuery(query).getResultList();
     }
 
     List<ActivityEntity> findActivitiesByProjectFiscal(UUID projectFiscalGuid) {

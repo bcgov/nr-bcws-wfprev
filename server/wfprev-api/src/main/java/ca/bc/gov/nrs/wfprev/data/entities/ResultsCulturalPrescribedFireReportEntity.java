@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -29,6 +30,11 @@ public class ResultsCulturalPrescribedFireReportEntity implements Serializable {
 
     @Column(name = "project_plan_fiscal_guid")
     private UUID projectPlanFiscalGuid;
+
+    // Used only to match rows to their spatial files; not part of the Lambda payload.
+    @JsonIgnore
+    @Column(name = "activity_guid")
+    private UUID activityGuid;
 
     @Transient
     private String linkToProject;

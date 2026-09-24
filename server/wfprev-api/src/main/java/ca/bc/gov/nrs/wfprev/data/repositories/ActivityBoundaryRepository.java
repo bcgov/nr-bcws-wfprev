@@ -22,6 +22,33 @@ public interface ActivityBoundaryRepository extends CommonRepository<ActivityBou
 
     void deleteByActivityGuid(@NotNull UUID activityGuid);
 
+    /**
+     * Spatial files of the given activities for the RESULTS export: one row per boundary that has a file
+     * attachment, as {activity_guid, activity_boundary_guid, document_path}, in upload order per activity.
+     */
+    @Query(value = """
+    SELECT ab.activity_guid, ab.activity_boundary_guid, fa.document_path
+    FROM wfprev.activity_boundary ab
+    JOIN wfprev.file_attachment fa ON fa.source_object_unique_id = CAST(ab.activity_boundary_guid AS text)
+    WHERE ab.activity_guid = ANY(:activityGuids)
+    ORDER BY ab.activity_guid, ab.system_start_timestamp, ab.activity_boundary_guid
+    """, nativeQuery = true)
+    List<Object[]> findResultsSpatialFiles(@Param("activityGuids") UUID[] activityGuids);
+
+    /**
+     * Same rows as {@link #findResultsSpatialFiles}, plus boundary_size_ha and the geometry in BC Albers
+     * (EPSG:3005) as WKB.
+     */
+    @Query(value = """
+    SELECT ab.activity_guid, ab.activity_boundary_guid, fa.document_path,
+           ab.boundary_size_ha, ST_AsBinary(ST_Transform(ab.geometry, 3005))
+    FROM wfprev.activity_boundary ab
+    JOIN wfprev.file_attachment fa ON fa.source_object_unique_id = CAST(ab.activity_boundary_guid AS text)
+    WHERE ab.activity_guid = ANY(:activityGuids)
+    ORDER BY ab.activity_guid, ab.system_start_timestamp, ab.activity_boundary_guid
+    """, nativeQuery = true)
+    List<Object[]> findResultsSpatialFilesWithGeometry(@Param("activityGuids") UUID[] activityGuids);
+
     @Query(value = """
     WITH tile AS (
       SELECT

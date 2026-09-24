@@ -6,7 +6,8 @@ public enum ReportType {
     PROJECT_XLSX,
     RESULTS_XLSX,
     PROJECT_CSV,
-    RESULTS_CSV;
+    RESULTS_CSV,
+    RESULTS_SPATIAL;
 
     @JsonCreator
     public static ReportType fromString(String value) {

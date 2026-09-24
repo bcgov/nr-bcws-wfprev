@@ -44,12 +44,12 @@ class ResultsCulturalPrescribedFireReportRepositoryTest {
         mockEntity.setProjectPlanFiscalGuid(fiscalGuid);
         mockEntity.setProjectName("Test Results Cultural Report");
 
-        when(repository.findByProjectGuid(projectGuid))
+        when(repository.findByProjectGuidIn(List.of(projectGuid)))
                 .thenReturn(List.of(mockEntity));
 
-        when(repository.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(projectGuid), any(Collection.class)))
+        when(repository.findByProjectPlanFiscalGuidIn(any(Collection.class)))
                 .thenAnswer(inv -> {
-                    Collection<UUID> guids = inv.getArgument(1);
+                    Collection<UUID> guids = inv.getArgument(0);
                     return guids != null && guids.contains(fiscalGuid)
                             ? List.of(mockEntity)
                             : Collections.emptyList();
@@ -57,9 +57,9 @@ class ResultsCulturalPrescribedFireReportRepositoryTest {
     }
 
     @Test
-    void findByProjectGuid_returnsExpectedRows() {
+    void findByProjectGuidIn_returnsExpectedRows() {
         List<ResultsCulturalPrescribedFireReportEntity> results =
-                repository.findByProjectGuid(projectGuid);
+                repository.findByProjectGuidIn(List.of(projectGuid));
 
         assertNotNull(results, "Result list should not be null");
         assertFalse(results.isEmpty(), "Result list should not be empty");
@@ -69,15 +69,15 @@ class ResultsCulturalPrescribedFireReportRepositoryTest {
         assertEquals(projectGuid, e.getProjectGuid(), "Project GUID should match");
         assertEquals("Test Results Cultural Report", e.getProjectName(), "Project name should match");
 
-        verify(repository, times(1)).findByProjectGuid(projectGuid);
+        verify(repository, times(1)).findByProjectGuidIn(List.of(projectGuid));
         verifyNoMoreInteractions(repository);
     }
 
     @Test
-    void findByProjectGuidAndProjectPlanFiscalGuidIn_returnsExpectedRows() {
+    void findByProjectPlanFiscalGuidIn_returnsExpectedRows() {
         List<ResultsCulturalPrescribedFireReportEntity> results =
-                repository.findByProjectGuidAndProjectPlanFiscalGuidIn(
-                        projectGuid, Collections.singleton(fiscalGuid));
+                repository.findByProjectPlanFiscalGuidIn(
+                        Collections.singleton(fiscalGuid));
 
         assertNotNull(results, "Result list should not be null");
         assertFalse(results.isEmpty(), "Result list should not be empty");
@@ -87,20 +87,20 @@ class ResultsCulturalPrescribedFireReportRepositoryTest {
         assertEquals("Test Results Cultural Report", e.getProjectName(), "Project name should match");
 
         verify(repository, times(1))
-                .findByProjectGuidAndProjectPlanFiscalGuidIn(eq(projectGuid), any(Collection.class));
+                .findByProjectPlanFiscalGuidIn(any(Collection.class));
         verifyNoMoreInteractions(repository);
     }
 
     @Test
-    void findByProjectGuidAndProjectPlanFiscalGuidIn_emptyCollection_returnsEmpty() {
+    void findByProjectPlanFiscalGuidIn_emptyCollection_returnsEmpty() {
         List<ResultsCulturalPrescribedFireReportEntity> results =
-                repository.findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, Collections.emptyList());
+                repository.findByProjectPlanFiscalGuidIn(Collections.emptyList());
 
         assertNotNull(results, "Result list should not be null");
         assertTrue(results.isEmpty(), "Result list should be empty");
 
         verify(repository, times(1))
-                .findByProjectGuidAndProjectPlanFiscalGuidIn(eq(projectGuid), any(Collection.class));
+                .findByProjectPlanFiscalGuidIn(any(Collection.class));
         verifyNoMoreInteractions(repository);
     }
 }

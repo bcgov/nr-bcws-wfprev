@@ -8,6 +8,7 @@ import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.params.FeatureQueryParams;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -241,6 +242,64 @@ class FeaturesServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testFindFilteredProjectFiscalGuids_groupsByProjectAndChunksProjectGuids() {
+        UUID projectA = UUID.randomUUID();
+        UUID projectB = UUID.randomUUID();
+        UUID fiscalA1 = UUID.randomUUID();
+        UUID fiscalA2 = UUID.randomUUID();
+        UUID fiscalB1 = UUID.randomUUID();
+        List<UUID> projectGuids = new ArrayList<>();
+        projectGuids.add(projectA);
+        for (int i = 0; i < FeaturesService.IN_CLAUSE_CHUNK_SIZE - 1; i++) {
+            projectGuids.add(UUID.randomUUID());
+        }
+        projectGuids.add(projectB); // first of the second chunk
+
+        CriteriaQuery<Tuple> tupleQuery = mock(CriteriaQuery.class);
+        Path<Object> projectPath = mock(Path.class);
+        Path<Object> guidPath = mock(Path.class);
+        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+        when(criteriaBuilder.createTupleQuery()).thenReturn(tupleQuery);
+        when(tupleQuery.from(ProjectFiscalEntity.class)).thenReturn(fiscalRoot);
+        when(fiscalRoot.get("project")).thenReturn(projectPath);
+        when(projectPath.get("projectGuid")).thenReturn(guidPath);
+        Path<Object> fiscalYearPath = mock(Path.class);
+        Expression<String> fiscalYearText = mock(Expression.class);
+        when(fiscalRoot.get("fiscalYear")).thenReturn(fiscalYearPath);
+        when(fiscalYearPath.as(String.class)).thenReturn(fiscalYearText);
+
+        TypedQuery<Tuple> firstChunk = mock(TypedQuery.class);
+        TypedQuery<Tuple> secondChunk = mock(TypedQuery.class);
+        when(entityManager.createQuery(tupleQuery)).thenReturn(firstChunk, secondChunk);
+        List<Tuple> firstRows = List.of(tuple(projectA, fiscalA1), tuple(projectA, fiscalA2));
+        List<Tuple> secondRows = List.of(tuple(projectB, fiscalB1));
+        when(firstChunk.getResultList()).thenReturn(firstRows);
+        when(secondChunk.getResultList()).thenReturn(secondRows);
+
+        Map<UUID, List<UUID>> result = featuresService.findFilteredProjectFiscalGuids(
+                projectGuids, List.of("2025"), null, null);
+
+        assertEquals(Map.of(projectA, List.of(fiscalA1, fiscalA2), projectB, List.of(fiscalB1)), result);
+        verify(guidPath).in(projectGuids.subList(0, FeaturesService.IN_CLAUSE_CHUNK_SIZE));
+        verify(guidPath).in(List.of(projectB));
+        verify(criteriaBuilder, times(2)).like(fiscalYearText, "2025%");
+    }
+
+    @Test
+    void testFindFilteredProjectFiscalGuids_noProjects_runsNoQuery() {
+        assertTrue(featuresService.findFilteredProjectFiscalGuids(List.of(), null, null, null).isEmpty());
+        verify(entityManager, never()).getCriteriaBuilder();
+    }
+
+    private static Tuple tuple(UUID projectGuid, UUID fiscalGuid) {
+        Tuple tuple = mock(Tuple.class);
+        when(tuple.get(0, UUID.class)).thenReturn(projectGuid);
+        when(tuple.get(1, UUID.class)).thenReturn(fiscalGuid);
+        return tuple;
     }
 
     @Test

@@ -20,9 +20,10 @@ import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { getActiveMap, ResourcesRoutes } from 'src/app/utils';
-import { CodeTableKeys, CodeTableNames, DownloadFileExtensions, DownloadOptions, DownloadReportTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { CodeTableKeys, CodeTableNames, DownloadCompanionReportTypes, DownloadFileNames, DownloadOptions, DownloadReportTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ReportRequest } from '../../models';
+import { catchError, forkJoin, map, of } from 'rxjs';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
@@ -730,25 +731,44 @@ export class ProjectsListComponent implements OnInit {
       return;
     }
 
-    this.projectService.downloadProjects(body).subscribe({
-      next: (blob) => {
-        snackRef.dismiss();
-        const url = globalThis.URL.createObjectURL(blob);
-        const a = globalThis.document.createElement('a');
-        const ext = body.reportType.endsWith('XLSX') ? DownloadFileExtensions.EXCEL : DownloadFileExtensions.CSV;
-        const fileName = body.reportType.startsWith('RESULTS') ? 'ReMi_RESULTS' : 'ReMi_Fiscal';
-        a.download = `${fileName}.${ext}`;
-        a.href = url;
-        a.click();
-        globalThis.URL.revokeObjectURL(url);
-        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', { duration: 5000, panelClass: 'snackbar-success' });
-      },
-      error: (err) => {
-        snackRef.dismiss();
-        console.error('Download failed', err);
+    // RESULTS also downloads its spatial ZIP. Each request fails on its own, so one failure doesn't
+    // throw away a file that did arrive.
+    const reportTypes = [body.reportType, ...(DownloadCompanionReportTypes[body.reportType] ?? [])];
+    forkJoin(reportTypes.map(reportType =>
+      this.projectService.downloadProjects({ ...body, reportType }).pipe(
+        map(blob => ({ reportType, blob, failed: false })),
+        catchError(err => {
+          console.error(`Download failed (${reportType})`, err);
+          return of({ reportType, blob: null as Blob | null, failed: true });
+        })
+      )
+    )).subscribe(results => {
+      snackRef.dismiss();
+      // A spatial request with no files answers 204, which arrives as a null body.
+      results.filter(r => r.blob && r.blob.size > 0)
+        .forEach(r => this.saveBlob(r.blob!, DownloadFileNames[r.reportType]));
+
+      const failures = results.filter(r => r.failed).length;
+      const noSpatialFiles = results.some(r => r.reportType === 'RESULTS_SPATIAL' && !r.failed && !r.blob?.size);
+      if (failures === results.length) {
         this.snackbarService.open(Messages.fileDownloadFailure, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
+      } else if (failures > 0) {
+        this.snackbarService.open(Messages.fileDownloadPartialFailure, 'Close', { duration: 8000, panelClass: 'snackbar-error' });
+      } else if (noSpatialFiles) {
+        this.snackbarService.open(Messages.resultsNoSpatialFiles, 'Close', { duration: 8000, panelClass: 'snackbar-success' });
+      } else {
+        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', { duration: 5000, panelClass: 'snackbar-success' });
       }
     });
+  }
+
+  private saveBlob(blob: Blob, fileName: string): void {
+    const url = globalThis.URL.createObjectURL(blob);
+    const a = globalThis.document.createElement('a');
+    a.download = fileName;
+    a.href = url;
+    a.click();
+    globalThis.URL.revokeObjectURL(url);
   }
 
   private addProjectToDisplayedList(newProject: any): void {
