@@ -3,6 +3,7 @@ import { MapService } from './map.service';
 import { BC_BOUNDS } from 'src/app/utils/constants';
 import { TokenService } from './token.service';
 import { AppConfigService } from './app-config.service';
+import { SmkService } from './smk.service';
 
 describe('MapService', () => {
   let service: MapService;
@@ -10,6 +11,7 @@ describe('MapService', () => {
   let mockSMK: any;
   let mockL: any;
   let maplibreSpy: jasmine.Spy;
+  let smkServiceMock: { baseUrl: string; load: jasmine.Spy };
 
   beforeEach(() => {
     // Mock SMK
@@ -32,9 +34,6 @@ describe('MapService', () => {
                 setMaxZoom: jasmine.createSpy('setMaxZoom')
               }
             }
-          },
-          prototype: {
-            basemap: {}
           }
         }
       }
@@ -61,9 +60,15 @@ describe('MapService', () => {
     (window as any)['SMK'] = mockSMK;
     (window as any)['L'] = mockL;
 
+    smkServiceMock = {
+      baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
+      load: jasmine.createSpy('load').and.returnValue(Promise.resolve(mockSMK))
+    };
+
     TestBed.configureTestingModule({
       providers: [
         MapService,
+        { provide: SmkService, useValue: smkServiceMock },
         {
           provide: TokenService,
           useValue: { getOauthToken: jasmine.createSpy('getOauthToken').and.returnValue('TEST_TOKEN') }
@@ -109,7 +114,7 @@ describe('MapService', () => {
         baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
         config: [{
           tools: [
-            { type: 'baseMaps' },
+            { type: 'baseMaps', enabled: true, choices: ['topographic-v2', 'bc-basemap-hillshade', 'imagery-v2'] },
             {
               type: 'bespoke',
               instance: 'full-extent',
@@ -139,7 +144,7 @@ describe('MapService', () => {
           { existingConfig: true },
           {
             tools: [
-              { type: 'baseMaps' },
+              { type: 'baseMaps', enabled: true, choices: ['topographic-v2', 'bc-basemap-hillshade', 'imagery-v2'] },
               {
                 type: 'bespoke',
                 instance: 'full-extent',
@@ -203,50 +208,172 @@ describe('MapService', () => {
     });
   });
 
-  describe('patch', () => {
-    let mockTemp: any;
-
+  describe('initSMK', () => {
     beforeEach(() => {
-      mockTemp = {
-        style: {},
-        parentElement: {
-          removeChild: jasmine.createSpy('removeChild')
-        },
-        remove: jasmine.createSpy('remove')
-      };
-      spyOn(document, 'createElement').and.returnValue(mockTemp);
-      spyOn(document.body, 'appendChild');
+      mockSMK.INIT.calls.reset();
+      spyOn(service, 'patch').and.returnValue(Promise.resolve());
     });
 
-    it('should patch SMK successfully', async () => {
-      await service.patch();
+    afterEach(() => {
+      delete mockSMK.BOOT;
+    });
 
-      // Verify temporary div creation and styling
-      expect(document.createElement).toHaveBeenCalledWith('div');
-      expect(mockTemp.style.display).toBe('none');
-      expect(mockTemp.style.visibility).toBe('hidden');
-      expect(document.body.appendChild).toHaveBeenCalledWith(mockTemp);
+    it('should patch SMK, then create the map from SMK\'s assets', async () => {
+      await service.initSMK({ id: 'mini-map-1', config: [] });
 
-      // Verify SMK initialization with correct parameters
-      expect(mockSMK.INIT).toHaveBeenCalledWith({
-        id: 999,
-        containerSel: mockTemp,
-        baseUrl: `${window.location.protocol}//${window.location.host}/assets/smk/`,
-        config: 'show-tool=bespoke'
+      expect(service.patch).toHaveBeenCalled();
+      expect(mockSMK.INIT).toHaveBeenCalledOnceWith({
+        baseUrl: smkServiceMock.baseUrl,
+        id: 'mini-map-1',
+        config: [],
       });
-
-      // Verify cleanup
-      expect(mockTemp.remove).toHaveBeenCalled();
     });
 
-    it('should define OpenStreetMap layer', async () => {
+    it('should not fail because an earlier map failed to initialize', async () => {
+      // SMK creates each map once the one before it (SMK.BOOT) has, and fails it if that one failed
+      mockSMK.BOOT = Promise.reject(new Error('earlier map failed'));
+      mockSMK.INIT.and.callFake(() => mockSMK.BOOT = mockSMK.BOOT.then(() => 'this map'));
+
+      await expectAsync(service.initSMK({})).toBeResolvedTo('this map');
+    });
+
+    it('should not create a map when SMK fails to load', async () => {
+      (service.patch as jasmine.Spy).and.returnValue(Promise.reject(new Error('offline')));
+
+      await expectAsync(service.initSMK({})).toBeRejectedWithError('offline');
+      expect(mockSMK.INIT).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('patch', () => {
+    it('should load SMK and patch it without creating a map', async () => {
+      const originalInitialize = mockSMK.TYPE.Viewer.leaflet.prototype.initialize;
+
       await service.patch();
 
-      expect(mockL.tileLayer).toHaveBeenCalledWith(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        { maxZoom: 19 }
-      );
-      expect(service.baseMapIds).toContain('openstreetmap');
+      expect(smkServiceMock.load).toHaveBeenCalled();
+      expect(mockSMK.INIT).not.toHaveBeenCalled();
+      expect(mockSMK.HANDLER.set).toHaveBeenCalledWith('BespokeTool--full-extent', 'triggered', jasmine.any(Function));
+      expect(mockSMK.TYPE.Viewer.leaflet.prototype.initialize).not.toBe(originalInitialize);
+    });
+
+    it('should load and patch SMK only once, however many maps are created', async () => {
+      const originalInitialize = mockSMK.TYPE.Viewer.leaflet.prototype.initialize;
+      const viewer = { map: { setMaxBounds: jasmine.createSpy('setMaxBounds'), setMaxZoom: jasmine.createSpy('setMaxZoom') } };
+
+      await service.patch();
+      await service.patch();
+      mockSMK.TYPE.Viewer.leaflet.prototype.initialize.call(viewer, {});
+
+      expect(smkServiceMock.load).toHaveBeenCalledTimes(1);
+      expect(mockSMK.HANDLER.set).toHaveBeenCalledTimes(1);
+      // Wrapped once: the original initializer runs once per viewer, not once per patch
+      expect(originalInitialize).toHaveBeenCalledTimes(1);
+      expect(viewer.map.setMaxZoom).toHaveBeenCalledWith(19);
+    });
+
+    it('should try again after a failed load', async () => {
+      spyOn(console, 'error');
+      smkServiceMock.load.and.returnValues(Promise.reject(new Error('offline')), Promise.resolve(mockSMK));
+
+      await expectAsync(service.patch()).toBeRejected();
+      await expectAsync(service.patch()).toBeResolved();
+      expect(smkServiceMock.load).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not register any basemap of its own', async () => {
+      await service.patch();
+
+      expect(mockL.tileLayer).not.toHaveBeenCalled();
+    });
+
+    it("should show and hide layers without SMK's 200ms wait, still handling changes made together at once", async () => {
+      const refreshLayers = jasmine.createSpy('refreshLayers').and.returnValue('refreshed');
+      mockSMK.TYPE.Viewer.leaflet.prototype.refreshLayers = refreshLayers;
+
+      await service.patch();
+      const viewer = {};
+      const result = mockSMK.TYPE.Viewer.leaflet.prototype.refreshLayers.call(viewer);
+      mockSMK.TYPE.Viewer.leaflet.prototype.refreshLayers.call(viewer, 500);
+
+      expect(result).toBe('refreshed');
+      expect(refreshLayers.calls.argsFor(0)).toEqual([1]);
+      expect(refreshLayers.calls.first().object).toBe(viewer);
+      expect(refreshLayers.calls.argsFor(1)).toEqual([500]);
+    });
+
+    it('should turn off the jQuery animations SMK fades each new map in with, which SMK.INIT waits for', async () => {
+      const g = globalThis as any;
+      const original = g.jQuery;
+      g.jQuery = { fx: { off: false } };
+      try {
+        await service.patch();
+
+        expect(g.jQuery.fx.off).toBeTrue();
+      } finally {
+        g.jQuery = original;
+      }
+    });
+  });
+
+  describe('detachSMK and reattachSMK', () => {
+    let frame: HTMLElement;
+    let smk: any;
+
+    const newContainer = () => {
+      const div = document.createElement('div');
+      div.id = 'map';
+      document.body.appendChild(div);
+      return div;
+    };
+
+    beforeEach(async () => {
+      spyOn(service, 'patch').and.returnValue(Promise.resolve());
+      smk = { destroy: jasmine.createSpy('destroy'), $viewer: { map: { invalidateSize: jasmine.createSpy('invalidateSize') } } };
+      mockSMK.INIT.and.returnValue(Promise.resolve(smk));
+      frame = newContainer();
+      frame.style.width = '300px';
+      frame.style.height = '200px';
+      await service.createSMK({ containerSel: frame, config: [] });
+    });
+
+    afterEach(() => {
+      frame.remove();
+      document.querySelectorAll('#map').forEach(e => e.remove());
+      [...document.body.children].forEach(e => (e as HTMLElement).style?.left === '-10000px' && e.remove());
+    });
+
+    it('should park the map off screen at its size, then put it back in place of the next page\'s container', () => {
+      service.detachSMK();
+
+      expect(frame.parentElement!.style.left).toBe('-10000px');
+      expect(frame.id).toBe('');
+      expect(frame.style.width).toBe('300px');
+
+      const next = newContainer();
+      const reused = service.reattachSMK(next);
+
+      expect(reused).toBe(smk);
+      expect(next.isConnected).toBeFalse();
+      expect(frame.parentElement).toBe(document.body);
+      expect(frame.id).toBe('map');
+      expect(frame.style.width).toBe('');
+      expect(smk.$viewer.map.invalidateSize).toHaveBeenCalled();
+      expect(smk.destroy).not.toHaveBeenCalled();
+    });
+
+    it('should have nothing to reattach before a map has been parked', () => {
+      expect(service.reattachSMK(newContainer())).toBeNull();
+    });
+
+    it('should build a new map rather than reuse one whose layers carry an old auth token', () => {
+      service.detachSMK();
+      (TestBed.inject(TokenService).getOauthToken as jasmine.Spy).and.returnValue('NEW_TOKEN');
+
+      expect(service.reattachSMK(newContainer())).toBeNull();
+      expect(smk.destroy).toHaveBeenCalled();
+      expect(frame.isConnected).toBeFalse();
+      expect(service.getSMKInstance()).toBeNull();
     });
   });
 
@@ -265,19 +392,6 @@ describe('MapService', () => {
     });
   });
 
-  describe('defineOpenStreetMapLayer', () => {
-    it('should define OpenStreetMap layer correctly', () => {
-      service.defineOpenStreetMapLayer();
-
-      expect(mockL.tileLayer).toHaveBeenCalledWith(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        { maxZoom: 19 }
-      );
-      expect(service.baseMapIds).toContain('openstreetmap');
-      expect(mockSMK.TYPE.Viewer.prototype.basemap['openstreetmap']).toBeDefined();
-    });
-  });
-
   describe('clearSMKInstance', () => {
     it('should clear the smkInstance by setting it to null', () => {
       (service as any).smkInstance = { some: 'value' };
@@ -287,92 +401,124 @@ describe('MapService', () => {
     });
   });
 
-  describe('filterWildfireLayersByCurrentYear', () => {
-    const callFn = async (option: any) =>
-      (service as any).filterWildfireLayersByCurrentYear(option);
-
+  describe('current fire year wildfire layers', () => {
     let originalFetch: any;
     let createObjUrlSpy: jasmine.Spy;
+    let blobs: Blob[];
+    let originalCreate: jasmine.Spy;
+    let VectorLeaflet: any;
+
+    const featureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        { properties: { FIRE_YEAR: 2024 }, geometry: null },
+        { properties: { FIRE_YEAR: 2023 }, geometry: null },
+        { properties: { fire_year: '2024' }, geometry: null },
+      ],
+    };
 
     beforeEach(() => {
       // Fix current fire year to a known value
-      spyOn(service as any, 'getCurrentFireYear').and.returnValue(2024);
+      spyOn(service, 'getCurrentFireYear').and.returnValue(2024);
 
-      // Stub URL.createObjectURL so we can assert deterministic values
-      createObjUrlSpy = spyOn(URL, 'createObjectURL').and.callFake(() => 'blob://test-url');
+      blobs = [];
+      createObjUrlSpy = spyOn(URL, 'createObjectURL').and.callFake((blob: Blob) => {
+        blobs.push(blob);
+        return 'blob:test-url';
+      });
 
-      // Mock fetch
       originalFetch = (window as any).fetch;
-      (window as any).fetch = jasmine
-        .createSpy('fetch')
-        .and.callFake((_url: string, _opts: any) =>
-          Promise.resolve(new Response(
-            JSON.stringify({
-              type: 'FeatureCollection',
-              features: [
-                { properties: { FIRE_YEAR: 2024 }, geometry: null },
-                { properties: { FIRE_YEAR: 2023 }, geometry: null },
-                { properties: { fire_year: '2024' }, geometry: null },
-              ],
-            }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
-          ))
-        );
+      (window as any).fetch = jasmine.createSpy('fetch').and.callFake(() =>
+        Promise.resolve(new Response(JSON.stringify(featureCollection), { status: 200 }))
+      );
+
+      originalCreate = jasmine.createSpy('create').and.returnValue(Promise.resolve('leaflet layer'));
+      VectorLeaflet = { create: originalCreate };
+      service.installCurrentFireYearPatch({ TYPE: { Layer: { vector: { leaflet: VectorLeaflet } } } });
     });
 
     afterEach(() => {
       (window as any).fetch = originalFetch;
     });
 
-    it('filters features by current fire year and swaps to a blob dataUrl', async () => {
-      const option = {
-        config: [{
-          layers: [
-            { id: 'active-wildfires-out-of-control', type: 'vector', dataUrl: '/api/wf/ooc', header: { Authorization: 'Bearer X' } },
-            { id: 'active-wildfires-holding', type: 'vector', dataUrl: '/api/wf/hold', header: { Authorization: 'Bearer X' } },
-            { id: 'some-other-layer', type: 'vector', dataUrl: '/api/other' },
-          ],
-        }],
-      };
+    it("keeps only the current fire year's features, fetched with the layer's headers", async () => {
+      const url = await service.currentFireYearDataUrl('/api/wf/ooc', { apikey: 'KEY' });
 
-      await callFn(option);
-
-      const ooc = option.config[0].layers[0];
-      const hold = option.config[0].layers[1];
-      const other = option.config[0].layers[2];
-
-      // Blob URL is applied to wildfire layers only
-      expect(ooc.dataUrl).toBe('blob://test-url');
-      expect(hold.dataUrl).toBe('blob://test-url');
-      // non-target layer untouched
-      expect(other.dataUrl).toBe('/api/other');
-
-      // headers removed for blob URLs
-      expect(ooc.header).toBeUndefined();
-      expect(hold.header).toBeUndefined();
-
-      // We created blob URLs
-      expect(createObjUrlSpy).toHaveBeenCalled();
-      // Fetch called twice (two target layers)
-      expect((window as any).fetch).toHaveBeenCalledTimes(2);
+      expect(url).toBe('blob:test-url');
+      expect((window as any).fetch).toHaveBeenCalledOnceWith('/api/wf/ooc', { headers: { apikey: 'KEY' } });
+      const kept = JSON.parse(await blobs[0].text());
+      expect(kept.features).toEqual([featureCollection.features[0], featureCollection.features[2]]);
     });
 
-    it('leaves layer untouched when fetch fails', async () => {
-      (window as any).fetch = jasmine
-        .createSpy('fetch')
-        .and.returnValue(Promise.resolve(new Response(null, { status: 403 })));
+    it('keeps the original URL, and so every fire, when the data cannot be read', async () => {
+      (window as any).fetch.and.returnValue(Promise.resolve(new Response(null, { status: 403 })));
 
-      const option = {
-        config: [{
-          layers: [{ id: 'active-wildfires-under-control', type: 'vector', dataUrl: '/api/wf/uc', header: { k: 'v' } }],
-        }],
+      await expectAsync(service.currentFireYearDataUrl('/api/wf/uc')).toBeResolvedTo('/api/wf/uc');
+      expect(createObjUrlSpy).not.toHaveBeenCalled();
+    });
+
+    it("filters a wildfire layer's data as SMK creates the layer, when it is first shown", async () => {
+      const layer = { config: { id: 'active-wildfires-holding', currentFireYearOnly: true, dataUrl: '/api/wf/hold', header: { apikey: 'KEY' } } };
+
+      const created = await VectorLeaflet.create.call('viewer', [layer], 3);
+
+      expect(created).toBe('leaflet layer');
+      expect(layer.config.dataUrl).toBe('blob:test-url');
+      expect(originalCreate).toHaveBeenCalledOnceWith([layer], 3);
+      expect(originalCreate.calls.mostRecent().object).toBe('viewer');
+    });
+
+    it('leaves other vector layers alone', async () => {
+      const layer = { config: { id: 'some-other-layer', dataUrl: '/api/other' } };
+
+      await VectorLeaflet.create([layer]);
+
+      expect(layer.config.dataUrl).toBe('/api/other');
+      expect((window as any).fetch).not.toHaveBeenCalled();
+      expect(originalCreate).toHaveBeenCalled();
+    });
+
+    it('fetches the data only once, however often the layer is created', async () => {
+      const layer = { config: { currentFireYearOnly: true, dataUrl: '/api/wf/out' } };
+
+      await VectorLeaflet.create([layer]);
+      await VectorLeaflet.create([layer]);
+
+      expect((window as any).fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('patches SMK only once', async () => {
+      const patched = VectorLeaflet.create;
+      service.installCurrentFireYearPatch({ TYPE: { Layer: { vector: { leaflet: VectorLeaflet } } } });
+
+      expect(VectorLeaflet.create).toBe(patched);
+    });
+  });
+
+  describe('addLayersToExistingSMKInstance', () => {
+    it('registers the layers and shows Regions, leaving SMK to create each layer when it is first shown', async () => {
+      const displayContext = {
+        changedVisibility: jasmine.createSpy('changedVisibility'),
+        setItemVisible: jasmine.createSpy('setItemVisible'),
       };
+      mockSMK.TYPE.LayerDisplayContext = jasmine.createSpy('LayerDisplayContext').and.returnValue(displayContext);
+      const viewer = {
+        addLayer: jasmine.createSpy('addLayer'),
+        createViewerLayer: jasmine.createSpy('createViewerLayer'),
+        updateLayersVisible: jasmine.createSpy('updateLayersVisible').and.returnValue(Promise.resolve()),
+        layerId: {},
+        displayContext: {} as any,
+      };
+      (service as any).smkInstance = { $viewer: viewer };
+      const layers = [{ id: 'ministry-of-forests-regions' }, { id: 'active-wildfires-holding', type: 'vector' }];
 
-      await callFn(option);
+      await service.addLayersToExistingSMKInstance({ layers });
 
-      const lyr = option.config[0].layers[0];
-      expect(lyr.dataUrl).toBe('/api/wf/uc');
-      expect(lyr.header).toEqual({ k: 'v' });
+      expect(viewer.addLayer).toHaveBeenCalledTimes(2);
+      expect(displayContext.setItemVisible).toHaveBeenCalledWith('ministry-of-forests-regions', true);
+      expect(displayContext.setItemVisible).toHaveBeenCalledWith('active-wildfires-holding', false);
+      expect(viewer.updateLayersVisible).toHaveBeenCalled();
+      expect(viewer.createViewerLayer).not.toHaveBeenCalled();
     });
   });
 

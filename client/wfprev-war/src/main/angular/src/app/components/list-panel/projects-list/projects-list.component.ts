@@ -16,7 +16,6 @@ import { IconButtonComponent } from 'src/app/components/shared/icon-button/icon-
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 import { DetailButtonComponent } from '../../shared/detail-button/detail-button.component';
 import { CodeTableServices } from 'src/app/services/code-table-services';
-import { MapService } from 'src/app/services/map.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
@@ -74,7 +73,6 @@ export class ProjectsListComponent implements OnInit {
     public readonly sharedService: SharedService,
     private readonly cdr: ChangeDetectorRef,
     private readonly snackbarService: MatSnackBar,
-    private readonly mapService: MapService,
     private readonly projectFilterStateService: ProjectFilterStateService,
   ) {
   }
@@ -323,9 +321,8 @@ export class ProjectsListComponent implements OnInit {
   }
 
 
-  async editProject(project: any, event: Event) {
+  editProject(project: any, event: Event) {
     event.stopPropagation();
-    await this.mapService.destroySMK();
     this.router.navigate([ResourcesRoutes.EDIT_PROJECT], {
       queryParams: { projectGuid: project.projectGuid }
     });

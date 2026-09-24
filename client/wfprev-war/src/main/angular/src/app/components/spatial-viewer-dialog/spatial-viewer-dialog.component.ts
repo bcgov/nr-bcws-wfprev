@@ -1,7 +1,8 @@
-import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
+import { Component, Inject, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProjectFile } from '../models';
 import * as L from 'leaflet';
+import { MiniMap, MiniMapService, MiniMapView, boundsOf } from 'src/app/services/mini-map.service';
 
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,14 +15,16 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [CommonModule, MatIconModule, MatButtonModule]
 })
-export class SpatialViewerDialogComponent implements OnInit, AfterViewInit {
+export class SpatialViewerDialogComponent implements OnInit, AfterViewInit, OnDestroy {
   public file: ProjectFile;
-  private map: L.Map | undefined;
+  private miniMap: MiniMap | undefined;
   private geometryLayer: L.GeoJSON | undefined;
+  private destroyed = false;
 
   constructor(
     public dialogRef: MatDialogRef<SpatialViewerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { file: ProjectFile }
+    @Inject(MAT_DIALOG_DATA) public data: { file: ProjectFile },
+    private readonly miniMapService: MiniMapService
   ) {
     this.file = data.file;
   }
@@ -32,20 +35,28 @@ export class SpatialViewerDialogComponent implements OnInit, AfterViewInit {
     this.initMap();
   }
 
-  private initMap(): void {
-    // Initialize map
-    this.map = L.map('spatial-viewer-map', {
-      zoomControl: false,
-      maxZoom: 18,
-      minZoom: 4
-    }).setView([53.7267, -127.6476], 5); // Default center of BC
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    // Release the map, including the vector basemap's WebGL context, each time the dialog closes
+    this.miniMapService.destroy(this.miniMap);
+  }
 
-    L.control.zoom({ position: 'topright' }).addTo(this.map);
+  private async initMap(): Promise<void> {
+    let miniMap: MiniMap;
+    try {
+      miniMap = await this.miniMapService.create(document.getElementById('spatial-viewer-map')!, this.initialView());
+    } catch (err) {
+      console.error('Error loading map', err);
+      return;
+    }
 
-    // Add base layer (matching main map default)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
+    // The dialog was closed while the map was being created
+    if (this.destroyed) {
+      this.miniMapService.destroy(miniMap);
+      return;
+    }
+    this.miniMap = miniMap;
+    const { map, leaflet } = miniMap;
 
     // If we have geometry, plot it
     if (this.file.boundaryGeometry && this.file.boundaryGeometry.coordinates) {
@@ -54,28 +65,24 @@ export class SpatialViewerDialogComponent implements OnInit, AfterViewInit {
         // the stored geometry is a MultiPolygon. Hand the whole geometry to Leaflet rather
         // than lifting a single ring out of it - it already expects GeoJSON [lon, lat] order
         // and draws every part and interior ring. See WFPREV-1201.
-        this.geometryLayer = this.createGeoJSON(this.file.boundaryGeometry, {
+        this.geometryLayer = leaflet.geoJSON(this.file.boundaryGeometry as GeoJSON.MultiPolygon, {
           style: {
             color: '#1A5A96', // product primary blue
             weight: 2,
             fillColor: '#1A5A96',
             fillOpacity: 0.3
           }
-        }).addTo(this.map);
-
-        // Fit map bounds to every part of the geometry
-        const bounds = this.geometryLayer.getBounds();
-        if (bounds.isValid()) {
-          this.map.fitBounds(bounds);
-        }
+        }).addTo(map);
       } catch (err) {
         console.error('Error rendering spatial geometry on map', err);
       }
     }
   }
 
-  createGeoJSON(geom: any, options?: L.GeoJSONOptions): L.GeoJSON {
-    return L.geoJSON(geom, options);
+  // Every part of the geometry. A file without one leaves the map on SMK's view of BC.
+  private initialView(): MiniMapView | undefined {
+    const bounds = this.file.boundaryGeometry?.coordinates ? boundsOf([this.file.boundaryGeometry]) : undefined;
+    return bounds && { bounds };
   }
 
   onClose(): void {

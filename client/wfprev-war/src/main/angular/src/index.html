@@ -4,6 +4,14 @@
   <meta charset="utf-8">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- The default basemap (SMK's topographic-v2) loads through a chain of requests to these hosts, each waiting on the
+       one before; connect to them now so no step waits for a connection. Esri's vector basemap uses CORS requests,
+       which need crossorigin; the hillshade host also serves plain image tiles, which don't. -->
+  <link rel="preconnect" href="https://www.arcgis.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.arcgis.com" crossorigin>
+  <link rel="preconnect" href="https://basemaps.arcgis.com" crossorigin>
+  <link rel="preconnect" href="https://services.arcgisonline.com" crossorigin>
+  <link rel="preconnect" href="https://services.arcgisonline.com">
   <title>ReMi Planner</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
