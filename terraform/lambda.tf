@@ -44,13 +44,14 @@ resource "aws_lambda_function" "report_generator" {
   package_type  = "Image"
 
   image_uri     = var.WFPREV_REPORT_GENERATOR_IMAGE
-  
+
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT
 
   environment {
     variables = {
-      NODE_ENV = var.TARGET_ENV
+      NODE_ENV             = var.TARGET_ENV
+      REPORT_EXPORT_BUCKET = aws_s3_bucket.report_exports.bucket
     }
   }
 }
