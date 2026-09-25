@@ -495,6 +495,54 @@ describe('MapService', () => {
     });
   });
 
+  describe('vector basemap pane', () => {
+    let VectorTileLayer: any;
+    let originalOnAdd: jasmine.Spy;
+    let panes: Record<string, any>;
+    let map: any;
+
+    beforeEach(() => {
+      originalOnAdd = jasmine.createSpy('onAdd').and.returnValue('added');
+      VectorTileLayer = { prototype: { onAdd: originalOnAdd }, mergeOptions: jasmine.createSpy('mergeOptions') };
+      panes = {};
+      map = {
+        getPane: (name: string) => panes[name],
+        createPane: jasmine.createSpy('createPane').and.callFake((name: string) => (panes[name] = { style: {} })),
+      };
+      service.installBasemapPanePatch({ esri: { Vector: { VectorTileLayer } } });
+    });
+
+    it('draws vector basemaps in their own pane, between the raster tiles and the map layers', () => {
+      const layer = {};
+      const added = VectorTileLayer.prototype.onAdd.call(layer, map);
+
+      expect(VectorTileLayer.mergeOptions).toHaveBeenCalledOnceWith({ pane: 'wf-basemap-vector' });
+      expect(panes['wf-basemap-vector'].style).toEqual({ zIndex: '250', pointerEvents: 'none' });
+      expect(added).toBe('added');
+      expect(originalOnAdd).toHaveBeenCalledOnceWith(map);
+      expect(originalOnAdd.calls.mostRecent().object).toBe(layer);
+    });
+
+    it('creates the pane once per map', () => {
+      VectorTileLayer.prototype.onAdd.call({}, map);
+      VectorTileLayer.prototype.onAdd.call({}, map);
+
+      expect(map.createPane).toHaveBeenCalledTimes(1);
+    });
+
+    it('patches the layer only once', () => {
+      const patched = VectorTileLayer.prototype.onAdd;
+      service.installBasemapPanePatch({ esri: { Vector: { VectorTileLayer } } });
+
+      expect(VectorTileLayer.prototype.onAdd).toBe(patched);
+      expect(VectorTileLayer.mergeOptions).toHaveBeenCalledTimes(1);
+    });
+
+    it('does nothing without esri-leaflet-vector', () => {
+      expect(() => service.installBasemapPanePatch({})).not.toThrow();
+    });
+  });
+
   describe('addLayersToExistingSMKInstance', () => {
     it('registers the layers and shows Regions, leaving SMK to create each layer when it is first shown', async () => {
       const displayContext = {

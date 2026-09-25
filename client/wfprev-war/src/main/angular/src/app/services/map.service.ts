@@ -9,6 +9,9 @@ import { SmkService } from './smk.service';
 import { baseMapsToolConfig } from './map-config.service/map.config';
 import '@maplibre/maplibre-gl-leaflet';
 
+// The Leaflet pane SMK's vector basemaps are drawn in (see installBasemapPanePatch)
+const BASEMAP_VECTOR_PANE = 'wf-basemap-vector';
+
 @Injectable({ providedIn: 'root' })
 export class MapService {
   private mapIndex: number = 0;
@@ -206,6 +209,7 @@ export class MapService {
 
     this.installAuthenticatedLegendPatch(SMK);
     this.installCurrentFireYearPatch(SMK);
+    this.installBasemapPanePatch((globalThis as any).L);
 
     // SMK waits 200ms before showing or hiding layers, so that a run of visibility changes is handled at once. Every
     // map waited for it as it was created, and so did each layer turned on in the layers panel. Changes made together
@@ -322,6 +326,30 @@ export class MapService {
     } catch {
       return url;
     }
+  }
+
+  /**
+   * Draws SMK's vector basemaps (the esri-vector-tile layers in Topographic, BC (Hillshade) and Imagery) under the map
+   * layers. Their layer has no pane of its own, so it took Leaflet's default, the overlay pane, and was drawn over the
+   * WMS layers there: Regions faded wherever the basemap is opaque, as along the coast. They get a pane between the
+   * basemap's raster tiles (tilePane, 200), which they're drawn over, and the map layers (overlayPane, 400). tilePane
+   * itself won't do: its raster tiles have a z-index and the vector canvas doesn't, so the tiles would cover it.
+   */
+  installBasemapPanePatch(leaflet: any) {
+    const VectorTileLayer = leaflet?.esri?.Vector?.VectorTileLayer;
+    if (!VectorTileLayer?.prototype || VectorTileLayer['__basemapPanePatched']) return;
+    VectorTileLayer['__basemapPanePatched'] = true;
+
+    VectorTileLayer.mergeOptions({ pane: BASEMAP_VECTOR_PANE });
+    const onAdd = VectorTileLayer.prototype.onAdd;
+    VectorTileLayer.prototype.onAdd = function (this: any, map: any) {
+      if (!map.getPane(BASEMAP_VECTOR_PANE)) {
+        const pane = map.createPane(BASEMAP_VECTOR_PANE);
+        pane.style.zIndex = '250';
+        pane.style.pointerEvents = 'none';
+      }
+      return onAdd.call(this, map);
+    };
   }
 
   installAuthenticatedLegendPatch(SMK: any) {
