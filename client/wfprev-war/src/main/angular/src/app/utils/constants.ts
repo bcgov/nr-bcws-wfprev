@@ -21,6 +21,7 @@ export const Messages = {
   fileDownloadSuccess: 'File downloaded successfully.',
   fileDownloadPartialFailure: 'Some files could not be downloaded. The files that downloaded are complete.',
   resultsNoSpatialFiles: 'RESULTS spreadsheet downloaded. The selected projects have no activity spatial files.',
+  fileDownloadStartFailure: "The download couldn't be started. Try again.",
   fileUploadFailure: 'File Uploaded Failed',
   fileUploadInProgress: 'File upload in progress, Please wait',
   fileUploadSuccess: 'File Uploaded Successfully',
