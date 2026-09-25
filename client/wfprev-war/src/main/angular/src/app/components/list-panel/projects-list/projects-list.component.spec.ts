@@ -152,7 +152,10 @@ describe('ProjectsListComponent', () => {
       })
     };
 
-    mockDownloadTray = jasmine.createSpyObj('DownloadTrayService', ['start']);
+    mockDownloadTray = jasmine.createSpyObj('DownloadTrayService', ['start', 'toggleVisible'], {
+      visible: signal(false),
+      state: signal('done')
+    });
 
     await TestBed.configureTestingModule({
       imports: [
@@ -926,6 +929,35 @@ describe('ProjectsListComponent', () => {
       expect(component.selectedProjectGuid).toBe('guid-y');
       expect(component.sharedService.selectProject).toHaveBeenCalledWith(project);
       expect(component.sharedService.triggerMapCommand).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('downloads tray button', () => {
+    const trayButton = () => debugElement.query(By.css('.downloads-tray-button'));
+
+    it('toggles the download tray', () => {
+      trayButton().nativeElement.click();
+
+      expect(mockDownloadTray.toggleVisible).toHaveBeenCalledTimes(1);
+    });
+
+    it('says whether it will show or hide the tray', () => {
+      expect(trayButton().attributes['aria-label']).toBe('Show downloads');
+
+      (mockDownloadTray.visible as any).set(true);
+      fixture.detectChanges();
+
+      expect(trayButton().attributes['aria-label']).toBe('Hide downloads');
+      expect(trayButton().attributes['aria-pressed']).toBe('true');
+    });
+
+    it('shows a dot while a download needs attention', () => {
+      expect(debugElement.query(By.css('.tray-button-dot'))).toBeNull();
+
+      (mockDownloadTray.state as any).set('ready');
+      fixture.detectChanges();
+
+      expect(debugElement.query(By.css('.tray-button-dot.ready'))).not.toBeNull();
     });
   });
 

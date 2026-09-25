@@ -65,7 +65,7 @@ export class ProjectsListComponent implements OnInit {
   pageRowCount = 20;
   hasMore = true;
   protected readonly perms = inject(PermissionsService);
-  private readonly downloadTray = inject(DownloadTrayService);
+  protected readonly downloadTray = inject(DownloadTrayService);
   protected readonly WFPREV_ACTIONS = WFPREV_ACTIONS;
 
   constructor(

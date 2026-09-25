@@ -167,6 +167,21 @@ export class DownloadTrayService implements OnDestroy {
     this.visible.set(false);
   }
 
+  /** Reopens the tray after it was hidden, with a fresh list. */
+  show(): void {
+    this.visible.set(true);
+    this.expanded.set(true);
+    this.refresh(false);
+  }
+
+  toggleVisible(): void {
+    if (this.visible()) {
+      this.hide();
+    } else {
+      this.show();
+    }
+  }
+
   /** Reloads the list. On first load the tray only appears if there is something to show. */
   refresh(initial: boolean): void {
     this.reportJobService.list().subscribe({

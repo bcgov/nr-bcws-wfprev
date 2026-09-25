@@ -371,6 +371,57 @@
   gap: 12px;
 }
 
+// Reopens the download tray; sized and bordered like the Download button beside it.
+.downloads-tray-button {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--wf-btn-height-large);
+  height: var(--wf-btn-height-large);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  border: 1px solid #2D2D2D;
+  border-radius: 4px;
+  background-color: var(--wf-colour-white);
+  color: #2D2D2DD2;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--wf-colour-lighter-grey);
+  }
+
+  &:disabled {
+    background-color: #c0c0c0;
+    color: white;
+    cursor: default;
+  }
+}
+
+// Same colours as the tray's own state icons.
+.tray-button-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--wf-colour-white);
+
+  &.preparing {
+    background: #1a5a96;
+  }
+
+  &.ready {
+    background: #42814a;
+  }
+
+  &.failed {
+    background: #ce3e39;
+  }
+}
+
 .fiscal-action-container {
   display: flex;
   align-items: center;

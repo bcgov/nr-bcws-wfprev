@@ -155,6 +155,28 @@ describe('DownloadTrayService', () => {
     });
   });
 
+  describe('show and hide', () => {
+    it('reopens a hidden, collapsed tray with a fresh list', () => {
+      api.list.and.returnValue(of([job({ status: 'READY', downloaded: true })]));
+      service.expanded.set(false);
+
+      service.show();
+
+      expect(service.visible()).toBeTrue();
+      expect(service.expanded()).toBeTrue();
+      expect(api.list).toHaveBeenCalledTimes(1);
+      expect(service.jobs().length).toBe(1);
+    });
+
+    it('toggles between shown and hidden', () => {
+      service.toggleVisible();
+      expect(service.visible()).toBeTrue();
+
+      service.toggleVisible();
+      expect(service.visible()).toBeFalse();
+    });
+  });
+
   describe('save', () => {
     it('opens a fresh link and marks the file saved', () => {
       service.jobs.set([job({ status: 'READY' })]);
