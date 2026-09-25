@@ -285,6 +285,18 @@ public class ReportService {
         xlsxReportGenerator.generateResultsXlsx(data.fuel, data.crx, outputStream);
     }
 
+    /** The rows for a PROJECT_XLSX or RESULTS_XLSX export, as the report Lambda's input. */
+    public XlsxReportGenerator.LambdaReportRequest prepareXlsxLambdaRequest(ReportRequestModel request) {
+        if (request != null && ReportType.RESULTS_XLSX.equals(request.getReportType())) {
+            ResultsReportDataBundle data = getPreparedResultsReportData(request);
+            // Names match the files in the RESULTS_SPATIAL ZIP, which is exported alongside.
+            resultsSpatialExporter.applyFileNames(data.fuel, data.crx);
+            return xlsxReportGenerator.buildResultsRequest(data.fuel, data.crx);
+        }
+        ProjectReportDataBundle data = getPreparedProjectReportData(request);
+        return xlsxReportGenerator.buildProjectRequest(data.fuel, data.crx);
+    }
+
     /**
      * Writes the ZIP of Shapefiles for the RESULTS export.
      *

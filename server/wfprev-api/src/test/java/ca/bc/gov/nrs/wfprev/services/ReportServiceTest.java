@@ -45,6 +45,7 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1010,6 +1011,43 @@ class ReportServiceTest {
         e.setProjectFiscalName("Fiscal " + name);
         e.setFiscalYear("2024/25");
         return e;
+    }
+
+    @Test
+    void prepareXlsxLambdaRequest_project_buildsTheFiscalReportInput() {
+        UUID proj = UUID.randomUUID();
+        when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, null, "Fuel X")));
+        when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(crx(proj, null, "CRX X")));
+        when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+        req.setReportType(ReportType.PROJECT_XLSX);
+
+        XlsxReportGenerator.LambdaReportRequest lambdaRequest = service.prepareXlsxLambdaRequest(req);
+
+        XlsxReportGenerator.LambdaReportRequest.Report report = lambdaRequest.getReports().get(0);
+        assertEquals("ReMi_Fiscal", report.getReportName());
+        assertEquals("XLSX", report.getReportType());
+        assertEquals(1, report.getXlsxReportData().getProjectFuelManagementReportData().size());
+        assertEquals(1, report.getXlsxReportData().getProjectCulturePrescribedFireReportData().size());
+        verifyNoInteractions(resultsSpatialExporter);
+    }
+
+    @Test
+    void prepareXlsxLambdaRequest_results_namesTheSpatialFilesToMatchTheZip() {
+        UUID proj = UUID.randomUUID();
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(resultsFuel(proj, null, "Results Fuel N")));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(resultsCrx(proj, null, "Results CRX N")));
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+        req.setReportType(ReportType.RESULTS_XLSX);
+
+        XlsxReportGenerator.LambdaReportRequest lambdaRequest = service.prepareXlsxLambdaRequest(req);
+
+        XlsxReportGenerator.LambdaReportRequest.Report report = lambdaRequest.getReports().get(0);
+        assertEquals("ReMi_RESULTS", report.getReportName());
+        assertEquals(1, report.getXlsxReportData().getResultsFuelManagementReportData().size());
+        verify(resultsSpatialExporter).applyFileNames(
+                report.getXlsxReportData().getResultsFuelManagementReportData(),
+                report.getXlsxReportData().getResultsCulturePrescribedFireReportData());
     }
 
     @Test

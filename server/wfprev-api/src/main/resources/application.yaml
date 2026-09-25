@@ -31,6 +31,16 @@ spring:
 wfdm:
   restUrl: ${WFDM_BASE_URL}
 
+reportJobs:
+  bucket: ${REPORT_EXPORT_BUCKET:}
+  region: ${AWS_REGION:ca-central-1}
+  lambdaFunctionName: ${REPORT_GENERATOR_FUNCTION_NAME:}
+  lambdaTimeoutSeconds: ${WFPREV_LAMBDA_TIMEOUT:300}
+  # Local development only (S3 mock and the Lambda runtime interface emulator)
+  s3Endpoint: ${REPORT_EXPORT_S3_ENDPOINT:}
+  s3PublicEndpoint: ${REPORT_EXPORT_S3_PUBLIC_ENDPOINT:}
+  lambdaEndpoint: ${REPORT_GENERATOR_LAMBDA_ENDPOINT:}
+
 logging:
   level:
     root: INFO

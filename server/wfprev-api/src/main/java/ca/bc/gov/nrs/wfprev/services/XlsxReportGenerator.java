@@ -39,38 +39,42 @@ public class XlsxReportGenerator {
                              List<ProjectCulturalPrescribedFireReportEntity> crxEntities,
                              OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
-
-        // Build Lambda request model
-        LambdaReportRequest lambdaRequest = new LambdaReportRequest();
-        LambdaReportRequest.Report report = new LambdaReportRequest.Report();
-        report.setReportType("XLSX");
-        report.setReportName("ReMi_Fiscal");
-        LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
-        xlsxData.setProjectFuelManagementReportData(fuelEntities);
-        xlsxData.setProjectCulturePrescribedFireReportData(crxEntities);
-        report.setXlsxReportData(xlsxData);
-        lambdaRequest.setReports(List.of(report));
-
-        callLambdaAndWriteStream(lambdaRequest, outputStream);
+        callLambdaAndWriteStream(buildProjectRequest(fuelEntities, crxEntities), outputStream);
     }
 
     public void generateResultsXlsx(List<ResultsFuelManagementReportEntity> fuelEntities,
                                     List<ResultsCulturalPrescribedFireReportEntity> crxEntities,
                                     OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
+        callLambdaAndWriteStream(buildResultsRequest(fuelEntities, crxEntities), outputStream);
+    }
 
-        // Build Lambda request model
-        LambdaReportRequest lambdaRequest = new LambdaReportRequest();
-        LambdaReportRequest.Report report = new LambdaReportRequest.Report();
-        report.setReportType("XLSX");
-        report.setReportName("ReMi_RESULTS");
+    /** The report Lambda's input for the Fiscal XLSX. */
+    public LambdaReportRequest buildProjectRequest(List<ProjectFuelManagementReportEntity> fuelEntities,
+                                                   List<ProjectCulturalPrescribedFireReportEntity> crxEntities) {
+        LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
+        xlsxData.setProjectFuelManagementReportData(fuelEntities);
+        xlsxData.setProjectCulturePrescribedFireReportData(crxEntities);
+        return buildRequest("ReMi_Fiscal", xlsxData);
+    }
+
+    /** The report Lambda's input for the RESULTS XLSX. */
+    public LambdaReportRequest buildResultsRequest(List<ResultsFuelManagementReportEntity> fuelEntities,
+                                                   List<ResultsCulturalPrescribedFireReportEntity> crxEntities) {
         LambdaReportRequest.XlsxReportData xlsxData = new LambdaReportRequest.XlsxReportData();
         xlsxData.setResultsFuelManagementReportData(fuelEntities);
         xlsxData.setResultsCulturePrescribedFireReportData(crxEntities);
+        return buildRequest("ReMi_RESULTS", xlsxData);
+    }
+
+    private static LambdaReportRequest buildRequest(String reportName, LambdaReportRequest.XlsxReportData xlsxData) {
+        LambdaReportRequest lambdaRequest = new LambdaReportRequest();
+        LambdaReportRequest.Report report = new LambdaReportRequest.Report();
+        report.setReportType("XLSX");
+        report.setReportName(reportName);
         report.setXlsxReportData(xlsxData);
         lambdaRequest.setReports(List.of(report));
-
-        callLambdaAndWriteStream(lambdaRequest, outputStream);
+        return lambdaRequest;
     }
 
     private void callLambdaAndWriteStream(LambdaReportRequest lambdaRequest, OutputStream outputStream)

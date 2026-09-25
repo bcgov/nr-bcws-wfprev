@@ -11,11 +11,31 @@ services:
       REPORT_GENERATOR_LAMBDA_URL: https://mock-lambda-url
       REPORT_GENERATOR_SERVICE_URL: http://mock-report-generator
       WFDM_BASE_URL: https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api
+      # Report exports: the S3 mock below, and the report Lambda under the runtime
+      # interface emulator (profile report-lambda), whose function name is always "function".
+      REPORT_EXPORT_BUCKET: wfprev-local-report-exports
+      REPORT_EXPORT_S3_ENDPOINT: http://report-exports-s3:9090
+      REPORT_EXPORT_S3_PUBLIC_ENDPOINT: http://localhost:9090
+      REPORT_GENERATOR_FUNCTION_NAME: function
+      REPORT_GENERATOR_LAMBDA_ENDPOINT: http://report-lambda:8080
     volumes:
       - ./server/wfprev-api/target:/app/target
     depends_on:
       db:
         condition: service_healthy
+
+  # S3 stand-in for report exports. Download links are signed for http://localhost:9090.
+  report-exports-s3:
+    image: adobe/s3mock:5.2.3
+    profiles:
+      - dev
+      - dev-watch
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: wfprev-local-report-exports
+    ports:
+      - "9090:9090"
+    networks:
+      - wfprev-network
 
   db:
     image: postgis/postgis:17-3.4
