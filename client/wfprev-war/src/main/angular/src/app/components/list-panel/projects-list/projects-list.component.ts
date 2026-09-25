@@ -736,15 +736,6 @@ export class ProjectsListComponent implements OnInit {
     this.downloadTray.start(reportTypes, body, buildFilterDescription(filters, codeTables));
   }
 
-  private saveBlob(blob: Blob, fileName: string): void {
-    const url = globalThis.URL.createObjectURL(blob);
-    const a = globalThis.document.createElement('a');
-    a.download = fileName;
-    a.href = url;
-    a.click();
-    globalThis.URL.revokeObjectURL(url);
-  }
-
   private addProjectToDisplayedList(newProject: any): void {
     const exists = this.displayedProjects.some(p => p.projectGuid === newProject.projectGuid);
     if (exists) return;

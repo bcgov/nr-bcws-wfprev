@@ -7,12 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 import org.jboss.logging.Logger;
 import ca.bc.gov.nrs.reportgenerator.service.XlsxReportBuilder;
 import ca.bc.gov.nrs.reportgenerator.service.XlsxReportBuilder.GeneratedXlsx;
@@ -25,13 +22,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import jakarta.inject.Inject;
 
 /**
- * Builds report XLSX files. Two event shapes:
- * <ul>
- *   <li>A report job from the API: {@code {"jobGuid","bucket","inputKey","outputKey"}}. The rows are
- *       read from S3, the XLSX is written back to S3, and the reply is {@code {"ok":true,...}}. Any
- *       failure is thrown, so the API sees it as a function error.</li>
- *   <li>The old Function URL request carrying the rows inline, answered with the files base64-encoded.</li>
- * </ul>
+ * Builds one report XLSX for a report export job. The API invokes it synchronously with
+ * {@code {"jobGuid","bucket","inputKey","outputKey"}}: the rows are read from S3, the XLSX is
+ * written back to S3, and the reply is {@code {"ok":true,...}}. Any failure is thrown, so the API
+ * sees it as a function error. The scheduled {@code {"warmup":true}} ping returns straight away.
  */
 public class LambdaHandler implements RequestStreamHandler {
     private static final Logger LOG = Logger.getLogger(LambdaHandler.class);
@@ -47,79 +41,17 @@ public class LambdaHandler implements RequestStreamHandler {
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
-        byte[] payload = input.readAllBytes();
-        String inputJson = new String(payload);
-        JsonNode root;
-        try {
-            root = mapper.readTree(inputJson);
-        } catch (Exception e) {
-            LOG.error("Failed to parse " + payload.length + "-byte input", e);
-            writeErrorResponse(output, "Invalid input: " + e.getMessage());
-            return;
-        }
-
+        JsonNode job = mapper.readTree(input.readAllBytes());
         // Scheduled keep-warm ping from EventBridge (terraform/lambda.tf): nothing to generate
-        if (root != null && root.path("warmup").asBoolean(false)) {
+        if (job != null && job.path("warmup").asBoolean(false)) {
             LOG.debug("Warm-up ping");
             mapper.writeValue(output, Map.of("statusCode", 200, "body", "{\"warmup\":true}"));
             return;
         }
-
-        if (root != null && root.hasNonNull("inputKey")) {
-            handleExportJob(root, output);
-            return;
+        if (job == null || !job.hasNonNull("inputKey")) {
+            throw new IllegalArgumentException("Expected a report job event with an inputKey");
         }
 
-        LambdaEvent event;
-        try {
-            // Try to parse as wrapper object first
-            if (root.has("body")) {
-                String bodyJson = root.get("body").asText();
-                event = mapper.readValue(bodyJson, LambdaEvent.class);
-            } else {
-                event = mapper.readValue(inputJson, LambdaEvent.class);
-            }
-        } catch (Exception e) {
-            LOG.error("Failed to deserialize " + payload.length + "-byte input", e);
-            writeErrorResponse(output, "Invalid input: " + e.getMessage());
-            return;
-        }
-
-        // Input validation
-        if (event.getReports() == null || event.getReports().isEmpty()) {
-            LOG.warn("No reports provided");
-            writeErrorResponse(output, "No reports provided");
-            return;
-        }
-
-        // Log a summary only: the rows hold user data (emails, names) and run to hundreds of KB
-        LOG.infof("Received request to generate %d report(s), payload %d bytes", event.getReports().size(), payload.length);
-
-        List<Map<String, String>> files = new ArrayList<>();
-        for (GeneratedXlsx file : xlsxReportBuilder.build(event)) {
-            files.add(Map.of(
-                "filename", file.filename(),
-                "content", Base64.getEncoder().encodeToString(file.content())
-            ));
-        }
-
-        if (files.isEmpty()) {
-            LOG.error("No valid XLSX files generated");
-            writeErrorResponse(output, "No valid XLSX files generated");
-            return;
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("statusCode", 200);
-        response.put("headers", Map.of("Content-Type", "application/json"));
-        response.put("body", mapper.writeValueAsString(Map.of("files", files)));
-        response.put("isBase64Encoded", false);
-
-        mapper.writeValue(output, response);
-    }
-
-    /** A report job: rows from S3 in, one XLSX to S3 out. Failures are thrown, not answered. */
-    private void handleExportJob(JsonNode job, OutputStream output) throws IOException {
         String jobGuid = job.path("jobGuid").asText("");
         String bucket = job.hasNonNull("bucket") && !job.get("bucket").asText().isBlank()
                 ? job.get("bucket").asText()
@@ -153,16 +85,6 @@ public class LambdaHandler implements RequestStreamHandler {
         response.put("ok", true);
         response.put("outputKey", outputKey);
         response.put("bytes", file.content().length);
-        mapper.writeValue(output, response);
-    }
-
-    private void writeErrorResponse(OutputStream output, String message) throws IOException {
-        Map<String, Object> response = new HashMap<>();
-        response.put("statusCode", 400);
-        response.put("error", true);
-        response.put("message", message);
-        response.put("headers", Map.of("Content-Type", "text/plain"));
-        response.put("isBase64Encoded", false);
         mapper.writeValue(output, response);
     }
 }

@@ -127,17 +127,30 @@ class LambdaHandlerExportJobTest {
     }
 
     @Test
-    void functionUrlRequest_stillReturnsTheFileInline() throws Exception {
-        byte[] xlsx = "inline".getBytes(StandardCharsets.UTF_8);
-        when(builder.build(any())).thenReturn(List.of(new GeneratedXlsx("ReMi_Fiscal.xlsx", xlsx)));
-
+    void warmup_returns200WithoutTouchingS3OrJasper() throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        handler.handleRequest(new ByteArrayInputStream(rows()), output, null);
+        handler.handleRequest(new ByteArrayInputStream("{\"warmup\":true}".getBytes(StandardCharsets.UTF_8)), output, null);
 
-        JsonNode reply = mapper.readTree(output.toByteArray());
-        assertEquals(200, reply.path("statusCode").asInt());
-        JsonNode files = mapper.readTree(reply.path("body").asText()).path("files");
-        assertEquals("ReMi_Fiscal.xlsx", files.get(0).path("filename").asText());
+        JsonNode response = mapper.readTree(output.toByteArray());
+        assertEquals(200, response.get("statusCode").asInt());
+        assertEquals("{\"warmup\":true}", response.get("body").asText());
         verify(s3, never()).getObjectAsBytes(any(GetObjectRequest.class));
+        verify(builder, never()).build(any());
+    }
+
+    @Test
+    void anEventWithoutAJob_isRejected() throws Exception {
+        // e.g. the old Function URL request, which carried the rows inline
+        assertThrows(IllegalArgumentException.class,
+                () -> handler.handleRequest(new ByteArrayInputStream(rows()), new ByteArrayOutputStream(), null));
+        verify(s3, never()).getObjectAsBytes(any(GetObjectRequest.class));
+    }
+
+    @Test
+    void withoutABucket_isRejected() {
+        // No bucket in the event, and no REPORT_EXPORT_BUCKET in the test JVM to fall back on.
+        assertThrows(IllegalArgumentException.class, () -> invoke(Map.of(
+                "inputKey", "jobs/abc/input.json",
+                "outputKey", "jobs/abc/ReMi_Fiscal.xlsx")));
     }
 }

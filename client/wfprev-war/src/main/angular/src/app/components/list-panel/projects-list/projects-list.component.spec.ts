@@ -73,7 +73,7 @@ describe('ProjectsListComponent', () => {
   let mockSharedService: any;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures', 'downloadProjects']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures']);
     mockProjectService.fetchProjects.and.returnValue(of({
       _embedded: {
         project: mockProjectList,
@@ -951,7 +951,6 @@ describe('ProjectsListComponent', () => {
       expect(body.projects).toBeUndefined();
       expect(body.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value', fiscalYears: ['2026'] }));
       expect(description).toBe('Search: value\nFiscal years: All');
-      expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
     });
 
     [

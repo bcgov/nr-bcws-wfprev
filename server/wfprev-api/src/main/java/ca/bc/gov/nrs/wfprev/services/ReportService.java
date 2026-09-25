@@ -262,29 +262,6 @@ public class ReportService {
         return data;
     }
 
-    public void exportXlsx(ReportRequestModel request, OutputStream outputStream)
-            throws ServiceException, IOException, InterruptedException {
-        if (request != null && ReportType.RESULTS_XLSX.equals(request.getReportType())) {
-            exportResultsXlsx(request, outputStream);
-        } else {
-            exportProjectXlsx(request, outputStream);
-        }
-    }
-
-    public void exportProjectXlsx(ReportRequestModel request, OutputStream outputStream)
-            throws ServiceException, IOException, InterruptedException {
-        ProjectReportDataBundle data = getPreparedProjectReportData(request);
-        xlsxReportGenerator.generateXlsx(data.fuel, data.crx, outputStream);
-    }
-
-    public void exportResultsXlsx(ReportRequestModel request, OutputStream outputStream)
-            throws ServiceException, IOException, InterruptedException {
-        ResultsReportDataBundle data = getPreparedResultsReportData(request);
-        // Names match the files in the RESULTS_SPATIAL ZIP, which the client downloads alongside.
-        resultsSpatialExporter.applyFileNames(data.fuel, data.crx);
-        xlsxReportGenerator.generateResultsXlsx(data.fuel, data.crx, outputStream);
-    }
-
     /** The rows for a PROJECT_XLSX or RESULTS_XLSX export, as the report Lambda's input. */
     public XlsxReportGenerator.LambdaReportRequest prepareXlsxLambdaRequest(ReportRequestModel request) {
         if (request != null && ReportType.RESULTS_XLSX.equals(request.getReportType())) {

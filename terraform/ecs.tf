@@ -127,10 +127,6 @@ resource "aws_ecs_task_definition" "wfprev_server" {
         value = var.api_key
       },
       {
-        name = "REPORT_GENERATOR_LAMBDA_URL"
-        value = aws_lambda_function_url.report_generator_url.function_url
-      },
-      {
         name  = "REPORT_GENERATOR_FUNCTION_NAME"
         value = aws_lambda_function.report_generator.function_name
       },
