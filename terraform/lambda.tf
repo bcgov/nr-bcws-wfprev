@@ -61,6 +61,29 @@ resource "aws_lambda_function_url" "report_generator_url" {
   
 }
 
+# Keep one report generator instance warm. A cold start takes about 25 s, which leaves too little
+# of the 30 s API Gateway limit for the report itself. The handler returns early on {"warmup": true}.
+resource "aws_cloudwatch_event_rule" "report_generator_keep_warm" {
+  name                = "report-generator-keep-warm-${var.TARGET_ENV}"
+  description         = "Keep the report generator Lambda warm"
+  schedule_expression = "rate(5 minutes)"
+}
+
+resource "aws_cloudwatch_event_target" "report_generator_keep_warm" {
+  rule      = aws_cloudwatch_event_rule.report_generator_keep_warm.name
+  target_id = "report-generator-keep-warm-${var.TARGET_ENV}-target"
+  arn       = aws_lambda_function.report_generator.arn
+  input     = jsonencode({ warmup = true })
+}
+
+resource "aws_lambda_permission" "report_generator_keep_warm" {
+  statement_id  = "AllowEventBridgeKeepWarm"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.report_generator.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.report_generator_keep_warm.arn
+}
+
 # # API Gateway
 # resource "aws_apigatewayv2_api" "http_api" {
 #   name          = "wfprev-${var.SHORTENED_ENV}-gdb-api"

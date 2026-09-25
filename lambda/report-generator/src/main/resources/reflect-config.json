@@ -1,6 +1,8 @@
 [
   { "name": "java.util.Date", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
   { "name": "java.util.Date[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.util.Calendar", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "java.util.Calendar[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
   { "name": "java.sql.Date", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
   { "name": "java.sql.Date[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
   { "name": "java.lang.String", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
@@ -13,5 +15,10 @@
   { "name": "java.sql.Time", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
   { "name": "java.sql.Timestamp", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
   { "name": "java.sql.Timestamp[]", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
-  { "name": "java.util.UUID", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true }
+  { "name": "java.util.UUID", "unsafeAllocated": true, "allDeclaredFields": true, "allPublicConstructors": true, "allPublicFields": true, "allDeclaredMethods": true, "allPublicMethods": true },
+  { "name": "net.sf.jasperreports.functions.standard.DateTimeFunctions", "allPublicConstructors": true, "allPublicMethods": true },
+  { "name": "net.sf.jasperreports.functions.standard.LogicalFunctions", "allPublicConstructors": true, "allPublicMethods": true },
+  { "name": "net.sf.jasperreports.functions.standard.MathFunctions", "allPublicConstructors": true, "allPublicMethods": true },
+  { "name": "net.sf.jasperreports.functions.standard.ReportFunctions", "allPublicConstructors": true, "allPublicMethods": true },
+  { "name": "net.sf.jasperreports.functions.standard.TextFunctions", "allPublicConstructors": true, "allPublicMethods": true }
 ]
