@@ -37,6 +37,29 @@ services:
     networks:
       - wfprev-network
 
+  # The report Lambda (native build, several minutes) under the Lambda runtime interface
+  # emulator, reading and writing the S3 mock. Needed for Fiscal and RESULTS XLSX exports:
+  #   docker compose -f docker-compose.yml -f docker-compose.local.yml --profile dev --profile report-lambda up
+  report-lambda:
+    build:
+      context: lambda/report-generator
+      dockerfile: src/main/docker/Dockerfile.lambda
+    profiles:
+      - report-lambda
+    entrypoint: ["/aws-lambda-rie", "/var/task/bootstrap"]
+    environment:
+      REPORT_EXPORT_BUCKET: wfprev-local-report-exports
+      QUARKUS_S3_ENDPOINT_OVERRIDE: http://report-exports-s3:9090
+      QUARKUS_S3_PATH_STYLE_ACCESS: "true"
+      QUARKUS_S3_AWS_REGION: ca-central-1
+      QUARKUS_S3_AWS_CREDENTIALS_TYPE: static
+      QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID: local
+      QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY: local
+    volumes:
+      - ./lambda/report-generator/aws-lambda-rie:/aws-lambda-rie:ro
+    networks:
+      - wfprev-network
+
   db:
     image: postgis/postgis:17-3.4
     volumes:

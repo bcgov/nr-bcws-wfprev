@@ -7,50 +7,72 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import org.jboss.logging.Logger;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
+import ca.bc.gov.nrs.reportgenerator.service.XlsxReportBuilder;
+import ca.bc.gov.nrs.reportgenerator.service.XlsxReportBuilder.GeneratedXlsx;
 import ca.bc.gov.nrs.reportgenerator.model.LambdaEvent;
-import ca.bc.gov.nrs.reportgenerator.model.Report;
-import ca.bc.gov.nrs.reportgenerator.model.XlsxReportData;
-import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import jakarta.inject.Inject;
 
+/**
+ * Builds report XLSX files. Two event shapes:
+ * <ul>
+ *   <li>A report job from the API: {@code {"jobGuid","bucket","inputKey","outputKey"}}. The rows are
+ *       read from S3, the XLSX is written back to S3, and the reply is {@code {"ok":true,...}}. Any
+ *       failure is thrown, so the API sees it as a function error.</li>
+ *   <li>The old Function URL request carrying the rows inline, answered with the files base64-encoded.</li>
+ * </ul>
+ */
 public class LambdaHandler implements RequestStreamHandler {
     private static final Logger LOG = Logger.getLogger(LambdaHandler.class);
+    private static final String XLSX_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    ReadOnlyStreamingService repo;
+    XlsxReportBuilder xlsxReportBuilder;
+
+    @Inject
+    S3Client s3;
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
-        LambdaEvent event;
         byte[] payload = input.readAllBytes();
         String inputJson = new String(payload);
+        JsonNode root;
+        try {
+            root = mapper.readTree(inputJson);
+        } catch (Exception e) {
+            LOG.error("Failed to parse " + payload.length + "-byte input", e);
+            writeErrorResponse(output, "Invalid input: " + e.getMessage());
+            return;
+        }
+
+        // Scheduled keep-warm ping from EventBridge (terraform/lambda.tf): nothing to generate
+        if (root != null && root.path("warmup").asBoolean(false)) {
+            LOG.debug("Warm-up ping");
+            mapper.writeValue(output, Map.of("statusCode", 200, "body", "{\"warmup\":true}"));
+            return;
+        }
+
+        if (root != null && root.hasNonNull("inputKey")) {
+            handleExportJob(root, output);
+            return;
+        }
+
+        LambdaEvent event;
         try {
             // Try to parse as wrapper object first
-            JsonNode root = mapper.readTree(inputJson);
-            // Scheduled keep-warm ping from EventBridge (terraform/lambda.tf): nothing to generate
-            if (root.path("warmup").asBoolean(false)) {
-                LOG.debug("Warm-up ping");
-                mapper.writeValue(output, Map.of("statusCode", 200, "body", "{\"warmup\":true}"));
-                return;
-            }
             if (root.has("body")) {
                 String bodyJson = root.get("body").asText();
                 event = mapper.readValue(bodyJson, LambdaEvent.class);
@@ -73,94 +95,11 @@ public class LambdaHandler implements RequestStreamHandler {
         // Log a summary only: the rows hold user data (emails, names) and run to hundreds of KB
         LOG.infof("Received request to generate %d report(s), payload %d bytes", event.getReports().size(), payload.length);
 
-        // Generate XLSX files for each report
         List<Map<String, String>> files = new ArrayList<>();
-        for (Report report : event.getReports()) {
-            XlsxReportData data = report.getXlsxReportData();
-            LOG.infof("Report '%s': %s", report.getReportName(), data == null ? "no xlsxReportData" : rowCounts(data));
-            if (data == null) continue;
-            List<JasperPrint> prints = new ArrayList<>();
-            List<String> sheetNames = new ArrayList<>();
-            if (data.getProjectFuelManagementReportData() != null && !data.getProjectFuelManagementReportData().isEmpty()) {
-                try {
-                    JRDataSource fuelDataSource = new JRBeanCollectionDataSource(data.getProjectFuelManagementReportData());
-                    JasperPrint fuelPrint = JasperFillManager.getInstance(repo.getContext())
-                        .fillFromRepo("WFPREV_FUEL_MANAGEMENT_JASPER.jasper", new HashMap<>(), fuelDataSource);
-                    prints.add(fuelPrint);
-                    sheetNames.add("FM XLS Download");
-                } catch (net.sf.jasperreports.engine.JRException e) {
-                    LOG.error("Error filling Fuel Management Jasper report", e);
-                }
-            }
-            if (data.getResultsFuelManagementReportData() != null && !data.getResultsFuelManagementReportData().isEmpty()) {
-                try {
-                    JRDataSource resultsFuelDataSource = new JRBeanCollectionDataSource(data.getResultsFuelManagementReportData());
-                    JasperPrint resultsFuelPrint = JasperFillManager.getInstance(repo.getContext())
-                        .fillFromRepo("WFPREV_RESULTS_JASPER.jasper", new HashMap<>(), resultsFuelDataSource);
-                    prints.add(resultsFuelPrint);
-                    sheetNames.add("FM XLS Download");
-                } catch (Exception e) {
-                    LOG.error("Error filling Results Fuel Management Jasper report", e);
-                }
-            }
-            if (data.getProjectCulturePrescribedFireReportData() != null && !data.getProjectCulturePrescribedFireReportData().isEmpty()) {
-                try {
-                    JRDataSource cultureDataSource = new JRBeanCollectionDataSource(data.getProjectCulturePrescribedFireReportData());
-                    JasperPrint culturePrint = JasperFillManager.getInstance(repo.getContext())
-                        .fillFromRepo("WFPREV_CULTURE_PRESCRIBED_FIRE_JASPER.jasper", new HashMap<>(), cultureDataSource);
-                    prints.add(culturePrint);
-                    sheetNames.add("CRx XLS Download");
-                } catch (net.sf.jasperreports.engine.JRException e) {
-                    LOG.error("Error filling Culture Prescribed Fire Jasper report", e);
-                }
-            }
-            if (data.getResultsCulturePrescribedFireReportData() != null && !data.getResultsCulturePrescribedFireReportData().isEmpty()) {
-                try {
-                    JRDataSource resultsCultureDataSource = new JRBeanCollectionDataSource(data.getResultsCulturePrescribedFireReportData());
-                    JasperPrint resultsCulturePrint = JasperFillManager.getInstance(repo.getContext())
-                        .fillFromRepo("WFPREV_RESULTS_JASPER.jasper", new HashMap<>(), resultsCultureDataSource);
-                    prints.add(resultsCulturePrint);
-                    sheetNames.add("CRx XLS Download");
-                } catch (Exception e) {
-                    LOG.error("Error filling Results Culture Prescribed Fire Jasper report", e);
-                }
-            }
-            if (prints.isEmpty()) continue;
-
-            ByteArrayOutputStream xlsxOut = new ByteArrayOutputStream();
-            JRXlsxExporter exporter = new JRXlsxExporter();
-            exporter.setExporterInput(SimpleExporterInput.getInstance(prints));
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsxOut));
-
-            SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
-            config.setDetectCellType(true);
-            config.setRemoveEmptySpaceBetweenRows(true);
-            config.setRemoveEmptySpaceBetweenColumns(true);
-            config.setCollapseRowSpan(true);
-            config.setWhitePageBackground(false);
-            config.setSheetNames(sheetNames.toArray(new String[0]));
-            exporter.setConfiguration(config);
-
-            try {
-                exporter.exportReport();
-                xlsxOut.flush();
-            } catch (Exception e) {
-                LOG.error("Error exporting XLSX for report", e);
-                continue;
-            }
-
-            byte[] xlsxBytes = xlsxOut.toByteArray();
-            if (xlsxBytes == null || xlsxBytes.length == 0) continue;
-
-            String filename;
-            if (report.getReportName() != null && !report.getReportName().isBlank()) {
-                filename = report.getReportName() + ".xlsx";
-            } else {
-                filename = "report-" + report.getReportType().name().toLowerCase() + ".xlsx";
-            }
+        for (GeneratedXlsx file : xlsxReportBuilder.build(event)) {
             files.add(Map.of(
-                "filename", filename,
-                "content", Base64.getEncoder().encodeToString(xlsxBytes)
+                "filename", file.filename(),
+                "content", Base64.getEncoder().encodeToString(file.content())
             ));
         }
 
@@ -179,15 +118,42 @@ public class LambdaHandler implements RequestStreamHandler {
         mapper.writeValue(output, response);
     }
 
-    private static String rowCounts(XlsxReportData data) {
-        return "rows projectFuelManagement=" + size(data.getProjectFuelManagementReportData())
-            + ", projectCulturePrescribedFire=" + size(data.getProjectCulturePrescribedFireReportData())
-            + ", resultsFuelManagement=" + size(data.getResultsFuelManagementReportData())
-            + ", resultsCulturePrescribedFire=" + size(data.getResultsCulturePrescribedFireReportData());
-    }
+    /** A report job: rows from S3 in, one XLSX to S3 out. Failures are thrown, not answered. */
+    private void handleExportJob(JsonNode job, OutputStream output) throws IOException {
+        String jobGuid = job.path("jobGuid").asText("");
+        String bucket = job.hasNonNull("bucket") && !job.get("bucket").asText().isBlank()
+                ? job.get("bucket").asText()
+                : System.getenv("REPORT_EXPORT_BUCKET");
+        String inputKey = job.get("inputKey").asText();
+        String outputKey = job.path("outputKey").asText("");
+        if (bucket == null || bucket.isBlank() || outputKey.isBlank()) {
+            throw new IllegalArgumentException("Report job " + jobGuid + " needs a bucket, inputKey and outputKey");
+        }
+        LOG.infof("Report job %s: reading %s from %s", jobGuid, inputKey, bucket);
 
-    private static int size(List<?> rows) {
-        return rows == null ? 0 : rows.size();
+        long started = System.currentTimeMillis();
+        byte[] rows = s3.getObjectAsBytes(GetObjectRequest.builder().bucket(bucket).key(inputKey).build()).asByteArray();
+        LambdaEvent event = mapper.readValue(rows, LambdaEvent.class);
+        if (event.getReports() == null || event.getReports().isEmpty()) {
+            throw new IllegalArgumentException("Report job " + jobGuid + ": no reports in " + inputKey);
+        }
+
+        List<GeneratedXlsx> files = xlsxReportBuilder.build(event);
+        if (files.isEmpty()) {
+            throw new IllegalStateException("Report job " + jobGuid + ": no XLSX was generated");
+        }
+        GeneratedXlsx file = files.get(0);
+
+        s3.putObject(PutObjectRequest.builder().bucket(bucket).key(outputKey).contentType(XLSX_CONTENT_TYPE).build(),
+                RequestBody.fromBytes(file.content()));
+        LOG.infof("Report job %s: wrote %d bytes to %s in %d ms", jobGuid, file.content().length, outputKey,
+                System.currentTimeMillis() - started);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("ok", true);
+        response.put("outputKey", outputKey);
+        response.put("bytes", file.content().length);
+        mapper.writeValue(output, response);
     }
 
     private void writeErrorResponse(OutputStream output, String message) throws IOException {
