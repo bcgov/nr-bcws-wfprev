@@ -145,6 +145,43 @@ class ReportControllerUnitTest {
     }
 
     @Test
+    void testGenerateReport_ResultsSpatial() throws Exception {
+        byte[] expectedBytes = "fake-spatial-zip-content".getBytes(StandardCharsets.UTF_8);
+        doAnswer(invocation -> {
+            OutputStream os = invocation.getArgument(1);
+            os.write(expectedBytes);
+            return true;
+        }).when(reportService).exportResultsSpatialZip(any(ReportRequestModel.class), any(OutputStream.class));
+
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType(ReportType.RESULTS_SPATIAL);
+
+        ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("attachment; filename=ReMi_RESULTS_Spatial.zip", response.getHeaders().getFirst("Content-Disposition"));
+        assertEquals("application/zip", response.getHeaders().getContentType().toString());
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        response.getBody().writeTo(baos);
+        assertArrayEquals(expectedBytes, baos.toByteArray());
+    }
+
+    @Test
+    void testGenerateReport_ResultsSpatial_NoFiles_ReturnsNoContent() throws Exception {
+        doAnswer(invocation -> false)
+                .when(reportService).exportResultsSpatialZip(any(ReportRequestModel.class), any(OutputStream.class));
+
+        ReportRequestModel request = new ReportRequestModel();
+        request.setReportType(ReportType.RESULTS_SPATIAL);
+
+        ResponseEntity<StreamingResponseBody> response = controller.generateReport(request);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     void testGenerateReport_NullType_ReturnsBadRequest() throws Exception {
         ReportRequestModel request = new ReportRequestModel();
         request.setReportType(null);
@@ -154,12 +191,12 @@ class ReportControllerUnitTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         response.getBody().writeTo(baos);
-        assertEquals("Only reportType=PROJECT_XLSX, RESULTS_XLSX, PROJECT_CSV, or RESULTS_CSV is supported.", baos.toString(StandardCharsets.UTF_8));
+        assertEquals("Only reportType=PROJECT_XLSX, RESULTS_XLSX, PROJECT_CSV, RESULTS_CSV, or RESULTS_SPATIAL is supported.", baos.toString(StandardCharsets.UTF_8));
         verifyNoInteractions(reportService);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"PROJECT_XLSX", "project_xlsx", "Project_Xlsx", "PROJECT_CSV", "project_csv", "RESULTS_XLSX", "results_xlsx", "RESULTS_CSV", "results_csv"})
+    @ValueSource(strings = {"PROJECT_XLSX", "project_xlsx", "Project_Xlsx", "PROJECT_CSV", "project_csv", "RESULTS_XLSX", "results_xlsx", "RESULTS_CSV", "results_csv", "RESULTS_SPATIAL", "results_spatial"})
     void testReportType_FromString_CaseInsensitive(String value) {
         ReportType type = ReportType.fromString(value);
         assertNotNull(type);

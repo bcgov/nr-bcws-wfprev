@@ -4,7 +4,6 @@ import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
@@ -15,10 +14,12 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFuelManagementReportReposit
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsFuelManagementReportRepository;
+import ca.bc.gov.nrs.wfprev.services.spatial.ResultsSpatialExporter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,11 +30,13 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -64,6 +67,7 @@ class ReportServiceTest {
 
     private CsvReportGenerator csvReportGenerator;
     private XlsxReportGenerator xlsxReportGenerator;
+    private ResultsSpatialExporter resultsSpatialExporter;
     private ReportService service;
 
     @BeforeEach
@@ -77,7 +81,8 @@ class ReportServiceTest {
         featuresService = mock(FeaturesService.class);
         csvReportGenerator = new CsvReportGenerator();
         xlsxReportGenerator = new XlsxReportGenerator();
-        service = new ReportService(fuelRepo, crxRepo, resultsFuelRepo, resultsCrxRepo, programAreaRepo, featuresService, csvReportGenerator, xlsxReportGenerator);
+        resultsSpatialExporter = mock(ResultsSpatialExporter.class);
+        service = new ReportService(fuelRepo, crxRepo, resultsFuelRepo, resultsCrxRepo, programAreaRepo, featuresService, csvReportGenerator, xlsxReportGenerator, resultsSpatialExporter);
 
         setField(service, "baseUrl", "https://example.com");
         xlsxReportGenerator.setReportGeneratorLambdaUrl("http://invalid/override-me-in-test");
@@ -113,19 +118,19 @@ class ReportServiceTest {
     void resolveReportData_noFiscalGuids_usesFindByProjectGuid() throws Exception {
         UUID proj = UUID.randomUUID();
 
-        when(fuelRepo.findByProjectGuid(proj))
+        when(fuelRepo.findByProjectGuidIn(List.of(proj)))
                 .thenReturn(List.of(fuel(proj,null, "Fuel N")));
-        when(crxRepo.findByProjectGuid(proj))
+        when(crxRepo.findByProjectGuidIn(List.of(proj)))
                 .thenReturn(List.of(crx(proj,null, "CRX N")));
 
         ReportRequestModel req = requestWithProjects(List.of(project(proj, /*fiscals*/ null)));
 
         service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
 
-        verify(fuelRepo, times(1)).findByProjectGuid(proj);
-        verify(crxRepo,  times(1)).findByProjectGuid(proj);
-        verify(fuelRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
-        verify(crxRepo,  never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+        verify(fuelRepo, times(1)).findByProjectGuidIn(List.of(proj));
+        verify(crxRepo,  times(1)).findByProjectGuidIn(List.of(proj));
+        verify(fuelRepo, never()).findByProjectPlanFiscalGuidIn(any());
+        verify(crxRepo,  never()).findByProjectPlanFiscalGuidIn(any());
     }
 
     @Test
@@ -141,26 +146,23 @@ class ReportServiceTest {
         ProjectEntity entity = new ProjectEntity();
         entity.setProjectGuid(proj);
 
-        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
-        fiscalEntity.setProjectPlanFiscalGuid(fiscal);
-
         when(featuresService.findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any()))
                 .thenReturn(List.of(entity));
         
-        when(featuresService.findFilteredProjectFiscals(eq(proj), eq(List.of("2025")), any(), any()))
-                .thenReturn(List.of(fiscalEntity));
+        when(featuresService.findFilteredProjectFiscalGuids(eq(List.of(proj)), eq(List.of("2025")), any(), any()))
+                .thenReturn(Map.of(proj, List.of(fiscal)));
 
-        when(fuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+        when(fuelRepo.findByProjectPlanFiscalGuidIn(eq(List.of(fiscal))))
                 .thenReturn(List.of(fuel(proj, fiscal, "Fuel Filtered")));
-        when(crxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+        when(crxRepo.findByProjectPlanFiscalGuidIn(eq(List.of(fiscal))))
                 .thenReturn(Collections.emptyList());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         service.writeCsvZipFromEntities(req, out);
 
         verify(featuresService).findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any());
-        verify(featuresService).findFilteredProjectFiscals(eq(proj), eq(List.of("2025")), any(), any());
-        verify(fuelRepo).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal)));
+        verify(featuresService).findFilteredProjectFiscalGuids(eq(List.of(proj)), eq(List.of("2025")), any(), any());
+        verify(fuelRepo).findByProjectPlanFiscalGuidIn(eq(List.of(fiscal)));
     }
 
     @Test
@@ -169,19 +171,19 @@ class ReportServiceTest {
         UUID fiscal = UUID.randomUUID();
         List<UUID> fiscals = List.of(fiscal);
 
-        when(fuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+        when(fuelRepo.findByProjectPlanFiscalGuidIn(eq(fiscals)))
                 .thenReturn(List.of(fuel(proj, fiscal, "Fuel F")));
-        when(crxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+        when(crxRepo.findByProjectPlanFiscalGuidIn(eq(fiscals)))
                 .thenReturn(List.of(crx(proj, fiscal, "CRX F")));
 
         ReportRequestModel req = requestWithProjects(List.of(project(proj, fiscals)));
 
         service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
 
-        verify(fuelRepo, times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
-        verify(crxRepo,  times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
-        verify(fuelRepo, never()).findByProjectGuid(proj);
-        verify(crxRepo,  never()).findByProjectGuid(proj);
+        verify(fuelRepo, times(1)).findByProjectPlanFiscalGuidIn(eq(fiscals));
+        verify(crxRepo,  times(1)).findByProjectPlanFiscalGuidIn(eq(fiscals));
+        verify(fuelRepo, never()).findByProjectGuidIn(any());
+        verify(crxRepo,  never()).findByProjectGuidIn(any());
     }
     
 
@@ -190,8 +192,8 @@ class ReportServiceTest {
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
 
-        when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuel(projectGuid, fiscalGuid, "Fuel A")));
-        when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(fuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(fuel(projectGuid, fiscalGuid, "Fuel A")));
+        when(crxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
         when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
@@ -210,8 +212,8 @@ class ReportServiceTest {
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
 
-        when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
-        when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crx(projectGuid, fiscalGuid, "CRX A")));
+        when(fuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+        when(crxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(crx(projectGuid, fiscalGuid, "CRX A")));
         when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
@@ -228,8 +230,8 @@ class ReportServiceTest {
     @Test
     void writeCsvZip_noData_throwsIllegalArgument() {
         UUID projectGuid = UUID.randomUUID();
-        when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
-        when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(fuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+        when(crxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
 
@@ -265,8 +267,8 @@ class ReportServiceTest {
 
             UUID projectGuid = UUID.randomUUID();
             UUID fiscalGuid = UUID.randomUUID();
-            when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuel(projectGuid, fiscalGuid, "Fuel X")));
-            when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crx(projectGuid, fiscalGuid, "CRX X")));
+            when(fuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(fuel(projectGuid, fiscalGuid, "Fuel X")));
+            when(crxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(crx(projectGuid, fiscalGuid, "CRX X")));
             when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
 
             ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
@@ -296,8 +298,8 @@ class ReportServiceTest {
             xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
 
             UUID proj = UUID.randomUUID();
-            when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, null, "Fuel Y")));
-            when(crxRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
+            when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, null, "Fuel Y")));
+            when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
 
             ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
 
@@ -328,8 +330,8 @@ class ReportServiceTest {
             xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
 
             UUID proj = UUID.randomUUID();
-            when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, null, "Fuel Q")));
-            when(crxRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
+            when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, null, "Fuel Q")));
+            when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
 
             ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
 
@@ -344,8 +346,8 @@ class ReportServiceTest {
     @Test
     void exportXlsx_noData_throwsIllegalArgument() throws Exception {
         UUID proj = UUID.randomUUID();
-        when(fuelRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
-        when(crxRepo.findByProjectGuid(proj)).thenReturn(Collections.emptyList());
+        when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
+        when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
 
         ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
 
@@ -361,8 +363,8 @@ class ReportServiceTest {
         UUID proj = UUID.randomUUID();
         UUID fiscal = UUID.randomUUID();
 
-        when(fuelRepo.findByProjectGuid(proj)).thenReturn(List.of(fuel(proj, fiscal, "Fuel Z")));
-        when(crxRepo.findByProjectGuid(proj)).thenReturn(List.of(crx(proj, fiscal, "CRX Z")));
+        when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, fiscal, "Fuel Z")));
+        when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(crx(proj, fiscal, "CRX Z")));
 
         // Blank URL triggers the ServiceException
         xlsxReportGenerator.setReportGeneratorLambdaUrl("");
@@ -640,8 +642,8 @@ class ReportServiceTest {
         crxEntity.setOutstandingObligations("2/3");
         crxEntity.setCarriedForward("1/3");
 
-        when(fuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuelEntity));
-        when(crxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crxEntity));
+        when(fuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(fuelEntity));
+        when(crxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(crxEntity));
         when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
@@ -1014,9 +1016,9 @@ class ReportServiceTest {
     void resolveResultsReportData_noFiscalGuids_usesFindByProjectGuid() throws Exception {
         UUID proj = UUID.randomUUID();
 
-        when(resultsFuelRepo.findByProjectGuid(proj))
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(proj)))
                 .thenReturn(List.of(resultsFuel(proj, null, "Results Fuel N")));
-        when(resultsCrxRepo.findByProjectGuid(proj))
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(proj)))
                 .thenReturn(List.of(resultsCrx(proj, null, "Results CRX N")));
 
         ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
@@ -1024,10 +1026,10 @@ class ReportServiceTest {
 
         service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
 
-        verify(resultsFuelRepo, times(1)).findByProjectGuid(proj);
-        verify(resultsCrxRepo, times(1)).findByProjectGuid(proj);
-        verify(resultsFuelRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
-        verify(resultsCrxRepo, never()).findByProjectGuidAndProjectPlanFiscalGuidIn(any(), any());
+        verify(resultsFuelRepo, times(1)).findByProjectGuidIn(List.of(proj));
+        verify(resultsCrxRepo, times(1)).findByProjectGuidIn(List.of(proj));
+        verify(resultsFuelRepo, never()).findByProjectPlanFiscalGuidIn(any());
+        verify(resultsCrxRepo, never()).findByProjectPlanFiscalGuidIn(any());
     }
 
     @Test
@@ -1036,9 +1038,9 @@ class ReportServiceTest {
         UUID fiscal = UUID.randomUUID();
         List<UUID> fiscals = List.of(fiscal);
 
-        when(resultsFuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+        when(resultsFuelRepo.findByProjectPlanFiscalGuidIn(eq(fiscals)))
                 .thenReturn(List.of(resultsFuel(proj, fiscal, "Results Fuel F")));
-        when(resultsCrxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals)))
+        when(resultsCrxRepo.findByProjectPlanFiscalGuidIn(eq(fiscals)))
                 .thenReturn(List.of(resultsCrx(proj, fiscal, "Results CRX F")));
 
         ReportRequestModel req = requestWithProjects(List.of(project(proj, fiscals)));
@@ -1046,10 +1048,10 @@ class ReportServiceTest {
 
         service.writeCsvZipFromEntities(req, new ByteArrayOutputStream());
 
-        verify(resultsFuelRepo, times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
-        verify(resultsCrxRepo, times(1)).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(fiscals));
-        verify(resultsFuelRepo, never()).findByProjectGuid(proj);
-        verify(resultsCrxRepo, never()).findByProjectGuid(proj);
+        verify(resultsFuelRepo, times(1)).findByProjectPlanFiscalGuidIn(eq(fiscals));
+        verify(resultsCrxRepo, times(1)).findByProjectPlanFiscalGuidIn(eq(fiscals));
+        verify(resultsFuelRepo, never()).findByProjectGuidIn(any());
+        verify(resultsCrxRepo, never()).findByProjectGuidIn(any());
     }
 
     @Test
@@ -1066,25 +1068,117 @@ class ReportServiceTest {
         ProjectEntity entity = new ProjectEntity();
         entity.setProjectGuid(proj);
 
-        ProjectFiscalEntity fiscalEntity = new ProjectFiscalEntity();
-        fiscalEntity.setProjectPlanFiscalGuid(fiscal);
-
         when(featuresService.findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any()))
                 .thenReturn(List.of(entity));
-        when(featuresService.findFilteredProjectFiscals(eq(proj), eq(List.of("2024")), any(), any()))
-                .thenReturn(List.of(fiscalEntity));
+        when(featuresService.findFilteredProjectFiscalGuids(eq(List.of(proj)), eq(List.of("2024")), any(), any()))
+                .thenReturn(Map.of(proj, List.of(fiscal)));
 
-        when(resultsFuelRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+        when(resultsFuelRepo.findByProjectPlanFiscalGuidIn(eq(List.of(fiscal))))
                 .thenReturn(List.of(resultsFuel(proj, fiscal, "Results Fuel Filtered")));
-        when(resultsCrxRepo.findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal))))
+        when(resultsCrxRepo.findByProjectPlanFiscalGuidIn(eq(List.of(fiscal))))
                 .thenReturn(Collections.emptyList());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         service.writeCsvZipFromEntities(req, out);
 
         verify(featuresService).findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any());
-        verify(featuresService).findFilteredProjectFiscals(eq(proj), eq(List.of("2024")), any(), any());
-        verify(resultsFuelRepo).findByProjectGuidAndProjectPlanFiscalGuidIn(eq(proj), eq(List.of(fiscal)));
+        verify(featuresService).findFilteredProjectFiscalGuids(eq(List.of(proj)), eq(List.of("2024")), any(), any());
+        verify(resultsFuelRepo).findByProjectPlanFiscalGuidIn(eq(List.of(fiscal)));
+    }
+
+    @Test
+    void resolveResultsReportData_withFilters_loadsAllProjectsInOneQueryPerStepAndKeepsProjectOrder() throws Exception {
+        FeatureQueryParams params = new FeatureQueryParams();
+        params.setFiscalYears(List.of("2024"));
+        ReportRequestModel req = new ReportRequestModel();
+        req.setReportType(ReportType.RESULTS_XLSX);
+        req.setProjectFilter(params);
+
+        // A and C have matching fiscals; B has none, so all of its rows are reported
+        UUID projA = UUID.randomUUID(), projB = UUID.randomUUID(), projC = UUID.randomUUID();
+        UUID fiscalA = UUID.randomUUID(), fiscalC = UUID.randomUUID();
+        when(featuresService.findFilteredProjects(eq(params), eq(1), eq(Integer.MAX_VALUE), any(), any()))
+                .thenReturn(List.of(projectEntity(projA), projectEntity(projB), projectEntity(projC)));
+        when(featuresService.findFilteredProjectFiscalGuids(eq(List.of(projA, projB, projC)), eq(List.of("2024")), any(), any()))
+                .thenReturn(Map.of(projA, List.of(fiscalA), projC, List.of(fiscalC)));
+
+        ResultsFuelManagementReportEntity rowA = resultsFuel(projA, fiscalA, "A");
+        ResultsFuelManagementReportEntity rowB1 = resultsFuel(projB, null, "B1");
+        ResultsFuelManagementReportEntity rowB2 = resultsFuel(projB, UUID.randomUUID(), "B2");
+        ResultsFuelManagementReportEntity rowC = resultsFuel(projC, fiscalC, "C");
+        when(resultsFuelRepo.findByProjectPlanFiscalGuidIn(List.of(fiscalA, fiscalC))).thenReturn(List.of(rowC, rowA));
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projB))).thenReturn(List.of(rowB1, rowB2));
+
+        assertEquals(List.of(rowA, rowB1, rowB2, rowC), exportedResultsFuelRows(req));
+        verify(featuresService, times(1)).findFilteredProjectFiscalGuids(any(), any(), any(), any());
+        verify(resultsFuelRepo, times(1)).findByProjectPlanFiscalGuidIn(any());
+        verify(resultsFuelRepo, times(1)).findByProjectGuidIn(any());
+        verify(resultsCrxRepo, times(1)).findByProjectPlanFiscalGuidIn(any());
+        verify(resultsCrxRepo, times(1)).findByProjectGuidIn(any());
+    }
+
+    @Test
+    void resolveResultsReportData_explicitProjects_keepOnlyEachProjectsOwnFiscals() throws Exception {
+        UUID projA = UUID.randomUUID(), projB = UUID.randomUUID();
+        UUID fiscalA = UUID.randomUUID(), fiscalB = UUID.randomUUID();
+        ResultsFuelManagementReportEntity rowA = resultsFuel(projA, fiscalA, "A");
+        ResultsFuelManagementReportEntity rowB = resultsFuel(projB, fiscalB, "B");
+        // Project A asks for B's fiscal as well; the old per-project query also filtered on project_guid
+        when(resultsFuelRepo.findByProjectPlanFiscalGuidIn(List.of(fiscalA, fiscalB))).thenReturn(List.of(rowA, rowB));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(projA, List.of(fiscalA, fiscalB))));
+        req.setReportType(ReportType.RESULTS_XLSX);
+
+        assertEquals(List.of(rowA), exportedResultsFuelRows(req));
+    }
+
+    @Test
+    void resolveResultsReportData_projectRequestedWholeAndByFiscal_doesNotRepeatRowsWithinAnEntry() throws Exception {
+        UUID proj = UUID.randomUUID();
+        UUID fiscal = UUID.randomUUID();
+        ResultsFuelManagementReportEntity row = resultsFuel(proj, fiscal, "Both");
+        ResultsFuelManagementReportEntity other = resultsFuel(proj, null, "Other");
+        when(resultsFuelRepo.findByProjectPlanFiscalGuidIn(List.of(fiscal))).thenReturn(List.of(row));
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(row, other));
+
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null), project(proj, List.of(fiscal))));
+        req.setReportType(ReportType.RESULTS_XLSX);
+
+        // One entry per requested project, as the per-project queries returned
+        assertEquals(List.of(row, other, row), exportedResultsFuelRows(req));
+    }
+
+    @Test
+    void resolveResultsReportData_manyProjects_queriesInChunks() throws Exception {
+        List<ReportRequestModel.Project> projects = new ArrayList<>();
+        for (int i = 0; i <= FeaturesService.IN_CLAUSE_CHUNK_SIZE; i++) {
+            projects.add(project(UUID.randomUUID(), null));
+        }
+        UUID last = projects.get(FeaturesService.IN_CLAUSE_CHUNK_SIZE).getProjectGuid();
+        ResultsFuelManagementReportEntity lastRow = resultsFuel(last, null, "Last");
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(last))).thenReturn(List.of(lastRow));
+
+        ReportRequestModel req = requestWithProjects(projects);
+        req.setReportType(ReportType.RESULTS_XLSX);
+
+        assertEquals(List.of(lastRow), exportedResultsFuelRows(req));
+        verify(resultsFuelRepo, times(2)).findByProjectGuidIn(any());
+        verify(resultsFuelRepo, never()).findByProjectPlanFiscalGuidIn(any());
+    }
+
+    /** Runs the RESULTS spatial export and returns the FM rows it was given. */
+    @SuppressWarnings("unchecked")
+    private List<ResultsFuelManagementReportEntity> exportedResultsFuelRows(ReportRequestModel req) throws Exception {
+        ArgumentCaptor<List<ResultsFuelManagementReportEntity>> fuel = ArgumentCaptor.forClass(List.class);
+        service.exportResultsSpatialZip(req, new ByteArrayOutputStream());
+        verify(resultsSpatialExporter).writeZip(fuel.capture(), any(), any());
+        return fuel.getValue();
+    }
+
+    private static ProjectEntity projectEntity(UUID projectGuid) {
+        ProjectEntity entity = new ProjectEntity();
+        entity.setProjectGuid(projectGuid);
+        return entity;
     }
 
     @Test
@@ -1092,8 +1186,8 @@ class ReportServiceTest {
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
 
-        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel A")));
-        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel A")));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
         req.setReportType(ReportType.RESULTS_CSV);
@@ -1111,8 +1205,8 @@ class ReportServiceTest {
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
 
-        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
-        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX A")));
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX A")));
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
         req.setReportType(ReportType.RESULTS_CSV);
@@ -1128,8 +1222,8 @@ class ReportServiceTest {
     @Test
     void writeCsvZip_results_noData_throwsIllegalArgument() {
         UUID projectGuid = UUID.randomUUID();
-        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
-        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
         req.setReportType(ReportType.RESULTS_CSV);
@@ -1165,8 +1259,8 @@ class ReportServiceTest {
 
             UUID projectGuid = UUID.randomUUID();
             UUID fiscalGuid = UUID.randomUUID();
-            when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel X")));
-            when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX X")));
+            when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel X")));
+            when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX X")));
 
             ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
             req.setReportType(ReportType.RESULTS_XLSX);
@@ -1190,8 +1284,8 @@ class ReportServiceTest {
         ResultsCulturalPrescribedFireReportEntity crxEntity = resultsCrx(projectGuid, fiscalGuid, "CRX Results Project");
         crxEntity.setFiscalYear("2025/26");
 
-        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(fuelEntity));
-        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(crxEntity));
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(fuelEntity));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(crxEntity));
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
         req.setReportType(ReportType.RESULTS_CSV);
@@ -1243,8 +1337,8 @@ class ReportServiceTest {
         try (var ignored = start(server)) {
             xlsxReportGenerator.setReportGeneratorLambdaUrl("http://localhost:" + server.getAddress().getPort() + "/lambda");
             UUID projectGuid = UUID.randomUUID();
-            when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct")));
-            when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+            when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct")));
+            when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
 
             ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1254,10 +1348,68 @@ class ReportServiceTest {
     }
 
     @Test
+    void exportResultsXlsx_appliesSpatialFileNamesBeforeCallingLambda() throws Exception {
+        java.util.concurrent.atomic.AtomicReference<String> sentToLambda = new java.util.concurrent.atomic.AtomicReference<>();
+        String payload = lambdaResponseWithSingleFile("results.xlsx", Base64.getEncoder().encodeToString(new byte[]{1}));
+
+        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/lambda", (HttpExchange ex) -> {
+            sentToLambda.set(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
+            ex.sendResponseHeaders(200, response.length);
+            try (OutputStream os = ex.getResponseBody()) { os.write(response); }
+        });
+
+        try (var ignored = start(server)) {
+            xlsxReportGenerator.setReportGeneratorLambdaUrl("http://localhost:" + server.getAddress().getPort() + "/lambda");
+            UUID projectGuid = UUID.randomUUID();
+            ResultsFuelManagementReportEntity row = resultsFuel(projectGuid, null, "Fuel Spatial");
+            row.setActivityGuid(UUID.randomUUID());
+            when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(row));
+            when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+            org.mockito.Mockito.doAnswer(inv -> {
+                List<ResultsFuelManagementReportEntity> fuel = inv.getArgument(0);
+                fuel.forEach(e -> e.setActivityShapeFileName("a.shp\na_1.shp"));
+                return null;
+            }).when(resultsSpatialExporter).applyFileNames(any(), any());
+
+            service.exportResultsXlsx(requestWithProjects(List.of(project(projectGuid, null))), new ByteArrayOutputStream());
+
+            assertTrue(sentToLambda.get().contains("\"activityShapeFileName\":\"a.shp\\na_1.shp\""));
+            assertFalse(sentToLambda.get().contains("activityGuid"), "activityGuid must stay out of the Lambda payload");
+        }
+    }
+
+    @Test
+    void exportResultsSpatialZip_delegatesToExporter() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        ResultsFuelManagementReportEntity fuelRow = resultsFuel(projectGuid, null, "Fuel Spatial");
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(fuelRow));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+        when(resultsSpatialExporter.writeZip(any(), any(), any())).thenReturn(true);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        assertTrue(service.exportResultsSpatialZip(requestWithProjects(List.of(project(projectGuid, null))), out));
+
+        verify(resultsSpatialExporter).writeZip(eq(List.of(fuelRow)), eq(List.of()), eq(out));
+        verify(resultsSpatialExporter, never()).applyFileNames(any(), any());
+    }
+
+    @Test
+    void exportResultsSpatialZip_noSpatialFiles_returnsFalse() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel")));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
+        when(resultsSpatialExporter.writeZip(any(), any(), any())).thenReturn(false);
+
+        assertFalse(service.exportResultsSpatialZip(requestWithProjects(List.of(project(projectGuid, null))), new ByteArrayOutputStream()));
+    }
+
+    @Test
     void writeResultsCsvZipFromEntities_directCall_works() throws Exception {
         UUID projectGuid = UUID.randomUUID();
-        when(resultsFuelRepo.findByProjectGuid(projectGuid)).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct CSV")));
-        when(resultsCrxRepo.findByProjectGuid(projectGuid)).thenReturn(Collections.emptyList());
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct CSV")));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
 
         ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1265,6 +1417,8 @@ class ReportServiceTest {
 
         Set<String> entries = zipEntries(out.toByteArray());
         assertTrue(entries.contains("results-fuel-management-projects.csv"));
+        // The RESULTS CSV ships no Shapefiles, so it keeps the view's file name.
+        verify(resultsSpatialExporter, never()).applyFileNames(any(), any());
     }
 
     private static AutoCloseable start(HttpServer server) {

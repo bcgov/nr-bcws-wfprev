@@ -38,30 +38,30 @@ class ResultsFuelManagementReportRepositoryTest {
         mockEntity.setProjectPlanFiscalGuid(fiscalGuid);
         mockEntity.setProjectName("Test Results Fuel Report");
 
-        when(repository.findByProjectGuid(projectGuid))
+        when(repository.findByProjectGuidIn(List.of(projectGuid)))
                 .thenReturn(List.of(mockEntity));
 
-        when(repository.findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, List.of(fiscalGuid)))
+        when(repository.findByProjectPlanFiscalGuidIn(List.of(fiscalGuid)))
                 .thenReturn(List.of(mockEntity));
     }
 
     @Test
-    void findByProjectGuid_returnsRowsIncludingNullFiscalOnesInRealDB() {
-        List<ResultsFuelManagementReportEntity> results = repository.findByProjectGuid(projectGuid);
+    void findByProjectGuidIn_returnsRowsIncludingNullFiscalOnesInRealDB() {
+        List<ResultsFuelManagementReportEntity> results = repository.findByProjectGuidIn(List.of(projectGuid));
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
         assertEquals(projectGuid, results.get(0).getProjectGuid());
         assertEquals("Test Results Fuel Report", results.get(0).getProjectName());
 
-        verify(repository, times(1)).findByProjectGuid(projectGuid);
+        verify(repository, times(1)).findByProjectGuidIn(List.of(projectGuid));
         verifyNoMoreInteractions(repository);
     }
 
     @Test
-    void findByProjectGuidAndProjectPlanFiscalGuidIn_filtersByFiscal() {
+    void findByProjectPlanFiscalGuidIn_filtersByFiscal() {
         List<ResultsFuelManagementReportEntity> results =
-                repository.findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, List.of(fiscalGuid));
+                repository.findByProjectPlanFiscalGuidIn(List.of(fiscalGuid));
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -69,7 +69,7 @@ class ResultsFuelManagementReportRepositoryTest {
         assertEquals("Test Results Fuel Report", results.get(0).getProjectName());
 
         verify(repository, times(1))
-                .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, List.of(fiscalGuid));
+                .findByProjectPlanFiscalGuidIn(List.of(fiscalGuid));
         verifyNoMoreInteractions(repository);
     }
 }

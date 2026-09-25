@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 @RepositoryRestResource(exported = false)
 public interface ProjectCulturalPrescribedFireReportRepository extends JpaRepository<ProjectCulturalPrescribedFireReportEntity, UUID> {
-    List<ProjectCulturalPrescribedFireReportEntity> findByProjectGuid(UUID projectGuid);
+    List<ProjectCulturalPrescribedFireReportEntity> findByProjectGuidIn(Collection<UUID> projectGuids);
 
-    List<ProjectCulturalPrescribedFireReportEntity> findByProjectGuidAndProjectPlanFiscalGuidIn(UUID projectGuid, Collection<UUID> fiscalGuids);
+    List<ProjectCulturalPrescribedFireReportEntity> findByProjectPlanFiscalGuidIn(Collection<UUID> fiscalGuids);
 }

@@ -3,7 +3,7 @@ package ca.bc.gov.nrs.wfprev.services;
 import ca.bc.gov.nrs.wfone.common.service.api.ServiceException;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectFuelManagementReportEntity;
-import ca.bc.gov.nrs.wfprev.data.entities.ProjectFiscalEntity;
+import ca.bc.gov.nrs.wfprev.data.entities.ProjectEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ReportRequestModel;
@@ -14,6 +14,7 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProjectFuelManagementReportReposit
 import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsFuelManagementReportRepository;
+import ca.bc.gov.nrs.wfprev.services.spatial.ResultsSpatialExporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,16 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Slf4j
 @Component
@@ -44,6 +52,7 @@ public class ReportService {
     private final FeaturesService featuresService;
     private final CsvReportGenerator csvReportGenerator;
     private final XlsxReportGenerator xlsxReportGenerator;
+    private final ResultsSpatialExporter resultsSpatialExporter;
 
     public ReportService(ProjectFuelManagementReportRepository projectFuelManagementReportRepository,
                          ProjectCulturalPrescribedFireReportRepository projectCulturalPrescribedFireReportRepository,
@@ -52,7 +61,8 @@ public class ReportService {
                          ProgramAreaRepository programAreaRepository,
                          FeaturesService featuresService,
                          CsvReportGenerator csvReportGenerator,
-                         XlsxReportGenerator xlsxReportGenerator) {
+                         XlsxReportGenerator xlsxReportGenerator,
+                         ResultsSpatialExporter resultsSpatialExporter) {
         this.projectFuelManagementReportRepository = projectFuelManagementReportRepository;
         this.projectCulturalPrescribedFireReportRepository = projectCulturalPrescribedFireReportRepository;
         this.resultsFuelManagementReportRepository = resultsFuelManagementReportRepository;
@@ -61,6 +71,7 @@ public class ReportService {
         this.featuresService = featuresService;
         this.csvReportGenerator = csvReportGenerator;
         this.xlsxReportGenerator = xlsxReportGenerator;
+        this.resultsSpatialExporter = resultsSpatialExporter;
     }
 
     public CsvReportGenerator getCsvReportGenerator() {
@@ -102,28 +113,22 @@ public class ReportService {
 
         if (projectsToReport == null || projectsToReport.isEmpty()) {
             // Fetch projects using filter
-            var entities = featuresService.findFilteredProjects(request.getProjectFilter(), 1, Integer.MAX_VALUE, null, null);
+            FeatureQueryParams filter = request.getProjectFilter();
+            var entities = featuresService.findFilteredProjects(filter, 1, Integer.MAX_VALUE, null, null);
+            Map<UUID, List<UUID>> fiscalGuidsByProject = featuresService.findFilteredProjectFiscalGuids(
+                    entities.stream().map(ProjectEntity::getProjectGuid).toList(),
+                    filter.getFiscalYears(),
+                    filter.getActivityCategoryCodes(),
+                    filter.getPlanFiscalStatusCodes()
+            );
+
             projectsToReport = new ArrayList<>();
             for (var entity : entities) {
                 ReportRequestModel.Project p = new ReportRequestModel.Project();
                 p.setProjectGuid(entity.getProjectGuid());
-
-                FeatureQueryParams filter = request.getProjectFilter();
-                List<ProjectFiscalEntity> fiscals = featuresService.findFilteredProjectFiscals(
-                        entity.getProjectGuid(),
-                        filter.getFiscalYears(),
-                        filter.getActivityCategoryCodes(),
-                        filter.getPlanFiscalStatusCodes()
-                );
-
-                if (!fiscals.isEmpty()) {
-                    p.setProjectFiscalGuids(fiscals.stream()
-                            .map(ProjectFiscalEntity::getProjectPlanFiscalGuid)
-                            .toList());
-                } else {
-                    p.setProjectFiscalGuids(new ArrayList<>());
-                }
-
+                // No matching fiscal means the whole project is reported (see collectRows)
+                p.setProjectFiscalGuids(new ArrayList<>(
+                        fiscalGuidsByProject.getOrDefault(entity.getProjectGuid(), List.of())));
                 projectsToReport.add(p);
             }
         }
@@ -131,52 +136,92 @@ public class ReportService {
     }
 
     private ProjectReportDataBundle resolveProjectReportData(ReportRequestModel request) {
-        List<ProjectFuelManagementReportEntity> fuel = new ArrayList<>();
-        List<ProjectCulturalPrescribedFireReportEntity> crx = new ArrayList<>();
-
         List<ReportRequestModel.Project> projectsToReport = resolveProjectsToReport(request);
 
-        for (ReportRequestModel.Project p : projectsToReport) {
-            UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
-            List<UUID> fiscals = p.getProjectFiscalGuids();
-
-            if (fiscals != null && !fiscals.isEmpty()) {
-                crx.addAll(projectCulturalPrescribedFireReportRepository
-                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
-                fuel.addAll(projectFuelManagementReportRepository
-                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
-            } else {
-                // Now includes rows where project_plan_fiscal_guid IS NULL
-                crx.addAll(projectCulturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
-                fuel.addAll(projectFuelManagementReportRepository.findByProjectGuid(projectGuid));
-            }
-        }
+        List<ProjectFuelManagementReportEntity> fuel = collectRows(projectsToReport,
+                projectFuelManagementReportRepository::findByProjectPlanFiscalGuidIn,
+                projectFuelManagementReportRepository::findByProjectGuidIn,
+                ProjectFuelManagementReportEntity::getProjectGuid,
+                ProjectFuelManagementReportEntity::getProjectPlanFiscalGuid);
+        List<ProjectCulturalPrescribedFireReportEntity> crx = collectRows(projectsToReport,
+                projectCulturalPrescribedFireReportRepository::findByProjectPlanFiscalGuidIn,
+                projectCulturalPrescribedFireReportRepository::findByProjectGuidIn,
+                ProjectCulturalPrescribedFireReportEntity::getProjectGuid,
+                ProjectCulturalPrescribedFireReportEntity::getProjectPlanFiscalGuid);
 
         return new ProjectReportDataBundle(fuel, crx);
     }
 
     private ResultsReportDataBundle resolveResultsReportData(ReportRequestModel request) {
-        List<ResultsFuelManagementReportEntity> fuel = new ArrayList<>();
-        List<ResultsCulturalPrescribedFireReportEntity> crx = new ArrayList<>();
-
         List<ReportRequestModel.Project> projectsToReport = resolveProjectsToReport(request);
 
-        for (ReportRequestModel.Project p : projectsToReport) {
-            UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
-            List<UUID> fiscals = p.getProjectFiscalGuids();
+        List<ResultsFuelManagementReportEntity> fuel = collectRows(projectsToReport,
+                resultsFuelManagementReportRepository::findByProjectPlanFiscalGuidIn,
+                resultsFuelManagementReportRepository::findByProjectGuidIn,
+                ResultsFuelManagementReportEntity::getProjectGuid,
+                ResultsFuelManagementReportEntity::getProjectPlanFiscalGuid);
+        List<ResultsCulturalPrescribedFireReportEntity> crx = collectRows(projectsToReport,
+                resultsCulturalPrescribedFireReportRepository::findByProjectPlanFiscalGuidIn,
+                resultsCulturalPrescribedFireReportRepository::findByProjectGuidIn,
+                ResultsCulturalPrescribedFireReportEntity::getProjectGuid,
+                ResultsCulturalPrescribedFireReportEntity::getProjectPlanFiscalGuid);
 
-            if (fiscals != null && !fiscals.isEmpty()) {
-                crx.addAll(resultsCulturalPrescribedFireReportRepository
-                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
-                fuel.addAll(resultsFuelManagementReportRepository
-                        .findByProjectGuidAndProjectPlanFiscalGuidIn(projectGuid, fiscals));
+        return new ResultsReportDataBundle(fuel, crx);
+    }
+
+    /**
+     * Loads a report view's rows for all the projects in a few set-based queries, then returns them in project
+     * order. A project with fiscal GUIDs gets only its rows for those fiscals; a project without any gets all of
+     * its rows, including those whose project_plan_fiscal_guid is null.
+     */
+    private static <E> List<E> collectRows(List<ReportRequestModel.Project> projects,
+                                           Function<Collection<UUID>, List<E>> findByFiscalGuids,
+                                           Function<Collection<UUID>, List<E>> findByProjectGuids,
+                                           Function<E, UUID> projectGuidOf,
+                                           Function<E, UUID> fiscalGuidOf) {
+        Set<UUID> fiscalGuids = new LinkedHashSet<>();
+        Set<UUID> wholeProjectGuids = new LinkedHashSet<>();
+        for (ReportRequestModel.Project p : projects) {
+            UUID projectGuid = Objects.requireNonNull(p.getProjectGuid(), "projectGuid is required");
+            if (p.getProjectFiscalGuids() != null && !p.getProjectFiscalGuids().isEmpty()) {
+                fiscalGuids.addAll(p.getProjectFiscalGuids());
             } else {
-                crx.addAll(resultsCulturalPrescribedFireReportRepository.findByProjectGuid(projectGuid));
-                fuel.addAll(resultsFuelManagementReportRepository.findByProjectGuid(projectGuid));
+                wholeProjectGuids.add(projectGuid);
             }
         }
 
-        return new ResultsReportDataBundle(fuel, crx);
+        // A row can be loaded twice when a project is requested both whole and by fiscal; keep one copy.
+        Set<E> loaded = new LinkedHashSet<>();
+        loaded.addAll(findInChunks(fiscalGuids, findByFiscalGuids));
+        loaded.addAll(findInChunks(wholeProjectGuids, findByProjectGuids));
+
+        Map<UUID, List<E>> rowsByProject = new HashMap<>();
+        for (E row : loaded) {
+            if (row != null) {
+                rowsByProject.computeIfAbsent(projectGuidOf.apply(row), k -> new ArrayList<>()).add(row);
+            }
+        }
+
+        List<E> rows = new ArrayList<>();
+        for (ReportRequestModel.Project p : projects) {
+            List<E> projectRows = rowsByProject.getOrDefault(p.getProjectGuid(), List.of());
+            if (p.getProjectFiscalGuids() != null && !p.getProjectFiscalGuids().isEmpty()) {
+                Set<UUID> wanted = new HashSet<>(p.getProjectFiscalGuids());
+                projectRows.stream().filter(r -> wanted.contains(fiscalGuidOf.apply(r))).forEach(rows::add);
+            } else {
+                rows.addAll(projectRows);
+            }
+        }
+        return rows;
+    }
+
+    private static <E> List<E> findInChunks(Collection<UUID> guids, Function<Collection<UUID>, List<E>> finder) {
+        List<UUID> all = new ArrayList<>(guids);
+        List<E> rows = new ArrayList<>();
+        for (int from = 0; from < all.size(); from += FeaturesService.IN_CLAUSE_CHUNK_SIZE) {
+            rows.addAll(finder.apply(all.subList(from, Math.min(from + FeaturesService.IN_CLAUSE_CHUNK_SIZE, all.size()))));
+        }
+        return rows;
     }
 
     private ProjectReportDataBundle getPreparedProjectReportData(ReportRequestModel request) {
@@ -235,7 +280,19 @@ public class ReportService {
     public void exportResultsXlsx(ReportRequestModel request, OutputStream outputStream)
             throws ServiceException, IOException, InterruptedException {
         ResultsReportDataBundle data = getPreparedResultsReportData(request);
+        // Names match the files in the RESULTS_SPATIAL ZIP, which the client downloads alongside.
+        resultsSpatialExporter.applyFileNames(data.fuel, data.crx);
         xlsxReportGenerator.generateResultsXlsx(data.fuel, data.crx, outputStream);
+    }
+
+    /**
+     * Writes the ZIP of Shapefiles for the RESULTS export.
+     *
+     * @return false, having written nothing, when none of the exported activities has a spatial file
+     */
+    public boolean exportResultsSpatialZip(ReportRequestModel request, OutputStream outputStream) throws IOException {
+        ResultsReportDataBundle data = getPreparedResultsReportData(request);
+        return resultsSpatialExporter.writeZip(data.fuel, data.crx, outputStream);
     }
 
     public void writeCsvZipFromEntities(ReportRequestModel request, OutputStream zipOutStream) throws ServiceException {
