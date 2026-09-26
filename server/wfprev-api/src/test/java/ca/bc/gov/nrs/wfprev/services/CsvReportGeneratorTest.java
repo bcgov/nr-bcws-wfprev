@@ -125,7 +125,8 @@ class CsvReportGeneratorTest {
         fuel.setLinkToFiscalActivity("https://example.com/activity");
         fuel.setActivityName("Piling");
         fuel.setIsResultsReportableInd("Y");
-        fuel.setCompletedAreaHa(new BigDecimal("45.67"));
+        fuel.setCompletedAreaHa(new BigDecimal("45.65"));
+        fuel.setProjectBoundarySizeHa(new BigDecimal("126.468"));
         fuel.setActivityStatusName("Completed");
         fuel.setFiscalYear("2024/25");
 
@@ -141,7 +142,9 @@ class CsvReportGeneratorTest {
         assertTrue(content.contains("Link to Fiscal Activity (within ReMi Planner)"));
         assertTrue(content.contains("Results Fuel Project"));
         assertTrue(content.contains("Piling"));
-        assertTrue(content.contains("\"45.67\""));
+        // Opening Area and Treatment Area are exported to one decimal place, rounding half up
+        assertTrue(content.contains("\"45.7\""));
+        assertTrue(content.contains("\"126.5\""));
         assertTrue(content.contains("2024/25"));
     }
 
@@ -155,6 +158,7 @@ class CsvReportGeneratorTest {
         crx.setActivityName("Broadcast Burn");
         crx.setIsResultsReportableInd("Y");
         crx.setCompletedAreaHa(new BigDecimal("89.12"));
+        crx.setProjectBoundarySizeHa(new BigDecimal("3"));
         crx.setActivityStatusName("Completed");
         crx.setFiscalYear("2024/25");
 
@@ -170,7 +174,8 @@ class CsvReportGeneratorTest {
         assertTrue(content.contains("Link to Fiscal Activity (within ReMi Planner)"));
         assertTrue(content.contains("Results CRX Project"));
         assertTrue(content.contains("Broadcast Burn"));
-        assertTrue(content.contains("\"89.12\""));
+        assertTrue(content.contains("\"89.1\""));
+        assertTrue(content.contains("\"3.0\""));
         assertTrue(content.contains("2024/25"));
     }
 
