@@ -398,6 +398,40 @@ export interface ReportRequest {
   projectFilter?: ProjectFilter;
 }
 
+/** Starts one report export job (one file). */
+export interface ReportJobRequest extends ReportRequest {
+  /** Filter summary shown in the download tray: one "Label: values" line per filter. */
+  description: string;
+  /** Shared by the files of one download, e.g. the RESULTS workbook and its spatial ZIP. */
+  exportGroupGuid: string;
+}
+
+export type ReportJobStatus = 'PREPARING' | 'READY' | 'NO_FILES' | 'FAILED';
+
+export interface ReportJob {
+  jobGuid: string;
+  exportGroupGuid: string;
+  reportType: ReportType;
+  fileName: string;
+  description: string;
+  status: ReportJobStatus;
+  /** READY, but the file has been deleted after the retention period. */
+  expired: boolean;
+  downloaded: boolean;
+  errorCode?: 'TEMPORARY' | 'DATA' | 'LIMIT' | null;
+  errorMessage?: string | null;
+  retryable?: boolean | null;
+  /** Short reference for support requests. */
+  reference: string;
+  /** ISO-8601 UTC. */
+  requestTimestamp: string;
+}
+
+export interface ReportJobDownloadUrl {
+  url: string;
+  fileName: string;
+}
+
 export interface NewPerformanceUpdate {
 
   reportingPeriod: ReportingPeriod,

@@ -2492,6 +2492,33 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_04_00_02",
+        "author": "sparmar",
+        "tagDatabase": {
+          "tag": "version_01_04_00_02"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/02/ddl/WFPREV.ddl.report_export_job.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_04_00/02/grants/wfprev.grants.report_export_job.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }

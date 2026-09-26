@@ -33,8 +33,14 @@
     color: white;
 }
 
-::ng-deep .mat-mdc-menu-panel {
-    width: 164px !important;
+// Only this menu: one row per option, growing to fit the longest.
+::ng-deep .download-menu.mat-mdc-menu-panel {
+    min-width: 164px;
+    max-width: none;
+}
+
+::ng-deep .download-menu .mat-mdc-menu-item {
+    white-space: nowrap;
 }
 
 .download-button:hover:not(:disabled) {

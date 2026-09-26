@@ -15,8 +15,6 @@ import ca.bc.gov.nrs.wfprev.data.repositories.ProgramAreaRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsCulturalPrescribedFireReportRepository;
 import ca.bc.gov.nrs.wfprev.data.repositories.ResultsFuelManagementReportRepository;
 import ca.bc.gov.nrs.wfprev.services.spatial.ResultsSpatialExporter;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,11 +25,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -43,8 +39,8 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -85,7 +81,6 @@ class ReportServiceTest {
         service = new ReportService(fuelRepo, crxRepo, resultsFuelRepo, resultsCrxRepo, programAreaRepo, featuresService, csvReportGenerator, xlsxReportGenerator, resultsSpatialExporter);
 
         setField(service, "baseUrl", "https://example.com");
-        xlsxReportGenerator.setReportGeneratorLambdaUrl("http://invalid/override-me-in-test");
     }
 
     @Test
@@ -244,107 +239,7 @@ class ReportServiceTest {
 
 
     @Test
-    void exportXlsx_success_writesReturnedBytes() throws Exception {
-        byte[] xlsxBytes = "test-xlsx-contents".getBytes(StandardCharsets.UTF_8);
-        String payload = lambdaResponseWithSingleFile(
-                "ReMi_Fiscal.xlsx",
-                Base64.getEncoder().encodeToString(xlsxBytes)
-        );
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/lambda", (HttpExchange ex) -> {
-            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
-            ex.getResponseHeaders().add("Content-Type", "application/json");
-            ex.sendResponseHeaders(200, response.length);
-            try (OutputStream os = ex.getResponseBody()) {
-                os.write(response);
-            }
-        });
-
-        try (var ignored = start(server)) {
-            String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
-
-            UUID projectGuid = UUID.randomUUID();
-            UUID fiscalGuid = UUID.randomUUID();
-            when(fuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(fuel(projectGuid, fiscalGuid, "Fuel X")));
-            when(crxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(crx(projectGuid, fiscalGuid, "CRX X")));
-            when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
-
-            ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
-
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                service.exportXlsx(req, out);
-                assertArrayEquals(xlsxBytes, out.toByteArray(),
-                        "Should write exactly the XLSX bytes returned by Lambda");
-            }
-        }
-    }
-
-    @Test
-    void exportXlsx_lambdaNon200_throwsServiceException() throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/lambda", (HttpExchange ex) -> {
-            byte[] response = "boom".getBytes(StandardCharsets.UTF_8);
-            ex.getResponseHeaders().add("Content-Type", "text/plain");
-            ex.sendResponseHeaders(500, response.length);
-            try (OutputStream os = ex.getResponseBody()) {
-                os.write(response);
-            }
-        });
-        server.start();
-        try {
-            String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
-
-            UUID proj = UUID.randomUUID();
-            when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, null, "Fuel Y")));
-            when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
-
-            ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
-
-            ServiceException ex = assertThrows(
-                    ServiceException.class,
-                    () -> service.exportXlsx(req, new ByteArrayOutputStream())
-            );
-            assertTrue(ex.getMessage().contains("Lambda returned error"));
-        } finally {
-            server.stop(0);
-        }
-    }
-
-    @Test
-    void exportXlsx_lambdaReturnsNoFiles_throwsServiceException() throws Exception {
-        String payload = "{\"files\":[]}";
-
-        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/lambda", ex -> {
-            byte[] resp = payload.getBytes(StandardCharsets.UTF_8);
-            ex.getResponseHeaders().add("Content-Type", "application/json");
-            ex.sendResponseHeaders(200, resp.length);
-            try (OutputStream os = ex.getResponseBody()) { os.write(resp); }
-        });
-
-        try (var ignored = start(server)) {
-            String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
-
-            UUID proj = UUID.randomUUID();
-            when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, null, "Fuel Q")));
-            when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
-
-            ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
-
-            ServiceException ex = assertThrows(
-                    ServiceException.class,
-                    () -> service.exportXlsx(req, new ByteArrayOutputStream())
-            );
-            assertTrue(ex.getMessage().contains("No files returned"));
-        }
-    }
-
-    @Test
-    void exportXlsx_noData_throwsIllegalArgument() throws Exception {
+    void prepareXlsxLambdaRequest_noData_throwsIllegalArgument() throws Exception {
         UUID proj = UUID.randomUUID();
         when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
         when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(Collections.emptyList());
@@ -353,29 +248,9 @@ class ReportServiceTest {
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> service.exportXlsx(req, new ByteArrayOutputStream())
+                () -> service.prepareXlsxLambdaRequest(req)
         );
         assertTrue(ex.getMessage().toLowerCase().contains("no fiscal data"));
-    }
-
-    @Test
-    void exportXlsx_missingLambdaUrl_throwsServiceException() throws Exception {
-        UUID proj = UUID.randomUUID();
-        UUID fiscal = UUID.randomUUID();
-
-        when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, fiscal, "Fuel Z")));
-        when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(crx(proj, fiscal, "CRX Z")));
-
-        // Blank URL triggers the ServiceException
-        xlsxReportGenerator.setReportGeneratorLambdaUrl("");
-
-        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
-
-        ServiceException ex = assertThrows(
-                ServiceException.class,
-                () -> service.exportXlsx(req, new ByteArrayOutputStream())
-        );
-        assertTrue(ex.getMessage().contains("REPORT_GENERATOR_LAMBDA_URL"));
     }
 
 
@@ -1013,6 +888,43 @@ class ReportServiceTest {
     }
 
     @Test
+    void prepareXlsxLambdaRequest_project_buildsTheFiscalReportInput() {
+        UUID proj = UUID.randomUUID();
+        when(fuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(fuel(proj, null, "Fuel X")));
+        when(crxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(crx(proj, null, "CRX X")));
+        when(programAreaRepo.findById(any())).thenReturn(Optional.empty());
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+        req.setReportType(ReportType.PROJECT_XLSX);
+
+        XlsxReportGenerator.LambdaReportRequest lambdaRequest = service.prepareXlsxLambdaRequest(req);
+
+        XlsxReportGenerator.LambdaReportRequest.Report report = lambdaRequest.getReports().get(0);
+        assertEquals("ReMi_Fiscal", report.getReportName());
+        assertEquals("XLSX", report.getReportType());
+        assertEquals(1, report.getXlsxReportData().getProjectFuelManagementReportData().size());
+        assertEquals(1, report.getXlsxReportData().getProjectCulturePrescribedFireReportData().size());
+        verifyNoInteractions(resultsSpatialExporter);
+    }
+
+    @Test
+    void prepareXlsxLambdaRequest_results_namesTheSpatialFilesToMatchTheZip() {
+        UUID proj = UUID.randomUUID();
+        when(resultsFuelRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(resultsFuel(proj, null, "Results Fuel N")));
+        when(resultsCrxRepo.findByProjectGuidIn(List.of(proj))).thenReturn(List.of(resultsCrx(proj, null, "Results CRX N")));
+        ReportRequestModel req = requestWithProjects(List.of(project(proj, null)));
+        req.setReportType(ReportType.RESULTS_XLSX);
+
+        XlsxReportGenerator.LambdaReportRequest lambdaRequest = service.prepareXlsxLambdaRequest(req);
+
+        XlsxReportGenerator.LambdaReportRequest.Report report = lambdaRequest.getReports().get(0);
+        assertEquals("ReMi_RESULTS", report.getReportName());
+        assertEquals(1, report.getXlsxReportData().getResultsFuelManagementReportData().size());
+        verify(resultsSpatialExporter).applyFileNames(
+                report.getXlsxReportData().getResultsFuelManagementReportData(),
+                report.getXlsxReportData().getResultsCulturePrescribedFireReportData());
+    }
+
+    @Test
     void resolveResultsReportData_noFiscalGuids_usesFindByProjectGuid() throws Exception {
         UUID proj = UUID.randomUUID();
 
@@ -1236,44 +1148,6 @@ class ReportServiceTest {
     }
 
     @Test
-    void exportXlsx_results_success_writesReturnedBytes() throws Exception {
-        byte[] xlsxBytes = "test-results-xlsx-contents".getBytes(StandardCharsets.UTF_8);
-        String payload = lambdaResponseWithSingleFile(
-                "ReMi_RESULTS.xlsx",
-                Base64.getEncoder().encodeToString(xlsxBytes)
-        );
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/lambda", (HttpExchange ex) -> {
-            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
-            ex.getResponseHeaders().add("Content-Type", "application/json");
-            ex.sendResponseHeaders(200, response.length);
-            try (OutputStream os = ex.getResponseBody()) {
-                os.write(response);
-            }
-        });
-
-        try (var ignored = start(server)) {
-            String url = "http://localhost:" + server.getAddress().getPort() + "/lambda";
-            xlsxReportGenerator.setReportGeneratorLambdaUrl(url);
-
-            UUID projectGuid = UUID.randomUUID();
-            UUID fiscalGuid = UUID.randomUUID();
-            when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, fiscalGuid, "Results Fuel X")));
-            when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsCrx(projectGuid, fiscalGuid, "Results CRX X")));
-
-            ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
-            req.setReportType(ReportType.RESULTS_XLSX);
-
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                service.exportXlsx(req, out);
-                assertArrayEquals(xlsxBytes, out.toByteArray(),
-                        "Should write exactly the XLSX bytes returned by Lambda for results");
-            }
-        }
-    }
-
-    @Test
     void writeCsvZip_results_includesLinksAndFormattedFiscalYear() throws Exception {
         UUID projectGuid = UUID.randomUUID();
         UUID fiscalGuid = UUID.randomUUID();
@@ -1322,65 +1196,6 @@ class ReportServiceTest {
     }
 
     @Test
-    void exportResultsXlsx_directCall_works() throws Exception {
-        byte[] xlsxBytes = "direct-results-xlsx".getBytes(StandardCharsets.UTF_8);
-        String payload = lambdaResponseWithSingleFile("results.xlsx", Base64.getEncoder().encodeToString(xlsxBytes));
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/lambda", (HttpExchange ex) -> {
-            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
-            ex.getResponseHeaders().add("Content-Type", "application/json");
-            ex.sendResponseHeaders(200, response.length);
-            try (OutputStream os = ex.getResponseBody()) { os.write(response); }
-        });
-
-        try (var ignored = start(server)) {
-            xlsxReportGenerator.setReportGeneratorLambdaUrl("http://localhost:" + server.getAddress().getPort() + "/lambda");
-            UUID projectGuid = UUID.randomUUID();
-            when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(resultsFuel(projectGuid, null, "Fuel Direct")));
-            when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
-
-            ReportRequestModel req = requestWithProjects(List.of(project(projectGuid, null)));
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            service.exportResultsXlsx(req, out);
-            assertArrayEquals(xlsxBytes, out.toByteArray());
-        }
-    }
-
-    @Test
-    void exportResultsXlsx_appliesSpatialFileNamesBeforeCallingLambda() throws Exception {
-        java.util.concurrent.atomic.AtomicReference<String> sentToLambda = new java.util.concurrent.atomic.AtomicReference<>();
-        String payload = lambdaResponseWithSingleFile("results.xlsx", Base64.getEncoder().encodeToString(new byte[]{1}));
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/lambda", (HttpExchange ex) -> {
-            sentToLambda.set(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
-            byte[] response = payload.getBytes(StandardCharsets.UTF_8);
-            ex.sendResponseHeaders(200, response.length);
-            try (OutputStream os = ex.getResponseBody()) { os.write(response); }
-        });
-
-        try (var ignored = start(server)) {
-            xlsxReportGenerator.setReportGeneratorLambdaUrl("http://localhost:" + server.getAddress().getPort() + "/lambda");
-            UUID projectGuid = UUID.randomUUID();
-            ResultsFuelManagementReportEntity row = resultsFuel(projectGuid, null, "Fuel Spatial");
-            row.setActivityGuid(UUID.randomUUID());
-            when(resultsFuelRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(List.of(row));
-            when(resultsCrxRepo.findByProjectGuidIn(List.of(projectGuid))).thenReturn(Collections.emptyList());
-            org.mockito.Mockito.doAnswer(inv -> {
-                List<ResultsFuelManagementReportEntity> fuel = inv.getArgument(0);
-                fuel.forEach(e -> e.setActivityShapeFileName("a.shp\na_1.shp"));
-                return null;
-            }).when(resultsSpatialExporter).applyFileNames(any(), any());
-
-            service.exportResultsXlsx(requestWithProjects(List.of(project(projectGuid, null))), new ByteArrayOutputStream());
-
-            assertTrue(sentToLambda.get().contains("\"activityShapeFileName\":\"a.shp\\na_1.shp\""));
-            assertFalse(sentToLambda.get().contains("activityGuid"), "activityGuid must stay out of the Lambda payload");
-        }
-    }
-
-    @Test
     void exportResultsSpatialZip_delegatesToExporter() throws Exception {
         UUID projectGuid = UUID.randomUUID();
         ResultsFuelManagementReportEntity fuelRow = resultsFuel(projectGuid, null, "Fuel Spatial");
@@ -1421,19 +1236,4 @@ class ReportServiceTest {
         verify(resultsSpatialExporter, never()).applyFileNames(any(), any());
     }
 
-    private static AutoCloseable start(HttpServer server) {
-        server.start();
-        return () -> server.stop(0);
-    }
-
-    private static String lambdaResponseWithSingleFile(String filename, String base64) {
-        return "{\n" +
-                "  \"files\": [\n" +
-                "    {\n" +
-                "      \"filename\": \"" + filename + "\",\n" +
-                "      \"content\": \"" + base64 + "\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-    }
 }

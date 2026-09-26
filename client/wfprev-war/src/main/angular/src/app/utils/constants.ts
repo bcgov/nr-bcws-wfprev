@@ -19,8 +19,7 @@ export const Messages = {
   fileDownloadInProgress: 'File download in progress. Please wait',
   fileDownloadRequiresFilter: 'Filters must be applied to download file.',
   fileDownloadSuccess: 'File downloaded successfully.',
-  fileDownloadPartialFailure: 'Some files could not be downloaded. The files that downloaded are complete.',
-  resultsNoSpatialFiles: 'RESULTS spreadsheet downloaded. The selected projects have no activity spatial files.',
+  fileDownloadStartFailure: "The download couldn't be started. Try again.",
   fileUploadFailure: 'File Uploaded Failed',
   fileUploadInProgress: 'File upload in progress, Please wait',
   fileUploadSuccess: 'File Uploaded Successfully',
@@ -239,14 +238,6 @@ export const DownloadReportTypes: Record<string, ReportType> = {
   [DownloadTypes.FISCAL_CSV]: 'PROJECT_CSV',
   [DownloadTypes.FISCAL_EXCEL]: 'PROJECT_XLSX',
   [DownloadTypes.RESULTS_EXCEL]: 'RESULTS_XLSX'
-};
-
-export const DownloadFileNames: Record<ReportType, string> = {
-  PROJECT_CSV: 'ReMi_Fiscal.zip',
-  PROJECT_XLSX: 'ReMi_Fiscal.xlsx',
-  RESULTS_CSV: 'results-report.zip',
-  RESULTS_XLSX: 'ReMi_RESULTS.xlsx',
-  RESULTS_SPATIAL: 'ReMi_RESULTS_Spatial.zip'
 };
 
 // Report types requested together with the chosen one; each is saved as its own file.

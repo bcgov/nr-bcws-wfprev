@@ -44,25 +44,20 @@ resource "aws_lambda_function" "report_generator" {
   package_type  = "Image"
 
   image_uri     = var.WFPREV_REPORT_GENERATOR_IMAGE
-  
+
   memory_size   = var.WFPREV_LAMBDA_MEMORY
   timeout       = var.WFPREV_LAMBDA_TIMEOUT
 
   environment {
     variables = {
-      NODE_ENV = var.TARGET_ENV
+      NODE_ENV             = var.TARGET_ENV
+      REPORT_EXPORT_BUCKET = aws_s3_bucket.report_exports.bucket
     }
   }
 }
 
-resource "aws_lambda_function_url" "report_generator_url" {
-  function_name = aws_lambda_function.report_generator.function_name
-  authorization_type = "NONE"
-  
-}
-
-# Keep one report generator instance warm. A cold start takes about 25 s, which leaves too little
-# of the 30 s API Gateway limit for the report itself. The handler returns early on {"warmup": true}.
+# Keep one report generator instance warm. A cold start takes about 25 s, which would otherwise be
+# added to each XLSX export job. The handler returns early on {"warmup": true}.
 resource "aws_cloudwatch_event_rule" "report_generator_keep_warm" {
   name                = "report-generator-keep-warm-${var.TARGET_ENV}"
   description         = "Keep the report generator Lambda warm"

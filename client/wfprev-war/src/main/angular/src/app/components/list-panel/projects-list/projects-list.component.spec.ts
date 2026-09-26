@@ -14,6 +14,8 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { PermissionsService } from 'src/app/services/permissions.service';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 import { ProjectService } from 'src/app/services/project-services';
+import { DownloadTrayService } from 'src/app/services/download-tray.service';
+import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { ResourcesRoutes } from 'src/app/utils';
 import { DownloadTypes, Messages } from 'src/app/utils/constants';
@@ -29,6 +31,7 @@ describe('ProjectsListComponent', () => {
   let mockMarker: any;
   let mockPolygon: any;
   let mockProjectFilterStateService: any;
+  let mockDownloadTray: jasmine.SpyObj<DownloadTrayService>;
 
   class MockPermissionsService {
     hasAction = jasmine.createSpy().and.returnValue(true);
@@ -70,7 +73,7 @@ describe('ProjectsListComponent', () => {
   let mockSharedService: any;
 
   beforeEach(async () => {
-    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures', 'downloadProjects']);
+    mockProjectService = jasmine.createSpyObj('ProjectService', ['fetchProjects', 'getFeatures']);
     mockProjectService.fetchProjects.and.returnValue(of({
       _embedded: {
         project: mockProjectList,
@@ -149,6 +152,11 @@ describe('ProjectsListComponent', () => {
       })
     };
 
+    mockDownloadTray = jasmine.createSpyObj('DownloadTrayService', ['start', 'toggleVisible'], {
+      visible: signal(false),
+      state: signal('done')
+    });
+
     await TestBed.configureTestingModule({
       imports: [
         ProjectsListComponent,
@@ -164,7 +172,8 @@ describe('ProjectsListComponent', () => {
         { provide: ActivatedRoute, useValue: {} },
         { provide: SharedService, useValue: mockSharedService },
         { provide: PermissionsService, useClass: MockPermissionsService },
-        { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService }
+        { provide: ProjectFilterStateService, useValue: mockProjectFilterStateService },
+        { provide: DownloadTrayService, useValue: mockDownloadTray }
       ],
     }).compileComponents();
 
@@ -923,182 +932,92 @@ describe('ProjectsListComponent', () => {
     });
   });
 
-  describe('downloadProjects', () => {
+  describe('downloads tray button', () => {
+    const trayButton = () => debugElement.query(By.css('.downloads-tray-button'));
+
+    it('toggles the download tray', () => {
+      trayButton().nativeElement.click();
+
+      expect(mockDownloadTray.toggleVisible).toHaveBeenCalledTimes(1);
+    });
+
+    it('says whether it will show or hide the tray', () => {
+      expect(trayButton().attributes['aria-label']).toBe('Show downloads');
+
+      (mockDownloadTray.visible as any).set(true);
+      fixture.detectChanges();
+
+      expect(trayButton().attributes['aria-label']).toBe('Hide downloads');
+      expect(trayButton().attributes['aria-pressed']).toBe('true');
+    });
+
+    it('shows a dot while a download needs attention', () => {
+      expect(debugElement.query(By.css('.tray-button-dot'))).toBeNull();
+
+      (mockDownloadTray.state as any).set('ready');
+      fixture.detectChanges();
+
+      expect(debugElement.query(By.css('.tray-button-dot.ready'))).not.toBeNull();
+    });
+  });
+
+  describe('onDownload', () => {
     let mockSnackBar: jasmine.SpyObj<any>;
     let projectFilterStateService: ProjectFilterStateService;
 
     beforeEach(() => {
       mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
-      mockSnackBar.open.and.returnValue({ dismiss: jasmine.createSpy('dismiss') });
       (component as any).snackbarService = mockSnackBar;
       projectFilterStateService = TestBed.inject(ProjectFilterStateService);
     });
 
-    it('should download projects successfully when filters are applied', fakeAsync(() => {
-      projectFilterStateService.set({ searchText: 'value' } as any);
-      // displayedProjects state is irrelevant for the current implementation, but we set it to empty for clarity
-      component.displayedProjects = [];
-
-      const mockBlob = new Blob(['test data'], { type: 'text/csv' });
-      spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
-      spyOn(document, 'createElement').and.callThrough();
-      mockProjectService.downloadProjects.and.returnValue(of(mockBlob));
+    it('starts the export in the download tray with the filters applied', () => {
+      projectFilterStateService.set({ searchText: 'value', fiscalYears: ['__ALL__', '2026'] } as any);
 
       component.onDownload(DownloadTypes.FISCAL_CSV);
-      tick();
 
-      const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
-      expect(bodyArg.reportType).toBe('PROJECT_CSV');
-      expect(bodyArg.projects).toBeUndefined();
-      expect(bodyArg.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value' }));
-    }));
+      expect(mockDownloadTray.start).toHaveBeenCalledTimes(1);
+      const [reportTypes, body, description] = mockDownloadTray.start.calls.mostRecent().args;
+      expect(reportTypes).toEqual(['PROJECT_CSV']);
+      expect(body.reportType).toBe('PROJECT_CSV');
+      expect(body.projects).toBeUndefined();
+      expect(body.projectFilter).toEqual(jasmine.objectContaining({ searchText: 'value', fiscalYears: ['2026'] }));
+      expect(description).toBe('Search: value\nFiscal years: All');
+    });
 
     [
-      { type: DownloadTypes.FISCAL_CSV, reportType: 'PROJECT_CSV', fileName: 'ReMi_Fiscal.zip' },
-      { type: DownloadTypes.FISCAL_EXCEL, reportType: 'PROJECT_XLSX', fileName: 'ReMi_Fiscal.xlsx' }
-    ].forEach(({ type, reportType, fileName }) => {
-      it(`should request ${reportType} and save it as ${fileName} for ${type}`, fakeAsync(() => {
+      { type: DownloadTypes.FISCAL_CSV, reportTypes: ['PROJECT_CSV'] },
+      { type: DownloadTypes.FISCAL_EXCEL, reportTypes: ['PROJECT_XLSX'] },
+      { type: DownloadTypes.RESULTS_EXCEL, reportTypes: ['RESULTS_XLSX', 'RESULTS_SPATIAL'] }
+    ].forEach(({ type, reportTypes }) => {
+      it(`starts ${reportTypes.join(' + ')} for ${type}`, () => {
         projectFilterStateService.set({ searchText: 'value' } as any);
-        const anchor = document.createElement('a');
-        spyOn(anchor, 'click');
-        spyOn(document, 'createElement').and.returnValue(anchor);
-        spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
-        mockProjectService.downloadProjects.and.returnValue(of(new Blob(['test data'])));
 
         component.onDownload(type);
-        tick();
 
-        expect(mockProjectService.downloadProjects).toHaveBeenCalledTimes(1);
-        const bodyArg = mockProjectService.downloadProjects.calls.mostRecent().args[0] as any;
-        expect(bodyArg.reportType).toBe(reportType);
-        expect(anchor.download).toBe(fileName);
-        expect(anchor.click).toHaveBeenCalled();
-      }));
-    });
-
-    describe('RESULTS (XLSX + Spatial)', () => {
-      let savedFiles: string[];
-
-      beforeEach(() => {
-        projectFilterStateService.set({ searchText: 'value' } as any);
-        savedFiles = [];
-        spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
-        spyOn(document, 'createElement').and.callFake(() => {
-          const anchor = { download: '', href: '', click: () => savedFiles.push(anchor.download) };
-          return anchor as any;
-        });
+        expect(mockDownloadTray.start.calls.mostRecent().args[0]).toEqual(reportTypes as any);
       });
-
-      function respond(responses: Record<string, any>) {
-        mockProjectService.downloadProjects.and.callFake((body: any) => responses[body.reportType]);
-      }
-
-      it('requests the workbook and the spatial ZIP with the same filter and saves both', fakeAsync(() => {
-        respond({
-          RESULTS_XLSX: of(new Blob(['xlsx'])),
-          RESULTS_SPATIAL: of(new Blob(['zip']))
-        });
-
-        component.onDownload(DownloadTypes.RESULTS_EXCEL);
-        tick();
-
-        const bodies = mockProjectService.downloadProjects.calls.allArgs().map(args => args[0] as any);
-        expect(bodies.map(b => b.reportType)).toEqual(['RESULTS_XLSX', 'RESULTS_SPATIAL']);
-        expect(bodies[1].projectFilter).toEqual(bodies[0].projectFilter);
-        expect(savedFiles).toEqual(['ReMi_RESULTS.xlsx', 'ReMi_RESULTS_Spatial.zip']);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.fileDownloadSuccess, 'Close', jasmine.any(Object));
-      }));
-
-      it('saves only the workbook and says so when there are no spatial files (204)', fakeAsync(() => {
-        respond({
-          RESULTS_XLSX: of(new Blob(['xlsx'])),
-          RESULTS_SPATIAL: of(null)
-        });
-
-        component.onDownload(DownloadTypes.RESULTS_EXCEL);
-        tick();
-
-        expect(savedFiles).toEqual(['ReMi_RESULTS.xlsx']);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.resultsNoSpatialFiles, 'Close', jasmine.any(Object));
-      }));
-
-      it('still saves the workbook when the spatial request fails', fakeAsync(() => {
-        spyOn(console, 'error');
-        respond({
-          RESULTS_XLSX: of(new Blob(['xlsx'])),
-          RESULTS_SPATIAL: throwError(() => new Error('boom'))
-        });
-
-        component.onDownload(DownloadTypes.RESULTS_EXCEL);
-        tick();
-
-        expect(savedFiles).toEqual(['ReMi_RESULTS.xlsx']);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.fileDownloadPartialFailure, 'Close', jasmine.any(Object));
-      }));
-
-      it('still saves the spatial ZIP when the workbook request fails', fakeAsync(() => {
-        spyOn(console, 'error');
-        respond({
-          RESULTS_XLSX: throwError(() => new Error('504')),
-          RESULTS_SPATIAL: of(new Blob(['zip']))
-        });
-
-        component.onDownload(DownloadTypes.RESULTS_EXCEL);
-        tick();
-
-        expect(savedFiles).toEqual(['ReMi_RESULTS_Spatial.zip']);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.fileDownloadPartialFailure, 'Close', jasmine.any(Object));
-      }));
-
-      it('reports a failure when both requests fail', fakeAsync(() => {
-        spyOn(console, 'error');
-        respond({
-          RESULTS_XLSX: throwError(() => new Error('504')),
-          RESULTS_SPATIAL: throwError(() => new Error('500'))
-        });
-
-        component.onDownload(DownloadTypes.RESULTS_EXCEL);
-        tick();
-
-        expect(savedFiles).toEqual([]);
-        expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.fileDownloadFailure, 'Close', jasmine.any(Object));
-      }));
     });
 
-    it('should show error message when attempting to download without filters', fakeAsync(() => {
+    it('describes the filters with names from the code tables', () => {
+      TestBed.inject(SharedCodeTableService).updateCodeTables({
+        forestRegions: [{ orgUnitId: 101, orgUnitName: 'Coast Area' }]
+      });
+      projectFilterStateService.set({ forestRegionOrgUnitIds: ['101'] } as any);
+
+      component.onDownload(DownloadTypes.RESULTS_EXCEL);
+
+      expect(mockDownloadTray.start.calls.mostRecent().args[2]).toBe('Forest regions: Coast Area');
+    });
+
+    it('asks for filters instead of starting an export without them', () => {
       projectFilterStateService.clear();
-      component.displayedProjects = [{ projectGuid: 'guid1' }] as any; // Presence of projects irrelevant
 
       component.onDownload(DownloadTypes.FISCAL_CSV);
-      tick();
 
-      expect(mockProjectService.downloadProjects).not.toHaveBeenCalled();
+      expect(mockDownloadTray.start).not.toHaveBeenCalled();
       expect(mockSnackBar.open).toHaveBeenCalledWith(Messages.fileDownloadRequiresFilter, 'Close', jasmine.any(Object));
-    }));
-
-    it('should show failure message when download service fails', fakeAsync(() => {
-      spyOn(console, 'error');
-      projectFilterStateService.set({ searchText: 'value' } as any);
-      component.displayedProjects = [] as any;
-
-      mockProjectService.downloadProjects.and.returnValue(
-        throwError(() => new Error('Download failed'))
-      );
-
-      component.onDownload(DownloadTypes.FISCAL_CSV);
-      tick();
-
-      expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.fileDownloadInProgress,
-        'Close',
-        jasmine.any(Object)
-      );
-      expect(mockSnackBar.open).toHaveBeenCalledWith(
-        Messages.fileDownloadFailure,
-        'Close',
-        jasmine.any(Object)
-      );
-    }));
+    });
   });
 
   describe('getDisplayedFiscalYears', () => {
