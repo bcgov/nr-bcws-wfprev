@@ -106,12 +106,18 @@ public class LocalReportGeneratorTest {
                 String xml = readEntry(xlsx, sheet);
                 assertTrue(xml.contains("ySplit=\"2\"") && xml.contains("state=\"frozen\""),
                         sheet + ": rows 1 and 2 should be frozen");
+                // Excel sizes the data rows itself; Jasper's heights clipped long wrapped values
+                assertTrue(xml.contains("<row r=\"1\" customHeight=\"1\""), sheet + ": header row height should stay fixed");
+                assertTrue(xml.contains("<row r=\"3\" customHeight=\"0\" bestFit=\"1\""), sheet + ": data rows should auto-fit");
+                // Opening Area and Treatment Area hold values rounded to one decimal place (row 3: 261.413 and 8.25)
+                assertTrue(xml.contains("<v>261.4</v>") && xml.contains("<v>8.3</v>"), sheet + ": areas should be rounded to one decimal");
             }
 
             String strings = readEntry(xlsx, "xl/sharedStrings.xml");
             // Line breaks mirror where the source workbook wraps, since Calibri is narrower than BC Sans
             assertTrue(strings.contains("Link to Project (within\nReMi Planner)"), "Row 1 titles missing");
             assertTrue(strings.contains("The district in which the project\nprimarily sits."), "Row 2 explanations missing");
+            assertTrue(strings.contains("two entries (Use LB or"), "Activity Base explanation should spell out two");
             assertFalse(strings.contains("Reference Fields"), "Developer reference rows must not be exported");
             assertFalse(strings.contains("&lt;style"), "Styled markup should become bold runs, not literal text");
 
@@ -152,7 +158,8 @@ public class LocalReportGeneratorTest {
             String[] silv = silviculture[i % silviculture.length];
             data.setLinkToProject("http://link.to.project/" + i);
             data.setLinkToFiscalActivity("http://link.to.fiscal/" + i);
-            data.setProjectName(category + " Project " + i);
+            // Row 4 has a long name that needs several wrapped lines in the narrow Project Name column
+            data.setProjectName(i == 4 ? category + " E2E Testing March 24 - Copy 10 of the Long Project Name" : category + " Project " + i);
             data.setProjectFiscalName("Sample " + category + " Fiscal Activity " + i);
             data.setActivityName(silv[0] + " - " + silv[1] + (silv[2] == null ? "" : " - " + silv[2]));
             // Row 3 leaves RESULTS Reportable blank to show there is no default "Y"
@@ -184,7 +191,7 @@ public class LocalReportGeneratorTest {
             if (i == 1) {
                 data.setProjectBoundarySizeHa(new BigDecimal("261.413"));
                 data.setPlannedTreatmentAreaHa(new BigDecimal("10"));
-                data.setCompletedAreaHa(new BigDecimal("8.3"));
+                data.setCompletedAreaHa(new BigDecimal("8.25"));
             } else if (i == 2) {
                 data.setProjectBoundarySizeHa(new BigDecimal("1200.00"));
                 data.setPlannedTreatmentAreaHa(new BigDecimal("61"));

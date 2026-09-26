@@ -639,9 +639,9 @@ different]]></text>
 		<element kind="staticText" uuid="e7545ebe-82d8-51fa-9572-b15cc4e844cd" mode="Opaque" x="2116" y="86" width="123" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Enter each activity that
 took place for the project
-on a new line.  Eg: A
-survey and planting are 2
-entries (Use LB or
+on a new line. Eg: A
+survey and planting are
+two entries (Use LB or
 LandBase Planning for
 Prescriptions)]]></text>
 			<box>
@@ -723,7 +723,7 @@ date]]></text>
 		</element>
 		<element kind="staticText" uuid="d892be2f-252a-5c3e-baba-a93ebaea2a93" mode="Opaque" x="2829" y="86" width="120" height="136" backcolor="#C6E0B4" fontName="Calibri" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Area treated per activity
-to 1 decimal place]]></text>
+to one decimal place]]></text>
 			<box>
 				<topPen lineWidth="1.0" lineColor="#000000" />
 				<leftPen lineWidth="1.0" lineColor="#000000" />
@@ -926,6 +926,8 @@ Attached? (Y/N)]]></text>
 				</box>
 			</element>
 			<element kind="textField" uuid="57cb125b-feb2-555b-9be4-25e2caff7226" mode="Opaque" x="290" y="0" width="87" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<!-- Leave data row heights to Excel: Jasper's line-break estimate is shorter than Excel's wrapping, so long values were clipped -->
+				<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true" />
 				<expression><![CDATA[$F{projectName}]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
@@ -1042,9 +1044,8 @@ Attached? (Y/N)]]></text>
 					<rightPen lineWidth="0.5" lineColor="#000000" />
 				</box>
 			</element>
-			<element kind="textField" uuid="b35fc5bf-575b-5952-9d63-68bc68679945" mode="Opaque" x="1950" y="0" width="99" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.##########" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{projectBoundarySizeHa}]]></expression>
-				<propertyExpression name="net.sf.jasperreports.export.xls.pattern"><![CDATA[$F{projectBoundarySizeHa} == null ? "#,##0" : ($F{projectBoundarySizeHa}.stripTrailingZeros().scale() <= 0 ? "#,##0" : "#,##0.##########")]]></propertyExpression>
+			<element kind="textField" uuid="b35fc5bf-575b-5952-9d63-68bc68679945" mode="Opaque" x="1950" y="0" width="99" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{projectBoundarySizeHa} == null ? null : $F{projectBoundarySizeHa}.setScale(1, java.math.RoundingMode.HALF_UP)]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />
@@ -1124,9 +1125,8 @@ Attached? (Y/N)]]></text>
 					<rightPen lineWidth="0.5" lineColor="#000000" />
 				</box>
 			</element>
-			<element kind="textField" uuid="de7d3446-05f3-52d3-ac75-56ea5da0710d" mode="Opaque" x="2829" y="0" width="120" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.##########" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{completedAreaHa}]]></expression>
-				<propertyExpression name="net.sf.jasperreports.export.xls.pattern"><![CDATA[$F{completedAreaHa} == null ? "#,##0" : ($F{completedAreaHa}.stripTrailingZeros().scale() <= 0 ? "#,##0" : "#,##0.##########")]]></propertyExpression>
+			<element kind="textField" uuid="de7d3446-05f3-52d3-ac75-56ea5da0710d" mode="Opaque" x="2829" y="0" width="120" height="30" backcolor="#FFFFFF" stretchType="ContainerHeight" fontName="Calibri" fontSize="10.0" textAdjust="StretchHeight" pattern="#,##0.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{completedAreaHa} == null ? null : $F{completedAreaHa}.setScale(1, java.math.RoundingMode.HALF_UP)]]></expression>
 				<box>
 					<topPen lineWidth="0.5" lineColor="#000000" />
 					<leftPen lineWidth="0.5" lineColor="#000000" />

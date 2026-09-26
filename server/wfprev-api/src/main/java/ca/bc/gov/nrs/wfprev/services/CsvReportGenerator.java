@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -168,7 +170,7 @@ public class CsvReportGenerator {
                 safe(e.getResultsOpeningId()),
                 safe(e.getResultsOpeningAction()),
                 safe(e.getResultsOpeningCategory()),
-                safe(e.getProjectBoundarySizeHa() != null ? formatHectares(e.getProjectBoundarySizeHa()) : ""),
+                safe(e.getProjectBoundarySizeHa() != null ? formatHectaresOneDecimal(e.getProjectBoundarySizeHa()) : ""),
                 safe(e.getMaxPermanentAccessPercent() != null ? formatHectares(e.getMaxPermanentAccessPercent()) : ""),
                 safe(e.getActivityBaseName()),
                 safe(e.getTechniqueName()),
@@ -177,7 +179,7 @@ public class CsvReportGenerator {
                 safe(e.getSecondaryObjectiveName()),
                 safe(e.getAdditionalObjectiveName()),
                 safe(e.getActivityEndDate() != null ? DATE_FORMAT.format(e.getActivityEndDate().toInstant()) : ""),
-                safe(e.getCompletedAreaHa() != null ? formatHectares(e.getCompletedAreaHa()) : ""),
+                safe(e.getCompletedAreaHa() != null ? formatHectaresOneDecimal(e.getCompletedAreaHa()) : ""),
                 safe(e.getFundingSourceCode()),
                 safe(e.getComment()),
                 safe(e.getTenureNumber()),
@@ -216,7 +218,7 @@ public class CsvReportGenerator {
                 safe(c.getResultsOpeningId()),
                 safe(c.getResultsOpeningAction()),
                 safe(c.getResultsOpeningCategory()),
-                safe(c.getProjectBoundarySizeHa() != null ? formatHectares(c.getProjectBoundarySizeHa()) : ""),
+                safe(c.getProjectBoundarySizeHa() != null ? formatHectaresOneDecimal(c.getProjectBoundarySizeHa()) : ""),
                 safe(c.getMaxPermanentAccessPercent() != null ? formatHectares(c.getMaxPermanentAccessPercent()) : ""),
                 safe(c.getActivityBaseName()),
                 safe(c.getTechniqueName()),
@@ -225,7 +227,7 @@ public class CsvReportGenerator {
                 safe(c.getSecondaryObjectiveName()),
                 safe(c.getAdditionalObjectiveName()),
                 safe(c.getActivityEndDate() != null ? DATE_FORMAT.format(c.getActivityEndDate().toInstant()) : ""),
-                safe(c.getCompletedAreaHa() != null ? formatHectares(c.getCompletedAreaHa()) : ""),
+                safe(c.getCompletedAreaHa() != null ? formatHectaresOneDecimal(c.getCompletedAreaHa()) : ""),
                 safe(c.getFundingSourceCode()),
                 safe(c.getComment()),
                 safe(c.getTenureNumber()),
@@ -803,6 +805,13 @@ public class CsvReportGenerator {
             return "";
         }
         return new DecimalFormat("$#,##0").format(n);
+    }
+
+    // RESULTS describes Opening Area and Treatment Area as hectares to one decimal place
+    private static String formatHectaresOneDecimal(BigDecimal n) {
+        DecimalFormat format = new DecimalFormat("#,##0.0");
+        format.setRoundingMode(RoundingMode.HALF_UP);
+        return format.format(n);
     }
 
     private static String formatHectares(Number n) {
