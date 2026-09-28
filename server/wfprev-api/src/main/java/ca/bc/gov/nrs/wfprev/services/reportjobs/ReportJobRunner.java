@@ -6,10 +6,7 @@ import ca.bc.gov.nrs.wfprev.data.models.ReportType;
 import ca.bc.gov.nrs.wfprev.data.repositories.ReportExportJobRepository;
 import ca.bc.gov.nrs.wfprev.services.ReportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.OutputStream;
@@ -19,15 +16,11 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * Runs report export jobs on a small thread pool and records how each one ended. The thread that
- * does the work is the one that updates the row, so nothing has to report back.
- *
- * <p>The pool is private rather than a Spring bean: an {@link Executor} bean would replace Spring
- * Boot's default task executor, which MVC uses for streaming responses.
+ * Runs report export jobs on {@link ReportJobExecutor} and records how each one ended. The thread
+ * that does the work is the one that updates the row, so nothing has to report back.
  */
 @Slf4j
 @Component
@@ -42,20 +35,11 @@ public class ReportJobRunner {
     private final ReportLambdaInvoker lambdaInvoker;
     private final ObjectMapper objectMapper;
     private final Clock clock;
-    private final Executor executor;
-    private final ThreadPoolTaskExecutor ownedPool;
+    private final ReportJobExecutor executor;
 
-    @Autowired
     public ReportJobRunner(ReportExportJobRepository repository, ReportService reportService,
                            ReportExportStore store, ReportLambdaInvoker lambdaInvoker,
-                           ObjectMapper objectMapper, ReportJobProperties properties) {
-        this(repository, reportService, store, lambdaInvoker, objectMapper, Clock.systemUTC(), createPool(properties));
-    }
-
-    /** For tests: pass a direct executor to run jobs on the calling thread. */
-    ReportJobRunner(ReportExportJobRepository repository, ReportService reportService,
-                    ReportExportStore store, ReportLambdaInvoker lambdaInvoker,
-                    ObjectMapper objectMapper, Clock clock, Executor executor) {
+                           ObjectMapper objectMapper, Clock clock, ReportJobExecutor executor) {
         this.repository = repository;
         this.reportService = reportService;
         this.store = store;
@@ -63,18 +47,6 @@ public class ReportJobRunner {
         this.objectMapper = objectMapper;
         this.clock = clock;
         this.executor = executor;
-        this.ownedPool = executor instanceof ThreadPoolTaskExecutor pool ? pool : null;
-    }
-
-    private static ThreadPoolTaskExecutor createPool(ReportJobProperties properties) {
-        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-        pool.setCorePoolSize(properties.getThreads());
-        pool.setMaxPoolSize(properties.getThreads());
-        pool.setQueueCapacity(properties.getQueueCapacity());
-        pool.setThreadNamePrefix("report-job-");
-        pool.setWaitForTasksToCompleteOnShutdown(false);
-        pool.initialize();
-        return pool;
     }
 
     /**
@@ -166,12 +138,5 @@ public class ReportJobRunner {
 
     private LocalDateTime now() {
         return LocalDateTime.now(clock);
-    }
-
-    @PreDestroy
-    void shutdown() {
-        if (ownedPool != null) {
-            ownedPool.shutdown();
-        }
     }
 }

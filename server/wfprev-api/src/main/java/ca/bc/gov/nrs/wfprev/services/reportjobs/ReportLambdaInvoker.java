@@ -4,28 +4,15 @@ import ca.bc.gov.nrs.wfprev.services.XlsxReportGenerator.LambdaReportRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.awscore.retry.AwsRetryStrategy;
 import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.http.apache.ApacheHttpClient;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.lambda.LambdaClientBuilder;
 import software.amazon.awssdk.services.lambda.model.InvocationType;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,24 +27,15 @@ import java.util.UUID;
 @Component
 public class ReportLambdaInvoker {
 
-    /** Extra wait beyond the Lambda timeout, for the invoke round trip. */
-    private static final Duration CALL_MARGIN = Duration.ofSeconds(60);
-
     private final ReportJobProperties properties;
     private final ReportExportStore store;
+    private final LambdaClient lambda;
     // Same serialization as the old Function URL call, so the Lambda sees identical rows.
     private final ObjectMapper mapper = new ObjectMapper();
-    private LambdaClient lambda;
 
-    @Autowired
-    public ReportLambdaInvoker(ReportJobProperties properties, ReportExportStore store) {
+    public ReportLambdaInvoker(ReportJobProperties properties, ReportExportStore store, LambdaClient lambda) {
         this.properties = properties;
         this.store = store;
-    }
-
-    /** For tests. */
-    ReportLambdaInvoker(ReportJobProperties properties, ReportExportStore store, LambdaClient lambda) {
-        this(properties, store);
         this.lambda = lambda;
     }
 
@@ -84,7 +62,7 @@ public class ReportLambdaInvoker {
         }
 
         long started = System.currentTimeMillis();
-        InvokeResponse response = client().invoke(InvokeRequest.builder()
+        InvokeResponse response = lambda.invoke(InvokeRequest.builder()
                 .functionName(functionName())
                 .invocationType(InvocationType.REQUEST_RESPONSE)
                 .payload(SdkBytes.fromUtf8String(eventJson))
@@ -116,46 +94,5 @@ public class ReportLambdaInvoker {
             throw new IllegalStateException("REPORT_GENERATOR_FUNCTION_NAME is not set");
         }
         return name;
-    }
-
-    private synchronized LambdaClient client() {
-        if (lambda == null) {
-            Duration timeout = properties.lambdaTimeout().plus(CALL_MARGIN);
-            LambdaClientBuilder builder = LambdaClient.builder()
-                    .region(Region.of(properties.getRegion()))
-                    .credentialsProvider(credentials())
-                    .httpClientBuilder(ApacheHttpClient.builder()
-                            .socketTimeout(timeout)
-                            .connectionTimeout(Duration.ofSeconds(10)))
-                    .overrideConfiguration(ClientOverrideConfiguration.builder()
-                            .apiCallTimeout(timeout)
-                            .apiCallAttemptTimeout(timeout)
-                            // A retried invoke would build the file twice; a failure surfaces as Retry instead.
-                            .retryStrategy(AwsRetryStrategy.doNotRetry())
-                            .build());
-            if (isSet(properties.getLambdaEndpoint())) {
-                builder.endpointOverride(URI.create(properties.getLambdaEndpoint()));
-            }
-            lambda = builder.build();
-        }
-        return lambda;
-    }
-
-    private AwsCredentialsProvider credentials() {
-        if (isSet(properties.getLambdaEndpoint()) && System.getenv("AWS_ACCESS_KEY_ID") == null) {
-            return StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local"));
-        }
-        return DefaultCredentialsProvider.builder().build();
-    }
-
-    private static boolean isSet(String value) {
-        return value != null && !value.isBlank();
-    }
-
-    @PreDestroy
-    synchronized void close() {
-        if (lambda != null) {
-            lambda.close();
-        }
     }
 }

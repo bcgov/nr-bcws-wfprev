@@ -2,6 +2,7 @@ import { DebugElement, ElementRef, QueryList, signal } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -162,7 +163,8 @@ describe('ProjectsListComponent', () => {
         ProjectsListComponent,
         BrowserAnimationsModule,
         MatExpansionModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        MatIconTestingModule
       ],
       providers: [
         { provide: ProjectService, useValue: mockProjectService },

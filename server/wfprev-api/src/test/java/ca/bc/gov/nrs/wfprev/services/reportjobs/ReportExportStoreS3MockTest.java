@@ -7,6 +7,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -37,20 +39,27 @@ class ReportExportStoreS3MockTest {
             .withExposedPorts(9090)
             .waitingFor(Wait.forHttp("/").forPort(9090).forStatusCodeMatching(code -> code < 500));
 
+    private static S3Client s3;
+    private static S3Presigner presigner;
     private static ReportExportStore store;
 
+    /** Clients built the way the local profile builds them. */
     @BeforeAll
     static void createStore() {
         ReportJobProperties properties = new ReportJobProperties();
         properties.setBucket(BUCKET);
         properties.setRegion("ca-central-1");
-        properties.setS3Endpoint("http://" + S3.getHost() + ":" + S3.getMappedPort(9090));
-        store = new ReportExportStore(properties);
+        String endpoint = "http://" + S3.getHost() + ":" + S3.getMappedPort(9090);
+        LocalReportJobConfig local = new LocalReportJobConfig();
+        s3 = local.reportExportS3Client(properties, endpoint);
+        presigner = local.reportExportS3Presigner(properties, endpoint);
+        store = new ReportExportStore(properties, s3, presigner);
     }
 
     @AfterAll
-    static void closeStore() {
-        store.close();
+    static void closeClients() {
+        s3.close();
+        presigner.close();
     }
 
     @Test

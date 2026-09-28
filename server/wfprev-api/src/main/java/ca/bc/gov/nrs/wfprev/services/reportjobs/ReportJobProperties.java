@@ -14,29 +14,17 @@ import java.time.Duration;
 public class ReportJobProperties {
 
     /** The private bucket finished files and Lambda input are written to. */
-    @Value("${reportJobs.bucket:}")
+    @Value("${reportJobs.bucket}")
     private String bucket;
 
-    @Value("${reportJobs.region:ca-central-1}")
+    @Value("${reportJobs.region}")
     private String region;
 
-    /** Local development only: an S3-compatible endpoint for the API to use. */
-    @Value("${reportJobs.s3Endpoint:}")
-    private String s3Endpoint;
-
-    /** Local development only: the S3 endpoint as the browser reaches it, used to sign download URLs. */
-    @Value("${reportJobs.s3PublicEndpoint:}")
-    private String s3PublicEndpoint;
-
-    @Value("${reportJobs.lambdaFunctionName:}")
+    @Value("${reportJobs.lambdaFunctionName}")
     private String lambdaFunctionName;
 
-    /** Local development only: the Lambda runtime interface emulator. */
-    @Value("${reportJobs.lambdaEndpoint:}")
-    private String lambdaEndpoint;
-
     /** The report Lambda's own timeout. The API waits longer than this, and the sweep's cutoff is based on it. */
-    @Value("${reportJobs.lambdaTimeoutSeconds:300}")
+    @Value("${reportJobs.lambdaTimeoutSeconds}")
     private long lambdaTimeoutSeconds;
 
     /** Each running XLSX job holds a thread while it waits for the Lambda. */

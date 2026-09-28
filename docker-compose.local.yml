@@ -7,7 +7,8 @@ services:
       - dev
       - dev-watch
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      # local: report export clients use the S3 mock and Lambda emulator (application-local.yaml)
+      SPRING_PROFILES_ACTIVE: dev,local
       REPORT_GENERATOR_SERVICE_URL: http://mock-report-generator
       WFDM_BASE_URL: https://i1bcwsapi.nrs.gov.bc.ca/wfdm-document-management-api
       # Report exports: the S3 mock below, and the report Lambda under the runtime
@@ -17,6 +18,8 @@ services:
       REPORT_EXPORT_S3_PUBLIC_ENDPOINT: http://localhost:9090
       REPORT_GENERATOR_FUNCTION_NAME: function
       REPORT_GENERATOR_LAMBDA_ENDPOINT: http://report-lambda:8080
+      AWS_REGION: ca-central-1
+      WFPREV_LAMBDA_TIMEOUT: 300
     volumes:
       - ./server/wfprev-api/target:/app/target
     depends_on:

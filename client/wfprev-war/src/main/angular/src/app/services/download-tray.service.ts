@@ -7,7 +7,7 @@ import { ReportJob, ReportRequest, ReportType } from 'src/app/components/models'
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
 import { ReportJobService } from 'src/app/services/report-job.service';
 import { TokenService } from 'src/app/services/token.service';
-import { Messages } from 'src/app/utils/constants';
+import { Messages, ReportJobStatuses } from 'src/app/utils/constants';
 
 /** The files of one download, e.g. the RESULTS workbook and its spatial ZIP. */
 export interface TrayExport {
@@ -49,19 +49,19 @@ export class DownloadTrayService implements OnDestroy {
 
   readonly state = computed<TrayState>(() => {
     const jobs = this.jobs();
-    if (jobs.some(job => job.status === 'PREPARING')) {
+    if (jobs.some(job => job.status === ReportJobStatuses.PREPARING)) {
       return 'preparing';
     }
-    if (jobs.some(job => job.status === 'FAILED')) {
+    if (jobs.some(job => job.status === ReportJobStatuses.FAILED)) {
       return 'failed';
     }
-    if (jobs.some(job => job.status === 'READY' && !job.expired && !job.downloaded)) {
+    if (jobs.some(job => job.status === ReportJobStatuses.READY && !job.expired && !job.downloaded)) {
       return 'ready';
     }
     return 'done';
   });
 
-  readonly hasFinished = computed(() => this.jobs().some(job => job.status !== 'PREPARING'));
+  readonly hasFinished = computed(() => this.jobs().some(job => job.status !== ReportJobStatuses.PREPARING));
 
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
   private pollStartedAt = 0;
@@ -144,13 +144,13 @@ export class DownloadTrayService implements OnDestroy {
 
   /** Run again: every file of an expired export. */
   runAgain(tray: TrayExport): void {
-    tray.jobs.filter(job => job.status !== 'PREPARING').forEach(job => this.retry(job));
+    tray.jobs.filter(job => job.status !== ReportJobStatuses.PREPARING).forEach(job => this.retry(job));
   }
 
   clearFinished(): void {
     this.reportJobService.clearFinished().subscribe({
       next: () => {
-        this.jobs.update(current => current.filter(job => job.status === 'PREPARING'));
+        this.jobs.update(current => current.filter(job => job.status === ReportJobStatuses.PREPARING));
         if (!this.jobs().length) {
           this.visible.set(false);
         }
@@ -188,7 +188,7 @@ export class DownloadTrayService implements OnDestroy {
       next: jobs => {
         this.announceFinished(this.jobs(), jobs);
         this.jobs.set(jobs);
-        if (initial && jobs.some(job => job.status === 'PREPARING' || (job.status === 'READY' && !job.downloaded && !job.expired) || job.status === 'FAILED')) {
+        if (initial && jobs.some(job => job.status === ReportJobStatuses.PREPARING || (job.status === ReportJobStatuses.READY && !job.downloaded && !job.expired) || job.status === ReportJobStatuses.FAILED)) {
           this.visible.set(true);
         }
         this.schedulePoll(false);
@@ -219,7 +219,7 @@ export class DownloadTrayService implements OnDestroy {
   /** Polls every 3 s while anything is preparing, slowing to 10 s after a minute; stops when nothing is. */
   private schedulePoll(restartFast: boolean): void {
     this.clearPoll();
-    if (!this.jobs().some(job => job.status === 'PREPARING')) {
+    if (!this.jobs().some(job => job.status === ReportJobStatuses.PREPARING)) {
       this.pollStartedAt = 0;
       return;
     }
@@ -242,8 +242,8 @@ export class DownloadTrayService implements OnDestroy {
 
   /** Opens the tray and announces files that finished since the last poll. */
   private announceFinished(before: ReportJob[], after: ReportJob[]): void {
-    const wasPreparing = new Set(before.filter(job => job.status === 'PREPARING').map(job => job.jobGuid));
-    const finished = after.filter(job => wasPreparing.has(job.jobGuid) && job.status !== 'PREPARING');
+    const wasPreparing = new Set(before.filter(job => job.status === ReportJobStatuses.PREPARING).map(job => job.jobGuid));
+    const finished = after.filter(job => wasPreparing.has(job.jobGuid) && job.status !== ReportJobStatuses.PREPARING);
     if (!finished.length) {
       return;
     }
@@ -251,8 +251,8 @@ export class DownloadTrayService implements OnDestroy {
     this.expanded.set(true);
     this.announcement.set(finished.map(job => {
       switch (job.status) {
-        case 'READY': return `${job.fileName} is ready to save.`;
-        case 'FAILED': return `${job.fileName} failed.`;
+        case ReportJobStatuses.READY: return `${job.fileName} is ready to save.`;
+        case ReportJobStatuses.FAILED: return `${job.fileName} failed.`;
         default: return `${job.fileName}: no files to include.`;
       }
     }).join(' '));
@@ -277,7 +277,7 @@ export function groupExports(jobs: ReportJob[]): TrayExport[] {
         requestTimestamp,
         description: sorted[0].description,
         jobs: sorted,
-        expired: sorted.every(job => job.expired || job.status === 'NO_FILES') && sorted.some(job => job.expired)
+        expired: sorted.every(job => job.expired || job.status === ReportJobStatuses.NO_FILES) && sorted.some(job => job.expired)
       };
     })
     .sort((a, b) => b.requestTimestamp.localeCompare(a.requestTimestamp));

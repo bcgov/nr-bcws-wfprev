@@ -1,3 +1,9 @@
+// Two icon sizes: status and file icons, and the smaller icons inside buttons.
+// A few asset files draw edge to edge, with none of the usual 24px-grid padding;
+// they're sized down so they look the same size as the icons around them.
+$icon-size: 20px;
+$button-icon-size: 18px;
+
 .download-tray {
   position: fixed;
   right: 24px;
@@ -28,25 +34,22 @@
   color: #ffffff;
 }
 
-.state-icon {
+mat-icon {
+  width: $icon-size;
+  height: $icon-size;
   flex-shrink: 0;
+
+  // Some of the shared asset icons set their own fill; take the text colour instead.
+  ::ng-deep svg path {
+    fill: currentColor;
+  }
 }
 
-.state-badge {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-
-  &.ready {
-    background: #42814a;
-  }
-
-  &.failed {
-    background: #ce3e39;
-  }
+.state-icon {
+  width: $icon-size;
+  height: $icon-size;
+  flex-shrink: 0;
+  --mat-progress-spinner-active-indicator-color: #ffffff;
 }
 
 .tray-title {
@@ -71,6 +74,17 @@
   &:hover,
   &:focus-visible {
     background: rgba(255, 255, 255, 0.12);
+  }
+
+  mat-icon {
+    width: $button-icon-size;
+    height: $button-icon-size;
+  }
+
+  // Edge to edge (13x8), so much smaller to match the close icon.
+  .chevron {
+    width: 14px;
+    height: 14px;
   }
 }
 
@@ -144,7 +158,21 @@
 }
 
 .file-icon {
+  width: $icon-size;
+  height: $icon-size;
   flex-shrink: 0;
+  color: #454545;
+
+  &.info {
+    color: #1a5a96;
+  }
+
+  // A filled disc drawn edge to edge, so smaller to match the outlined file icons.
+  &.failed {
+    width: $button-icon-size;
+    height: $button-icon-size;
+    margin: 0 1px;
+  }
 }
 
 .file-text {
@@ -192,6 +220,7 @@
 .file-spinner {
   flex-shrink: 0;
   margin: 0 8px;
+  --mat-progress-spinner-active-indicator-color: #1a5a96;
 }
 
 .file-action {
@@ -213,15 +242,10 @@
   &:focus-visible {
     background: #f2f2f2;
   }
-}
 
-.spin {
-  animation: download-tray-spin 0.9s linear infinite;
-}
-
-@keyframes download-tray-spin {
-  to {
-    transform: rotate(360deg);
+  mat-icon {
+    width: $button-icon-size;
+    height: $button-icon-size;
   }
 }
 
@@ -298,10 +322,4 @@
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .spin {
-    animation: none;
-  }
 }

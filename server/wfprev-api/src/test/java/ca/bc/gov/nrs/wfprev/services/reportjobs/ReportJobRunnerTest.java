@@ -53,8 +53,14 @@ class ReportJobRunnerTest {
         reportService = mock(ReportService.class);
         store = mock(ReportExportStore.class);
         lambdaInvoker = mock(ReportLambdaInvoker.class);
+        // Runs jobs on the calling thread.
+        ReportJobExecutor executor = mock(ReportJobExecutor.class);
+        doAnswer(invocation -> {
+            invocation.<Runnable>getArgument(0).run();
+            return null;
+        }).when(executor).execute(any());
         runner = new ReportJobRunner(repository, reportService, store, lambdaInvoker, new ObjectMapper(),
-                Clock.fixed(NOW, ZoneOffset.UTC), Runnable::run);
+                Clock.fixed(NOW, ZoneOffset.UTC), executor);
     }
 
     private ReportExportJobEntity givenClaimedJob(ReportType type) {
@@ -184,10 +190,10 @@ class ReportJobRunnerTest {
 
     @Test
     void submit_whenTheQueueIsFull_leavesTheJobForTheSweep() {
+        ReportJobExecutor fullExecutor = mock(ReportJobExecutor.class);
+        doThrow(new RejectedExecutionException("full")).when(fullExecutor).execute(any());
         ReportJobRunner full = new ReportJobRunner(repository, reportService, store, lambdaInvoker, new ObjectMapper(),
-                Clock.fixed(NOW, ZoneOffset.UTC), task -> {
-                    throw new RejectedExecutionException("full");
-                });
+                Clock.fixed(NOW, ZoneOffset.UTC), fullExecutor);
 
         full.submit(UUID.randomUUID());
 

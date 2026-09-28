@@ -1,0 +1,8 @@
+# Local development only (docker-compose.local.yml sets the local profile). Report exports use the
+# S3 mock and the report Lambda under the runtime interface emulator; see LocalReportJobConfig.
+reportJobs:
+  local:
+    s3Endpoint: ${REPORT_EXPORT_S3_ENDPOINT}
+    # The S3 mock as the browser reaches it, used to sign download links
+    s3PublicEndpoint: ${REPORT_EXPORT_S3_PUBLIC_ENDPOINT}
+    lambdaEndpoint: ${REPORT_GENERATOR_LAMBDA_ENDPOINT}

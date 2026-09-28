@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -40,14 +39,8 @@ public class ReportJobService {
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    @Autowired
     public ReportJobService(ReportExportJobRepository repository, ReportJobRunner runner, ReportExportStore store,
-                            ReportJobProperties properties, ObjectMapper objectMapper) {
-        this(repository, runner, store, properties, objectMapper, Clock.systemUTC());
-    }
-
-    ReportJobService(ReportExportJobRepository repository, ReportJobRunner runner, ReportExportStore store,
-                     ReportJobProperties properties, ObjectMapper objectMapper, Clock clock) {
+                            ReportJobProperties properties, ObjectMapper objectMapper, Clock clock) {
         this.repository = repository;
         this.runner = runner;
         this.store = store;

@@ -19,10 +19,10 @@ CREATE TABLE "wfprev"."report_export_job"
 	"error_code" varchar(16)	 NULL,    -- Error Code is the failure category: TEMPORARY, DATA or LIMIT.
 	"error_message" varchar(1000)	 NULL,    -- Error Message is the plain-language failure message shown to the user.
 	"retryable_ind" boolean NULL,    -- Retryable Ind is true when retrying the failed job can succeed.
-	"request_timestamp" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,    -- Request Timestamp is when the export was requested.
-	"started_timestamp" TIMESTAMP NULL,    -- Started Timestamp is when a worker claimed the job.
-	"completed_timestamp" TIMESTAMP NULL,    -- Completed Timestamp is when the job reached a final status.
-	"downloaded_timestamp" TIMESTAMP NULL,    -- Downloaded Timestamp is when a download link was first issued.
+	"request_timestamp" TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),    -- Request Timestamp is when the export was requested, in UTC.
+	"started_timestamp" TIMESTAMP NULL,    -- Started Timestamp is when a worker claimed the job, in UTC.
+	"completed_timestamp" TIMESTAMP NULL,    -- Completed Timestamp is when the job reached a final status, in UTC.
+	"downloaded_timestamp" TIMESTAMP NULL,    -- Downloaded Timestamp is when a download link was first issued, in UTC.
 	"dismissed_ind" boolean NOT NULL DEFAULT false,    -- Dismissed Ind is true once the user has cleared the job from the download tray.
 	"revision_count" decimal(10) NOT NULL DEFAULT 0,    -- REVISION_COUNT is the number of times that the row of data has been changed. The column is used for optimistic locking via application code.
 	"create_user" varchar(64)	 NOT NULL,    -- CREATE_USER is an audit column that indicates the user that created the record.
@@ -92,19 +92,19 @@ COMMENT ON COLUMN "wfprev"."report_export_job"."retryable_ind"
 ;
 
 COMMENT ON COLUMN "wfprev"."report_export_job"."request_timestamp"
-	IS 'Request Timestamp is when the export was requested.'
+	IS 'Request Timestamp is when the export was requested, in UTC.'
 ;
 
 COMMENT ON COLUMN "wfprev"."report_export_job"."started_timestamp"
-	IS 'Started Timestamp is when a worker claimed the job. It is null while the job is waiting to start.'
+	IS 'Started Timestamp is when a worker claimed the job, in UTC. It is null while the job is waiting to start.'
 ;
 
 COMMENT ON COLUMN "wfprev"."report_export_job"."completed_timestamp"
-	IS 'Completed Timestamp is when the job reached a final status.'
+	IS 'Completed Timestamp is when the job reached a final status, in UTC.'
 ;
 
 COMMENT ON COLUMN "wfprev"."report_export_job"."downloaded_timestamp"
-	IS 'Downloaded Timestamp is when a download link for the file was first issued.'
+	IS 'Downloaded Timestamp is when a download link for the file was first issued, in UTC.'
 ;
 
 COMMENT ON COLUMN "wfprev"."report_export_job"."dismissed_ind"

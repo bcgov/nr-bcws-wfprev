@@ -1,4 +1,4 @@
-import { DownloadOption, ReportType } from 'src/app/components/models';
+import { DownloadOption, ReportJobStatus, ReportType } from 'src/app/components/models';
 
 export const Messages = {
   activityCreatedFailure: 'Activity Created Failed',
@@ -243,6 +243,38 @@ export const DownloadReportTypes: Record<string, ReportType> = {
 // Report types requested together with the chosen one; each is saved as its own file.
 export const DownloadCompanionReportTypes: Partial<Record<ReportType, ReportType[]>> = {
   RESULTS_XLSX: ['RESULTS_SPATIAL']
+};
+
+export const ReportJobStatuses = {
+  FAILED: 'FAILED',
+  NO_FILES: 'NO_FILES',
+  PREPARING: 'PREPARING',
+  READY: 'READY'
+} as const satisfies Record<ReportJobStatus, ReportJobStatus>;
+
+export const DownloadTrayText = {
+  CLEAR_FINISHED: 'Clear finished',
+  COLLAPSE: 'Collapse downloads',
+  COPY: 'Copy',
+  DETAILS: 'Details',
+  EXPAND: 'Expand downloads',
+  EXPIRED: 'Expired',
+  FAILED: 'Failed',
+  FAILED_FALLBACK_MESSAGE: 'Something went wrong.',
+  HIDE: 'Hide downloads',
+  NO_DOWNLOADS: 'No downloads.',
+  NO_FILTERS: 'All projects',
+  NO_SPATIAL_FILES: 'No spatial files',
+  NO_SPATIAL_FILES_STATUS: 'None of these projects have any',
+  PREPARING: 'Preparing…',
+  READY: 'Ready',
+  REFERENCE: 'Reference',
+  SAVED: 'Saved',
+  SHOW: 'Show downloads',
+  STATE_FAILED: 'A file failed',
+  STATE_PREPARING: 'Preparing',
+  STATE_READY: 'Ready to save',
+  TITLE: 'Downloads'
 };
 
 export const NumericLimits = {

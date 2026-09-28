@@ -3,7 +3,6 @@ package ca.bc.gov.nrs.wfprev.services.reportjobs;
 import ca.bc.gov.nrs.wfprev.data.entities.ReportExportJobEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.ReportExportJobRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -37,14 +36,8 @@ public class ReportJobSweeper {
     private final ReportJobProperties properties;
     private final Clock clock;
 
-    @Autowired
     public ReportJobSweeper(ReportExportJobRepository repository, ReportExportStore store, ReportJobRunner runner,
-                            ReportJobProperties properties) {
-        this(repository, store, runner, properties, Clock.systemUTC());
-    }
-
-    ReportJobSweeper(ReportExportJobRepository repository, ReportExportStore store, ReportJobRunner runner,
-                     ReportJobProperties properties, Clock clock) {
+                            ReportJobProperties properties, Clock clock) {
         this.repository = repository;
         this.store = store;
         this.runner = runner;

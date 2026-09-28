@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { computed, importProvidersFrom, signal } from '@angular/core';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular';
 import { ReportJob } from 'src/app/components/models';
 import { DownloadTrayService, TrayState, groupExports } from 'src/app/services/download-tray.service';
@@ -80,7 +81,7 @@ export default {
   title: 'Components/DownloadTray',
   component: DownloadTrayComponent,
   decorators: [
-    applicationConfig({ providers: [importProvidersFrom(NoopAnimationsModule)] }),
+    applicationConfig({ providers: [importProvidersFrom(BrowserAnimationsModule), provideHttpClient()] }),
     moduleMetadata({ imports: [DownloadTrayComponent] })
   ],
   parameters: { layout: 'fullscreen' }

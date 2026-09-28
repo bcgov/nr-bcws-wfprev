@@ -1,5 +1,6 @@
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReportJob } from 'src/app/components/models';
 import { DownloadTrayService, TrayState, groupExports } from 'src/app/services/download-tray.service';
@@ -45,7 +46,7 @@ describe('DownloadTrayComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [DownloadTrayComponent, NoopAnimationsModule],
+      imports: [DownloadTrayComponent, NoopAnimationsModule, MatIconTestingModule],
       providers: [{ provide: DownloadTrayService, useValue: tray }]
     }).compileComponents();
 
