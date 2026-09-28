@@ -31,6 +31,12 @@ spring:
 wfdm:
   restUrl: ${WFDM_BASE_URL}
 
+reportJobs:
+  bucket: ${REPORT_EXPORT_BUCKET}
+  region: ${AWS_REGION}
+  lambdaFunctionName: ${REPORT_GENERATOR_FUNCTION_NAME}
+  lambdaTimeoutSeconds: ${WFPREV_LAMBDA_TIMEOUT}
+
 logging:
   level:
     root: INFO

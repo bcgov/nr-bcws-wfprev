@@ -1,4 +1,4 @@
-import { DownloadOption, ReportType } from 'src/app/components/models';
+import { DownloadOption, ReportJobStatus, ReportType } from 'src/app/components/models';
 
 export const Messages = {
   activityCreatedFailure: 'Activity Created Failed',
@@ -19,8 +19,7 @@ export const Messages = {
   fileDownloadInProgress: 'File download in progress. Please wait',
   fileDownloadRequiresFilter: 'Filters must be applied to download file.',
   fileDownloadSuccess: 'File downloaded successfully.',
-  fileDownloadPartialFailure: 'Some files could not be downloaded. The files that downloaded are complete.',
-  resultsNoSpatialFiles: 'RESULTS spreadsheet downloaded. The selected projects have no activity spatial files.',
+  fileDownloadStartFailure: "The download couldn't be started. Try again.",
   fileUploadFailure: 'File Uploaded Failed',
   fileUploadInProgress: 'File upload in progress, Please wait',
   fileUploadSuccess: 'File Uploaded Successfully',
@@ -241,17 +240,41 @@ export const DownloadReportTypes: Record<string, ReportType> = {
   [DownloadTypes.RESULTS_EXCEL]: 'RESULTS_XLSX'
 };
 
-export const DownloadFileNames: Record<ReportType, string> = {
-  PROJECT_CSV: 'ReMi_Fiscal.zip',
-  PROJECT_XLSX: 'ReMi_Fiscal.xlsx',
-  RESULTS_CSV: 'results-report.zip',
-  RESULTS_XLSX: 'ReMi_RESULTS.xlsx',
-  RESULTS_SPATIAL: 'ReMi_RESULTS_Spatial.zip'
-};
-
 // Report types requested together with the chosen one; each is saved as its own file.
 export const DownloadCompanionReportTypes: Partial<Record<ReportType, ReportType[]>> = {
   RESULTS_XLSX: ['RESULTS_SPATIAL']
+};
+
+export const ReportJobStatuses = {
+  FAILED: 'FAILED',
+  NO_FILES: 'NO_FILES',
+  PREPARING: 'PREPARING',
+  READY: 'READY'
+} as const satisfies Record<ReportJobStatus, ReportJobStatus>;
+
+export const DownloadTrayText = {
+  CLEAR_FINISHED: 'Clear finished',
+  COLLAPSE: 'Collapse downloads',
+  COPY: 'Copy',
+  DETAILS: 'Details',
+  EXPAND: 'Expand downloads',
+  EXPIRED: 'Expired',
+  FAILED: 'Failed',
+  FAILED_FALLBACK_MESSAGE: 'Something went wrong.',
+  HIDE: 'Hide downloads',
+  NO_DOWNLOADS: 'No downloads.',
+  NO_FILTERS: 'All projects',
+  NO_SPATIAL_FILES: 'No spatial files',
+  NO_SPATIAL_FILES_STATUS: 'None of these projects have any',
+  PREPARING: 'Preparing…',
+  READY: 'Ready',
+  REFERENCE: 'Reference',
+  SAVED: 'Saved',
+  SHOW: 'Show downloads',
+  STATE_FAILED: 'A file failed',
+  STATE_PREPARING: 'Preparing',
+  STATE_READY: 'Ready to save',
+  TITLE: 'Downloads'
 };
 
 export const NumericLimits = {

@@ -2,7 +2,7 @@ import { HttpClient, HttpRequest, HttpHeaders, HttpEventType, HttpResponse, Http
 import { Injectable } from "@angular/core";
 import { UUID } from "angular2-uuid";
 import { catchError, map, Observable, throwError } from "rxjs";
-import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, NewPerformanceUpdate, PerformanceUpdate, Project, ProjectBoundary, ProjectFiscal, ProjectLocation, ReportRequest } from "src/app/components/models";
+import { ActivityBoundary, EvaluationCriteriaSummaryModel, FeaturesResponse, NewPerformanceUpdate, PerformanceUpdate, Project, ProjectBoundary, ProjectFiscal, ProjectLocation } from "src/app/components/models";
 import { AppConfigService } from "src/app/services/app-config.service";
 import { TokenService } from "src/app/services/token.service";
 
@@ -654,24 +654,6 @@ export class ProjectService {
         );
     }
 
-
-    downloadProjects(body: ReportRequest): Observable<Blob> {
-        const url = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/reports`;
-
-        return this.httpClient.post<Blob>(url, body, {
-            headers: {
-                Authorization: `Bearer ${this.tokenService.getOauthToken()}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/octet-stream'
-            },
-            responseType: 'blob' as 'json' 
-        }).pipe(
-            catchError((error) => {
-                console.error('Error downloading projects', error);
-                return throwError(() => new Error('Failed to download projects'));
-            })
-        );
-    }
 
     getPerformanceUpdates (projectGuid: string, projectPlanFiscalGuid: string): Observable<any> {
         const baseUrl = `${this.appConfigService.getConfig().rest['wfprev']}/wfprev-api/projects`;

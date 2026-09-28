@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ErrorPageComponent } from './components/error-page/error-page/error-page.component';
+import { DownloadTrayComponent } from './components/shared/download-tray/download-tray.component';
 import { CustomDateTimeProvider, CustomOAuthLogger } from './utils';
 import { MapConfigService } from './services/map-config.service';
 
@@ -27,6 +28,7 @@ import { MapConfigService } from './services/map-config.service';
     BrowserAnimationsModule,
     MatDialogModule,
     ErrorPageComponent,
+    DownloadTrayComponent,
   ],
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),

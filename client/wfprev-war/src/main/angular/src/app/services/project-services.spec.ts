@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { TokenService } from 'src/app/services/token.service';
-import { EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal, ReportRequest } from 'src/app/components/models';
+import { EvaluationCriteriaSummaryModel, FeaturesResponse, Project, ProjectBoundary, ProjectFiscal } from 'src/app/components/models';
 import { ProjectService } from 'src/app/services/project-services';
 import { HttpEventType } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -887,56 +887,6 @@ describe('ProjectService', () => {
 
     const req = httpMock.expectOne(`http://mock-api.com/wfprev-api/projects/${projectGuid}/evaluationCriteriaSummary/${summaryGuid}`);
     req.flush('Error', { status: 500, statusText: 'Server Error' });
-  });
-
-  it('should download projects and return blob', () => {
-    const body: ReportRequest = {
-      reportType: 'PROJECT_CSV',
-      projects: [
-        { projectGuid: 'guid1' },
-        { projectGuid: 'guid2' }
-      ]
-    };
-
-    const mockBlob = new Blob(['test data'], { type: 'text/csv' });
-
-    service.downloadProjects(body).subscribe((result) => {
-      expect(result).toEqual(mockBlob);
-    });
-
-    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/reports');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.responseType).toBe('blob');
-    expect(req.request.body).toEqual(body);
-    req.flush(mockBlob);
-  });
-
-  it('should handle error when downloading projects', () => {
-    const body: ReportRequest = {
-      reportType: 'PROJECT_CSV',
-      projects: [
-        { projectGuid: 'guid1' },
-        { projectGuid: 'guid2' }
-      ]
-    };
-
-    service.downloadProjects(body).subscribe({
-      next: () => fail('Should have failed'),
-      error: (err) => {
-        expect(err).toBeTruthy();
-        expect(err.message).toBe('Failed to download projects');
-      }
-    });
-
-    const req = httpMock.expectOne('http://mock-api.com/wfprev-api/reports');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.responseType).toBe('blob'); 
-    expect(req.request.body).toEqual(body);
-    expect(req.request.headers.get('Accept')).toBe('application/octet-stream');
-    expect(req.request.headers.get('Content-Type')).toBe('application/json');
-
-    const errorBlob = new Blob(['Error'], { type: 'text/plain' });
-    req.flush(errorBlob, { status: 500, statusText: 'Server Error' });
   });
 
    it('should delete evaluation criteria summary', () => {

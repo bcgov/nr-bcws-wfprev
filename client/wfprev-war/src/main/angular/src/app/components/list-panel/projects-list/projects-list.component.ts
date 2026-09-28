@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import L from 'leaflet';
 import 'leaflet.markercluster';
@@ -20,10 +22,12 @@ import { ProjectService } from 'src/app/services/project-services';
 import { SharedCodeTableService } from 'src/app/services/shared-code-table.service';
 import { SharedService } from 'src/app/services/shared-service';
 import { getActiveMap, ResourcesRoutes } from 'src/app/utils';
-import { CodeTableKeys, CodeTableNames, DownloadCompanionReportTypes, DownloadFileNames, DownloadOptions, DownloadReportTypes, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
+import { CodeTableKeys, CodeTableNames, DownloadCompanionReportTypes, DownloadOptions, DownloadReportTypes, DownloadTrayText, Messages, WildfireOrgUnitTypeCodes } from 'src/app/utils/constants';
 import { getBluePinIcon, getFiscalYearDisplay, PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ReportRequest } from '../../models';
-import { catchError, forkJoin, map, of } from 'rxjs';
+import { take } from 'rxjs';
+import { buildFilterDescription } from 'src/app/utils/report-export-format';
+import { DownloadTrayService } from 'src/app/services/download-tray.service';
 import { ExpansionIndicatorComponent } from '../../shared/expansion-indicator/expansion-indicator.component';
 import { ProjectFilterStateService } from 'src/app/services/project-filter-state.service';
 import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions.service';
@@ -31,7 +35,7 @@ import { PermissionsService, WFPREV_ACTIONS } from 'src/app/services/permissions
 @Component({
     selector: 'wfprev-projects-list',
     standalone: true,
-    imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule],
+    imports: [MatSlideToggleModule, CommonModule, MatExpansionModule, MatTooltipModule, ExpansionIndicatorComponent, IconButtonComponent, DetailButtonComponent, MatSelectModule, StatusBadgeComponent, DownloadButtonComponent, MatProgressSpinnerModule, MatIconModule],
     templateUrl: './projects-list.component.html',
     styleUrls: ['./projects-list.component.scss']
 })
@@ -63,7 +67,9 @@ export class ProjectsListComponent implements OnInit {
   pageRowCount = 20;
   hasMore = true;
   protected readonly perms = inject(PermissionsService);
+  protected readonly downloadTray = inject(DownloadTrayService);
   protected readonly WFPREV_ACTIONS = WFPREV_ACTIONS;
+  protected readonly DownloadTrayText = DownloadTrayText;
 
   constructor(
     private readonly router: Router,
@@ -76,6 +82,10 @@ export class ProjectsListComponent implements OnInit {
     private readonly snackbarService: MatSnackBar,
     private readonly projectFilterStateService: ProjectFilterStateService,
   ) {
+    inject(MatIconRegistry).addSvgIcon(
+      'downloads-tray',
+      inject(DomSanitizer).bypassSecurityTrustResourceUrl('assets/icons/downloads-tray.svg')
+    );
   }
   ngOnInit(): void {
     this.loadCodeTables();
@@ -708,11 +718,6 @@ export class ProjectsListComponent implements OnInit {
       reportType: DownloadReportTypes[type]
     };
 
-    const snackRef = this.snackbarService.open(Messages.fileDownloadInProgress, 'Close', {
-      duration: undefined,
-      panelClass: 'snackbar-info'
-    });
-
     if (filters && Object.keys(filters).length > 0) {
       body.projectFilter = {
         programAreaGuids: sanitize(filters?.programAreaGuids ?? []),
@@ -726,49 +731,16 @@ export class ProjectsListComponent implements OnInit {
         searchText: filters.searchText
       };
     } else {
-      snackRef.dismiss();
       this.snackbarService.open(Messages.fileDownloadRequiresFilter, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
       return;
     }
 
-    // RESULTS also downloads its spatial ZIP. Each request fails on its own, so one failure doesn't
-    // throw away a file that did arrive.
+    // Each file is prepared as its own background job; the download tray shows them together.
+    // RESULTS also exports its spatial ZIP.
     const reportTypes = [body.reportType, ...(DownloadCompanionReportTypes[body.reportType] ?? [])];
-    forkJoin(reportTypes.map(reportType =>
-      this.projectService.downloadProjects({ ...body, reportType }).pipe(
-        map(blob => ({ reportType, blob, failed: false })),
-        catchError(err => {
-          console.error(`Download failed (${reportType})`, err);
-          return of({ reportType, blob: null as Blob | null, failed: true });
-        })
-      )
-    )).subscribe(results => {
-      snackRef.dismiss();
-      // A spatial request with no files answers 204, which arrives as a null body.
-      results.filter(r => r.blob && r.blob.size > 0)
-        .forEach(r => this.saveBlob(r.blob!, DownloadFileNames[r.reportType]));
-
-      const failures = results.filter(r => r.failed).length;
-      const noSpatialFiles = results.some(r => r.reportType === 'RESULTS_SPATIAL' && !r.failed && !r.blob?.size);
-      if (failures === results.length) {
-        this.snackbarService.open(Messages.fileDownloadFailure, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
-      } else if (failures > 0) {
-        this.snackbarService.open(Messages.fileDownloadPartialFailure, 'Close', { duration: 8000, panelClass: 'snackbar-error' });
-      } else if (noSpatialFiles) {
-        this.snackbarService.open(Messages.resultsNoSpatialFiles, 'Close', { duration: 8000, panelClass: 'snackbar-success' });
-      } else {
-        this.snackbarService.open(Messages.fileDownloadSuccess, 'Close', { duration: 5000, panelClass: 'snackbar-success' });
-      }
-    });
-  }
-
-  private saveBlob(blob: Blob, fileName: string): void {
-    const url = globalThis.URL.createObjectURL(blob);
-    const a = globalThis.document.createElement('a');
-    a.download = fileName;
-    a.href = url;
-    a.click();
-    globalThis.URL.revokeObjectURL(url);
+    let codeTables: any = {};
+    this.sharedCodeTableService.codeTables$.pipe(take(1)).subscribe(tables => codeTables = tables);
+    this.downloadTray.start(reportTypes, body, buildFilterDescription(filters, codeTables));
   }
 
   private addProjectToDisplayedList(newProject: any): void {

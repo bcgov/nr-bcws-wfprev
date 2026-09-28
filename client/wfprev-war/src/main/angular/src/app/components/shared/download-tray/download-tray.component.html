@@ -1,0 +1,123 @@
+@if (tray.visible()) {
+  <section class="download-tray" [attr.aria-label]="DownloadTrayText.TITLE">
+    <div class="tray-header">
+      @switch (tray.state()) {
+        @case ('preparing') {
+          <mat-progress-spinner class="state-icon" mode="indeterminate" diameter="20" strokeWidth="3"
+            [attr.aria-label]="DownloadTrayText.STATE_PREPARING"></mat-progress-spinner>
+        }
+        @case ('failed') {
+          <img class="state-icon" src="assets/error-filled-icon.svg" [attr.alt]="DownloadTrayText.STATE_FAILED" />
+        }
+        @case ('ready') {
+          <img class="state-icon" src="assets/complete-icon.svg" [attr.alt]="DownloadTrayText.STATE_READY" />
+        }
+        @default {
+          <mat-icon class="state-icon" svgIcon="download" aria-hidden="true"></mat-icon>
+        }
+      }
+      <span class="tray-title">{{ DownloadTrayText.TITLE }}</span>
+      <button type="button" class="header-button" (click)="tray.toggleExpanded()"
+        [attr.aria-label]="tray.expanded() ? DownloadTrayText.COLLAPSE : DownloadTrayText.EXPAND"
+        [attr.aria-expanded]="tray.expanded()">
+        <mat-icon class="chevron" [svgIcon]="tray.expanded() ? 'chevron-down' : 'chevron-up'"
+          aria-hidden="true"></mat-icon>
+      </button>
+      <button type="button" class="header-button" (click)="tray.hide()" [attr.aria-label]="DownloadTrayText.HIDE">
+        <mat-icon svgIcon="close" aria-hidden="true"></mat-icon>
+      </button>
+    </div>
+
+    @if (tray.expanded()) {
+      <div class="tray-body">
+        @for (download of tray.exports(); track download.exportGroupGuid) {
+          <div class="tray-export">
+            <div class="export-heading">
+              <div class="export-text">
+                <div class="export-time" [class.muted]="download.expired">
+                  {{ time(download) }}@if (download.expired) { · {{ DownloadTrayText.EXPIRED }} }
+                </div>
+                <div class="export-filters" tabindex="0" [matTooltip]="tooltip(download)"
+                  matTooltipClass="download-tray-tooltip" [attr.aria-label]="'Filters: ' + tooltip(download)">
+                  {{ summary(download) }}
+                </div>
+              </div>
+              @if (download.expired) {
+                <button type="button" class="file-action" (click)="tray.runAgain(download)"
+                  [attr.aria-label]="'Run the ' + time(download) + ' download again'">
+                  <mat-icon svgIcon="refresh" aria-hidden="true"></mat-icon>
+                </button>
+              }
+            </div>
+
+            @if (!download.expired) {
+              <div class="export-files">
+                @for (job of download.jobs; track job.jobGuid) {
+                  <div class="tray-file" [class.failed]="job.status === ReportJobStatuses.FAILED">
+                    @switch (job.status) {
+                      @case (ReportJobStatuses.FAILED) {
+                        <img class="file-icon failed" src="assets/error-filled-icon.svg" alt="" />
+                      }
+                      @case (ReportJobStatuses.NO_FILES) {
+                        <mat-icon class="file-icon info" svgIcon="info" aria-hidden="true"></mat-icon>
+                      }
+                      @default {
+                        <mat-icon class="file-icon" svgIcon="file" aria-hidden="true"></mat-icon>
+                      }
+                    }
+                    <div class="file-text">
+                      <span class="file-name" [class.muted]="job.status === ReportJobStatuses.NO_FILES">{{ fileLabel(job) }}</span>
+                      <span class="file-status" [class.ready]="job.status === ReportJobStatuses.READY && !job.downloaded && !job.expired"
+                        [class.failed]="job.status === ReportJobStatuses.FAILED">
+                        {{ statusText(job) }}
+                        @if (job.status === ReportJobStatuses.FAILED) {
+                          · <button type="button" class="details-link" [matMenuTriggerFor]="details"
+                            [attr.aria-label]="'Why ' + job.fileName + ' failed'">{{ DownloadTrayText.DETAILS }}</button>
+                        }
+                      </span>
+                      <mat-menu #details="matMenu" class="download-tray-details" xPosition="before">
+                        <div class="details-panel" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                          <p class="details-message">{{ job.errorMessage || DownloadTrayText.FAILED_FALLBACK_MESSAGE }}</p>
+                          <div class="details-reference">
+                            <span>{{ DownloadTrayText.REFERENCE }} <strong>{{ job.reference }}</strong></span>
+                            <button type="button" class="details-copy" [cdkCopyToClipboard]="job.reference"
+                              [attr.aria-label]="'Copy reference ' + job.reference">{{ DownloadTrayText.COPY }}</button>
+                          </div>
+                        </div>
+                      </mat-menu>
+                    </div>
+
+                    @if (job.status === ReportJobStatuses.PREPARING) {
+                      <mat-progress-spinner class="file-spinner" mode="indeterminate" diameter="20" strokeWidth="3"
+                        aria-hidden="true"></mat-progress-spinner>
+                    } @else if (isSavable(job)) {
+                      <button type="button" class="file-action" (click)="tray.save(job)"
+                        [attr.aria-label]="(job.downloaded ? 'Save ' + job.fileName + ' again' : 'Save ' + job.fileName)">
+                        <mat-icon svgIcon="download" aria-hidden="true"></mat-icon>
+                      </button>
+                    } @else if (isRetryable(job)) {
+                      <button type="button" class="file-action" (click)="tray.retry(job)"
+                        [attr.aria-label]="(job.expired ? 'Run ' : 'Retry ') + job.fileName + (job.expired ? ' again' : '')">
+                        <mat-icon svgIcon="refresh" aria-hidden="true"></mat-icon>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        } @empty {
+          <p class="tray-empty">{{ DownloadTrayText.NO_DOWNLOADS }}</p>
+        }
+
+        <div class="tray-footer">
+          <button type="button" class="clear-button" (click)="tray.clearFinished()" [disabled]="!tray.hasFinished()">
+            {{ DownloadTrayText.CLEAR_FINISHED }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="visually-hidden" aria-live="polite">{{ tray.announcement() }}</div>
+  </section>
+}

@@ -209,6 +209,55 @@ resource "aws_iam_role_policy_attachment" "attach_invoke_lambda" {
   policy_arn = aws_iam_policy.invoke_lambda.arn
 }
 
+# Report exports: the API writes job input and finished files to the export bucket, checks
+# whether files exist (ListBucket makes a missing object a 404 rather than a 403), signs
+# download URLs, and invokes the report Lambda.
+resource "aws_iam_role_policy" "wfprev_app_report_exports" {
+  name = "wfprev-report-exports"
+  role = aws_iam_role.wfprev_app_container_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:PutObject", "s3:GetObject", "s3:AbortMultipartUpload"],
+        Resource = "${aws_s3_bucket.report_exports.arn}/jobs/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = "s3:ListBucket",
+        Resource = aws_s3_bucket.report_exports.arn,
+        Condition = {
+          StringLike = { "s3:prefix" = ["jobs/*"] }
+        }
+      },
+      {
+        Effect   = "Allow",
+        Action   = "lambda:InvokeFunction",
+        Resource = aws_lambda_function.report_generator.arn
+      }
+    ]
+  })
+}
+
+# The report Lambda reads its input from the export bucket and writes the finished XLSX back.
+resource "aws_iam_role_policy" "lambda_report_exports" {
+  name = "wfprev-lambda-report-exports"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:GetObject", "s3:PutObject"],
+        Resource = "${aws_s3_bucket.report_exports.arn}/jobs/*"
+      }
+    ]
+  })
+}
+
 # Output for the AWS Account ID
 output "github_actions_account_id" {
   value       = regex("^arn:aws:iam::([0-9]+):", aws_iam_role.github_actions_role.arn)[0]

@@ -89,6 +89,13 @@ body {
   }
 }
 
+// Download tray: the full filter list, one filter per line
+.download-tray-tooltip .mdc-tooltip__surface {
+  white-space: pre-line;
+  text-align: left;
+  max-width: 320px;
+}
+
 html,
 body {
   font-family: var(--wf-font-family-main) !important;
