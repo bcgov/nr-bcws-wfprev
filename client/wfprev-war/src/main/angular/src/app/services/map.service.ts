@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
-import { TokenService } from './token.service';
-import { StyleSpecification } from 'maplibre-gl';
-import * as L from 'leaflet';
-import { AppConfigService } from './app-config.service';
-import { SmkService } from './smk.service';
-import { baseMapsToolConfig } from './map-config.service/map.config';
+import { Injectable } from '@angular/core';
 import '@maplibre/maplibre-gl-leaflet';
+import L from 'leaflet';
+import { StyleSpecification } from 'maplibre-gl';
+import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
+import { AppConfigService } from './app-config.service';
+import { baseMapsToolConfig } from './map-config.service/map.config';
+import { SmkService } from './smk.service';
+import { TokenService } from './token.service';
 
 // The Leaflet pane SMK's vector basemaps are drawn in (see installBasemapPanePatch)
 const BASEMAP_VECTOR_PANE = 'wf-basemap-vector';
