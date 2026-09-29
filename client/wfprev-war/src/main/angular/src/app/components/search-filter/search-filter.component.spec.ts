@@ -396,4 +396,14 @@ describe('SearchFilterComponent', () => {
       (component as any).previousSelections.get('selectedForestDistrict')
     ).toEqual([component.ALL, '1', '2']);
   });
+
+  it('search input should opt out of browser autofill', () => {
+    fixture.detectChanges();
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input.search-input');
+
+    expect(input.type).toBe('search');
+    expect(input.name).toBe('project-search');
+    expect(input.getAttribute('autocomplete')).toBe('off');
+  });
 });
