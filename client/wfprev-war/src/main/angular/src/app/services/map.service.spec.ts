@@ -888,7 +888,7 @@ describe('MapService', () => {
     });
   });
 
-  describe('createProjectBoundaryLayer', () => {
+  describe('createBoundaryLayer', () => {
     let mapMock: any;
     let paneStore: Record<string, any>;
 
@@ -904,92 +904,47 @@ describe('MapService', () => {
     });
 
     it('ensures pane and uses z-index 401', () => {
-      service.createProjectBoundaryLayer(mapMock, { programAreaGuids: ['g1'] });
+      service.createBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, 2025);
 
-      expect(mapMock.getPane).toHaveBeenCalledWith('pane-project-boundary-gl');
-      expect(mapMock.createPane).toHaveBeenCalledWith('pane-project-boundary-gl');
-      expect(paneStore['pane-project-boundary-gl'].style.zIndex).toBe('401');
+      expect(mapMock.getPane).toHaveBeenCalledWith('pane-boundary-gl');
+      expect(mapMock.createPane).toHaveBeenCalledWith('pane-boundary-gl');
+      expect(paneStore['pane-boundary-gl'].style.zIndex).toBe('401');
     });
 
-    it('calls L.maplibreGL with proper style, tiles and minzoom', () => {
-      const layer = service.createProjectBoundaryLayer(mapMock, { programAreaGuids: ['g1', 'g2'] });
-      const args = (layer as any).__opts;
+    it('creates one maplibreGL layer with both boundary sources, filtered', () => {
+      service.createBoundaryLayer(mapMock, { programAreaGuids: ['g1', 'g2'] }, 2026);
 
-      expect(args.pane).toBe('pane-project-boundary-gl');
-      const tiles: string[] = args.style.sources.projectBoundary.tiles;
-      expect(tiles.length).toBe(1);
-      expect(tiles[0]).toContain('/tiles/project_boundary/{z}/{x}/{y}.mvt');
-      expect(tiles[0]).toContain('programAreaGuids=g1');
-      expect(tiles[0]).toContain('programAreaGuids=g2');
-      const ids = args.style.layers.map((l: any) => l.id);
-      expect(ids).toContain('project-boundary-fill');
-      expect(ids).toContain('project-boundary-line');
-      expect((layer as any).__opts).toBeDefined();
+      expect(maplibreSpy).toHaveBeenCalledTimes(1);
+      const args = maplibreSpy.calls.mostRecent().args[0];
+      expect(args.pane).toBe('pane-boundary-gl');
+
+      const sources = args.style.sources;
+      expect(Object.keys(sources)).toEqual(['activityBoundary', 'projectBoundary']);
+      for (const [source, path] of [['activityBoundary', 'activity_boundary'], ['projectBoundary', 'project_boundary']]) {
+        const tiles: string[] = sources[source].tiles;
+        expect(tiles.length).toBe(1);
+        expect(tiles[0]).toContain(`/tiles/${path}/{z}/{x}/{y}.mvt`);
+        expect(tiles[0]).toContain('programAreaGuids=g1');
+        expect(tiles[0]).toContain('programAreaGuids=g2');
+      }
     });
 
-    it('transformRequest attaches Authorization ONLY for API base URL', () => {
-      const layer = service.createProjectBoundaryLayer(mapMock, { programAreaGuids: ['g1'] });
-      const opts = (layer as any).__opts;
-      const tr = opts.transformRequest as (u: string) => any;
+    it('draws project boundaries over activity boundaries, from zoom 10', () => {
+      const layer = service.createBoundaryLayer(mapMock, {}, 2026);
+      const layers = (layer as any).__opts.style.layers;
 
-      const apiUrl = 'http://localhost:9876/wfprev-api/tiles/project_boundary/1/2/3.mvt';
-      const res1 = tr(apiUrl);
-      expect(res1.url).toBe(apiUrl);
-      expect(res1.headers).toEqual({ Authorization: 'Bearer TEST_TOKEN' });
-
-      const otherUrl = 'https://example.com/some.json';
-      const res2 = tr(otherUrl);
-      expect(res2.url).toBe(otherUrl);
-      expect(res2.headers).toBeUndefined();
-    });
-  });
-
-  describe('createActivityBoundaryLayer', () => {
-    let mapMock: any;
-    let paneStore: Record<string, any>;
-
-    beforeEach(() => {
-      paneStore = {};
-      mapMock = {
-        getPane: jasmine.createSpy('getPane').and.callFake((name: string) => paneStore[name] || null),
-        createPane: jasmine.createSpy('createPane').and.callFake((name: string) => {
-          paneStore[name] = { style: {} };
-          return paneStore[name];
-        })
-      };
-    });
-
-    it('ensures pane and uses z-index 400', () => {
-      service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, 2025);
-
-      expect(mapMock.getPane).toHaveBeenCalledWith('pane-activity-boundary-gl');
-      expect(mapMock.createPane).toHaveBeenCalledWith('pane-activity-boundary-gl');
-      expect(paneStore['pane-activity-boundary-gl'].style.zIndex).toBe('400');
-    });
-
-    it('calls L.maplibreGL with proper style, tiles and minzoom', () => {
-      const layer = service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1', 'g2'] }, 2026);
-      const args = (layer as any).__opts;
-
-      // pane
-      expect(args.pane).toBe('pane-activity-boundary-gl');
-
-      // tiles url with query string in the source
-      const tiles: string[] = args.style.sources.activityBoundary.tiles;
-      expect(tiles.length).toBe(1);
-      expect(tiles[0]).toContain('/tiles/activity_boundary/{z}/{x}/{y}.mvt');
-      expect(tiles[0]).toContain('programAreaGuids=g1');
-      expect(tiles[0]).toContain('programAreaGuids=g2');
-
-      // layers present
-      const ids = args.style.layers.map((l: any) => l.id);
-      expect(ids).toContain('activity-boundary-fill');
-      expect(ids).toContain('activity-boundary-line');
+      expect(layers.map((l: any) => l.id)).toEqual([
+        'activity-boundary-fill',
+        'activity-boundary-line',
+        'project-boundary-fill',
+        'project-boundary-line'
+      ]);
+      expect(layers.every((l: any) => l.minzoom === 10)).toBeTrue();
     });
 
     it('line layer uses fiscal-year based color expression with provided currentFiscalYear', () => {
       const currentFY = 2024;
-      const layer = service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, currentFY);
+      const layer = service.createBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, currentFY);
       const args = (layer as any).__opts;
 
       const line = args.style.layers.find((l: any) => l.id === 'activity-boundary-line');
@@ -1024,7 +979,7 @@ describe('MapService', () => {
     });
 
     it('transformRequest attaches Authorization ONLY for API base URL', () => {
-      const layer = service.createActivityBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, 2025);
+      const layer = service.createBoundaryLayer(mapMock, { programAreaGuids: ['g1'] }, 2025);
       const opts = (layer as any).__opts;
       const tr = opts.transformRequest as (u: string) => any;
 

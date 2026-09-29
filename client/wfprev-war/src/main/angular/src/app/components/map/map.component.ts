@@ -51,8 +51,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly activityBoundaryGroup: L.LayerGroup = L.layerGroup();
   private readonly projectBoundaryGroup: L.LayerGroup = L.layerGroup();
   private readonly featureCache = new Map<string, Project>();
-  private projectBoundaryLayer: L.Layer | null = null;
-  private activityBoundaryLayer: L.Layer | null = null;
+  private boundaryLayer: L.Layer | null = null;
   legendControl: L.Control | null = null;
   // fiscal year starts April 1
   currentFiscalYear = new Date().getMonth() >= 3
@@ -82,7 +81,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (!map) return;
 
     map.closePopup();
-    for (const layer of [this.markersClusterGroup, this.projectBoundaryLayer, this.activityBoundaryLayer]) {
+    for (const layer of [this.markersClusterGroup, this.boundaryLayer]) {
       if (layer && map.hasLayer(layer)) {
         map.removeLayer(layer);
       }
@@ -446,37 +445,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
     }
 
+    if (this.boundaryLayer && map.hasLayer(this.boundaryLayer)) {
+      map.removeLayer(this.boundaryLayer);
+    }
+
     if (validLocations.length > 0) {
-      const projectGuids = Array.from(
-        new Set(validLocations.map(v => v.projectGuid))
-      );
-
-      if (this.projectBoundaryLayer && map.hasLayer(this.projectBoundaryLayer)) {
-        map.removeLayer(this.projectBoundaryLayer);
-      }
-      if (this.activityBoundaryLayer && map.hasLayer(this.activityBoundaryLayer)) {
-        map.removeLayer(this.activityBoundaryLayer);
-      }
-
-      if (projectGuids.length > 0) {
-        this.projectBoundaryLayer = this.mapService.createProjectBoundaryLayer(map, filters);
-        this.activityBoundaryLayer = this.mapService.createActivityBoundaryLayer(map, filters, this.currentFiscalYear);
-        map.addLayer(this.projectBoundaryLayer);
-        map.addLayer(this.activityBoundaryLayer);
-      } else {
-        this.projectBoundaryLayer = null;
-        this.activityBoundaryLayer = null;
-      }
-    }  else {
+      this.boundaryLayer = this.mapService.createBoundaryLayer(map, filters, this.currentFiscalYear);
+      map.addLayer(this.boundaryLayer);
+    } else {
       console.log('[Map] No valid project locations to add markers for.');
-      if (this.projectBoundaryLayer && map.hasLayer(this.projectBoundaryLayer)) {
-        map.removeLayer(this.projectBoundaryLayer);
-      }
-      if (this.activityBoundaryLayer && map.hasLayer(this.activityBoundaryLayer)) {
-        map.removeLayer(this.activityBoundaryLayer);
-      }
-      this.projectBoundaryLayer = null;
-      this.activityBoundaryLayer = null;
+      this.boundaryLayer = null;
     }
     console.log(`Map added ${validLocations.length} project location markers`);
   }

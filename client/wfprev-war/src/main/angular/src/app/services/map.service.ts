@@ -11,6 +11,8 @@ import { TokenService } from './token.service';
 
 // The Leaflet pane SMK's vector basemaps are drawn in (see installBasemapPanePatch)
 const BASEMAP_VECTOR_PANE = 'wf-basemap-vector';
+// The Leaflet pane the project and activity boundaries are drawn in (see createBoundaryLayer)
+const BOUNDARY_PANE = 'pane-boundary-gl';
 
 @Injectable({ providedIn: 'root' })
 export class MapService {
@@ -533,42 +535,22 @@ export class MapService {
     return query ? `?${query}` : '';
   }
 
-  createProjectBoundaryLayer(map: L.Map, filters: any): L.Layer {
-    this.ensurePane(map, 'pane-project-boundary-gl', 401);
+  /**
+   * The project and activity boundaries as one MapLibre layer. Each MapLibre layer is a WebGL map of its own that
+   * redraws on every zoom, on top of SMK's vector basemap, so they share one. Activity boundaries are drawn first,
+   * so project boundaries are drawn over them.
+   */
+  createBoundaryLayer(map: L.Map, filters: any, currentFiscalYear: number): L.Layer {
+    this.ensurePane(map, BOUNDARY_PANE, 401);
 
-    const tiles = `${this.apiBaseUrl}/tiles/project_boundary/{z}/{x}/{y}.mvt${this.toQueryString(filters)}`;
-
-    const style: StyleSpecification = {
-      version: 8,
-      sources: {
-        projectBoundary: { type: 'vector', tiles: [tiles] }
-      },
-      layers: [
-        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 },  minzoom: 10 },
-        { id: 'project-boundary-line', type: 'line', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'line-color': '#000', 'line-width': 2 }, minzoom: 10 }
-      ]
-    };
-
-    const token = this.tokenService.getOauthToken?.();
-    return this.createMaplibreGLLayer({
-      style,
-      pane: 'pane-project-boundary-gl',
-      transformRequest: (url: string) =>
-        token && url.startsWith(this.apiBaseUrl)
-          ? { url, headers: { Authorization: `Bearer ${token}` } }
-          : { url }
-    });
-  }
-
-  createActivityBoundaryLayer(map: L.Map, filters: any, currentFiscalYear: number): L.Layer {
-    this.ensurePane(map, 'pane-activity-boundary-gl', 400);
-
-    const tiles = `${this.apiBaseUrl}/tiles/activity_boundary/{z}/{x}/{y}.mvt${this.toQueryString(filters)}`;
+    const query = this.toQueryString(filters);
+    const tiles = (layer: string) => `${this.apiBaseUrl}/tiles/${layer}/{z}/{x}/{y}.mvt${query}`;
 
     const style: StyleSpecification = {
       version: 8,
       sources: {
-        activityBoundary: { type: 'vector', tiles: [tiles] }
+        activityBoundary: { type: 'vector', tiles: [tiles('activity_boundary')] },
+        projectBoundary: { type: 'vector', tiles: [tiles('project_boundary')] }
       },
       layers: [
         { id: 'activity-boundary-fill', type: 'fill', source: 'activityBoundary', 'source-layer': 'activity_boundary', paint: { 'fill-opacity': 0.1 }, minzoom: 10 },
@@ -587,14 +569,16 @@ export class MapService {
             ],
             'line-width': 2
           }
-        }
+        },
+        { id: 'project-boundary-fill', type: 'fill', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'fill-opacity': 0.1 }, minzoom: 10 },
+        { id: 'project-boundary-line', type: 'line', source: 'projectBoundary', 'source-layer': 'project_boundary', paint: { 'line-color': '#000', 'line-width': 2 }, minzoom: 10 }
       ]
     };
 
     const token = this.tokenService.getOauthToken?.();
     return this.createMaplibreGLLayer({
       style,
-      pane: 'pane-activity-boundary-gl',
+      pane: BOUNDARY_PANE,
       transformRequest: (url: string) =>
         token && url.startsWith(this.apiBaseUrl)
           ? { url, headers: { Authorization: `Bearer ${token}` } }

@@ -179,7 +179,7 @@ describe('MapComponent', () => {
     });
 
     mapConfigServiceMock = jasmine.createSpyObj<MapConfigService>('MapConfigService', ['getMapConfig', 'getBaseConfig', 'getLayersConfig']);
-    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'detachSMK', 'reattachSMK', 'createProjectBoundaryLayer', 'createActivityBoundaryLayer', 'addLayersToExistingSMKInstance']);
+    mapServiceMock = jasmine.createSpyObj<MapService>('MapService', ['getMapIndex', 'setMapIndex', 'createSMK', 'getSMKInstance', 'clearSMKInstance', 'setContainerId', 'destroySMK', 'detachSMK', 'reattachSMK', 'createBoundaryLayer', 'addLayersToExistingSMKInstance']);
     mapContainer = jasmine.createSpyObj('ElementRef', ['nativeElement']);
     bboxParam = null;
 
@@ -396,11 +396,9 @@ describe('MapComponent', () => {
       const map = smk.$viewer.map;
       mapServiceMock.getSMKInstance.and.returnValue(smk);
       const markers = {} as any;
-      const projectBoundaries = {} as any;
-      const activityBoundaries = {} as any;
+      const boundaries = {} as any;
       (component as any).markersClusterGroup = markers;
-      (component as any).projectBoundaryLayer = projectBoundaries;
-      (component as any).activityBoundaryLayer = activityBoundaries;
+      (component as any).boundaryLayer = boundaries;
       component.legendControl = jasmine.createSpyObj('Control', ['remove']);
       map.hasLayer.and.returnValue(true);
 
@@ -408,8 +406,7 @@ describe('MapComponent', () => {
 
       expect(map.closePopup).toHaveBeenCalled();
       expect(map.removeLayer).toHaveBeenCalledWith(markers);
-      expect(map.removeLayer).toHaveBeenCalledWith(projectBoundaries);
-      expect(map.removeLayer).toHaveBeenCalledWith(activityBoundaries);
+      expect(map.removeLayer).toHaveBeenCalledWith(boundaries);
       expect(component.legendControl!.remove).toHaveBeenCalled();
       expect(mapServiceMock.detachSMK).toHaveBeenCalled();
       expect(mapServiceMock.destroySMK).not.toHaveBeenCalled();
@@ -836,11 +833,10 @@ describe('MapComponent', () => {
 
 
       // default returns for factory methods
-      mapServiceMock.createProjectBoundaryLayer.and.returnValue({ id: 'proj-layer' } as any);
-      mapServiceMock.createActivityBoundaryLayer.and.returnValue({ id: 'act-layer' } as any);
+      mapServiceMock.createBoundaryLayer.and.returnValue({ id: 'boundary-layer' } as any);
     });
 
-    it('creates project & activity layers with unique projectGuids and adds them to map', () => {
+    it('creates one boundary layer for valid locations and adds it to the map', () => {
       const locs = [
         { projectGuid: 'a', latitude: 1, longitude: 2 },
         { projectGuid: 'a', latitude: 3, longitude: 4 },
@@ -851,26 +847,14 @@ describe('MapComponent', () => {
 
       (component as any).updateProjectMarkersFromLocations(locs as any, mockFilters);
 
-      // verify MapService layer factories are called with correct args
-      expect(mapServiceMock.createProjectBoundaryLayer)
-        .toHaveBeenCalledWith(mockMap, mockFilters);
-      expect(mapServiceMock.createActivityBoundaryLayer)
-        .toHaveBeenCalledWith(mockMap, mockFilters, component.currentFiscalYear);
-
-      // and the returned layers are added to the map
-      expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'proj-layer' }));
-      expect(mockMap.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'act-layer' }));
+      expect(mapServiceMock.createBoundaryLayer).toHaveBeenCalledOnceWith(mockMap, mockFilters, component.currentFiscalYear);
+      expect(mockMap.addLayer).toHaveBeenCalledOnceWith(jasmine.objectContaining({ id: 'boundary-layer' }));
     });
 
-    it('removes existing layers before adding new ones', () => {
-      // seed existing layers on the component
-      const oldProj = { id: 'old-proj' } as any;
-      const oldAct = { id: 'old-act' } as any;
-      (component as any).projectBoundaryLayer = oldProj;
-      (component as any).activityBoundaryLayer = oldAct;
-
-      // make map think they are currently present
-      mockMap.hasLayer.and.callFake((l: any) => l === oldProj || l === oldAct);
+    it('removes the existing boundary layer before adding the new one', () => {
+      const old = { id: 'old-boundaries' } as any;
+      (component as any).boundaryLayer = old;
+      mockMap.hasLayer.and.callFake((l: any) => l === old);
 
       const locs = [
         { projectGuid: 'x', latitude: 49, longitude: -123 },
@@ -878,41 +862,33 @@ describe('MapComponent', () => {
 
       (component as any).updateProjectMarkersFromLocations(locs as any, {});
 
-      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldProj);
-      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldAct);
-      expect(mapServiceMock.createProjectBoundaryLayer).toHaveBeenCalled();
-      expect(mapServiceMock.createActivityBoundaryLayer).toHaveBeenCalled();
-      expect(mockMap.addLayer).toHaveBeenCalledTimes(2);
+      expect(mockMap.removeLayer).toHaveBeenCalledWith(old);
+      expect(mapServiceMock.createBoundaryLayer).toHaveBeenCalled();
+      expect(mockMap.addLayer).toHaveBeenCalledTimes(1);
+      expect((component as any).boundaryLayer).toEqual(jasmine.objectContaining({ id: 'boundary-layer' }));
     });
 
-    it('when no valid locations: removes layers and sets them to null (no new layer creation)', () => {
-      // seed existing layers
-      const oldProj = { id: 'old-proj' } as any;
-      const oldAct = { id: 'old-act' } as any;
-      (component as any).projectBoundaryLayer = oldProj;
-      (component as any).activityBoundaryLayer = oldAct;
-
-      mockMap.hasLayer.and.callFake((l: any) => l === oldProj || l === oldAct);
+    it('when no valid locations: removes the boundary layer and sets it to null (no new layer creation)', () => {
+      const old = { id: 'old-boundaries' } as any;
+      (component as any).boundaryLayer = old;
+      mockMap.hasLayer.and.callFake((l: any) => l === old);
 
       const empty: any[] = [];
       (component as any).updateProjectMarkersFromLocations(empty, {});
 
-      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldProj);
-      expect(mockMap.removeLayer).toHaveBeenCalledWith(oldAct);
-      expect(mapServiceMock.createProjectBoundaryLayer).not.toHaveBeenCalled();
-      expect(mapServiceMock.createActivityBoundaryLayer).not.toHaveBeenCalled();
-      expect((component as any).projectBoundaryLayer).toBeNull();
-      expect((component as any).activityBoundaryLayer).toBeNull();
+      expect(mockMap.removeLayer).toHaveBeenCalledWith(old);
+      expect(mapServiceMock.createBoundaryLayer).not.toHaveBeenCalled();
+      expect((component as any).boundaryLayer).toBeNull();
     });
 
-    it('passes currentFiscalYear to createActivityBoundaryLayer', () => {
+    it('passes currentFiscalYear to createBoundaryLayer', () => {
       component.currentFiscalYear = 2030;
 
       const locs = [{ projectGuid: 'p', latitude: 1, longitude: 1 }];
 
       (component as any).updateProjectMarkersFromLocations(locs as any, {});
 
-      expect(mapServiceMock.createActivityBoundaryLayer)
+      expect(mapServiceMock.createBoundaryLayer)
         .toHaveBeenCalledWith(mockMap, {}, 2030);
     });
   });
