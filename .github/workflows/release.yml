@@ -18,7 +18,7 @@ jobs:
       report_exists: ${{ steps.check_report.outputs.exists }}
     steps:
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: ${{ vars.REGISTRY }}
           username: ${{ github.actor }}
@@ -65,14 +65,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: ${{ vars.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure AWS Credentials for ECR
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
           role-session-name: wfprev-release-retag

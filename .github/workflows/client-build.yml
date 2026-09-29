@@ -33,7 +33,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - id: mapEnvironments
       name: Determine namespaces for deploy
@@ -53,14 +53,14 @@ jobs:
         fi
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
         role-session-name: wfprev-terraform-s3
         aws-region: ca-central-1
 
     - name: Replace tokens
-      uses: cschleiden/replace-tokens@v1.3
+      uses: cschleiden/replace-tokens@v1.4
       with:
           files: ${{ env.APP_CONFIG_FILE }}
       env:
@@ -79,7 +79,7 @@ jobs:
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '20'
 
