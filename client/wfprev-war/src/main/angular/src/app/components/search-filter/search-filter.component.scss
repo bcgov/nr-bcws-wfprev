@@ -55,6 +55,12 @@
     padding: 0 36px 0 8px;
     font-family: var(--wf-font-family-main) !important;
     font-size: 14px;
+    appearance: none;
+
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      appearance: none;
+    }
 
     &:focus {
       outline: none;

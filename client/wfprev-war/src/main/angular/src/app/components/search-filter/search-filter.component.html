@@ -3,7 +3,8 @@
     <!-- Search input -->
     <div class="field search-input textsearch">
       <mat-label class="label">Search</mat-label>
-      <input class="search-input" aria-label="Search" type="text" [formControl]="searchControl" />
+      <input class="search-input" id="project-search" name="project-search" aria-label="Search" type="search"
+        autocomplete="off" [formControl]="searchControl" />
       @if (searchControl.value.length) {
         <button mat-icon-button class="input-search-button" aria-label="Search" matTooltip="Search"
           (click)="clearSearch(); $event.stopPropagation()">
