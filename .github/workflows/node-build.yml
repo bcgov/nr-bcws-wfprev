@@ -34,10 +34,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
 
@@ -64,7 +64,7 @@ jobs:
 
       # Authenticate to AWS using OIDC and assume IAM role
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
           aws-region: ${{ env.AWS_REGION }}
@@ -72,13 +72,13 @@ jobs:
 
       # Docker setup
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: ${{ vars.REGISTRY }}
           username: ${{ github.actor }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ vars.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -100,7 +100,7 @@ jobs:
         run: ls -al ./node/${{ inputs.COMPONENT_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./node/${{ inputs.COMPONENT_NAME }}
           file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
@@ -117,7 +117,7 @@ jobs:
           docker push $IMAGE:${{ inputs.TAG }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.LZA_ECR_AWS_ACCOUNT_ID }}:role/Terraform-deploy
           role-session-name: wfprev-terraform-s3

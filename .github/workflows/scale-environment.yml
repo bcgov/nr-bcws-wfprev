@@ -61,7 +61,7 @@ jobs:
           echo "TAG_TO_USE=$TAG_TO_USE" >> "$GITHUB_OUTPUT"
           
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v6
         with:
             role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
             role-session-name: wfprev-terraform-s3
@@ -94,7 +94,7 @@ jobs:
 
     steps:
       - name: Configure AWS credentials for Terraform account (DEV/TEST/PROD)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v6
         with:
             role-to-assume:  ${{ secrets.AWS_TERRAFORM_ROLE_TO_ASSUME }}
             role-session-name: wfprev-terraform-s3
