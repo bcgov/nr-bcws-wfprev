@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ProjectFiscal } from 'src/app/components/models';
@@ -12,7 +12,7 @@ import { CodeTableServices } from 'src/app/services/code-table-services';
 import { ProjectService } from 'src/app/services/project-services';
 import { TokenService } from 'src/app/services/token.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
-import { EndorsementCode, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { EndorsementCode, FiscalStatuses, ModalMessages, ModalTitles } from 'src/app/utils/constants';
 import * as Tools from 'src/app/utils/tools';
 import { PlanFiscalStatusIcons } from 'src/app/utils/tools';
 import { ProjectFiscalsComponent } from './project-fiscals.component';
@@ -811,7 +811,27 @@ describe('ProjectFiscalsComponent', () => {
       'OK',
       { duration: 5000, panelClass: 'snackbar-success' }
     );
-    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true);
+    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true, 'guid-1');
+  });
+
+  it('should reload onto the promoted fiscal after approval', () => {
+    spyOn(component, 'loadProjectFiscals');
+    component.projectFiscals = [{ projectPlanFiscalGuid: 'guid-1' }, { projectPlanFiscalGuid: 'guid-2' }];
+    component.selectedTabIndex = 1;
+    const updatedFiscal = {
+      isApprovedInd: true,
+      isBcwsHQApprovedInd: true,
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED }
+    } as ProjectFiscal;
+    mockProjectService.updateProjectFiscal.and.returnValue(of({}));
+    component.onSaveEndorsement(updatedFiscal);
+    expect(mockProjectService.updateProjectFiscal).toHaveBeenCalledWith(
+      'test-guid',
+      'guid-2',
+      jasmine.objectContaining({ planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PREPARED } })
+    );
+    expect(component.loadProjectFiscals).toHaveBeenCalledWith(true, 'guid-2');
   });
 
   it('should show error snackbar if updateProjectFiscal fails', () => {
@@ -897,6 +917,60 @@ describe('ProjectFiscalsComponent', () => {
     component.loadProjectFiscals();
     tick();
     expect(component.selectedTabIndex).toBe(1);
+  }));
+
+  it('keeps the current fiscal selected on reload even when the URL fiscal differs', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: {
+        projectFiscals: [
+          { projectPlanFiscalGuid: 'X1', fiscalYear: 2025 },
+          { projectPlanFiscalGuid: 'X2', fiscalYear: 2024 },
+          { projectPlanFiscalGuid: 'X3', fiscalYear: 2023 },
+        ]
+      }
+    }));
+    component.focusedFiscalId = 'X1';
+    component.currentFiscalGuid = 'X3';
+    component.selectedTabIndex = 0;
+    component.loadProjectFiscals(true);
+    tick();
+    expect(component.selectedTabIndex).toBe(2);
+    expect(component.currentFiscalGuid).toBe('X3');
+  }));
+
+  it('follows the current fiscal by GUID when the tab order changes', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: {
+        projectFiscals: [
+          { projectPlanFiscalGuid: 'NEW', fiscalYear: 2026 },
+          { projectPlanFiscalGuid: 'OLD', fiscalYear: 2024 },
+        ]
+      }
+    }));
+    component.currentFiscalGuid = 'OLD';
+    component.selectedTabIndex = 0;
+    component.loadProjectFiscals(true);
+    tick();
+    expect(component.selectedTabIndex).toBe(1);
+  }));
+
+  it('updates the fiscalGuid in the URL to the selected fiscal after loading', fakeAsync(() => {
+    mockProjectService.getProjectFiscalsByProjectGuid.and.returnValue(of({
+      _embedded: {
+        projectFiscals: [
+          { projectPlanFiscalGuid: 'X1', fiscalYear: 2025 },
+          { projectPlanFiscalGuid: 'X2', fiscalYear: 2024 },
+        ]
+      }
+    }));
+    const createUrlTreeSpy = spyOn(TestBed.inject(Router), 'createUrlTree').and.returnValue({ toString: () => '/edit?fiscalGuid=X2' } as UrlTree);
+    component.focusedFiscalId = 'X1';
+    component.loadProjectFiscals(true, 'X2');
+    tick();
+    expect(createUrlTreeSpy).toHaveBeenCalledWith([], jasmine.objectContaining({
+      queryParams: jasmine.objectContaining({ fiscalGuid: 'X2' })
+    }));
+    expect(TestBed.inject(Location).replaceState).toHaveBeenCalledWith('/edit?fiscalGuid=X2');
   }));
 
   it('falls back to previousTabIndex or jump to 0', fakeAsync(() => {

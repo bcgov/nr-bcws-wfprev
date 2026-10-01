@@ -275,6 +275,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
 
   loadProjectFiscals(markFormsPristine: boolean = false, newFiscalGuid?: string): void {
     const previousTabIndex = this.selectedTabIndex;
+    // Tab order can change after a reload, so restore the selection by GUID rather than index
+    const previousFiscalGuid = this.currentFiscalGuid;
     this.projectGuid = this.route.snapshot?.queryParamMap?.get('projectGuid') ?? '';
     if (!this.projectGuid) return;
 
@@ -321,22 +323,25 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
           return form;
         });
 
-        if (newFiscalGuid) {
-          const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === newFiscalGuid);
-          if (index >= 0) this.selectedTabIndex = index;
-        }
+        // Prefer the explicitly requested fiscal, then the one the user was on, then the one from the URL
+        const index = [newFiscalGuid, previousFiscalGuid, this.focusedFiscalId]
+          .filter((guid): guid is string => !!guid)
+          .map(guid => this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === guid))
+          .find(i => i !== -1);
 
-        // Find fiscal's index if it exists and set it as the active tab
-        else if (this.focusedFiscalId) {
-          const index = this.projectFiscals.findIndex(f => f.projectPlanFiscalGuid === this.focusedFiscalId);
-          if (index !== -1) {
-            this.selectedTabIndex = index;
-          }
-          // if no fiscal default to first tab or direct to previous index 
+        // if no fiscal matches, keep the previous index or default to the first tab
+        if (index !== undefined) {
+          this.selectedTabIndex = index;
         } else {
           this.selectedTabIndex = previousTabIndex < this.projectFiscals.length ? previousTabIndex : 0;
         }
         this.updateCurrentFiscalGuid();
+
+        // The tab group is re-created after loading, so onTabChange won't fire to sync the URL
+        clearTimeout(this.routeNavTimeout);
+        if (this.currentFiscalGuid) {
+          this.updateFiscalGuidInUrl(this.currentFiscalGuid);
+        }
       },
       'Error fetching project details'
     );
@@ -359,15 +364,18 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       if (this.routeNavTimeout) {
         clearTimeout(this.routeNavTimeout);
       }
-      this.routeNavTimeout = setTimeout(() => {
-        const urlTree = this.router.createUrlTree([], {
-          relativeTo: this.route,
-          queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
-          queryParamsHandling: 'merge'
-        });
-        this.location.replaceState(urlTree.toString());
-      }, 300);
+      this.routeNavTimeout = setTimeout(() => this.updateFiscalGuidInUrl(fiscalGuid), 300);
     }
+  }
+
+  // replaceState updates the URL without triggering router navigation or the queryParamMap listener
+  updateFiscalGuidInUrl(fiscalGuid: string): void {
+    const urlTree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: { ...this.route.snapshot.queryParams, fiscalGuid },
+      queryParamsHandling: 'merge'
+    });
+    this.location.replaceState(urlTree.toString());
   }
 
   get hasUnsavedFiscal(): boolean {
@@ -793,7 +801,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       this.promoteFiscalStatus(index);
     } else {
       this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
-      this.loadProjectFiscals(true);
+      this.loadProjectFiscals(true, this.projectFiscals[index]?.projectPlanFiscalGuid);
       this.fiscalsUpdated.emit();
     }
   }
@@ -814,7 +822,7 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
     ).subscribe({
       next: () => {
         this.showSnackbar(this.messages.projectFiscalUpdatedSuccess);
-        this.loadProjectFiscals(true);
+        this.loadProjectFiscals(true, fiscalGuid);
         this.fiscalsUpdated.emit();
       },
       error: () => this.showSnackbar(this.messages.projectFiscalUpdatedFailure, false)
