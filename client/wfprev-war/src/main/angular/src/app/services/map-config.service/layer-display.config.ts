@@ -61,6 +61,11 @@ export function LayerDisplayConfig() {
             alwaysShowLegend: true,
         },
         {
+            id: 'headfire-intensity',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: true,

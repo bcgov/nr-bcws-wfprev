@@ -12,6 +12,7 @@ import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-a
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { SpottingImpactConfig } from "./psta/spotting-impact.config";
+import { HeadfireIntensityLayerConfig } from "./psta/headfire-intensity.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -45,6 +46,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     ResultsActivityTreatmentLayerConfig(ls),
     BCParksAndProtectedAreasLayerConfig(ls),
     SpottingImpactConfig(ls),
+    HeadfireIntensityLayerConfig(ls),
     ConservancyAreaLayerConfig(ls)
   ];
 
