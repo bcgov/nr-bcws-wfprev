@@ -568,6 +568,61 @@ describe('MapService', () => {
       expect(viewer.updateLayersVisible).toHaveBeenCalled();
       expect(viewer.createViewerLayer).not.toHaveBeenCalled();
     });
+
+    it('recursively registers leaf layers in folders without registering the folder itself, and builds nested display items', async () => {
+      const displayContext = {
+        changedVisibility: jasmine.createSpy('changedVisibility'),
+        setItemVisible: jasmine.createSpy('setItemVisible'),
+      };
+      let createdDisplayItems: any = null;
+      mockSMK.TYPE.LayerDisplayContext = jasmine.createSpy('LayerDisplayContext').and.callFake(function (items: any) {
+        createdDisplayItems = items;
+        return displayContext;
+      });
+      const viewer = {
+        addLayer: jasmine.createSpy('addLayer'),
+        updateLayersVisible: jasmine.createSpy('updateLayersVisible').and.returnValue(Promise.resolve()),
+        layerId: {},
+        displayContext: {} as any,
+      };
+      (service as any).smkInstance = { $viewer: viewer };
+      const layers = [
+        { id: 'ministry-of-forests-regions' },
+        {
+          id: 'psta',
+          type: 'folder',
+          title: 'PSTA',
+          isVisible: true,
+          isExpanded: true,
+          items: [
+            { id: 'spotting-impact', type: 'wms', title: 'Spotting Impact' },
+            { id: 'headfire-intensity', type: 'wms', title: 'Headfire Intensity' },
+          ],
+        },
+      ];
+
+      await service.addLayersToExistingSMKInstance({ layers });
+
+      expect(viewer.addLayer).toHaveBeenCalledTimes(3);
+      expect(viewer.addLayer).not.toHaveBeenCalledWith(jasmine.objectContaining({ id: 'psta' }));
+      expect(viewer.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'spotting-impact' }));
+      expect(viewer.addLayer).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'headfire-intensity' }));
+
+      expect(createdDisplayItems.length).toBe(2);
+      expect(createdDisplayItems[1]).toEqual(
+        jasmine.objectContaining({
+          id: 'psta',
+          type: 'folder',
+          title: 'PSTA',
+          isVisible: true,
+          isExpanded: true,
+          items: [
+            jasmine.objectContaining({ id: 'spotting-impact', type: 'layer', title: 'Spotting Impact' }),
+            jasmine.objectContaining({ id: 'headfire-intensity', type: 'layer', title: 'Headfire Intensity' }),
+          ],
+        })
+      );
+    });
   });
 
   describe('installAuthenticatedLegendPatch', () => {

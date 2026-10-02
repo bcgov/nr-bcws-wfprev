@@ -480,7 +480,7 @@ export class MapService {
       }
 
       // If this node is a group/folder with children
-      const children = node.layers ?? node.entries;
+      const children = node.layers ?? node.items ?? node.entries;
       if (Array.isArray(children)) {
         // Hide the group itself and recurse into children
         node.visible = false;
@@ -592,23 +592,47 @@ export class MapService {
 
     const SMK = (globalThis as any)['SMK'];
 
-    // Register each layer into viewer.layerId and viewer.layerIds
-    for (const layerConfig of mapState.layers) {
-      try {
-        viewer.addLayer(layerConfig);
-      } catch (err) {
-        console.error(`Failed to add layer ${layerConfig?.id}:`, err);
+    // Register each leaf layer into viewer.layerId and viewer.layerIds
+    const registerLayers = (configs: any[]) => {
+      for (const layerConfig of configs) {
+        if (!layerConfig) continue;
+        const children = layerConfig.items ?? layerConfig.layers;
+        if (Array.isArray(children)) {
+          registerLayers(children);
+        } else if (layerConfig.type !== 'folder') {
+          try {
+            viewer.addLayer(layerConfig);
+          } catch (err) {
+            console.error(`Failed to add layer ${layerConfig?.id}:`, err);
+          }
+        }
       }
-    }
+    };
+    registerLayers(mapState.layers);
 
     // Replace the empty displayContext.layers with a new one including our layers  
-    const layerItems = mapState.layers.map((l: any) => ({
-      id: l.id,
-      type: 'layer',
-      isVisible: l.id === 'ministry-of-forests-regions',
-      isEnabled: true,
-      title: l.title ?? l.id,
-    }));
+    const buildDisplayItem = (l: any): any => {
+      const children = l.items ?? l.layers;
+      if (l.type === 'folder' || l.type === 'group' || Array.isArray(children)) {
+        return {
+          id: l.id,
+          type: l.type === 'group' ? 'group' : 'folder',
+          title: l.title ?? l.id,
+          isVisible: l.isVisible ?? true,
+          isExpanded: l.isExpanded ?? true,
+          items: Array.isArray(children) ? children.map(buildDisplayItem) : [],
+        };
+      }
+      return {
+        id: l.id,
+        type: 'layer',
+        isVisible: l.id === 'ministry-of-forests-regions',
+        isEnabled: true,
+        title: l.title ?? l.id,
+      };
+    };
+
+    const layerItems = mapState.layers.map(buildDisplayItem);
 
     viewer.displayContext.layers = new SMK.TYPE.LayerDisplayContext(
       layerItems,

@@ -5,18 +5,19 @@ import { FireThreatRatingLayerConfig } from "./psta/fire-threat-rating.config";
 import { FireStartDensityAllLayerConfig } from "./psta/fire-start-density-all.config";
 
 export function PSTAConfig(ls: LayerSettings) {
+  const items = [
+    SpottingImpactLayerConfig(ls),
+    HeadfireIntensityLayerConfig(ls),
+    FireThreatRatingLayerConfig(ls),
+    FireStartDensityAllLayerConfig(ls),
+  ];
   return {
     id: "psta",
     type: "folder",
     title: "PSTA",
     isVisible: true,
     isExpanded: true,
-    layers: [
-      SpottingImpactLayerConfig(ls),
-      HeadfireIntensityLayerConfig(ls),
-      FireThreatRatingLayerConfig(ls),
-      FireStartDensityAllLayerConfig(ls),
-    ]
-  }
-
+    items,
+    layers: items,
+  };
 }
