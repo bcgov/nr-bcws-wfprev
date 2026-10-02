@@ -49,6 +49,16 @@ export function LayerDisplayConfig() {
             id: 'risk-reduction-projects-activities',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'bc-parks-and-protected-areas',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
+            id: 'conservancy-area',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
