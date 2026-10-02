@@ -56,6 +56,11 @@ export function LayerDisplayConfig() {
             alwaysShowLegend: true,
         },
         {
+            id: 'spotting-impact',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: true,
