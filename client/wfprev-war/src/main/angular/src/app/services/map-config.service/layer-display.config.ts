@@ -66,6 +66,11 @@ export function LayerDisplayConfig() {
             alwaysShowLegend: true,
         },
         {
+            id: 'fire-threat-rating',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: true,
