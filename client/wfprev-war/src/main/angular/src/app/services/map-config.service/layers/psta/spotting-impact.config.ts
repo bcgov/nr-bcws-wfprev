@@ -1,6 +1,6 @@
 import { LayerSettings } from "src/app/components/models";
 
-export function SpottingImpactConfig(ls: LayerSettings) {
+export function SpottingImpactLayerConfig(ls: LayerSettings) {
     return {
         serviceUrl: `${ls.openmaps}/geo/pub/WHSE_LAND_AND_NATURAL_RESOURCE.PROT_PSTA_SPOTTING_IMPACT_SP/ows`,
         id: "spotting-impact",

@@ -1,6 +1,6 @@
 import { LayerSettings } from "src/app/components/models";
 
-export function FireStartDensityAllConfig(ls: LayerSettings) {
+export function FireStartDensityAllLayerConfig(ls: LayerSettings) {
   return {
     serviceUrl: `${ls.openmaps}/geo/pub/WHSE_LAND_AND_NATURAL_RESOURCE.PROT_PSTA_FIRE_STRT_DENSITY_SP/ows`,
     id: "fire-start-density-all",
