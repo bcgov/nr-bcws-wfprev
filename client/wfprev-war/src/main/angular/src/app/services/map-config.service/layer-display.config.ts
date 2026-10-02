@@ -56,24 +56,33 @@ export function LayerDisplayConfig() {
             alwaysShowLegend: true,
         },
         {
-            id: 'spotting-impact',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'headfire-intensity',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'fire-threat-rating',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'fire-start-density-all',
-            isVisible: false,
-            alwaysShowLegend: true,
+            id: 'psta',
+            type: 'folder',
+            title: 'PSTA',
+            isVisible: true,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'spotting-impact',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'headfire-intensity',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'fire-threat-rating',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'fire-start-density-all',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+            ]
         },
         {
             id: 'conservancy-area',
