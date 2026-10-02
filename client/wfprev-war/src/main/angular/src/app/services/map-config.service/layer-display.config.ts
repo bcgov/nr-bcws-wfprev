@@ -54,6 +54,11 @@ export function LayerDisplayConfig() {
             id: 'bc-parks-and-protected-areas',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'conservancy-area',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];

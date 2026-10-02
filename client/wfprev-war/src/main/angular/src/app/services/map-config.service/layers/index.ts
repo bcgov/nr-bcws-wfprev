@@ -10,6 +10,7 @@ import { MapServices } from "..";
 import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config";
 import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
+import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -41,7 +42,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     OutWildfiresLayerConfig(ls),
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls),
-    BCParksAndProtectedAreasLayerConfig(ls)
+    BCParksAndProtectedAreasLayerConfig(ls),
+    ConservancyAreaLayerConfig(ls)
   ];
 
 }
