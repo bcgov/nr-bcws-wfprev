@@ -71,6 +71,11 @@ export function LayerDisplayConfig() {
             alwaysShowLegend: true,
         },
         {
+            id: 'fire-start-density-all',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: true,

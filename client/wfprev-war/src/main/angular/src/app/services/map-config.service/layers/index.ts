@@ -14,6 +14,7 @@ import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { SpottingImpactConfig } from "./psta/spotting-impact.config";
 import { HeadfireIntensityLayerConfig } from "./psta/headfire-intensity.config";
 import { FireThreatRatingLayerConfig } from "./psta/fire-threat-rating.config";
+import { FireStartDensityAllConfig } from "./psta/fire-start-density-all.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -49,6 +50,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     SpottingImpactConfig(ls),
     HeadfireIntensityLayerConfig(ls),
     FireThreatRatingLayerConfig(ls),
+    FireStartDensityAllConfig(ls),
     ConservancyAreaLayerConfig(ls)
   ];
 
