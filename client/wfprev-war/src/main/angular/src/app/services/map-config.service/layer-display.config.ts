@@ -108,6 +108,11 @@ export function LayerDisplayConfig() {
             id: 'fuel-type',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: '1-km-wui',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
