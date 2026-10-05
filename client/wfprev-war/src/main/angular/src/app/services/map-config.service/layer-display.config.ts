@@ -93,6 +93,11 @@ export function LayerDisplayConfig() {
             id: 'municipal-boundaries',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'recreation-polygons',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
