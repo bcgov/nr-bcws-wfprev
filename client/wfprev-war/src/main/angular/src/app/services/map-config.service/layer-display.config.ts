@@ -98,6 +98,11 @@ export function LayerDisplayConfig() {
             id: 'recreation-polygons',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'managed-licence-woodlot',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];

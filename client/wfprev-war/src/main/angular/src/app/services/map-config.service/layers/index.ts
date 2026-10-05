@@ -14,6 +14,7 @@ import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { PSTAConfig } from "./psta.config";
 import { MunicipalBoundariesLayerConfig } from "./municipal-boundaries.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
+import { ManagedLicenceWoodlotLayerConfig } from "./managed-licence-woodlot.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -49,7 +50,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     PSTAConfig(ls),
     ConservancyAreaLayerConfig(ls),
     MunicipalBoundariesLayerConfig(ls),
-    RecreationPolygonsLayerConfig(ls)
+    RecreationPolygonsLayerConfig(ls),
+    ManagedLicenceWoodlotLayerConfig(ls)
   ];
 
 }
