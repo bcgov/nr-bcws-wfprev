@@ -15,7 +15,7 @@ export function PSTAConfig(ls: LayerSettings) {
     id: "psta",
     type: "folder",
     title: "PSTA",
-    isVisible: true,
+    isVisible: false,
     isExpanded: true,
     items,
     layers: items,

@@ -59,7 +59,7 @@ export function LayerDisplayConfig() {
             id: 'psta',
             type: 'folder',
             title: 'PSTA',
-            isVisible: true,
+            isVisible: false,
             isExpanded: true,
             items: [
                 {
