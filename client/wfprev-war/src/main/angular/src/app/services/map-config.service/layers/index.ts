@@ -12,6 +12,7 @@ import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-a
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { PSTAConfig } from "./psta.config";
+import { MunicipalBoundariesLayerConfig } from "./municipal-boundaries.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -45,7 +46,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     ResultsActivityTreatmentLayerConfig(ls),
     BCParksAndProtectedAreasLayerConfig(ls),
     PSTAConfig(ls),
-    ConservancyAreaLayerConfig(ls)
+    ConservancyAreaLayerConfig(ls),
+    MunicipalBoundariesLayerConfig(ls)
   ];
 
 }

@@ -88,6 +88,11 @@ export function LayerDisplayConfig() {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'municipal-boundaries',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
