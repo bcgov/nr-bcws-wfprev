@@ -13,6 +13,7 @@ import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-ar
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { PSTAConfig } from "./psta.config";
 import { MunicipalBoundariesLayerConfig } from "./municipal-boundaries.config";
+import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -47,7 +48,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BCParksAndProtectedAreasLayerConfig(ls),
     PSTAConfig(ls),
     ConservancyAreaLayerConfig(ls),
-    MunicipalBoundariesLayerConfig(ls)
+    MunicipalBoundariesLayerConfig(ls),
+    RecreationPolygonsLayerConfig(ls)
   ];
 
 }
