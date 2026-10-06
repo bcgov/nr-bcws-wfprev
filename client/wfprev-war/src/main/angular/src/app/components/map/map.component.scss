@@ -66,6 +66,10 @@
   display: none !important;
 }
 
+:host ::ng-deep .smk-map-frame .smk-overlay {
+  font-family: "BC Sans", var(--wf-font-family-main);
+}
+
 :host ::ng-deep .smk-panel .smk-display-layer .smk-item[title^="id: IdentifyListTool--"] {
   display: none !important;
 }
