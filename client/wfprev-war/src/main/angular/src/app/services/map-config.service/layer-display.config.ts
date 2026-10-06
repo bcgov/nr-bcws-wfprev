@@ -113,6 +113,11 @@ export function LayerDisplayConfig() {
             id: '1-km-wui',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'wui-risk-class',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
