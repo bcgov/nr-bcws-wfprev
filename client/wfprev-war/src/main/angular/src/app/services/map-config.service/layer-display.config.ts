@@ -88,6 +88,21 @@ export function LayerDisplayConfig() {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'municipal-boundaries',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
+            id: 'recreation-polygons',
+            isVisible: false,
+            alwaysShowLegend: true,
+        },
+        {
+            id: 'managed-licence-woodlot',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
