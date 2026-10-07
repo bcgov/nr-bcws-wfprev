@@ -16,6 +16,7 @@ import { MunicipalBoundariesLayerConfig } from "./municipal-boundaries.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { ManagedLicenceWoodlotLayerConfig } from "./managed-licence-woodlot.config";
 import { FuelTypeLayerConfig } from "./fuel-type.config";
+import { OneKMWUILayerConfig } from "./1-km-wui.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -53,7 +54,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     MunicipalBoundariesLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
     ManagedLicenceWoodlotLayerConfig(ls),
-    FuelTypeLayerConfig(ls)
+    FuelTypeLayerConfig(ls),
+    OneKMWUILayerConfig(ls)
   ];
 
 }
