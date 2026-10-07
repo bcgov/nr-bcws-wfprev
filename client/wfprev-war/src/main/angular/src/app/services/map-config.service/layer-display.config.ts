@@ -103,6 +103,11 @@ export function LayerDisplayConfig() {
             id: 'managed-licence-woodlot',
             isVisible: false,
             alwaysShowLegend: true,
+        },
+        {
+            id: 'fuel-type',
+            isVisible: false,
+            alwaysShowLegend: true,
         }
 
     ];
