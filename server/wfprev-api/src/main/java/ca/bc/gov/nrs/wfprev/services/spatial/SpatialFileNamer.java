@@ -45,6 +45,32 @@ public final class SpatialFileNamer {
     private SpatialFileNamer() {
     }
 
+    /** An exported project row. */
+    public record Project(UUID projectGuid, String projectName) {
+    }
+
+    /** A spatial file of a project. Within a project, files are named in the order they are passed in. */
+    public record ProjectSpatialFile(UUID projectGuid, UUID projectBoundaryGuid, String documentPath) {
+    }
+
+    /**
+     * A named project file.
+     *
+     * @param folder   {@code Project}, without a trailing slash
+     * @param baseName the file name without extension, unique across the export
+     */
+    public record NamedProjectFile(Project project, ProjectSpatialFile file, String folder, String baseName) {
+
+        public String shapefileName() {
+            return baseName + SHAPEFILE_EXTENSION;
+        }
+
+        /** The path of the file with the given extension (".shp", ".dbf", ...) inside the ZIP. */
+        public String zipPath(String extension) {
+            return folder + "/" + baseName + extension;
+        }
+    }
+
     /** An exported activity row. */
     public record Activity(UUID projectGuid, String projectName,
                            UUID projectPlanFiscalGuid, String fiscalYear, String fiscalName,
@@ -73,6 +99,14 @@ public final class SpatialFileNamer {
         }
     }
 
+    /** The named project and activity files of an export. */
+    public record NamedFiles(List<NamedProjectFile> projectFiles, List<NamedFile> activityFiles) {
+
+        public boolean isEmpty() {
+            return projectFiles.isEmpty() && activityFiles.isEmpty();
+        }
+    }
+
     /**
      * Names every file that belongs to one of the activities. Files of activities not in the list are
      * ignored, and so is an activity listed twice after its first entry.
@@ -81,17 +115,41 @@ public final class SpatialFileNamer {
      *         each activity's files
      */
     public static List<NamedFile> assign(Collection<Activity> activities, List<SpatialFile> files) {
+        return assign(List.of(), List.of(), activities, files).activityFiles();
+    }
+
+    /**
+     * Names every file that belongs to one of the projects or activities.
+     *
+     * @return the named project and activity files in export order
+     */
+    public static NamedFiles assign(Collection<Project> projects, List<ProjectSpatialFile> projectFiles,
+                                    Collection<Activity> activities, List<SpatialFile> activityFiles) {
+        Map<UUID, List<ProjectSpatialFile>> filesByProject = new HashMap<>();
+        for (ProjectSpatialFile file : projectFiles) {
+            filesByProject.computeIfAbsent(file.projectGuid(), k -> new ArrayList<>()).add(file);
+        }
+
         Map<UUID, List<SpatialFile>> filesByActivity = new HashMap<>();
-        for (SpatialFile file : files) {
+        for (SpatialFile file : activityFiles) {
             filesByActivity.computeIfAbsent(file.activityGuid(), k -> new ArrayList<>()).add(file);
         }
 
-        Map<UUID, Activity> uniqueActivities = new LinkedHashMap<>();
-        for (Activity activity : activities) {
-            uniqueActivities.putIfAbsent(activity.activityGuid(), activity);
+        Map<UUID, Project> uniqueProjects = new LinkedHashMap<>();
+        for (Project project : projects) {
+            uniqueProjects.putIfAbsent(project.projectGuid(), project);
         }
-        List<Activity> ordered = new ArrayList<>(uniqueActivities.values());
-        ordered.sort(EXPORT_ORDER);
+        for (Activity activity : activities) {
+            uniqueProjects.putIfAbsent(activity.projectGuid(),
+                    new Project(activity.projectGuid(), activity.projectName()));
+        }
+        List<Project> orderedProjects = new ArrayList<>(uniqueProjects.values());
+        orderedProjects.sort(PROJECT_ORDER);
+
+        Map<UUID, List<Activity>> activitiesByProject = new HashMap<>();
+        for (Activity activity : activities) {
+            activitiesByProject.computeIfAbsent(activity.projectGuid(), k -> new ArrayList<>()).add(activity);
+        }
 
         UniqueNames fileNames = new UniqueNames();
         UniqueNames projectFolders = new UniqueNames();
@@ -100,28 +158,70 @@ public final class SpatialFileNamer {
         Map<UUID, String> fiscalFolderByGuid = new HashMap<>();
         Map<String, UniqueNames> activityFoldersByParent = new HashMap<>();
 
-        List<NamedFile> named = new ArrayList<>();
-        for (Activity activity : ordered) {
-            List<SpatialFile> activityFiles = filesByActivity.get(activity.activityGuid());
-            if (activityFiles == null || activityFiles.isEmpty()) {
+        List<NamedProjectFile> namedProjectFiles = new ArrayList<>();
+        List<NamedFile> namedActivityFiles = new ArrayList<>();
+
+        for (Project project : orderedProjects) {
+            List<ProjectSpatialFile> projFiles = filesByProject.get(project.projectGuid());
+            List<Activity> projActivities = activitiesByProject.get(project.projectGuid());
+
+            boolean hasProjectFiles = projFiles != null && !projFiles.isEmpty();
+            boolean hasActivityFiles = false;
+            if (projActivities != null) {
+                for (Activity a : projActivities) {
+                    List<SpatialFile> af = filesByActivity.get(a.activityGuid());
+                    if (af != null && !af.isEmpty()) {
+                        hasActivityFiles = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasProjectFiles && !hasActivityFiles) {
                 continue;
             }
 
-            String projectFolder = projectFolderByGuid.computeIfAbsent(activity.projectGuid(),
-                    k -> projectFolders.claim(folderName(activity.projectName(), "Project")));
-            String fiscalFolder = fiscalFolderByGuid.computeIfAbsent(activity.projectPlanFiscalGuid(),
-                    k -> projectFolder + "/" + fiscalFoldersByParent
-                            .computeIfAbsent(projectFolder, p -> new UniqueNames())
-                            .claim(folderName(fiscalLabel(activity), "Fiscal")));
-            String activityFolder = fiscalFolder + "/" + activityFoldersByParent
-                    .computeIfAbsent(fiscalFolder, p -> new UniqueNames())
-                    .claim(folderName(activity.activityName(), "Activity"));
+            String projectFolder = projectFolderByGuid.computeIfAbsent(project.projectGuid(),
+                    k -> projectFolders.claim(folderName(project.projectName(), "Project")));
 
-            for (SpatialFile file : activityFiles) {
-                named.add(new NamedFile(activity, file, activityFolder, fileNames.claim(baseName(file.documentPath()))));
+            if (hasProjectFiles) {
+                for (ProjectSpatialFile file : projFiles) {
+                    namedProjectFiles.add(new NamedProjectFile(project, file, projectFolder,
+                            fileNames.claim(baseName(file.documentPath()))));
+                }
+            }
+
+            if (hasActivityFiles) {
+                Map<UUID, Activity> uniqueActivities = new LinkedHashMap<>();
+                for (Activity a : projActivities) {
+                    uniqueActivities.putIfAbsent(a.activityGuid(), a);
+                }
+                List<Activity> orderedActivities = new ArrayList<>(uniqueActivities.values());
+                orderedActivities.sort(EXPORT_ORDER);
+
+                for (Activity activity : orderedActivities) {
+                    List<SpatialFile> actFiles = filesByActivity.get(activity.activityGuid());
+                    if (actFiles == null || actFiles.isEmpty()) {
+                        continue;
+                    }
+
+                    String fiscalFolder = fiscalFolderByGuid.computeIfAbsent(activity.projectPlanFiscalGuid(),
+                            k -> projectFolder + "/" + fiscalFoldersByParent
+                                    .computeIfAbsent(projectFolder, p -> new UniqueNames())
+                                    .claim(folderName(fiscalLabel(activity), "Fiscal")));
+                    String activityFolder = fiscalFolder + "/" + activityFoldersByParent
+                            .computeIfAbsent(fiscalFolder, p -> new UniqueNames())
+                            .claim(folderName(activity.activityName(), "Activity"));
+
+                    for (SpatialFile file : actFiles) {
+                        namedActivityFiles.add(new NamedFile(activity, file, activityFolder,
+                                fileNames.claim(baseName(file.documentPath()))));
+                    }
+                }
             }
         }
-        return named;
+
+        return new NamedFiles(namedProjectFiles, namedActivityFiles);
     }
 
     /** The uploaded file name without folders or a spatial extension, made safe for a file name. */
@@ -169,6 +269,10 @@ public final class SpatialFileNamer {
     private static final Comparator<String> TEXT = Comparator.nullsFirst(
             Comparator.comparing((String s) -> s.toLowerCase(Locale.ROOT)).thenComparing(Comparator.naturalOrder()));
     private static final Comparator<UUID> GUID = Comparator.nullsFirst(Comparator.naturalOrder());
+
+    private static final Comparator<Project> PROJECT_ORDER = Comparator
+            .comparing(Project::projectName, TEXT)
+            .thenComparing(Project::projectGuid, GUID);
 
     private static final Comparator<Activity> EXPORT_ORDER = Comparator
             .comparing(Activity::projectName, TEXT)
