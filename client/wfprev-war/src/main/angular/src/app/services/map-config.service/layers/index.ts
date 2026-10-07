@@ -18,6 +18,7 @@ import { ManagedLicenceWoodlotLayerConfig } from "./managed-licence-woodlot.conf
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
 import { FuelTypeLayerConfig } from "./fuel-type.config";
 import { OneKMWUILayerConfig } from "./1-km-wui.config";
+import { WuiRiskClassLayerConfig } from "./wui-risk-class.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -57,7 +58,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     ManagedLicenceWoodlotLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
     FuelTypeLayerConfig(ls),
-    OneKMWUILayerConfig(ls)
+    OneKMWUILayerConfig(ls),
+    WuiRiskClassLayerConfig(ls)
   ];
 
 }
