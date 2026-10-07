@@ -48,6 +48,8 @@ services:
       dockerfile: src/main/docker/Dockerfile.lambda
     profiles:
       - report-lambda
+      - dev
+      - dev-watch
     entrypoint: ["/aws-lambda-rie", "/var/task/bootstrap"]
     environment:
       REPORT_EXPORT_BUCKET: wfprev-local-report-exports
