@@ -15,6 +15,7 @@ import { PSTAConfig } from "./psta.config";
 import { MunicipalBoundariesLayerConfig } from "./municipal-boundaries.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { ManagedLicenceWoodlotLayerConfig } from "./managed-licence-woodlot.config";
+import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
 import { FuelTypeLayerConfig } from "./fuel-type.config";
 import { OneKMWUILayerConfig } from "./1-km-wui.config";
 import { WuiRiskClassLayerConfig } from "./wui-risk-class.config";
@@ -55,6 +56,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     MunicipalBoundariesLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
     ManagedLicenceWoodlotLayerConfig(ls),
+    ParcelFabricLayerConfig(ls),
     FuelTypeLayerConfig(ls),
     OneKMWUILayerConfig(ls),
     WuiRiskClassLayerConfig(ls)
