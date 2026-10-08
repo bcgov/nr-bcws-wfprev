@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.wfprev.services.spatial;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity;
 import ca.bc.gov.nrs.wfprev.data.entities.ResultsFuelManagementReportEntity;
 import ca.bc.gov.nrs.wfprev.data.repositories.ActivityBoundaryRepository;
+import ca.bc.gov.nrs.wfprev.data.repositories.ProjectBoundaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.WKBWriter;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
 class ResultsSpatialExporterTest {
 
     private ActivityBoundaryRepository repository;
+    private ProjectBoundaryRepository projectBoundaryRepository;
     private ResultsSpatialExporter exporter;
 
     private final UUID projectA = UUID.randomUUID();
@@ -45,7 +47,11 @@ class ResultsSpatialExporterTest {
     @BeforeEach
     void setup() {
         repository = mock(ActivityBoundaryRepository.class);
-        exporter = new ResultsSpatialExporter(repository);
+        projectBoundaryRepository = mock(ProjectBoundaryRepository.class);
+        when(projectBoundaryRepository.findResultsSpatialFiles(any())).thenReturn(List.of());
+        when(projectBoundaryRepository.findResultsSpatialFilesWithGeometry(any())).thenReturn(List.of());
+
+        exporter = new ResultsSpatialExporter(repository, projectBoundaryRepository);
 
         fuelA = new ResultsFuelManagementReportEntity();
         fuelA.setProjectGuid(projectA);
@@ -201,6 +207,81 @@ class ResultsSpatialExporterTest {
 
         assertFalse(exporter.writeZip(List.of(fuelA), List.of(), new ByteArrayOutputStream()));
         verify(repository, never()).findResultsSpatialFilesWithGeometry(any());
+    }
+
+    @Test
+    void applyFileNames_listsProjectBoundaryShapefileNames() {
+        when(projectBoundaryRepository.findResultsSpatialFiles(any())).thenReturn(List.of(
+                fileRow(projectA, "Project_Boundary.kml"),
+                fileRow(projectA, "Project_Boundary.kmz")));
+
+        exporter.applyFileNames(List.of(fuelA, fuelNoFiles), List.of(crxB));
+
+        assertEquals("Project_Boundary.shp\nProject_Boundary_1.shp", fuelA.getOpeningShapeFileName());
+        // fuelNoFiles belongs to projectA as well, so it gets the same opening file names
+        assertEquals("Project_Boundary.shp\nProject_Boundary_1.shp", fuelNoFiles.getOpeningShapeFileName());
+        assertNull(crxB.getOpeningShapeFileName());
+    }
+
+    @Test
+    void writeZip_writesProjectBoundaryShapefileInProjectFolder() throws Exception {
+        String square = "MULTIPOLYGON(((1000000 500000, 1000000 500100, 1000100 500100, 1000100 500000, 1000000 500000)))";
+        when(projectBoundaryRepository.findResultsSpatialFilesWithGeometry(any())).thenReturn(
+                List.<Object[]>of(geometryRow(projectA, "Boundary.kml", square)));
+        when(repository.findResultsSpatialFilesWithGeometry(any())).thenReturn(
+                List.<Object[]>of(geometryRow(fuelA.getActivityGuid(), "Area.kml", square)));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        assertTrue(exporter.writeZip(List.of(fuelA), List.of(), out));
+
+        Map<String, byte[]> entries = unzip(out.toByteArray());
+        assertEquals(List.of(
+                "Alpha/Boundary.shp",
+                "Alpha/Boundary.shx",
+                "Alpha/Boundary.dbf",
+                "Alpha/Boundary.prj",
+                "Alpha/Boundary.cpg",
+                "Alpha/2025-26 Treatments/Burn/Area.shp",
+                "Alpha/2025-26 Treatments/Burn/Area.shx",
+                "Alpha/2025-26 Treatments/Burn/Area.dbf",
+                "Alpha/2025-26 Treatments/Burn/Area.prj",
+                "Alpha/2025-26 Treatments/Burn/Area.cpg"), List.copyOf(entries.keySet()));
+
+        String dbf = new String(entries.get("Alpha/Boundary.dbf"), StandardCharsets.UTF_8);
+        assertTrue(dbf.contains("Alpha"));
+        assertTrue(dbf.contains("OPEN-1"));
+        assertTrue(dbf.contains("1.2345"));
+        assertTrue(dbf.contains("Boundary.kml"));
+    }
+
+    @Test
+    void writeZip_onlyProjectBoundaries_succeeds() throws Exception {
+        String square = "MULTIPOLYGON(((1000000 500000, 1000000 500100, 1000100 500100, 1000100 500000, 1000000 500000)))";
+        when(projectBoundaryRepository.findResultsSpatialFilesWithGeometry(any())).thenReturn(
+                List.<Object[]>of(geometryRow(projectA, "Boundary.kml", square)));
+        when(repository.findResultsSpatialFilesWithGeometry(any())).thenReturn(List.of());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        assertTrue(exporter.writeZip(List.of(fuelA), List.of(), out));
+
+        Map<String, byte[]> entries = unzip(out.toByteArray());
+        assertTrue(entries.containsKey("Alpha/Boundary.shp"));
+    }
+
+    @Test
+    void writeZip_projectAndActivityNameCollision_appliesSuffix() throws Exception {
+        String square = "MULTIPOLYGON(((1000000 500000, 1000000 500100, 1000100 500100, 1000100 500000, 1000000 500000)))";
+        when(projectBoundaryRepository.findResultsSpatialFilesWithGeometry(any())).thenReturn(
+                List.<Object[]>of(geometryRow(projectA, "Area.kml", square)));
+        when(repository.findResultsSpatialFilesWithGeometry(any())).thenReturn(
+                List.<Object[]>of(geometryRow(fuelA.getActivityGuid(), "Area.kml", square)));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        assertTrue(exporter.writeZip(List.of(fuelA), List.of(), out));
+
+        Map<String, byte[]> entries = unzip(out.toByteArray());
+        assertTrue(entries.containsKey("Alpha/Area.shp"));
+        assertTrue(entries.containsKey("Alpha/2025-26 Treatments/Burn/Area_1.shp"));
     }
 
     private static Map<String, byte[]> unzip(byte[] zip) throws Exception {
