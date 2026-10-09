@@ -92,7 +92,8 @@ export function LayerDisplayConfig() {
         {
             id: 'conservancy-area',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 6000000,
         },
         {
             id: 'municipal-boundaries',
