@@ -117,7 +117,8 @@ export function LayerDisplayConfig() {
         {
             id: 'parcel-fabric',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 40000,
         },
         {
             id: 'fuel-type',

@@ -11,7 +11,8 @@ export function ParcelFabricLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 40000
   }
 
 }
