@@ -53,7 +53,8 @@ export function LayerDisplayConfig() {
         {
             id: 'bc-parks-and-protected-areas',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 12000000,
         },
         {
             id: 'psta',

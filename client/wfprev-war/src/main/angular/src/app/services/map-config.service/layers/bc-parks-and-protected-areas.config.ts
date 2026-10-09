@@ -11,7 +11,8 @@ export function BCParksAndProtectedAreasLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 12000000
   }
 
 }
