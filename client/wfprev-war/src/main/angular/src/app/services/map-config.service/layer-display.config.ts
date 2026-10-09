@@ -128,7 +128,8 @@ export function LayerDisplayConfig() {
         {
             id: 'wui-risk-class',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 2500000,
         }
 
     ];
