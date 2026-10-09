@@ -12,7 +12,7 @@ export function BCParksAndProtectedAreasLayerConfig(ls: LayerSettings) {
     transparent: true,
     layerName: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW",
     geometryAttribute: "SHAPE",
-    minScale: 12000000
+    minScale: 6000000
   }
 
 }
