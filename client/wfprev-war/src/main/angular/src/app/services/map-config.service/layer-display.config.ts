@@ -80,7 +80,8 @@ export function LayerDisplayConfig() {
                 {
                     id: 'fire-start-density-all',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 150000,
                 },
             ]
         },
