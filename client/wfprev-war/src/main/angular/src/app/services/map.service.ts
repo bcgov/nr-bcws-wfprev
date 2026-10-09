@@ -620,6 +620,7 @@ export class MapService {
           title: l.title ?? l.id,
           isVisible: l.isVisible ?? true,
           isExpanded: l.isExpanded ?? true,
+          alwaysShowLegend: l.alwaysShowLegend,
           items: Array.isArray(children) ? children.map(buildDisplayItem) : [],
         };
       }
@@ -629,6 +630,9 @@ export class MapService {
         isVisible: l.id === 'ministry-of-forests-regions',
         isEnabled: true,
         title: l.title ?? l.id,
+        minScale: l.minScale,
+        maxScale: l.maxScale,
+        alwaysShowLegend: l.alwaysShowLegend
       };
     };
 
@@ -643,6 +647,23 @@ export class MapService {
     viewer.displayContext.layers.changedVisibility(() => {
       viewer.changedLayerVisibility();
     });
+
+    // Wire up scale/view changes so SMK knows the current scale and can toggle scale-dependent layers
+    const updateView = () => {
+      if (typeof viewer.getView === 'function' && typeof viewer.displayContext?.layers?.setView === 'function') {
+        viewer.displayContext.layers.setView(viewer.getView());
+      }
+    };
+    updateView();
+
+    viewer.changedView?.(updateView);
+    if (viewer.map) {
+      if ((viewer as any)._wfprevZoomHandler) {
+        viewer.map.off?.('zoomend', (viewer as any)._wfprevZoomHandler);
+      }
+      (viewer as any)._wfprevZoomHandler = updateView;
+      viewer.map.on?.('zoomend', updateView);
+    }
 
     // Apply visibility and render. SMK creates a layer on the map when it's first shown (updateLayersVisible), so
     // the hidden layers cost nothing until they're turned on.

@@ -11,7 +11,8 @@ export function RecreationPolygonsLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW",
-    geometryAttribute: "GEOMETRY"
+    geometryAttribute: "GEOMETRY",
+    minScale: 250000
   }
 
 }
