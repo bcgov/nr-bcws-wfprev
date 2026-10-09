@@ -11,7 +11,8 @@ export function FireStartDensityAllLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_LAND_AND_NATURAL_RESOURCE.PROT_PSTA_FIRE_STRT_DENSITY_SP",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 150000
   }
 
 }

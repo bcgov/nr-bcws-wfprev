@@ -11,7 +11,8 @@ export function ConservancyAreaLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 6000000
   }
 
 }

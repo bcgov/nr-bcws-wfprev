@@ -43,17 +43,20 @@ export function LayerDisplayConfig() {
         {
             id: 'legacy-fuel-treatments',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 20000000,
         },
         {
             id: 'risk-reduction-projects-activities',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 200000,
         },
         {
             id: 'bc-parks-and-protected-areas',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 6000000,
         },
         {
             id: 'psta',
@@ -65,64 +68,76 @@ export function LayerDisplayConfig() {
                 {
                     id: 'spotting-impact',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 150000,
                 },
                 {
                     id: 'headfire-intensity',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 150000,
                 },
                 {
                     id: 'fire-threat-rating',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 50000,
                 },
                 {
                     id: 'fire-start-density-all',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 150000,
                 },
             ]
         },
         {
             id: 'conservancy-area',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 6000000,
         },
         {
             id: 'municipal-boundaries',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 500000,
         },
         {
             id: 'recreation-polygons',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 250000,
         },
         {
             id: 'managed-licence-woodlot',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 100000,
         },
         {
             id: 'parcel-fabric',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 40000,
         },
         {
             id: 'fuel-type',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 50000,
         },
         {
             id: '1-km-wui',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 2500000,
         },
         {
             id: 'wui-risk-class',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 2500000,
         }
 
     ];

@@ -11,7 +11,8 @@ export function ManagedLicenceWoodlotLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_FOREST_TENURE.FTEN_MANAGED_LICENCE_POLY_SVW",
-    geometryAttribute: "GEOMETRY"
+    geometryAttribute: "GEOMETRY",
+    minScale: 100000
   }
 
 }

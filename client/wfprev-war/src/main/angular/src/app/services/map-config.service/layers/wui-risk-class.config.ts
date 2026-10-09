@@ -11,7 +11,8 @@ export function WuiRiskClassLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_LAND_AND_NATURAL_RESOURCE.PROT_WUI_RISK_CLASS_SP",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 2500000
   }
 
 }
