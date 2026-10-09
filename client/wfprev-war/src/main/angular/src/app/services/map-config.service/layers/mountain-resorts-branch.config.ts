@@ -11,7 +11,8 @@ export function MountainResortsBranchLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:REG_LEGAL_AND_ADMIN_BOUNDARIES.REC_TENURE_ALPINE_SKI_AREAS_SP",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 1000000
   }
 
 }
