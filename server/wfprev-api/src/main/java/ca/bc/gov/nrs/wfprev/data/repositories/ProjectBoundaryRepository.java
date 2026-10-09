@@ -22,6 +22,33 @@ public interface ProjectBoundaryRepository extends CommonRepository<ProjectBound
 
     void deleteByProjectGuid(@NotNull UUID projectGuid);
 
+    /**
+     * Spatial files of the given projects for the RESULTS export: one row per boundary that has a file
+     * attachment, as {project_guid, project_boundary_guid, document_path}, in upload order per project.
+     */
+    @Query(value = """
+    SELECT pb.project_guid, pb.project_boundary_guid, fa.document_path
+    FROM wfprev.project_boundary pb
+    JOIN wfprev.file_attachment fa ON fa.source_object_unique_id = CAST(pb.project_boundary_guid AS text)
+    WHERE pb.project_guid = ANY(:projectGuids)
+    ORDER BY pb.project_guid, pb.system_start_timestamp, pb.project_boundary_guid
+    """, nativeQuery = true)
+    List<Object[]> findResultsSpatialFiles(@Param("projectGuids") UUID[] projectGuids);
+
+    /**
+     * Same rows as {@link #findResultsSpatialFiles}, plus boundary_size_ha and the geometry in BC Albers
+     * (EPSG:3005) as WKB.
+     */
+    @Query(value = """
+    SELECT pb.project_guid, pb.project_boundary_guid, fa.document_path,
+           pb.boundary_size_ha, ST_AsBinary(ST_Transform(pb.boundary_geometry, 3005))
+    FROM wfprev.project_boundary pb
+    JOIN wfprev.file_attachment fa ON fa.source_object_unique_id = CAST(pb.project_boundary_guid AS text)
+    WHERE pb.project_guid = ANY(:projectGuids)
+    ORDER BY pb.project_guid, pb.system_start_timestamp, pb.project_boundary_guid
+    """, nativeQuery = true)
+    List<Object[]> findResultsSpatialFilesWithGeometry(@Param("projectGuids") UUID[] projectGuids);
+
     @Query(value = """
     WITH tile AS (
       SELECT

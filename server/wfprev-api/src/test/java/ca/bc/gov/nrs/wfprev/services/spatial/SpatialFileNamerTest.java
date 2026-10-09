@@ -2,6 +2,9 @@ package ca.bc.gov.nrs.wfprev.services.spatial;
 
 import ca.bc.gov.nrs.wfprev.services.spatial.SpatialFileNamer.Activity;
 import ca.bc.gov.nrs.wfprev.services.spatial.SpatialFileNamer.NamedFile;
+import ca.bc.gov.nrs.wfprev.services.spatial.SpatialFileNamer.NamedFiles;
+import ca.bc.gov.nrs.wfprev.services.spatial.SpatialFileNamer.Project;
+import ca.bc.gov.nrs.wfprev.services.spatial.SpatialFileNamer.ProjectSpatialFile;
 import ca.bc.gov.nrs.wfprev.services.spatial.SpatialFileNamer.SpatialFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -189,5 +192,33 @@ class SpatialFileNamerTest {
                 List.of(file(a, "zulu.kml"), file(a, "alpha.kml"), file(a, "zulu.kmz")));
 
         assertEquals(List.of("zulu", "alpha", "zulu_1"), named.stream().map(NamedFile::baseName).toList());
+    }
+
+    @Test
+    void assign_projectsAndActivities_placesProjectFilesInProjectFolderAndActivitiesInSubfolders() {
+        Activity a = activity("Alpha", "2025/26", "Treatments", "Burn");
+        Project p = new Project(a.projectGuid(), a.projectName());
+        ProjectSpatialFile pf = new ProjectSpatialFile(p.projectGuid(), UUID.randomUUID(), "boundary.kml");
+
+        NamedFiles named = SpatialFileNamer.assign(
+                List.of(p), List.of(pf),
+                List.of(a), List.of(file(a, "treatment.kml")));
+
+        assertEquals(List.of("Alpha/boundary.shp"), named.projectFiles().stream().map(f -> f.zipPath(".shp")).toList());
+        assertEquals(List.of("Alpha/2025-26 Treatments/Burn/treatment.shp"), named.activityFiles().stream().map(f -> f.zipPath(".shp")).toList());
+    }
+
+    @Test
+    void assign_projectAndActivityNameClash_sharesUniqueNameSequence() {
+        Activity a = activity("Alpha", "2025/26", "Treatments", "Burn");
+        Project p = new Project(a.projectGuid(), a.projectName());
+        ProjectSpatialFile pf = new ProjectSpatialFile(p.projectGuid(), UUID.randomUUID(), "area.kml");
+
+        NamedFiles named = SpatialFileNamer.assign(
+                List.of(p), List.of(pf),
+                List.of(a), List.of(file(a, "area.kml")));
+
+        assertEquals(List.of("Alpha/area.shp"), named.projectFiles().stream().map(f -> f.zipPath(".shp")).toList());
+        assertEquals(List.of("Alpha/2025-26 Treatments/Burn/area_1.shp"), named.activityFiles().stream().map(f -> f.zipPath(".shp")).toList());
     }
 }
