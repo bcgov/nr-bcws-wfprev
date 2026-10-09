@@ -11,7 +11,8 @@ export function MunicipalBoundariesLayerConfig(ls: LayerSettings) {
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP",
-    geometryAttribute: "SHAPE"
+    geometryAttribute: "SHAPE",
+    minScale: 500000
   }
 
 }
