@@ -43,7 +43,8 @@ export function LayerDisplayConfig() {
         {
             id: 'legacy-fuel-treatments',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 20000000,
         },
         {
             id: 'risk-reduction-projects-activities',
