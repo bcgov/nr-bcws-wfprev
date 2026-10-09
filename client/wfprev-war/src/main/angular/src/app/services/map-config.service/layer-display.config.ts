@@ -70,7 +70,8 @@ export function LayerDisplayConfig() {
                 {
                     id: 'headfire-intensity',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 150000,
                 },
                 {
                     id: 'fire-threat-rating',
