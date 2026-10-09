@@ -49,7 +49,8 @@ export function LayerDisplayConfig() {
         {
             id: 'risk-reduction-projects-activities',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 200000,
         },
         {
             id: 'bc-parks-and-protected-areas',

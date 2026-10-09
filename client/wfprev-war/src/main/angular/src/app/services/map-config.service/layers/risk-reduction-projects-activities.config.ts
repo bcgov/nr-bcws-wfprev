@@ -20,6 +20,7 @@ export function ResultsActivityTreatmentLayerConfig(ls: LayerSettings) {
     layerName: "pub:WHSE_FOREST_VEGETATION.RSLT_ACTIVITY_TREATMENT_SVW",
     version: "1.1.1",
     where,
-    transparent: true
+    transparent: true,
+    minScale: 200000
   };
 }
