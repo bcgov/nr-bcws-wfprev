@@ -75,7 +75,8 @@ export function LayerDisplayConfig() {
                 {
                     id: 'fire-threat-rating',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 50000,
                 },
                 {
                     id: 'fire-start-density-all',
