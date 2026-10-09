@@ -120,7 +120,8 @@ export function LayerDisplayConfig() {
         {
             id: 'fuel-type',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 50000,
         },
         {
             id: '1-km-wui',
