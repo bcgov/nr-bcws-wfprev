@@ -65,7 +65,8 @@ export function LayerDisplayConfig() {
                 {
                     id: 'spotting-impact',
                     isVisible: false,
-                    alwaysShowLegend: true,
+                    alwaysShowLegend: false,
+                    minScale: 150000,
                 },
                 {
                     id: 'headfire-intensity',
