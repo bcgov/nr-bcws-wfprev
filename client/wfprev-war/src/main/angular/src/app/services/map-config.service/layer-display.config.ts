@@ -111,7 +111,8 @@ export function LayerDisplayConfig() {
         {
             id: 'managed-licence-woodlot',
             isVisible: false,
-            alwaysShowLegend: true,
+            alwaysShowLegend: false,
+            minScale: 100000,
         },
         {
             id: 'parcel-fabric',
