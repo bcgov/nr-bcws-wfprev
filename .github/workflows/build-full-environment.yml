@@ -9,7 +9,7 @@ on:
       - closed
     branches:
       - 'main'
-      - 'feature/lza-migration'
+      - 'release/**'
     paths:
       - ".github/workflows/**"
       - "client/**"
@@ -20,8 +20,16 @@ on:
       - 'lambda/report-generator/**'
   workflow_dispatch:
 
-jobs: 
+# One INT build+deploy at a time: overlapping applies fail on the Terraform state lock,
+# and the UI must not land after a newer run's API.
+# PRs closed without merging get their own group so they never displace a queued deploy.
+concurrency:
+  group: ${{ (github.event_name == 'workflow_dispatch' || github.event.pull_request.merged) && 'wfint-deploy' || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
   node-build:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged
     uses: ./.github/workflows/node-build.yml
     secrets: inherit
     with:
@@ -29,6 +37,7 @@ jobs:
       TAG: latest
 
   wfprev-api:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
     with:
@@ -37,12 +46,14 @@ jobs:
       COMPONENT_TYPE: server
   
   liquibase-build:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged
     uses: ./.github/workflows/liquibase-build.yml
     secrets: inherit
     with:
       TAG: latest
 
   report-generator-lambda:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged
     uses: ./.github/workflows/report-generator-image-build.yml
     secrets: inherit
       
@@ -51,7 +62,7 @@ jobs:
     needs: [node-build, wfprev-api, liquibase-build, report-generator-lambda]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: wfint
-      IMAGE_TAG: latest
+      IMAGE_TAG: ${{ github.sha }}
       RUN_LIQUIBASE: true
       COMMAND: apply
     secrets: inherit
