@@ -97,10 +97,11 @@ jobs:
         rm -rf node_modules
         npm cache clean --force
 
+    # --legacy-peer-deps matches local dev; strict peer resolution crashes npm on vitest's optional peer set
     - name: Install dependencies for Angular project
       run: |
           cd client/wfprev-war/src/main/angular
-          npm install
+          npm install --legacy-peer-deps
 
     - name: Build Angular app
       run: |
