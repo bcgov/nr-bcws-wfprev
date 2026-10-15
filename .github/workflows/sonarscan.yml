@@ -90,7 +90,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./client/wfprev-war/src/main/angular
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Install Angular CLI globally
         run: npm install -g @angular/cli  
