@@ -5,7 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from 'src/app/services/project-services';
-import { convertFiscalYear } from 'src/app/utils/tools';
+import { convertFiscalYear, formatLocalDate } from 'src/app/utils/tools';
 import { ExpansionIndicatorComponent } from "../../../shared/expansion-indicator/expansion-indicator.component";
 import { StatusBadgeComponent } from 'src/app/components/shared/status-badge/status-badge.component';
 
@@ -92,10 +92,8 @@ export class FiscalYearProjectsComponent implements OnInit{
     });
   }
 
-  private formatDate(dateString: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+  formatDate(dateString: string): string {
+    return formatLocalDate(dateString);
   }
 
   
