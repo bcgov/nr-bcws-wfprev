@@ -1,5 +1,5 @@
 # Build stage
-FROM ghcr.io/graalvm/graalvm-community:21 AS builder
+FROM bellsoft/liberica-native-image-kit-container:jdk-21-nik-23-glibc AS builder
 
 # Define build argument and set it as environment variable
 ARG MAVEN_SETTINGS_FILE=settings.xml
