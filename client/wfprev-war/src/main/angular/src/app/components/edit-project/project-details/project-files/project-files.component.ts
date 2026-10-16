@@ -20,6 +20,7 @@ import { FileViewerService } from 'src/app/services/file-viewer.service';
 import { ProjectService } from 'src/app/services/project-services';
 import { SpatialService } from 'src/app/services/spatial-services';
 import { Messages, ModalMessages, ModalTitles } from 'src/app/utils/constants';
+import { formatLocalDate } from 'src/app/utils/tools';
 
 @Component({
   selector: 'wfprev-project-files',
@@ -341,7 +342,7 @@ export class ProjectFilesComponent implements OnInit {
           activityGuid: this.activityGuid,
           systemStartTimestamp: now.toISOString(),
           systemEndTimestamp: futureDate.toISOString(),
-          collectionDate: now.toISOString().split('T')[0],
+          collectionDate: formatLocalDate(now),
           collectorName: this.uploadedBy,
           plannedSpendAmount: 20000,
           boundarySizeHa: 0,
@@ -394,7 +395,7 @@ export class ProjectFilesComponent implements OnInit {
           projectGuid: this.projectGuid,
           systemStartTimestamp: now.toISOString(),
           systemEndTimestamp: futureDate.toISOString(),
-          collectionDate: now.toISOString().split('T')[0],
+          collectionDate: formatLocalDate(now),
           collectorName: this.uploadedBy,
           boundaryGeometry: {
             type: "MultiPolygon",
@@ -501,7 +502,7 @@ export class ProjectFilesComponent implements OnInit {
       projectGuid: this.projectGuid,
       systemStartTimestamp: now.toISOString(),
       systemEndTimestamp: futureDate.toISOString(),
-      collectionDate: now.toISOString().split('T')[0],
+      collectionDate: formatLocalDate(now),
       collectorName: this.uploadedBy,
       boundaryGeometry: {
         type: "MultiPolygon",
@@ -539,7 +540,7 @@ export class ProjectFilesComponent implements OnInit {
       activityGuid: this.activityGuid,
       systemStartTimestamp: now.toISOString(),
       systemEndTimestamp: futureDate.toISOString(),
-      collectionDate: now.toISOString().split('T')[0],
+      collectionDate: formatLocalDate(now),
       collectorName: this.uploadedBy,
       plannedSpendAmount: 20000, // hardcode for now, should use the value from activity
       boundarySizeHa: 0,// hardcode for now

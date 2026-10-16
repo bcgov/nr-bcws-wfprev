@@ -1,5 +1,5 @@
 import { FiscalYearColors } from 'src/app/utils/constants';
-import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp, getUtcIsoTimestamp, isEmpty } from './tools';
+import { parseLatLong, validateLatLong, formatLatLong, trimLatLong, getFiscalYearDisplay, getFiscalYearColor, LOCAL_ISO_FORMAT, getLocalIsoTimestamp, getUtcIsoTimestamp, isEmpty, formatLocalDate } from './tools';
 
 describe('Latitude/Longitude Utilities', () => {
   describe('parseLatLong', () => {
@@ -157,6 +157,43 @@ describe('Latitude/Longitude Utilities', () => {
       expect(isEmpty('hello')).toBeFalse();
       expect(isEmpty({})).toBeFalse();
       expect(isEmpty([])).toBeFalse();
+    });
+  });
+
+  describe('formatLocalDate', () => {
+    it('should confirm the helper builds the date from local date parts, so a time after 17:00 local gives the same day', () => {
+      // 18:30:00 (after 17:00) on October 16, 2026 local time
+      const dateAfter17 = new Date(2026, 9, 16, 18, 30, 0);
+      expect(formatLocalDate(dateAfter17)).toBe('2026-10-16');
+
+      // 23:59:59 local time
+      const lateEvening = new Date(2026, 9, 16, 23, 59, 59);
+      expect(formatLocalDate(lateEvening)).toBe('2026-10-16');
+
+      // In timezones behind UTC (such as Pacific Time UTC-7 / UTC-8), toISOString() yields next day (2026-10-17),
+      // whereas formatLocalDate preserves the device's local calendar day
+      if (dateAfter17.getTimezoneOffset() > 0) {
+        expect(dateAfter17.toISOString().split('T')[0]).toBe('2026-10-17');
+      }
+    });
+
+    it('should format a yyyy-MM-dd string and not be off by one day', () => {
+      expect(formatLocalDate('2025-05-01')).toBe('2025-05-01');
+    });
+
+    it('should format a full ISO timestamp and not be off by one day', () => {
+      expect(formatLocalDate('2025-05-01T00:00:00.000+00:00')).toBe('2025-05-01');
+      expect(formatLocalDate('2025-05-01T00:00:00.000Z')).toBe('2025-05-01');
+    });
+
+    it('should default to current local date when no date is provided', () => {
+      const today = new Date();
+      const expected = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      expect(formatLocalDate()).toBe(expected);
+    });
+
+    it('should return empty string for empty string input', () => {
+      expect(formatLocalDate('')).toBe('');
     });
   });
 });
