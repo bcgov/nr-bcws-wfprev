@@ -209,7 +209,7 @@ public class ProjectAttachmentController extends CommonController {
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_PROJECT')")
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_SPATIAL_UPLOAD')")
     @Operation(
             summary = "Delete an File Attachment for a Project",
             description = "Delete a specific File Attachment by ID",
