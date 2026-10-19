@@ -137,8 +137,9 @@ variable "WFPREV_CLIENT_ID" {
 }
 
 variable "WFPREV_CLIENT_SECRET" {
-  type    = string
-  default = ""
+  type      = string
+  default   = ""
+  sensitive = true
 }
 
 variable "WFPREV_BASE_URL" {
@@ -167,8 +168,9 @@ variable "WFNEWS_API_BASE_URL" {
 }
 
 variable "WFNEWS_API_KEY" {
-  type    = string
-  default = ""
+  type      = string
+  default   = ""
+  sensitive = true
 }
 
 variable "OPENMAPS_URL" {
@@ -190,12 +192,14 @@ variable "DB_PASS" {
   description = "db password, passed in as env variable at runtime"
   type        = string
   default     = ""
+  sensitive   = true
 }
 
 variable "api_key" {
   description = "value for api key"
   type        = string
   default     = ""
+  sensitive   = true
 }
 
 variable "server_name" {
@@ -234,8 +238,9 @@ variable "WFPREV_CLIENT_PORT" {
 }
 
 variable "WEBADE_OAUTH2_WFPREV_UI_CLIENT_SECRET" {
-  type    = string
-  default = ""
+  type      = string
+  default   = ""
+  sensitive = true
 }
 
 variable "client_name" {
@@ -360,6 +365,7 @@ variable "CLOUDFRONT_HEADER" {
   description = "Header added when passing through cloudfront"
   default     = ""
   type        = string
+  sensitive   = true
 }
 
 variable "NONPROXY_COUNT" {
@@ -367,7 +373,8 @@ variable "NONPROXY_COUNT" {
   default = 1
 }
 variable "APP_WF1_PREV_PASSWORD" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 
@@ -378,6 +385,7 @@ variable "PROXY_WF1_PREV_REST_USER" {
 variable "PROXY_WF1_PREV_REST_PASSWORD" {
   type        = string
   description = "Password for proxy_wf1_prev_rest DB user"
+  sensitive   = true
 }
 
 variable "TARGET_LIQUIBASE_TAG" {
@@ -417,5 +425,5 @@ variable "SNS_TOPIC_NAME" {
 
 variable "SLACK_NOTIFICATION_EMAIL" {
   description = "Email address for slack notification"
-  type = string
+  type        = string
 }
