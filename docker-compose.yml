@@ -75,7 +75,7 @@ services:
       - .env
 
   db:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:17-3.6
     container_name: wfprev-postgres
     environment:
       POSTGRES_USER: wfprev

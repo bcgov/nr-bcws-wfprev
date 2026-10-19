@@ -22,12 +22,12 @@ This guide will help you build a local instance of PostGIS, set up the database,
 1. **Pull the PostGIS Image**:
 
    ```bash
-   docker pull postgis/postgis:16-3.4
+   docker pull postgis/postgis:17-3.6
 
 2. **Run the PostGIS Containe**:
 
    ```bash
-   docker run --name wfprev-postgres -e POSTGRES_USER=wfprev -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgis/postgis:16-3.4
+   docker run --name wfprev-postgres -e POSTGRES_USER=wfprev -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgis/postgis:17-3.6
 
 ## Step 2: Find the IP Address
 

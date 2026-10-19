@@ -17,7 +17,7 @@ class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	static PostgreSQLContainer<?> postgresContainer() {
-		DockerImageName image = DockerImageName.parse("postgis/postgis:16-3.4").asCompatibleSubstituteFor("postgres");
+		DockerImageName image = DockerImageName.parse("postgis/postgis:17-3.6").asCompatibleSubstituteFor("postgres");
 		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(image)
 		.withDatabaseName("wfprev")
 		.withUsername("wfprev")
