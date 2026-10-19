@@ -68,7 +68,7 @@ public class EvaluationCriteriaSummaryController extends CommonController {
             description = "Create a new Evaluation Criteria Summary Resource",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}))
-    @PreAuthorize("hasAuthority('WFPREV.CREATE_PREVENTION_PROJECT')")
+    @PreAuthorize("hasAuthority('WFPREV.CREATE_EVALUATION_CRITERIA')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = EvaluationCriteriaSummaryModel.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
@@ -100,7 +100,7 @@ public class EvaluationCriteriaSummaryController extends CommonController {
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}),
             extensions = {@Extension(properties = {@ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"), @ExtensionProperty(name = "throttling-tier", value = "Unlimited")})})
-    @PreAuthorize("hasAuthority('WFPREV.UPDATE_PREVENTION_PROJECT')")
+    @PreAuthorize("hasAuthority('WFPREV.UPDATE_EVALUATION_CRITERIA')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = EvaluationCriteriaSummaryModel.class)), headers = {@Header(name = "ETag", description = "The ETag response-header field provides the current value of the entity tag for the requested variant.", schema = @Schema(implementation = String.class))}), @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))), @ApiResponse(responseCode = "403", description = "Forbidden"), @ApiResponse(responseCode = "404", description = "Not Found"), @ApiResponse(responseCode = "409", description = "Conflict"), @ApiResponse(responseCode = "412", description = "Precondition Failed"), @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = MessageListRsrc.class)))})
     @Parameter(name = HeaderConstants.VERSION_HEADER, description = HeaderConstants.VERSION_HEADER_DESCRIPTION, required = false, schema = @Schema(implementation = Integer.class), in = ParameterIn.HEADER)
     @Parameter(name = HeaderConstants.IF_MATCH_HEADER, description = HeaderConstants.IF_MATCH_DESCRIPTION, required = true, schema = @Schema(implementation = String.class), in = ParameterIn.HEADER)
@@ -144,7 +144,7 @@ public class EvaluationCriteriaSummaryController extends CommonController {
             description = "Delete a specific Evaluation Criteria Summary Resource by its ID",
             security = @SecurityRequirement(name = "Webade-OAUTH2",
                     scopes = {"WFPREV"}))
-    @PreAuthorize("hasAuthority('WFPREV.DELETE_PREVENTION_PROJECT')")
+    @PreAuthorize("hasAuthority('WFPREV.DELETE_EVALUATION_CRITERIA')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = MessageListRsrc.class))),
