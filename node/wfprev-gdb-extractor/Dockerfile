@@ -12,7 +12,7 @@ COPY package*.json ./
 # Security Hotspot docker:S6505 reviewed – safe: gdal-async install requires lifecycle scripts and runs in isolated Lambda context
 # The npm registry config comes in as a BuildKit secret (npmrc) so it never lands in an image layer
 RUN --mount=type=secret,id=npmrc \
-    NPM_CONFIG_USERCONFIG=/run/secrets/npmrc npm install
+    NPM_CONFIG_USERCONFIG=/run/secrets/npmrc npm install --omit=dev
 
 # Copy only runtime code
 COPY server.js .
