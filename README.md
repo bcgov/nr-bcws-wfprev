@@ -116,7 +116,6 @@ Deployments to TEST and PROD happen when you publish a GitHub release. The relea
 | Release type | Workflow | Tag contains | Deploys to |
 |---|---|---|---|
 | Pre-release | [prerelease.yml](.github/workflows/prerelease.yml) | `-rc` | TEST (`wftst`) |
-| Pre-release | [prerelease.yml](.github/workflows/prerelease.yml) | `-beta` | DLV (`wfdlv`) |
 | Full release | [release.yml](.github/workflows/release.yml) | `-release` | PROD (`wfprd`) |
 
 Neither workflow builds anything. Each one finds the API, Liquibase, GDB extractor and report generator images tagged with the commit SHA the release tag points at, re-tags them with the release tag (GHCR and ECR), then runs Terragrunt apply with Liquibase and builds the UI. **The images must already exist for that exact commit.**
