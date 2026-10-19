@@ -45,7 +45,7 @@ class ActivitySpatialIndTriggerTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
-            DockerImageName.parse("postgis/postgis:16-3.4").asCompatibleSubstituteFor("postgres"))
+            DockerImageName.parse("postgis/postgis:17-3.6").asCompatibleSubstituteFor("postgres"))
             .withDatabaseName("wfprev")
             .withUsername("wfprev")
             .withPassword("password");

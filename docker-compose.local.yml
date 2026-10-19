@@ -18,7 +18,7 @@ services:
         condition: service_healthy
 
   db:
-    image: postgis/postgis:17-3.4
+    image: postgis/postgis:17-3.6
     volumes:
       - ./docker/db-init:/docker-entrypoint-initdb.d
       - ./wfprev.dump:/dump/wfprev.dump
