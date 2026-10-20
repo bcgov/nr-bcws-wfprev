@@ -5,6 +5,8 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MAVEN_OPTS: "-Xmx10000m"
   NODE_OPTIONS: "--max-old-space-size=4096"
+permissions:
+  contents: read
 on:
   # push:
   #   branches: [ main, feature/* ]
