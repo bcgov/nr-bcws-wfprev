@@ -44,10 +44,13 @@ WFPREV_BASE_URL=http://localhost:4200
 WEBADE_OAUTH2_CHECK_TOKEN_URL=https://<domain>/pub/oauth2/v1/check_token
 WEBADE_OAUTH2_CHECK_AUTHORIZE_URL=https://<domain>/ext/oauth2/v1/oauth/authorize
 ```
-2. Run the following command to build the GraalVM Docker image:
+2. Run the following command to build the GraalVM Docker image. The Artifactory credentials are passed as
+   BuildKit secrets read from the `REPO_LOGIN` and `REPO_PASSWORD` environment variables, never as `--build-arg`:
 
 ```bash 
- docker build -t wfprev-api -f Dockerfile.graalvm .
+ docker build -t wfprev-api -f Dockerfile.graalvm \
+   --secret id=repo_login,env=REPO_LOGIN \
+   --secret id=repo_password,env=REPO_PASSWORD .
 ```
 
 3. Run the following command to start the GraalVM Docker container:

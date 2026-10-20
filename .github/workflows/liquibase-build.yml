@@ -32,6 +32,8 @@ on:
 
 jobs:
   docker:
+    # A closed but unmerged PR must not build
+    if: ${{ github.event_name != 'pull_request_target' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

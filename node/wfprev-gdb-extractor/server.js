@@ -19,9 +19,18 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(fileUpload());
 
+// File type bits of a zip entry's Unix mode, the same check extract-zip uses to create symlinks
+const S_IFMT = 0o170000;
+const S_IFLNK = 0o120000;
+
 function isValidPath(filePath, destinationPath) {
   const normalizedPath = path.normalize(filePath);
-  return normalizedPath.startsWith(destinationPath);
+  return normalizedPath === destinationPath || normalizedPath.startsWith(destinationPath + path.sep);
+}
+
+function isSymlink(entry) {
+  const mode = (entry.externalFileAttributes >> 16) & 0xffff;
+  return (mode & S_IFMT) === S_IFLNK;
 }
 
 async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
@@ -29,39 +38,45 @@ async function extractAndParseGDB(zipBuffer, zipFileName = "upload.zip") {
   const zipPath = path.join(tmpDir.name, zipFileName);
   const unzipPath = path.join(tmpDir.name, path.basename(zipFileName, ".zip"));
 
-  fs.writeFileSync(zipPath, zipBuffer);
+  // Clean up tmp files even when extraction or parsing fails: a warm Lambda keeps /tmp between invocations
+  try {
+    fs.writeFileSync(zipPath, zipBuffer);
 
-  await extract(zipPath, {
-    dir: unzipPath,
-    onEntry: (entry) => {
-      const destPath = path.join(unzipPath, entry.fileName);
-      if (!isValidPath(destPath, unzipPath)) {
-        throw new Error(`Zip slip detected: ${entry.fileName}`);
-      }
-    },
-  });
-
-  const files = fs.readdirSync(unzipPath);
-  const gdbFolder = files.find((f) => f.endsWith(".gdb"));
-  if (!gdbFolder) throw new Error("No .gdb found.");
-
-  const gdbPath = path.join(unzipPath, gdbFolder);
-  const dataset = gdal.open(gdbPath);
-  const results = [];
-
-  dataset.layers.forEach((layer) => {
-    layer.features.forEach((feature) => {
-      const geom = feature.getGeometry();
-      if (geom) results.push(JSON.parse(geom.toJSON()));
+    await extract(zipPath, {
+      dir: unzipPath,
+      onEntry: (entry) => {
+        const destPath = path.join(unzipPath, entry.fileName);
+        if (!isValidPath(destPath, unzipPath)) {
+          throw new Error(`Zip slip detected: ${entry.fileName}`);
+        }
+        // A symlink entry can point outside unzipPath, and extract-zip creates it without checking the target
+        if (isSymlink(entry)) {
+          throw new Error(`Symlinks are not allowed: ${entry.fileName}`);
+        }
+      },
     });
-  });
 
-  dataset.close();
+    const files = fs.readdirSync(unzipPath);
+    const gdbFolder = files.find((f) => f.endsWith(".gdb"));
+    if (!gdbFolder) throw new Error("No .gdb found.");
 
-  // Clean up tmp files
-  tmpDir.removeCallback();
+    const gdbPath = path.join(unzipPath, gdbFolder);
+    const dataset = gdal.open(gdbPath);
+    const results = [];
 
-  return results;
+    dataset.layers.forEach((layer) => {
+      layer.features.forEach((feature) => {
+        const geom = feature.getGeometry();
+        if (geom) results.push(JSON.parse(geom.toJSON()));
+      });
+    });
+
+    dataset.close();
+
+    return results;
+  } finally {
+    tmpDir.removeCallback();
+  }
 }
 
 async function handleUpload(req, res) {

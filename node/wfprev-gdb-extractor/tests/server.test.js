@@ -85,6 +85,45 @@ describe("Server Module", () => {
       expect(res.text).toContain("Zip slip detected");
     });
 
+    test("should reject a path that only shares the extract directory's prefix", async () => {
+      extract.mockImplementationOnce((_, opts) => {
+        opts.onEntry({ fileName: "../test-evil/malicious.txt" });
+        return Promise.resolve();
+      });
+
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("mock zip"), "test.zip");
+      expect(res.status).toBe(500);
+      expect(res.text).toContain("Zip slip detected");
+    });
+
+    test("should reject symlink entries", async () => {
+      extract.mockImplementationOnce((_, opts) => {
+        opts.onEntry({ fileName: "evil.gdb", externalFileAttributes: (0o120777 << 16) >>> 0 });
+        return Promise.resolve();
+      });
+
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("mock zip"), "test.zip");
+      expect(res.status).toBe(500);
+      expect(res.text).toContain("Symlinks are not allowed");
+    });
+
+    test("should accept regular file and directory entries", async () => {
+      extract.mockImplementationOnce((_, opts) => {
+        opts.onEntry({ fileName: "test.gdb/", externalFileAttributes: (0o040755 << 16) >>> 0 });
+        opts.onEntry({ fileName: "test.gdb/a00000001.gdbtable", externalFileAttributes: (0o100644 << 16) >>> 0 });
+        return Promise.resolve();
+      });
+
+      const res = await request(app)
+        .post("/upload")
+        .attach("file", Buffer.from("mock zip"), "test.zip");
+      expect(res.status).toBe(200);
+    });
+
     test("should handle extract error", async () => {
       extract.mockImplementationOnce(() => { throw new Error("Extract failed"); });
 
@@ -108,6 +147,13 @@ describe("Server Module", () => {
       fs.readdirSync.mockReturnValueOnce([]);
       await expect(extractAndParseGDB(Buffer.from("zip"), "sample.zip"))
         .rejects.toThrow("No .gdb found.");
+    });
+
+    test("should clean up the tmp dir when extraction fails", async () => {
+      extract.mockImplementationOnce(() => Promise.reject(new Error("Extract failed")));
+      await expect(extractAndParseGDB(Buffer.from("zip"), "sample.zip"))
+        .rejects.toThrow("Extract failed");
+      expect(tmp.dirSync.mock.results[0].value.removeCallback).toHaveBeenCalled();
     });
   });
 });
