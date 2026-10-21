@@ -14,7 +14,7 @@ EOF
 fi
 
 echo "🐘 Setting up PostgreSQL..."
-docker pull postgis/postgis:16-3.4
+docker pull postgis/postgis:17-3.6
 
 # Stop and remove existing container if it exists
 docker rm -f wfprev-postgres 2>/dev/null || true
@@ -30,7 +30,7 @@ docker run --name wfprev-postgres \
     -e POSTGRES_DB=wfprev \
     -e POSTGRES_HOST_AUTH_METHOD=trust \
     -p 5432:5432 \
-    -d postgis/postgis:16-3.4
+    -d postgis/postgis:17-3.6
 
 echo "⏳ Waiting for PostgreSQL to be ready..."
 # More comprehensive health check

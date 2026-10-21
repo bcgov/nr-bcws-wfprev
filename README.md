@@ -70,12 +70,12 @@ You can create a database instance via
 
 #### Postgres
 ```
-docker pull postgis/postgis:16-3.4
+docker pull postgis/postgis:17-3.6
 docker run --name wfprev-postgres \
     --env-file .env.local \
     -e POSTGRES_USER=wfprev \
     -p 5432:5432 \
-    -d postgis/postgis:16-3.4
+    -d postgis/postgis:17-3.6
 
 ```
 

@@ -66,6 +66,48 @@ describe('PerformanceUpdateHeaderComponent', () => {
     expect(date).toBeTruthy();
   });
 
+  it('should render the fiscalCloseout update date', () => {
+    component.update = undefined as any;
+    component.fiscalCloseout = mockUpdate;
+    fixture.detectChanges();
+    const date = fixture.debugElement.query(By.css('.performance-update-title'));
+    expect(date).toBeTruthy();
+  });
+
+  it('should show the same date for fiscalCloseout updateDate of 2027-04-01T01:00:00Z as a submitted timestamp at the same instant', () => {
+    const instant = new Date('2027-04-01T01:00:00Z');
+
+    component.update = { ...mockUpdate, submittedTimestamp: instant };
+    fixture.detectChanges();
+    const submittedDateText = fixture.debugElement.query(By.css('.performance-update-title')).nativeElement.textContent.trim();
+
+    const closeoutFixture = TestBed.createComponent(PerformanceUpdateHeaderComponent);
+    const closeoutComp = closeoutFixture.componentInstance;
+    closeoutComp.fiscalCloseout = { ...mockUpdate, updateDate: instant };
+    closeoutFixture.detectChanges();
+    const closeoutDateText = closeoutFixture.debugElement.query(By.css('.performance-update-title')).nativeElement.textContent.trim();
+
+    expect(closeoutDateText).toBe(submittedDateText);
+  });
+
+  it('should show the same date for fiscalCloseout updateDate of 2027-04-01T01:00:00Z as a submitted timestamp at the same instant when stacked', () => {
+    const instant = new Date('2027-04-01T01:00:00Z');
+
+    component.shouldStack = true;
+    component.update = { ...mockUpdate, submittedTimestamp: instant };
+    fixture.detectChanges();
+    const submittedDateText = fixture.debugElement.query(By.css('.performance-update-title')).nativeElement.textContent.trim();
+
+    const closeoutFixture = TestBed.createComponent(PerformanceUpdateHeaderComponent);
+    const closeoutComp = closeoutFixture.componentInstance;
+    closeoutComp.shouldStack = true;
+    closeoutComp.fiscalCloseout = { ...mockUpdate, updateDate: instant };
+    closeoutFixture.detectChanges();
+    const closeoutDateText = closeoutFixture.debugElement.query(By.css('.performance-update-title')).nativeElement.textContent.trim();
+
+    expect(closeoutDateText).toBe(submittedDateText);
+  });
+
   it('should show the Q2 reporting period label', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent;

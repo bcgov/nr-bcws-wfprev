@@ -1,19 +1,13 @@
 # Build stage
-FROM ghcr.io/graalvm/graalvm-community:21 AS builder
+FROM bellsoft/liberica-native-image-kit-container:jdk-21-nik-23-glibc AS builder
 
 # Define build argument and set it as environment variable
 ARG MAVEN_SETTINGS_FILE=settings.xml
-ARG REPO_LOGIN
-ARG REPO_PASSWORD
 
 ENV MAVEN_SETTINGS_FILE=${MAVEN_SETTINGS_FILE}
 
-ENV REPO_LOGIN=${REPO_LOGIN}
-ENV REPO_PASSWORD=${REPO_PASSWORD}
-
-# The environment variables from .env are automatically available here
-# We don't need the ARG declarations anymore since we're using the env file
-
+# Artifactory credentials come in as BuildKit secrets (repo_login, repo_password), never as
+# build-args: build-args are recorded in the build history and the uploaded build record.
 
 # Copy maven settings first
 COPY server/wfprev-api/mvn_settings/${MAVEN_SETTINGS_FILE} /root/.m2/settings.xml
@@ -33,7 +27,11 @@ RUN pwd
 RUN ls -la
 
 # Build the native image using settings.xml
-RUN ./mvnw -Pnative native:compile -DskipTests  -Drepo.login=${REPO_LOGIN} -Drepo.password=${REPO_PASSWORD}
+RUN --mount=type=secret,id=repo_login \
+    --mount=type=secret,id=repo_password \
+    ./mvnw -Pnative native:compile -DskipTests \
+      -Drepo.login="$(cat /run/secrets/repo_login)" \
+      -Drepo.password="$(cat /run/secrets/repo_password)"
 
 # Runtime stage
 FROM ubuntu:22.04
