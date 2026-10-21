@@ -1,3 +1,4 @@
+import { formatDate } from "@angular/common";
 import L from "leaflet";
 import { FiscalYearColors, PlanFiscalStatus } from "src/app/utils/constants";
 
@@ -207,6 +208,16 @@ export function getLocalIsoTimestamp(date?: Date): string {
 export function getUtcIsoTimestamp(date?: Date): string {
   // Example: 2025-08-08T18:20:30.000Z (always UTC)
   return (date ?? new Date()).toISOString();
+}
+
+export function formatLocalDate(date: Date | string = new Date()): string {
+  if (!date) {
+    return '';
+  }
+  if (typeof date === 'string') {
+    date = date.includes('T') ? date.split('T')[0] : date;
+  }
+  return formatDate(date, 'yyyy-MM-dd', 'en-CA');
 }
 
 export function isEmpty(val: any): boolean {

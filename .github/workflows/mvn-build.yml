@@ -161,8 +161,12 @@ jobs:
           build-args: |
             CONTAINER_NAME=${{inputs.COMPONENT_NAME}}
             MAVEN_SETTINGS_FILE=settings.xml
-            REPO_LOGIN=${{secrets.IDIR_AS_EMAIL}}
-            REPO_PASSWORD=${{secrets.IDIR_PASSWORD}}
+          secrets: |
+            repo_login=${{secrets.IDIR_AS_EMAIL}}
+            repo_password=${{secrets.IDIR_PASSWORD}}
           push: true
+          provenance: mode=min
           tags: ${{ steps.meta_pr.outputs.tags }}
           labels: ${{ steps.meta_pr.outputs.labels }}
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false

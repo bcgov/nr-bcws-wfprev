@@ -22,6 +22,8 @@ on:
 
 jobs: 
   node-build:
+    # A closed but unmerged PR must not build or deploy
+    if: ${{ github.event_name != 'pull_request_target' || github.event.pull_request.merged == true }}
     uses: ./.github/workflows/node-build.yml
     secrets: inherit
     with:
@@ -29,6 +31,8 @@ jobs:
       TAG: latest
 
   wfprev-api:
+    # A closed but unmerged PR must not build or deploy
+    if: ${{ github.event_name != 'pull_request_target' || github.event.pull_request.merged == true }}
     uses: ./.github/workflows/mvn-build.yml
     secrets: inherit
     with:
@@ -37,12 +41,16 @@ jobs:
       COMPONENT_TYPE: server
   
   liquibase-build:
+    # A closed but unmerged PR must not build or deploy
+    if: ${{ github.event_name != 'pull_request_target' || github.event.pull_request.merged == true }}
     uses: ./.github/workflows/liquibase-build.yml
     secrets: inherit
     with:
       TAG: latest
 
   report-generator-lambda:
+    # A closed but unmerged PR must not build or deploy
+    if: ${{ github.event_name != 'pull_request_target' || github.event.pull_request.merged == true }}
     uses: ./.github/workflows/report-generator-image-build.yml
     secrets: inherit
       

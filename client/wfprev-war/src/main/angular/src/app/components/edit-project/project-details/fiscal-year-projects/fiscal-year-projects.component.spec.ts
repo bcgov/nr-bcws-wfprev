@@ -104,8 +104,14 @@ describe('FiscalYearProjectsComponent', () => {
     expect(component.displayedColumnsPlanned).toEqual(['name', 'description', 'startDate', 'endDate', 'plannedHectares']);
   });
 
-  it('should format dates correctly', () => {
+  it('should format dates correctly with a full ISO timestamp and not be off by one day', () => {
     const dateString = '2025-05-01T00:00:00.000+00:00';
+    const formattedDate = component['formatDate'](dateString);
+    expect(formattedDate).toBe('2025-05-01');
+  });
+
+  it('should format dates correctly with a yyyy-MM-dd string and not be off by one day', () => {
+    const dateString = '2025-05-01';
     const formattedDate = component['formatDate'](dateString);
     expect(formattedDate).toBe('2025-05-01');
   });

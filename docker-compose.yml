@@ -4,11 +4,12 @@ services:
       - api
     build:
       dockerfile: Dockerfile.graalvm
-      # Pass the maven settings file and repo credentials as build args
+      # Pass the maven settings file as a build arg and the repo credentials as build secrets
       args:
         - MAVEN_SETTINGS_FILE=vivid.settings.xml
-        - REPO_LOGIN=${REPO_LOGIN}
-        - REPO_PASSWORD=${REPO_PASSWORD}
+      secrets:
+        - repo_login
+        - repo_password
     environment:
       # Environment variables for the application
       WFPREV_DATASOURCE_URL: ${WFPREV_DATASOURCE_URL}
@@ -33,8 +34,6 @@ services:
       dockerfile: Dockerfile.dev
       args:
         - MAVEN_SETTINGS_FILE=vivid.settings.xml
-        - REPO_LOGIN=${REPO_LOGIN}
-        - REPO_PASSWORD=${REPO_PASSWORD}
     environment:
       # Environment variables for the application
       WFPREV_DATASOURCE_URL: ${WFPREV_DATASOURCE_URL}
@@ -73,7 +72,7 @@ services:
       - .env
 
   db:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:17-3.6
     container_name: wfprev-postgres
     environment:
       POSTGRES_USER: wfprev
@@ -126,3 +125,9 @@ networks:
 volumes:
   postgres_data:
     driver: local
+
+secrets:
+  repo_login:
+    environment: REPO_LOGIN
+  repo_password:
+    environment: REPO_PASSWORD

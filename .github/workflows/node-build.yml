@@ -55,13 +55,6 @@ jobs:
         working-directory: ./node/${{ inputs.COMPONENT_NAME }}
         run: npm install
 
-      # Package Lambda function code
-      - name: Create Lambda deployment package
-        working-directory: ./node/${{ inputs.COMPONENT_NAME }}
-        run: |
-          npm prune --production
-          zip -r ../../lambda-deployment.zip . -x "*.git*" "*.github*" "tests/*" "*.zip"
-
       # Authenticate to AWS using OIDC and assume IAM role
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
@@ -104,6 +97,8 @@ jobs:
         with:
           context: ./node/${{ inputs.COMPONENT_NAME }}
           file: ./node/${{ inputs.COMPONENT_NAME }}/Dockerfile
+          secret-files: |
+            npmrc=./node/${{ inputs.COMPONENT_NAME }}/.npmrc
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
