@@ -2522,31 +2522,31 @@
     },
     {
       "changeSet": {
-        "id": "01_04_00_03",
+        "id": "01_05_00_00",
         "author": "hwang",
         "tagDatabase": {
-          "tag": "version_01_04_00_03"
+          "tag": "version_01_05_00_00"
         },
         "changes": [
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_04_00/03/ddl/WFPREV.ddl.create.project_activity_svw.sql"
+              "path": "scripts/01_05_00/00/ddl/WFPREV.ddl.create.project_activity_svw.sql"
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_04_00/03/grants/proxy.grants.project_activity_svw.sql"
+              "path": "scripts/01_05_00/00/grants/proxy.grants.project_activity_svw.sql"
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_04_00/03/grants/app_wf1_prev.grants.project_activity_svw.sql"
+              "path": "scripts/01_05_00/00/grants/app_wf1_prev.grants.project_activity_svw.sql"
             }
           }
         ],
