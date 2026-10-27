@@ -543,6 +543,94 @@ describe('MapService', () => {
     });
   });
 
+  describe('installMeasurementToolPatch', () => {
+    it('disables autoPanOnFocus on leaflet Marker and patches MeasureControl', () => {
+      const mockLeaflet: any = {
+        Marker: {
+          prototype: {
+            options: { autoPanOnFocus: true }
+          }
+        },
+        Control: {
+          Measure: function (this: any) {}
+        },
+        DomEvent: {
+          off: jasmine.createSpy('off')
+        }
+      };
+      mockLeaflet.Control.Measure.prototype = {
+        _setCaptureMarkerIcon: jasmine.createSpy('_setCaptureMarkerIcon'),
+        _startMeasure: jasmine.createSpy('_startMeasure'),
+      };
+
+      const mockSMK: any = {
+        TYPE: {
+          MeasureTool: {
+            addInitializer: jasmine.createSpy('addInitializer')
+          }
+        }
+      };
+
+      service.installMeasurementToolPatch(mockSMK, mockLeaflet);
+
+      expect(mockLeaflet.Marker.prototype.options.autoPanOnFocus).toBeFalse();
+      expect(mockSMK.TYPE.MeasureTool.addInitializer).toHaveBeenCalled();
+
+      // Test _setCaptureMarkerIcon behavior
+      const instance: any = {
+        _captureMarker: {
+          options: { autoPanOnFocus: true },
+          _panOnFocus: () => {},
+          _icon: {}
+        }
+      };
+      mockLeaflet.Control.Measure.prototype._setCaptureMarkerIcon.call(instance);
+      expect(instance._captureMarker.options.autoPanOnFocus).toBeFalse();
+      expect(mockLeaflet.DomEvent.off).toHaveBeenCalledWith(instance._captureMarker._icon, 'focus', jasmine.any(Function), instance._captureMarker);
+
+      // Test _startMeasure behavior
+      instance._captureMarker.options.autoPanOnFocus = true;
+      mockLeaflet.Control.Measure.prototype._startMeasure.call(instance);
+      expect(instance._captureMarker.options.autoPanOnFocus).toBeFalse();
+    });
+
+    it('patches control instance via SMK MeasureTool initializer', () => {
+      let registeredInitializer: Function | undefined;
+      const mockSMK: any = {
+        TYPE: {
+          MeasureTool: {
+            addInitializer: jasmine.createSpy('addInitializer').and.callFake((fn: Function) => {
+              registeredInitializer = fn;
+            })
+          }
+        }
+      };
+      const mockLeaflet: any = {
+        DomEvent: { off: jasmine.createSpy('off') }
+      };
+
+      service.installMeasurementToolPatch(mockSMK, mockLeaflet);
+      expect(registeredInitializer).toBeDefined();
+
+      const toolInstance: any = {
+        control: {
+          _setCaptureMarkerIcon: jasmine.createSpy('_setCaptureMarkerIcon'),
+          _startMeasure: jasmine.createSpy('_startMeasure'),
+        }
+      };
+      registeredInitializer!.call(toolInstance);
+
+      const captureMarker: any = {
+        options: { autoPanOnFocus: true },
+        _panOnFocus: () => {},
+        _icon: {}
+      };
+      toolInstance.control._captureMarker = captureMarker;
+      toolInstance.control._startMeasure();
+      expect(captureMarker.options.autoPanOnFocus).toBeFalse();
+    });
+  });
+
   describe('addLayersToExistingSMKInstance', () => {
     it('registers the layers and shows Regions, leaving SMK to create each layer when it is first shown', async () => {
       const displayContext = {
