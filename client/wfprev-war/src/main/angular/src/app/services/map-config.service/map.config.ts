@@ -61,6 +61,9 @@ export const mapConfigBase = (mapServices: MapServices, token?: string) => ({
       order: 2,
       display: LayerDisplayConfig(),
     },
+    { type: 'scale', enabled: true, showFactor: true, showBar: true, order: 1 },
+    { type: 'coordinate', enabled: true, order: 2 },
+    { type: 'measure', enabled: true, position: 'shortcut-menu', order: 6 },
   ],
 });
 
