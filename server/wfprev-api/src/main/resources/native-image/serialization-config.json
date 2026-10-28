@@ -77,6 +77,7 @@
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ResultsCulturalPrescribedFireReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectCulturalPrescribedFireReportEntity" },
   { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectLocationEntity" },
+  { "name": "ca.bc.gov.nrs.wfprev.data.entities.ProjectActivityEntity" },
   { "name": "org.springframework.hateoas.RepresentationModel"},
   { "name": "org.springframework.hateoas.Link"},
   { "name": "org.springframework.hateoas.Links"},
