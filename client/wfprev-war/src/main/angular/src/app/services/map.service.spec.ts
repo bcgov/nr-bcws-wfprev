@@ -612,11 +612,13 @@ describe('MapService', () => {
       service.installMeasurementToolPatch(mockSMK, mockLeaflet);
       expect(registeredInitializer).toBeDefined();
 
+      class MockMeasureControl {
+        _setCaptureMarkerIcon(): void {}
+        _startMeasure(): void {}
+      }
+
       const toolInstance: any = {
-        control: {
-          _setCaptureMarkerIcon: jasmine.createSpy('_setCaptureMarkerIcon'),
-          _startMeasure: jasmine.createSpy('_startMeasure'),
-        }
+        control: new MockMeasureControl()
       };
       registeredInitializer!.call(toolInstance);
 
