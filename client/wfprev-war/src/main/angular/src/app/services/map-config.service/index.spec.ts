@@ -96,6 +96,34 @@ describe('mapConfigBase', () => {
       { id: 'imagery-v2', order: 3, optionImageUrl: 'assets/basemaps/imagery-v2.png' },
     ]);
   });
+
+  it('should include scale, coordinate, measure, and box zoom tools in the base map configuration', () => {
+    const tools = mapConfigBase({}).tools;
+
+    expect(tools).toContain(jasmine.objectContaining({
+      type: 'scale',
+      enabled: true,
+      showFactor: true,
+      showBar: true,
+      order: 1,
+    }));
+    expect(tools).toContain(jasmine.objectContaining({
+      type: 'coordinate',
+      enabled: true,
+      order: 2,
+    }));
+    expect(tools).toContain(jasmine.objectContaining({
+      type: 'measure',
+      enabled: true,
+      position: 'shortcut-menu',
+      order: 6,
+    }));
+    expect(tools).toContain(jasmine.objectContaining({
+      type: 'zoom',
+      enabled: true,
+      box: true,
+    }));
+  });
 });
 
 describe('miniMapConfig', () => {

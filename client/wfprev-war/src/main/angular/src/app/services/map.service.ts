@@ -212,6 +212,7 @@ export class MapService {
     this.installAuthenticatedLegendPatch(SMK);
     this.installCurrentFireYearPatch(SMK);
     this.installBasemapPanePatch((globalThis as any).L);
+    this.installMeasurementToolPatch(SMK, (globalThis as any).L);
 
     // SMK waits 200ms before showing or hiding layers, so that a run of visibility changes is handled at once. Every
     // map waited for it as it was created, and so did each layer turned on in the layers panel. Changes made together
@@ -352,6 +353,66 @@ export class MapService {
       }
       return onAdd.call(this, map);
     };
+  }
+
+  /**
+   * Patches the measurement tool (leaflet-measure) to prevent unwanted map panning.
+   * By default, Leaflet markers have autoPanOnFocus = true. Because the measurement tool's
+   * capture marker uses a divIcon that is 2x the map size, clicking the map focuses the capture marker,
+   * which causes Leaflet to think the marker is out of view and trigger continuous map auto-panning.
+   */
+  installMeasurementToolPatch(SMK: any, leaflet: any): void {
+    if (leaflet?.Marker?.prototype?.options) {
+      leaflet.Marker.prototype.options.autoPanOnFocus = false;
+    }
+
+    const patchControl = (target: any) => {
+      if (!target || target['__measureAutoPanPatched']) return;
+      target['__measureAutoPanPatched'] = true;
+
+      const origSetCapture = target._setCaptureMarkerIcon;
+      target._setCaptureMarkerIcon = function (this: any) {
+        if (this._captureMarker) {
+          this._captureMarker.options.autoPanOnFocus = false;
+          this._captureMarker._panOnFocus = () => {};
+        }
+        const res = origSetCapture?.apply(this, arguments);
+        if (this._captureMarker) {
+          this._captureMarker.options.autoPanOnFocus = false;
+          this._captureMarker._panOnFocus = () => {};
+          if (this._captureMarker._icon) {
+            leaflet?.DomEvent?.off(this._captureMarker._icon, 'focus', this._captureMarker._panOnFocus, this._captureMarker);
+          }
+        }
+        return res;
+      };
+
+      const origStart = target._startMeasure;
+      target._startMeasure = function (this: any) {
+        const res = origStart?.apply(this, arguments);
+        if (this._captureMarker) {
+          this._captureMarker.options.autoPanOnFocus = false;
+          this._captureMarker._panOnFocus = () => {};
+          if (this._captureMarker._icon) {
+            leaflet?.DomEvent?.off(this._captureMarker._icon, 'focus', this._captureMarker._panOnFocus, this._captureMarker);
+          }
+        }
+        return res;
+      };
+    };
+
+    if (leaflet?.Control?.Measure?.prototype) {
+      patchControl(leaflet.Control.Measure.prototype);
+    }
+
+    if (SMK?.TYPE?.MeasureTool?.addInitializer) {
+      SMK.TYPE.MeasureTool.addInitializer(function (this: any) {
+        if (this.control) {
+          patchControl(this.control.constructor?.prototype);
+          patchControl(this.control);
+        }
+      });
+    }
   }
 
   installAuthenticatedLegendPatch(SMK: any) {
