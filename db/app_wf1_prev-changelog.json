@@ -2553,6 +2553,47 @@
         "rollback": [
         ]
       }
+    },
+    {
+      "changeSet": {
+        "id": "01_05_00_01",
+        "author": "hwang",
+        "tagDatabase": {
+          "tag": "version_01_05_00_01"
+        },
+        "changes": [
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_05_00/01/ddl/WFPREV.ddl.prevention_layer_change_log.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "path": "scripts/01_05_00/01/ddl/WFPREV.ddl.prevention_layer_change_log_trigger.sql",
+              "splitStatements": false
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_05_00/01/grants/wfprev.grants.prevention_layer_change_log.sql"
+            }
+          },
+          {
+            "sqlFile": {
+              "dbms": "postgresql",
+              "endDelimiter": ";",
+              "path": "scripts/01_05_00/01/dml/WFPREV.dml.prevention_layer_change_log_backfill.sql"
+            }
+          }
+        ],
+        "rollback": [
+        ]
+      }
     }
   ]
 }
