@@ -32,3 +32,7 @@ ALTER TABLE "wfprev"."prevention_layer_change_log" ADD CONSTRAINT "prevention_la
 	PRIMARY KEY ("project_guid")
 ;
 
+CREATE INDEX "prevention_layer_change_log_last_updated_idx"
+ON "wfprev"."prevention_layer_change_log" ("last_updated" ASC, "project_guid" ASC)
+;
+
