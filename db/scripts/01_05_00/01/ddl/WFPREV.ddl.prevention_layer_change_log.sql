@@ -7,7 +7,7 @@
 CREATE TABLE "wfprev"."prevention_layer_change_log"
 (
 	"project_guid" UUID NOT NULL,
-	"last_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	"last_updated" TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 )
 TABLESPACE PG_DEFAULT
 ;

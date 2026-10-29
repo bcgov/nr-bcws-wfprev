@@ -84,16 +84,16 @@ BEGIN
 
   IF v_project_guid IS NOT NULL THEN
     INSERT INTO wfprev.prevention_layer_change_log (project_guid, last_updated)
-    VALUES (v_project_guid, CURRENT_TIMESTAMP)
+    VALUES (v_project_guid, (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'))
     ON CONFLICT (project_guid) DO UPDATE
-    SET last_updated = CURRENT_TIMESTAMP;
+    SET last_updated = (CURRENT_TIMESTAMP AT TIME ZONE 'UTC');
   END IF;
 
   IF v_old_project_guid IS NOT NULL THEN
     INSERT INTO wfprev.prevention_layer_change_log (project_guid, last_updated)
-    VALUES (v_old_project_guid, CURRENT_TIMESTAMP)
+    VALUES (v_old_project_guid, (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'))
     ON CONFLICT (project_guid) DO UPDATE
-    SET last_updated = CURRENT_TIMESTAMP;
+    SET last_updated = (CURRENT_TIMESTAMP AT TIME ZONE 'UTC');
   END IF;
 
   RETURN NULL;
