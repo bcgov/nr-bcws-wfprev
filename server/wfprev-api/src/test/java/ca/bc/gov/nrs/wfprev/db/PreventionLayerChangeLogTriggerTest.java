@@ -148,6 +148,19 @@ class PreventionLayerChangeLogTriggerTest {
     }
 
     @Test
+    void defaultLastUpdated_isUtcTimestamp() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        Timestamp beforeInsert = getDbCurrentTimestamp();
+        execute("INSERT INTO wfprev.prevention_layer_change_log (project_guid) VALUES ('" + projectGuid + "')");
+        Timestamp afterInsert = getDbCurrentTimestamp();
+
+        Timestamp tsInsert = getLastUpdated(projectGuid);
+        assertNotNull(tsInsert, "Direct insert without last_updated must populate default timestamp");
+        assertTrue(!tsInsert.before(beforeInsert) && !tsInsert.after(afterInsert),
+                String.format("default last_updated (%s) must be between %s and %s", tsInsert, beforeInsert, afterInsert));
+    }
+
+    @Test
     void projectBoundary_insertUpdateDelete_updatesChangeLog() throws Exception {
         UUID projectGuid = UUID.randomUUID();
         execute("INSERT INTO wfprev.project (project_guid, project_name) VALUES ('" + projectGuid + "', 'Boundary Test')");
@@ -364,7 +377,7 @@ class PreventionLayerChangeLogTriggerTest {
 
     private Timestamp getDbCurrentTimestamp() throws Exception {
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT CURRENT_TIMESTAMP")) {
+             ResultSet rs = st.executeQuery("SELECT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')")) {
             rs.next();
             return rs.getTimestamp(1);
         }
