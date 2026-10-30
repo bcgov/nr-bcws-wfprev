@@ -91,33 +91,6 @@ services:
       retries: 10  # Allow up to 10 retries (100 seconds total)
       start_period: 15s  # Delay the first check by 15 seconds
 
-  schemaspy:
-    profiles:
-      - schemaspy
-    build:
-      context: .
-      dockerfile: schemaspy/Dockerfile
-    container_name: schemaspy
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      POSTGRES_PASSWORD: ${WFPREV_DATASOURCE_PASSWORD}
-    command:
-      [
-        "-t", "pgsql",
-        "-host", "wfprev-postgres",
-        "-port", "5432",
-        "-db", "wfprev",
-        "-u", "wfprev",
-        "-p", "${WFPREV_DATASOURCE_PASSWORD}",
-        "-debug"
-      ]
-    volumes:
-      - ./schemaspy/schemaspy-output:/output
-    networks:
-      - wfprev-network
-
 networks:
   wfprev-network:
     driver: bridge
