@@ -133,54 +133,5 @@ class ProjectActivityResourceAssemblerTest {
         ProjectActivityModel model = assembler.toModel((ProjectActivityEntity) null);
         assertThat(model).isNull();
     }
-
-    @Test
-    void testToEntity_DeletedProject() {
-        UUID projectGuid = UUID.randomUUID();
-        Date lastUpdated = new Date();
-
-        ProjectActivityModel model = ProjectActivityModel.builder()
-                .projectGuid(projectGuid)
-                .activityGuid(null)
-                .lastUpdated(lastUpdated)
-                .build();
-
-        ProjectActivityEntity entity = assembler.toEntity(model);
-
-        assertThat(entity).isNotNull();
-        assertThat(entity.getRowId()).isEqualTo(projectGuid);
-        assertThat(entity.getProjectGuid()).isEqualTo(projectGuid);
-        assertThat(entity.getActivityGuid()).isNull();
-        assertThat(entity.getLastUpdated()).isEqualTo(lastUpdated);
-    }
-
-    @Test
-    void testToEntity_ActiveProject() {
-        UUID projectGuid = UUID.randomUUID();
-        UUID activityGuid = UUID.randomUUID();
-        Date lastUpdated = new Date();
-
-        ProjectActivityModel model = ProjectActivityModel.builder()
-                .projectGuid(projectGuid)
-                .activityGuid(activityGuid)
-                .activityName("Prescribed Fire")
-                .lastUpdated(lastUpdated)
-                .build();
-
-        ProjectActivityEntity entity = assembler.toEntity(model);
-
-        assertThat(entity).isNotNull();
-        assertThat(entity.getRowId()).isEqualTo(activityGuid);
-        assertThat(entity.getProjectGuid()).isEqualTo(projectGuid);
-        assertThat(entity.getActivityGuid()).isEqualTo(activityGuid);
-        assertThat(entity.getActivityName()).isEqualTo("Prescribed Fire");
-        assertThat(entity.getLastUpdated()).isEqualTo(lastUpdated);
-    }
-
-    @Test
-    void testToEntity_NullModel() {
-        ProjectActivityEntity entity = assembler.toEntity(null);
-        assertThat(entity).isNull();
-    }
 }
 

@@ -57,37 +57,5 @@ public class ProjectActivityResourceAssembler extends RepresentationModelAssembl
                 .lastUpdated(entity.getLastUpdated())
                 .build();
     }
-
-    public ProjectActivityEntity toEntity(ProjectActivityModel model) {
-        if (model == null) {
-            return null;
-        }
-
-        return ProjectActivityEntity.builder()
-                .rowId(model.getActivityGuid() != null ? model.getActivityGuid() : model.getProjectGuid())
-                .projectGuid(model.getProjectGuid())
-                .projectNumber(model.getProjectNumber())
-                .projectTypeCode(model.getProjectTypeCode())
-                .projectTypeDesc(model.getProjectTypeDesc())
-                .primaryObjectiveTypeCode(model.getPrimaryObjectiveTypeCode())
-                .primaryObjectiveTypeDesc(model.getPrimaryObjectiveTypeDesc())
-                .secondaryObjectiveTypeCode(model.getSecondaryObjectiveTypeCode())
-                .secondaryObjectiveTypeDesc(model.getSecondaryObjectiveTypeDesc())
-                .resultsProjectCode(model.getResultsProjectCode())
-                .projectPlanFiscalGuid(model.getProjectPlanFiscalGuid())
-                .fiscalYear(model.getFiscalYear())
-                .projectFiscalName(model.getProjectFiscalName())
-                .activityGuid(model.getActivityGuid())
-                .activityName(model.getActivityName())
-                .activityStatusCode(model.getActivityStatusCode())
-                .activityStatusDesc(model.getActivityStatusDesc())
-                .activityStartDate(model.getActivityStartDate())
-                .activityEndDate(model.getActivityEndDate())
-                .completedAreaHa(model.getCompletedAreaHa())
-                .outstandingObligationsInd(model.getOutstandingObligationsInd())
-                .geometry(model.getGeometry())
-                .lastUpdated(model.getLastUpdated())
-                .build();
-    }
 }
 
