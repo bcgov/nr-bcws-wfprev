@@ -1,8 +1,11 @@
 package ca.bc.gov.nrs.wfprev.controllers;
 
+import ca.bc.gov.nrs.wfprev.data.models.ProjectActivityModel;
+import ca.bc.gov.nrs.wfprev.data.models.SpatialExportModel;
 import ca.bc.gov.nrs.wfprev.data.models.ValidationResult;
 import ca.bc.gov.nrs.wfprev.handlers.GlobalExceptionHandler;
 import ca.bc.gov.nrs.wfprev.handlers.SpatialExceptionHandler;
+import ca.bc.gov.nrs.wfprev.services.SpatialExportService;
 import ca.bc.gov.nrs.wfprev.services.SpatialValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +22,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.n52.jackson.datatype.jts.JtsModule;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,6 +44,9 @@ class SpatialControllerTest {
 
     @Mock
     private SpatialValidationService spatialValidationService;
+
+    @Mock
+    private SpatialExportService spatialExportService;
 
     @InjectMocks
     private SpatialController spatialController;
@@ -132,5 +146,66 @@ class SpatialControllerTest {
                 .andExpect(jsonPath("$.valid").value(false))
                 .andExpect(jsonPath("$.errorType").value("STRUCTURAL_ERROR"))
                 .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Spatial structure error")));
+    }
+
+    @Test
+    void testExport_DeletedProjects() throws Exception {
+        UUID projectGuid = UUID.randomUUID();
+        Date lastUpdated = Date.from(Instant.parse("2026-10-30T10:15:30.000Z"));
+        Date nextSince = Date.from(Instant.parse("2026-10-30T12:00:00.000Z"));
+
+        ProjectActivityModel deletedModel = ProjectActivityModel.builder()
+                .projectGuid(projectGuid)
+                .lastUpdated(lastUpdated)
+                .build();
+
+        SpatialExportModel exportModel = SpatialExportModel.builder()
+                .projectActivities(List.of(deletedModel))
+                .since(nextSince)
+                .build();
+
+        when(spatialExportService.getSpatialExport(any(Date.class))).thenReturn(exportModel);
+
+        mockMvc.perform(get("/spatial/export")
+                        .param("since", "2026-10-30T00:00:00Z"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectActivities", hasSize(1)))
+                .andExpect(jsonPath("$.projectActivities[0].projectGuid").value(projectGuid.toString()))
+                .andExpect(jsonPath("$.projectActivities[0].activityGuid").doesNotExist())
+                .andExpect(jsonPath("$.projectActivities[0].geometry").doesNotExist())
+                .andExpect(jsonPath("$.projectActivities[0].projectNumber").doesNotExist())
+                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.000Z"));
+    }
+
+    @Test
+    void testExport_EmptyResult() throws Exception {
+        Date cursor = Date.from(Instant.parse("2026-10-30T12:00:00.000Z"));
+
+        SpatialExportModel emptyExportModel = SpatialExportModel.builder()
+                .projectActivities(Collections.emptyList())
+                .since(cursor)
+                .build();
+
+        when(spatialExportService.getSpatialExport(any(Date.class))).thenReturn(emptyExportModel);
+
+        mockMvc.perform(get("/spatial/export")
+                        .param("since", "2026-10-30T00:00:00Z"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectActivities", hasSize(0)))
+                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.000Z"));
+    }
+
+    @Test
+    void testExport_InvalidSince() throws Exception {
+        mockMvc.perform(get("/spatial/export")
+                        .param("since", "not-a-valid-date"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Invalid parameter: since"));
+    }
+
+    @Test
+    void testExport_MissingSince() throws Exception {
+        mockMvc.perform(get("/spatial/export"))
+                .andExpect(status().isBadRequest());
     }
 }
