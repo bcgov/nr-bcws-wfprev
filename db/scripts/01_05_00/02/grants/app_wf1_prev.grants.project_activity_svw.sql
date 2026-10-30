@@ -1,0 +1,2 @@
+GRANT SELECT ON wfprev.project_activity_svw TO app_wf1_prev_rest_proxy;
+
