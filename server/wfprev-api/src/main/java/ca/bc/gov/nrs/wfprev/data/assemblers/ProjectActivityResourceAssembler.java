@@ -1,20 +1,13 @@
 package ca.bc.gov.nrs.wfprev.data.assemblers;
 
-import ca.bc.gov.nrs.wfprev.controllers.SpatialController;
 import ca.bc.gov.nrs.wfprev.data.entities.ProjectActivityEntity;
 import ca.bc.gov.nrs.wfprev.data.models.ProjectActivityModel;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProjectActivityResourceAssembler extends RepresentationModelAssemblerSupport<ProjectActivityEntity, ProjectActivityModel> {
+public class ProjectActivityResourceAssembler {
 
-    public ProjectActivityResourceAssembler() {
-        super(SpatialController.class, ProjectActivityModel.class);
-    }
-
-    @Override
     public ProjectActivityModel toModel(ProjectActivityEntity entity) {
         if (entity == null) {
             return null;

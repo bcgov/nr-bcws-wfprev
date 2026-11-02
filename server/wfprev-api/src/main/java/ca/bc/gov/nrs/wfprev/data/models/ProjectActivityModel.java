@@ -9,8 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.server.core.Relation;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -20,13 +18,12 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @JsonRootName(value = "projectActivity")
-@Relation(collectionRelation = "projectActivities", itemRelation = "projectActivity")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectActivityModel extends RepresentationModel<ProjectActivityModel> implements Serializable {
+public class ProjectActivityModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID projectGuid;
