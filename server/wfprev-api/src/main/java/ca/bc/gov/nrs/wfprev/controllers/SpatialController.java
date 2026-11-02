@@ -86,7 +86,7 @@ public class SpatialController {
     @Operation(
             summary = "Export Changed Spatial Boundaries",
             description = "Reads changed project activities since the specified timestamp and returns a model of ProjectActivityModel with geometry as GeoJSON in EPSG:4326 and a timestamp for the next cursor.",
-            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV", "WFPREV.EXPORT_SPATIAL"}),
+            security = @SecurityRequirement(name = "Webade-OAUTH2", scopes = {"WFPREV", "WFPREV.GET_SPATIAL_EXPORT"}),
             extensions = {
                     @Extension(properties = {
                             @ExtensionProperty(name = "auth-type", value = "#{wso2.x-auth-type.app_and_app_user}"),
