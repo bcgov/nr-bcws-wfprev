@@ -174,6 +174,7 @@ class SpatialControllerTest {
                 .andExpect(jsonPath("$.projectActivities[0].activityGuid").doesNotExist())
                 .andExpect(jsonPath("$.projectActivities[0].geometry").doesNotExist())
                 .andExpect(jsonPath("$.projectActivities[0].projectNumber").doesNotExist())
+                .andExpect(jsonPath("$.projectActivities[0].lastUpdated").value("2026-10-30T10:15:30.000Z"))
                 .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.000Z"));
     }
 

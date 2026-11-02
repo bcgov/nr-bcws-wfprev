@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.wfprev.data.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -42,11 +43,14 @@ public class ProjectActivityModel implements Serializable {
     private String activityName;
     private String activityStatusCode;
     private String activityStatusDesc;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date activityStartDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date activityEndDate;
     private BigDecimal completedAreaHa;
     private Boolean outstandingObligationsInd;
     private MultiPolygon geometry;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date lastUpdated;
 }
 
