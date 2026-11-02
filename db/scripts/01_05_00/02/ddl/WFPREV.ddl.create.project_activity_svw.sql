@@ -28,11 +28,11 @@ FROM wfprev.project p
   JOIN wfprev.project_type_code ptc          ON ptc.project_type_code = p.project_type_code
   LEFT JOIN wfprev.objective_type_code potc  ON potc.objective_type_code = p.primary_objective_type_code
   LEFT JOIN wfprev.objective_type_code sotc  ON sotc.objective_type_code = p.secondary_objective_type_code
-  JOIN wfprev.project_plan_fiscal ppf        ON ppf.project_guid = p.project_guid
-  JOIN wfprev.activity a                     ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
-  JOIN wfprev.activity_status_code ascd      ON ascd.activity_status_code = a.activity_status_code
+  LEFT JOIN wfprev.project_plan_fiscal ppf        ON ppf.project_guid = p.project_guid
+  LEFT JOIN wfprev.activity a                     ON a.project_plan_fiscal_guid = ppf.project_plan_fiscal_guid
+  LEFT JOIN wfprev.activity_status_code ascd      ON ascd.activity_status_code = a.activity_status_code
   LEFT JOIN wfprev.prevention_layer_change_log plcl ON plcl.project_guid = p.project_guid
-  JOIN LATERAL (
+  LEFT JOIN LATERAL (
     SELECT lab.geometry
     FROM wfprev.activity_boundary lab
     WHERE lab.activity_guid = a.activity_guid
