@@ -128,5 +128,16 @@ class SpatialExportControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("'since' parameter is required"));
     }
+
+    @Test
+    void testExportChanges_ServiceThrowsDatabaseClockRuntimeException() throws Exception {
+        when(spatialExportService.getSpatialExport(any(Date.class)))
+                .thenThrow(new RuntimeException("Could not fetch database clock"));
+
+        mockMvc.perform(get("/spatial-export/changes")
+                        .param("since", "2026-10-30T00:00:00Z"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("Unexpected error occurred: Could not fetch database clock"));
+    }
 }
 

@@ -44,8 +44,8 @@ public class SpatialExportService {
             Timestamp ts = (Timestamp) query.getSingleResult();
             return ts.toInstant();
         } catch (Exception e) {
-            log.warn("Could not fetch database clock, falling back to system clock: {}", e.getMessage());
-            return Instant.now();
+            log.error("Could not fetch database clock: {}", e.getMessage(), e);
+            throw new RuntimeException("Could not fetch database clock", e);
         }
     }
 

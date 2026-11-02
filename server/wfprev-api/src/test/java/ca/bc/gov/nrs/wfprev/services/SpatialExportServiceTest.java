@@ -242,13 +242,11 @@ class SpatialExportServiceTest {
     }
 
     @Test
-    void testFetchDatabaseClock_DatabaseExceptionFallback() {
+    void testFetchDatabaseClock_DatabaseExceptionThrows() {
         when(entityManager.createNativeQuery(anyString())).thenThrow(new RuntimeException("DB down"));
 
-        Instant clock = spatialExportService.fetchDatabaseClock();
-
-        assertThat(clock).isNotNull();
-        assertThat(clock).isBeforeOrEqualTo(Instant.now());
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> spatialExportService.fetchDatabaseClock());
+        assertThat(ex.getMessage()).contains("Could not fetch database clock");
     }
 }
 
