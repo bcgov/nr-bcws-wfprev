@@ -4,23 +4,14 @@ import ca.bc.gov.nrs.wfprev.controllers.SpatialController;
 import ca.bc.gov.nrs.wfprev.data.models.ValidationResult;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.io.ParseException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.util.Map;
-
-import org.springframework.core.annotation.Order;
 
 @ControllerAdvice(assignableTypes = SpatialController.class)
 @Order(1)
 public class SpatialExceptionHandler {
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        return ResponseEntity.badRequest().body(Map.of("error", "Invalid parameter: " + ex.getName()));
-    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ValidationResult> handleIllegalArgumentException(IllegalArgumentException ex) {

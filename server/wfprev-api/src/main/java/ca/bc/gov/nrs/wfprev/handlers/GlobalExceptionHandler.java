@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 
 import jakarta.persistence.EntityNotFoundException;
@@ -122,6 +123,13 @@ public class GlobalExceptionHandler {
        return ResponseEntity
                .status(HttpStatus.CONFLICT)
                .body(errors);
+   }
+
+   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+   public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+       Map<String, String> error = new HashMap<>();
+       error.put(ERROR, "Invalid parameter: " + ex.getName());
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
    }
 
    @ExceptionHandler(IllegalArgumentException.class)
