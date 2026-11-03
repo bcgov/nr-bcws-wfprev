@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public class SpatialExportService {
         try {
             Query query = entityManager.createNativeQuery("SELECT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')");
             Timestamp ts = (Timestamp) query.getSingleResult();
-            return ts.toInstant();
+            return ts.toLocalDateTime().toInstant(ZoneOffset.UTC);
         } catch (Exception e) {
             log.error("Could not fetch database clock: {}", e.getMessage(), e);
             throw new RuntimeException("Could not fetch database clock", e);
@@ -59,11 +60,14 @@ public class SpatialExportService {
         Instant databaseClock = fetchDatabaseClock();
 
         // 2. Query changed activities
-        List<ProjectActivityEntity> entities = projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, afterProjectGuid);
+        List<ProjectActivityEntity> entities = projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since,
+                afterProjectGuid);
 
         // 3. Aggregate entities by project and limit response size to 10MB
         List<ProjectActivityModel> models = new ArrayList<>();
-        // Overhead of JSON envelope {"projectActivities":[],"since":"2026-10-30T18:23:19.000000Z"} is approx 100 bytes
+        // Overhead of JSON envelope
+        // {"projectActivities":[],"since":"2026-10-30T18:23:19.000000Z"} is approx 100
+        // bytes
         long totalBytes = 100L;
         Instant nextSince = databaseClock;
         UUID nextAfterProjectGuid = null;
