@@ -87,6 +87,7 @@ public class SpatialExportService {
                 totalBytes += additionalBytes;
             } catch (JsonProcessingException e) {
                 log.error("Error serializing ProjectActivityModel: {}", e.getMessage(), e);
+                throw new RuntimeException("Error serializing ProjectActivityModel", e);
             }
         }
 

@@ -309,5 +309,36 @@ class SpatialExportServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class, () -> spatialExportService.fetchDatabaseClock());
         assertThat(ex.getMessage()).contains("Could not fetch database clock");
     }
+
+    @Test
+    void testExport_SerializationFailureThrows() throws Exception {
+        mockDatabaseClock(fixedDbClock);
+
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
+        ProjectActivityEntity entity = ProjectActivityEntity.builder()
+                .rowId(UUID.randomUUID())
+                .projectGuid(UUID.randomUUID())
+                .activityGuid(UUID.randomUUID())
+                .lastUpdated(since)
+                .build();
+
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+                .thenReturn(List.of(entity));
+
+        ObjectMapper mockMapper = mock(ObjectMapper.class);
+        when(mockMapper.writeValueAsBytes(any(ProjectActivityModel.class)))
+                .thenThrow(new com.fasterxml.jackson.core.JsonParseException(null, "Serialization failed"));
+
+        SpatialExportService serviceWithMockMapper = new SpatialExportService(
+                entityManager,
+                projectActivityRepository,
+                projectActivityResourceAssembler,
+                mockMapper
+        );
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> serviceWithMockMapper.getSpatialExport(since, null));
+        assertThat(ex.getMessage()).contains("Error serializing ProjectActivityModel");
+    }
 }
 
