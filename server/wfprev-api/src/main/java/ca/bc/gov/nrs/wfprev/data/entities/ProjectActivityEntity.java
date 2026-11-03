@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "project_activity_svw", schema = "wfprev")
+@Table(name = "project_activity_change_svw", schema = "wfprev")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)

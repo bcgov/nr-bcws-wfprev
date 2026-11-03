@@ -86,7 +86,6 @@ public class WfprevApiApplication {
 
 		mapper.registerModule(new JtsModule());
 		mapper.registerModule(new JavaTimeModule());
-		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 		mapper.registerModule(module);
 		return mapper;
