@@ -88,7 +88,7 @@ class SpatialExportServiceTest {
                 .lastUpdated(deletedLastUpdated)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
                 .thenReturn(List.of(deletedEntity));
 
         SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
@@ -111,7 +111,7 @@ class SpatialExportServiceTest {
 
         Instant since = Instant.parse("2026-10-30T00:00:00Z");
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
                 .thenReturn(Collections.emptyList());
 
         SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
@@ -166,7 +166,7 @@ class SpatialExportServiceTest {
                 .lastUpdated(lastUpdated)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
                 .thenReturn(List.of(activeEntity));
 
         SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
@@ -220,7 +220,7 @@ class SpatialExportServiceTest {
                 .lastUpdated(lastUpdated)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
                 .thenReturn(List.of(entity1, entity2));
 
         SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
@@ -242,7 +242,7 @@ class SpatialExportServiceTest {
         Instant since = Instant.parse("2026-10-30T00:00:00Z");
         UUID afterProjectGuid = UUID.randomUUID();
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, afterProjectGuid))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, afterProjectGuid, SpatialExportService.PAGE_SIZE))
                 .thenReturn(Collections.emptyList());
 
         SpatialExportModel result = spatialExportService.getSpatialExport(since, afterProjectGuid);
@@ -273,7 +273,7 @@ class SpatialExportServiceTest {
                 .lastUpdated(update2)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
                 .thenReturn(List.of(entity1, entity2));
 
         // Create a mock ObjectMapper that simulates large byte size for the second model
@@ -322,7 +322,7 @@ class SpatialExportServiceTest {
                 .lastUpdated(since)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
                 .thenReturn(List.of(entity));
 
         ObjectMapper mockMapper = mock(ObjectMapper.class);
@@ -339,6 +339,81 @@ class SpatialExportServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> serviceWithMockMapper.getSpatialExport(since, null));
         assertThat(ex.getMessage()).contains("Error serializing ProjectActivityModel");
+    }
+
+    @Test
+    void testExport_PageSizeLimitDropsLastProjectToAvoidPartialActivities() {
+        mockDatabaseClock(fixedDbClock);
+
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
+        Instant update1 = Instant.parse("2026-10-30T08:00:00.111111Z");
+        Instant update2 = Instant.parse("2026-10-30T09:00:00.222222Z");
+        UUID projectGuid1 = UUID.randomUUID();
+        UUID projectGuid2 = UUID.randomUUID();
+
+        List<ProjectActivityEntity> entities = new java.util.ArrayList<>(1000);
+        for (int i = 0; i < 600; i++) {
+            entities.add(ProjectActivityEntity.builder()
+                    .rowId(UUID.randomUUID())
+                    .projectGuid(projectGuid1)
+                    .activityGuid(UUID.randomUUID())
+                    .lastUpdated(update1)
+                    .build());
+        }
+        for (int i = 0; i < 400; i++) {
+            entities.add(ProjectActivityEntity.builder()
+                    .rowId(UUID.randomUUID())
+                    .projectGuid(projectGuid2)
+                    .activityGuid(UUID.randomUUID())
+                    .lastUpdated(update2)
+                    .build());
+        }
+
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
+                .thenReturn(entities);
+
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
+
+        // Project 2 should be dropped to avoid partial activities due to PAGE_SIZE limit
+        assertThat(result.getProjectActivities()).hasSize(1);
+        ProjectActivityModel model = result.getProjectActivities().get(0);
+        assertThat(model.getProjectGuid()).isEqualTo(projectGuid1);
+        assertThat(model.getActivities()).hasSize(600);
+        // Cursor points to project 1
+        assertThat(result.getSince()).isEqualTo(update1);
+        assertThat(result.getAfterProjectGuid()).isEqualTo(projectGuid1);
+    }
+
+    @Test
+    void testExport_PageSizeLimitSingleProjectRetained() {
+        mockDatabaseClock(fixedDbClock);
+
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
+        Instant update1 = Instant.parse("2026-10-30T08:00:00.111111Z");
+        UUID projectGuid1 = UUID.randomUUID();
+
+        List<ProjectActivityEntity> entities = new java.util.ArrayList<>(1000);
+        for (int i = 0; i < 1000; i++) {
+            entities.add(ProjectActivityEntity.builder()
+                    .rowId(UUID.randomUUID())
+                    .projectGuid(projectGuid1)
+                    .activityGuid(UUID.randomUUID())
+                    .lastUpdated(update1)
+                    .build());
+        }
+
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null, SpatialExportService.PAGE_SIZE))
+                .thenReturn(entities);
+
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
+
+        // Since all 1000 entities belong to 1 project, it cannot be dropped
+        assertThat(result.getProjectActivities()).hasSize(1);
+        ProjectActivityModel model = result.getProjectActivities().get(0);
+        assertThat(model.getProjectGuid()).isEqualTo(projectGuid1);
+        assertThat(model.getActivities()).hasSize(1000);
+        assertThat(result.getSince()).isEqualTo(update1);
+        assertThat(result.getAfterProjectGuid()).isEqualTo(projectGuid1);
     }
 }
 

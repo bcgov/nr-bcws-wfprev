@@ -16,8 +16,10 @@ public interface ProjectActivityRepository extends JpaRepository<ProjectActivity
     @Query("SELECT e FROM ProjectActivityEntity e "
             + "WHERE e.lastUpdated > :since "
             + "OR (e.lastUpdated = :since AND (cast(:afterProjectGuid as uuid) IS NULL OR e.projectGuid > :afterProjectGuid)) "
-            + "ORDER BY e.lastUpdated ASC, e.projectGuid ASC")
+            + "ORDER BY e.lastUpdated ASC, e.projectGuid ASC "
+            + "LIMIT :limit")
     List<ProjectActivityEntity> findByLastUpdatedAndProjectGuidAfter(
             @Param("since") Instant since,
-            @Param("afterProjectGuid") UUID afterProjectGuid);
+            @Param("afterProjectGuid") UUID afterProjectGuid,
+            @Param("limit") int limit);
 }

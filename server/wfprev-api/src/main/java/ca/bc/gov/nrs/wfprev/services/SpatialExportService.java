@@ -28,6 +28,7 @@ import java.util.UUID;
 public class SpatialExportService {
 
     public static final long MAX_RESPONSE_BYTES = 10L * 1024 * 1024; // 10 MB
+    public static final int PAGE_SIZE = 1000;
 
     @PersistenceContext
     private final EntityManager entityManager;
@@ -61,7 +62,7 @@ public class SpatialExportService {
 
         // 2. Query changed activities
         List<ProjectActivityEntity> entities = projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since,
-                afterProjectGuid);
+                afterProjectGuid, PAGE_SIZE);
 
         // 3. Aggregate entities by project and limit response size to 10MB
         List<ProjectActivityModel> models = new ArrayList<>();
@@ -74,6 +75,15 @@ public class SpatialExportService {
         boolean truncated = false;
 
         List<ProjectActivityModel> aggregatedModels = projectActivityResourceAssembler.toModels(entities);
+
+        if (entities.size() >= PAGE_SIZE) {
+            truncated = true;
+            if (aggregatedModels.size() > 1) {
+                // Drop the last project because its activities might be partially fetched due to the PAGE_SIZE limit.
+                // It will be fetched in full on the next request starting after the last included project.
+                aggregatedModels.remove(aggregatedModels.size() - 1);
+            }
+        }
 
         for (ProjectActivityModel model : aggregatedModels) {
             try {
