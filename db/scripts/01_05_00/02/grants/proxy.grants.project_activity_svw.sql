@@ -1,2 +1,0 @@
-GRANT SELECT ON wfprev.project_activity_svw TO proxy_wf1_prev_rest;
-

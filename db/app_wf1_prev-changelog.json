@@ -2607,21 +2607,21 @@
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_05_00/02/ddl/WFPREV.ddl.create.project_activity_svw.sql"
+              "path": "scripts/01_05_00/02/ddl/WFPREV.ddl.create.project_activity_change_svw.sql"
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_05_00/02/grants/proxy.grants.project_activity_svw.sql"
+              "path": "scripts/01_05_00/02/grants/proxy.grants.project_activity_change_svw.sql"
             }
           },
           {
             "sqlFile": {
               "dbms": "postgresql",
               "endDelimiter": ";",
-              "path": "scripts/01_05_00/02/grants/app_wf1_prev.grants.project_activity_svw.sql"
+              "path": "scripts/01_05_00/02/grants/app_wf1_prev.grants.project_activity_change_svw.sql"
             }
           }
         ],

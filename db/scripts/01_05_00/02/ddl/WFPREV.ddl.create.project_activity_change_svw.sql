@@ -1,0 +1,26 @@
+CREATE OR REPLACE VIEW wfprev.project_activity_change_svw AS
+SELECT COALESCE(v.activity_guid, plcl.project_guid) AS row_id,
+       plcl.project_guid,
+       v.project_number,
+       v.project_type_code,
+       v.project_type_desc,
+       v.primary_objective_type_code,
+       v.primary_objective_type_desc,
+       v.secondary_objective_type_code,
+       v.secondary_objective_type_desc,
+       v.results_project_code,
+       v.project_plan_fiscal_guid,
+       v.fiscal_year,
+       v.project_fiscal_name,
+       v.activity_guid,
+       v.activity_name,
+       v.activity_status_code,
+       v.activity_status_desc,
+       v.activity_start_date,
+       v.activity_end_date,
+       v.completed_area_ha,
+       v.outstanding_obligations_ind,
+       v.geometry,
+       plcl.last_updated
+FROM wfprev.prevention_layer_change_log plcl
+  LEFT JOIN wfprev.project_activity_svw v ON v.project_guid = plcl.project_guid;
