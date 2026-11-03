@@ -5,36 +5,23 @@ import ca.bc.gov.nrs.wfprev.data.models.ProjectActivityModel;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @Component
 public class ProjectActivityResourceAssembler {
 
-    public ProjectActivityModel toModel(ProjectActivityEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        if (entity.getActivityGuid() == null) {
-            return ProjectActivityModel.builder()
-                    .projectGuid(entity.getProjectGuid())
-                    .lastUpdated(entity.getLastUpdated())
-                    .build();
-        }
-
+    public ProjectActivityModel.Activity toActivityModel(ProjectActivityEntity entity) {
         MultiPolygon geometry = entity.getGeometry();
         if (geometry != null && geometry.getSRID() == 0) {
             geometry.setSRID(4326);
         }
 
-        return ProjectActivityModel.builder()
-                .projectGuid(entity.getProjectGuid())
-                .projectNumber(entity.getProjectNumber())
-                .projectTypeCode(entity.getProjectTypeCode())
-                .projectTypeDesc(entity.getProjectTypeDesc())
-                .primaryObjectiveTypeCode(entity.getPrimaryObjectiveTypeCode())
-                .primaryObjectiveTypeDesc(entity.getPrimaryObjectiveTypeDesc())
-                .secondaryObjectiveTypeCode(entity.getSecondaryObjectiveTypeCode())
-                .secondaryObjectiveTypeDesc(entity.getSecondaryObjectiveTypeDesc())
-                .resultsProjectCode(entity.getResultsProjectCode())
+        return ProjectActivityModel.Activity.builder()
                 .projectPlanFiscalGuid(entity.getProjectPlanFiscalGuid())
                 .fiscalYear(entity.getFiscalYear())
                 .projectFiscalName(entity.getProjectFiscalName())
@@ -47,8 +34,43 @@ public class ProjectActivityResourceAssembler {
                 .completedAreaHa(entity.getCompletedAreaHa())
                 .outstandingObligationsInd(entity.getOutstandingObligationsInd())
                 .geometry(geometry)
-                .lastUpdated(entity.getLastUpdated())
                 .build();
     }
-}
 
+    public List<ProjectActivityModel> toModels(List<ProjectActivityEntity> entities) {
+        if (entities == null) {
+            return Collections.emptyList();
+        }
+
+        Map<UUID, ProjectActivityModel> projectMap = new LinkedHashMap<>();
+
+        for (ProjectActivityEntity entity : entities) {
+            if (entity == null || entity.getProjectGuid() == null) {
+                continue;
+            }
+
+            ProjectActivityModel model = projectMap.computeIfAbsent(entity.getProjectGuid(), k -> {
+                return ProjectActivityModel.builder()
+                        .projectGuid(entity.getProjectGuid())
+                        .projectNumber(entity.getProjectNumber())
+                        .projectTypeCode(entity.getProjectTypeCode())
+                        .projectTypeDesc(entity.getProjectTypeDesc())
+                        .primaryObjectiveTypeCode(entity.getPrimaryObjectiveTypeCode())
+                        .primaryObjectiveTypeDesc(entity.getPrimaryObjectiveTypeDesc())
+                        .secondaryObjectiveTypeCode(entity.getSecondaryObjectiveTypeCode())
+                        .secondaryObjectiveTypeDesc(entity.getSecondaryObjectiveTypeDesc())
+                        .resultsProjectCode(entity.getResultsProjectCode())
+                        .activities(new ArrayList<>())
+                        .lastUpdated(entity.getLastUpdated())
+                        .build();
+            });
+
+            if (model.getActivities() == null) {
+                model.setActivities(new ArrayList<>());
+            }
+            model.getActivities().add(toActivityModel(entity));
+        }
+
+        return new ArrayList<>(projectMap.values());
+    }
+}

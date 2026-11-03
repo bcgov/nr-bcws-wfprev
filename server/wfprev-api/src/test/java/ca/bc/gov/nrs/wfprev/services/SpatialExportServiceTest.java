@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,9 +73,9 @@ class SpatialExportServiceTest {
     void testExport_DeletedProjects() {
         mockDatabaseClock(fixedDbClock);
 
-        Date since = Date.from(Instant.parse("2026-10-30T00:00:00Z"));
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
         UUID deletedProjectGuid = UUID.randomUUID();
-        Date deletedLastUpdated = Date.from(Instant.parse("2026-10-30T10:00:00Z"));
+        Instant deletedLastUpdated = Instant.parse("2026-10-30T10:00:00.123456Z");
 
         // Deleted project from view has activityGuid == null and rowId == projectGuid
         ProjectActivityEntity deletedEntity = ProjectActivityEntity.builder()
@@ -89,10 +88,10 @@ class SpatialExportServiceTest {
                 .lastUpdated(deletedLastUpdated)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedGreaterThanEqualOrderByLastUpdatedAsc(since))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
                 .thenReturn(List.of(deletedEntity));
 
-        SpatialExportModel result = spatialExportService.getSpatialExport(since);
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
 
         assertThat(result).isNotNull();
         assertThat(result.getProjectActivities()).hasSize(1);
@@ -100,36 +99,34 @@ class SpatialExportServiceTest {
         ProjectActivityModel model = result.getProjectActivities().get(0);
         assertThat(model.getProjectGuid()).isEqualTo(deletedProjectGuid);
         assertThat(model.getLastUpdated()).isEqualTo(deletedLastUpdated);
-        // All activity / spatial fields must be null for deleted project
-        assertThat(model.getActivityGuid()).isNull();
-        assertThat(model.getGeometry()).isNull();
+        assertThat(model.getActivities()).hasSize(1);
+        assertThat(model.getActivities().get(0).getActivityGuid()).isNull();
         assertThat(model.getProjectNumber()).isNull();
-        assertThat(model.getActivityName()).isNull();
 
-        assertThat(result.getSince()).isEqualTo(Date.from(fixedDbClock));
+        assertThat(result.getSince()).isEqualTo(fixedDbClock);
     }
 
     @Test
     void testExport_EmptyResult() {
         mockDatabaseClock(fixedDbClock);
 
-        Date since = Date.from(Instant.parse("2026-10-30T00:00:00Z"));
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
 
-        when(projectActivityRepository.findByLastUpdatedGreaterThanEqualOrderByLastUpdatedAsc(since))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
                 .thenReturn(Collections.emptyList());
 
-        SpatialExportModel result = spatialExportService.getSpatialExport(since);
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
 
         assertThat(result).isNotNull();
         assertThat(result.getProjectActivities()).isNotNull().isEmpty();
-        assertThat(result.getSince()).isEqualTo(Date.from(fixedDbClock));
+        assertThat(result.getSince()).isEqualTo(fixedDbClock);
     }
 
     @Test
     void testExport_InvalidSince_NullThrowsException() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> spatialExportService.getSpatialExport(null)
+                () -> spatialExportService.getSpatialExport(null, null)
         );
 
         assertThat(exception.getMessage()).isEqualTo("'since' parameter is required");
@@ -139,10 +136,10 @@ class SpatialExportServiceTest {
     void testExport_ActiveAndCompletedProjects() {
         mockDatabaseClock(fixedDbClock);
 
-        Date since = Date.from(Instant.parse("2026-10-30T00:00:00Z"));
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
         UUID projectGuid = UUID.randomUUID();
         UUID activityGuid = UUID.randomUUID();
-        Date lastUpdated = Date.from(Instant.parse("2026-10-30T11:00:00Z"));
+        Instant lastUpdated = Instant.parse("2026-10-30T11:00:00.654321Z");
 
         GeometryFactory gf = new GeometryFactory();
         Coordinate[] coords = new Coordinate[] {
@@ -170,34 +167,98 @@ class SpatialExportServiceTest {
                 .lastUpdated(lastUpdated)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedGreaterThanEqualOrderByLastUpdatedAsc(since))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
                 .thenReturn(List.of(activeEntity));
 
-        SpatialExportModel result = spatialExportService.getSpatialExport(since);
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
 
         assertThat(result).isNotNull();
         assertThat(result.getProjectActivities()).hasSize(1);
 
         ProjectActivityModel model = result.getProjectActivities().get(0);
         assertThat(model.getProjectGuid()).isEqualTo(projectGuid);
-        assertThat(model.getActivityGuid()).isEqualTo(activityGuid);
         assertThat(model.getProjectNumber()).isEqualTo(12345);
         assertThat(model.getProjectTypeCode()).isEqualTo("FUEL_MGMT");
-        assertThat(model.getActivityName()).isEqualTo("Prescribed Fire");
-        assertThat(model.getGeometry()).isNotNull();
-        assertThat(model.getGeometry().getSRID()).isEqualTo(4326);
         assertThat(model.getLastUpdated()).isEqualTo(lastUpdated);
 
-        assertThat(result.getSince()).isEqualTo(Date.from(fixedDbClock));
+        assertThat(model.getActivities()).isNotNull().hasSize(1);
+        ProjectActivityModel.Activity activity = model.getActivities().get(0);
+        assertThat(activity.getActivityGuid()).isEqualTo(activityGuid);
+        assertThat(activity.getActivityName()).isEqualTo("Prescribed Fire");
+        assertThat(activity.getGeometry()).isNotNull();
+        assertThat(activity.getGeometry().getSRID()).isEqualTo(4326);
+
+        assertThat(result.getSince()).isEqualTo(fixedDbClock);
+    }
+
+    @Test
+    void testExport_AggregatesMultipleActivitiesForSameProject() {
+        mockDatabaseClock(fixedDbClock);
+
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
+        UUID projectGuid = UUID.randomUUID();
+        UUID activityGuid1 = UUID.randomUUID();
+        UUID activityGuid2 = UUID.randomUUID();
+        Instant lastUpdated = Instant.parse("2026-10-30T11:00:00.123456Z");
+
+        ProjectActivityEntity entity1 = ProjectActivityEntity.builder()
+                .rowId(activityGuid1)
+                .projectGuid(projectGuid)
+                .projectNumber(12345)
+                .projectTypeCode("FUEL_MGMT")
+                .activityGuid(activityGuid1)
+                .activityName("Activity 1")
+                .lastUpdated(lastUpdated)
+                .build();
+
+        ProjectActivityEntity entity2 = ProjectActivityEntity.builder()
+                .rowId(activityGuid2)
+                .projectGuid(projectGuid)
+                .projectNumber(12345)
+                .projectTypeCode("FUEL_MGMT")
+                .activityGuid(activityGuid2)
+                .activityName("Activity 2")
+                .lastUpdated(lastUpdated)
+                .build();
+
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
+                .thenReturn(List.of(entity1, entity2));
+
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, null);
+
+        assertThat(result).isNotNull();
+        // Aggregated into 1 project with 2 activities
+        assertThat(result.getProjectActivities()).hasSize(1);
+        ProjectActivityModel model = result.getProjectActivities().get(0);
+        assertThat(model.getProjectGuid()).isEqualTo(projectGuid);
+        assertThat(model.getActivities()).hasSize(2);
+        assertThat(model.getActivities().get(0).getActivityGuid()).isEqualTo(activityGuid1);
+        assertThat(model.getActivities().get(1).getActivityGuid()).isEqualTo(activityGuid2);
+    }
+
+    @Test
+    void testExport_WithAfterProjectGuid() {
+        mockDatabaseClock(fixedDbClock);
+
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
+        UUID afterProjectGuid = UUID.randomUUID();
+
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, afterProjectGuid))
+                .thenReturn(Collections.emptyList());
+
+        SpatialExportModel result = spatialExportService.getSpatialExport(since, afterProjectGuid);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getProjectActivities()).isEmpty();
     }
 
     @Test
     void testExport_TruncationWhenExceedingMaxBytes() {
         mockDatabaseClock(fixedDbClock);
 
-        Date since = Date.from(Instant.parse("2026-10-30T00:00:00Z"));
-        Date update1 = Date.from(Instant.parse("2026-10-30T08:00:00Z"));
-        Date update2 = Date.from(Instant.parse("2026-10-30T09:00:00Z"));
+        Instant since = Instant.parse("2026-10-30T00:00:00Z");
+        Instant update1 = Instant.parse("2026-10-30T08:00:00.111111Z");
+        Instant update2 = Instant.parse("2026-10-30T09:00:00.222222Z");
 
         ProjectActivityEntity entity1 = ProjectActivityEntity.builder()
                 .rowId(UUID.randomUUID())
@@ -213,7 +274,7 @@ class SpatialExportServiceTest {
                 .lastUpdated(update2)
                 .build();
 
-        when(projectActivityRepository.findByLastUpdatedGreaterThanEqualOrderByLastUpdatedAsc(since))
+        when(projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, null))
                 .thenReturn(List.of(entity1, entity2));
 
         // Create a mock ObjectMapper that simulates large byte size for the second model
@@ -233,12 +294,13 @@ class SpatialExportServiceTest {
                 mockMapper
         );
 
-        SpatialExportModel result = serviceWithMockMapper.getSpatialExport(since);
+        SpatialExportModel result = serviceWithMockMapper.getSpatialExport(since, null);
 
         // Only the first entity should be included
         assertThat(result.getProjectActivities()).hasSize(1);
         // Next cursor since should be the last included model's lastUpdated
         assertThat(result.getSince()).isEqualTo(update1);
+        assertThat(result.getAfterProjectGuid()).isEqualTo(entity1.getProjectGuid());
     }
 
     @Test

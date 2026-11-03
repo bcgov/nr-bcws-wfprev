@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -50,27 +50,28 @@ public class SpatialExportService {
     }
 
     @Transactional(readOnly = true)
-    public SpatialExportModel getSpatialExport(Date since) {
+    public SpatialExportModel getSpatialExport(Instant since, UUID afterProjectGuid) {
         if (since == null) {
             throw new IllegalArgumentException("'since' parameter is required");
         }
 
         // 1. Database clock at the start of the request
         Instant databaseClock = fetchDatabaseClock();
-        Date timestamp = Date.from(databaseClock);
 
         // 2. Query changed activities
-        List<ProjectActivityEntity> entities = projectActivityRepository.findByLastUpdatedGreaterThanEqualOrderByLastUpdatedAsc(since);
+        List<ProjectActivityEntity> entities = projectActivityRepository.findByLastUpdatedAndProjectGuidAfter(since, afterProjectGuid);
 
-        // 3. Convert and limit response size to 10MB
+        // 3. Aggregate entities by project and limit response size to 10MB
         List<ProjectActivityModel> models = new ArrayList<>();
-        // Overhead of JSON envelope {"projectActivities":[],"since":"2026-10-30T18:23:19.000+00:00"} is approx 100 bytes
+        // Overhead of JSON envelope {"projectActivities":[],"since":"2026-10-30T18:23:19.000000Z"} is approx 100 bytes
         long totalBytes = 100L;
-        Date nextSince = timestamp;
+        Instant nextSince = databaseClock;
+        UUID nextAfterProjectGuid = null;
         boolean truncated = false;
 
-        for (ProjectActivityEntity entity : entities) {
-            ProjectActivityModel model = projectActivityResourceAssembler.toModel(entity);
+        List<ProjectActivityModel> aggregatedModels = projectActivityResourceAssembler.toModels(entities);
+
+        for (ProjectActivityModel model : aggregatedModels) {
             try {
                 byte[] modelBytes = objectMapper.writeValueAsBytes(model);
                 long additionalBytes = modelBytes.length + (models.isEmpty() ? 0 : 1); // 1 byte for comma separator
@@ -86,12 +87,15 @@ public class SpatialExportService {
         }
 
         if (truncated && !models.isEmpty()) {
-            nextSince = models.get(models.size() - 1).getLastUpdated();
+            ProjectActivityModel lastModel = models.get(models.size() - 1);
+            nextSince = lastModel.getLastUpdated();
+            nextAfterProjectGuid = lastModel.getProjectGuid();
         }
 
         return SpatialExportModel.builder()
                 .projectActivities(models)
                 .since(nextSince)
+                .afterProjectGuid(nextAfterProjectGuid)
                 .build();
     }
 }

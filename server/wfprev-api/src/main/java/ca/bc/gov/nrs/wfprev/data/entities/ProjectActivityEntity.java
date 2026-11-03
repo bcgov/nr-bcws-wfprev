@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -101,5 +102,5 @@ public class ProjectActivityEntity implements Serializable {
     private MultiPolygon geometry;
 
     @Column(name = "last_updated")
-    private Date lastUpdated;
+    private Instant lastUpdated;
 }

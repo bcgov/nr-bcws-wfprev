@@ -1610,6 +1610,15 @@
     "allPublicFields": true
   },
   {
+    "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectActivityModel$Activity",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
     "name": "ca.bc.gov.nrs.wfprev.data.models.ProjectLocationModel",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -1644,6 +1653,12 @@
   },
   {
     "name": "ca.bc.gov.nrs.wfprev.common.serializers.PointDeserializer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "ca.bc.gov.nrs.wfprev.common.serializers.IsoInstantDeserializer",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true

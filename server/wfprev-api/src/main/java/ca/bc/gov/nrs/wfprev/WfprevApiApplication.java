@@ -15,7 +15,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringDeserializer;
 import ca.bc.gov.nrs.wfprev.common.serializers.PGLineStringSerializer;
@@ -83,6 +85,8 @@ public class WfprevApiApplication {
 		module.addDeserializer(Point.class, new PointDeserializer());
 
 		mapper.registerModule(new JtsModule());
+		mapper.registerModule(new JavaTimeModule());
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 		mapper.registerModule(module);
 		return mapper;

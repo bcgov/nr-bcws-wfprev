@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.beans.PropertyEditorSupport;
 import java.time.Instant;
-import java.util.Date;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -39,18 +39,24 @@ public class SpatialExportController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
+        binder.registerCustomEditor(Instant.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
                 if (text == null || text.trim().isEmpty()) {
                     setValue(null);
                 } else {
                     try {
-                        setValue(Date.from(Instant.parse(text.trim())));
+                        setValue(Instant.parse(text.trim()));
                     } catch (Exception e) {
                         throw new IllegalArgumentException("Invalid ISO-8601 UTC date: " + text, e);
                     }
                 }
+            }
+
+            @Override
+            public String getAsText() {
+                Instant value = (Instant) getValue();
+                return value != null ? value.toString() : "";
             }
         });
     }
@@ -79,11 +85,13 @@ public class SpatialExportController {
     public ResponseEntity<SpatialExportModel> exportChanges(
             @Parameter(description = "Timestamp cursor (ISO-8601 UTC) indicating changes since this time", required = true)
             @RequestParam(name = "since", required = true)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date since
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant since,
+            @Parameter(description = "Project GUID cursor indicating changes after this project ID when timestamp is identical", required = false)
+            @RequestParam(name = "afterProjectGuid", required = false) UUID afterProjectGuid
     ) {
-        log.info(" >> export changes since={}", since);
+        log.info(" >> export changes since={}, afterProjectGuid={}", since, afterProjectGuid);
 
-        SpatialExportModel response = spatialExportService.getSpatialExport(since);
+        SpatialExportModel response = spatialExportService.getSpatialExport(since, afterProjectGuid);
         return ResponseEntity.ok(response);
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,10 +56,29 @@ class SpatialExportControllerTest {
     }
 
     @Test
+    void testExportChanges_PreservesMicrosecondsInput() throws Exception {
+        Instant expectedSince = Instant.parse("2026-10-30T00:00:00.123456Z");
+        Instant returnSince = Instant.parse("2026-10-30T12:00:00.987654Z");
+
+        SpatialExportModel exportModel = SpatialExportModel.builder()
+                .projectActivities(Collections.emptyList())
+                .since(returnSince)
+                .build();
+
+        when(spatialExportService.getSpatialExport(org.mockito.ArgumentMatchers.eq(expectedSince), any()))
+                .thenReturn(exportModel);
+
+        mockMvc.perform(get("/spatial-export/changes")
+                        .param("since", "2026-10-30T00:00:00.123456Z"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.987654Z"));
+    }
+
+    @Test
     void testExportChanges_DeletedProjects() throws Exception {
         UUID projectGuid = UUID.randomUUID();
-        Date lastUpdated = Date.from(Instant.parse("2026-10-30T10:15:30.000Z"));
-        Date nextSince = Date.from(Instant.parse("2026-10-30T12:00:00.000Z"));
+        Instant lastUpdated = Instant.parse("2026-10-30T10:15:30.123456Z");
+        Instant nextSince = Instant.parse("2026-10-30T12:00:00.654321Z");
 
         ProjectActivityModel deletedModel = ProjectActivityModel.builder()
                 .projectGuid(projectGuid)
@@ -72,36 +90,36 @@ class SpatialExportControllerTest {
                 .since(nextSince)
                 .build();
 
-        when(spatialExportService.getSpatialExport(any(Date.class))).thenReturn(exportModel);
+        when(spatialExportService.getSpatialExport(any(Instant.class), any())).thenReturn(exportModel);
 
         mockMvc.perform(get("/spatial-export/changes")
-                        .param("since", "2026-10-30T00:00:00Z"))
+                        .param("since", "2026-10-30T00:00:00.000000Z"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectActivities", hasSize(1)))
                 .andExpect(jsonPath("$.projectActivities[0].projectGuid").value(projectGuid.toString()))
                 .andExpect(jsonPath("$.projectActivities[0].activityGuid").doesNotExist())
                 .andExpect(jsonPath("$.projectActivities[0].geometry").doesNotExist())
                 .andExpect(jsonPath("$.projectActivities[0].projectNumber").doesNotExist())
-                .andExpect(jsonPath("$.projectActivities[0].lastUpdated").value("2026-10-30T10:15:30.000Z"))
-                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.000Z"));
+                .andExpect(jsonPath("$.projectActivities[0].lastUpdated").value("2026-10-30T10:15:30.123456Z"))
+                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.654321Z"));
     }
 
     @Test
     void testExportChanges_EmptyResult() throws Exception {
-        Date cursor = Date.from(Instant.parse("2026-10-30T12:00:00.000Z"));
+        Instant cursor = Instant.parse("2026-10-30T12:00:00.123456Z");
 
         SpatialExportModel emptyExportModel = SpatialExportModel.builder()
                 .projectActivities(Collections.emptyList())
                 .since(cursor)
                 .build();
 
-        when(spatialExportService.getSpatialExport(any(Date.class))).thenReturn(emptyExportModel);
+        when(spatialExportService.getSpatialExport(any(Instant.class), any())).thenReturn(emptyExportModel);
 
         mockMvc.perform(get("/spatial-export/changes")
                         .param("since", "2026-10-30T00:00:00Z"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectActivities", hasSize(0)))
-                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.000Z"));
+                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.123456Z"));
     }
 
     @Test
@@ -120,7 +138,7 @@ class SpatialExportControllerTest {
 
     @Test
     void testExportChanges_ServiceThrowsIllegalArgumentException() throws Exception {
-        when(spatialExportService.getSpatialExport(any(Date.class)))
+        when(spatialExportService.getSpatialExport(any(Instant.class), any()))
                 .thenThrow(new IllegalArgumentException("'since' parameter is required"));
 
         mockMvc.perform(get("/spatial-export/changes")
@@ -130,8 +148,29 @@ class SpatialExportControllerTest {
     }
 
     @Test
+    void testExportChanges_WithAfterProjectGuid() throws Exception {
+        UUID afterProjectGuid = UUID.randomUUID();
+        Instant cursor = Instant.parse("2026-10-30T12:00:00.999999Z");
+
+        SpatialExportModel emptyExportModel = SpatialExportModel.builder()
+                .projectActivities(Collections.emptyList())
+                .since(cursor)
+                .build();
+
+        when(spatialExportService.getSpatialExport(any(Instant.class), org.mockito.ArgumentMatchers.eq(afterProjectGuid)))
+                .thenReturn(emptyExportModel);
+
+        mockMvc.perform(get("/spatial-export/changes")
+                        .param("since", "2026-10-30T00:00:00Z")
+                        .param("afterProjectGuid", afterProjectGuid.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectActivities", hasSize(0)))
+                .andExpect(jsonPath("$.since").value("2026-10-30T12:00:00.999999Z"));
+    }
+
+    @Test
     void testExportChanges_ServiceThrowsDatabaseClockRuntimeException() throws Exception {
-        when(spatialExportService.getSpatialExport(any(Date.class)))
+        when(spatialExportService.getSpatialExport(any(Instant.class), any()))
                 .thenThrow(new RuntimeException("Could not fetch database clock"));
 
         mockMvc.perform(get("/spatial-export/changes")
