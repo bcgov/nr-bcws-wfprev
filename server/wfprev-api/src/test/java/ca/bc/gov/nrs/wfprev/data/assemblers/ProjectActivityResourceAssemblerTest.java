@@ -47,8 +47,7 @@ class ProjectActivityResourceAssemblerTest {
         ProjectActivityModel model = models.get(0);
         assertThat(model.getProjectGuid()).isEqualTo(projectGuid);
         assertThat(model.getLastUpdated()).isEqualTo(lastUpdated);
-        assertThat(model.getActivities()).hasSize(1);
-        assertThat(model.getActivities().get(0).getActivityGuid()).isNull();
+        assertThat(model.getActivities()).isNotNull().isEmpty();
         assertThat(model.getProjectNumber()).isEqualTo(12345);
     }
 

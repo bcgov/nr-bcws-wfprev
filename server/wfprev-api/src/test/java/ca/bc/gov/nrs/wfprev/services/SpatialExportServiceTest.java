@@ -99,8 +99,7 @@ class SpatialExportServiceTest {
         ProjectActivityModel model = result.getProjectActivities().get(0);
         assertThat(model.getProjectGuid()).isEqualTo(deletedProjectGuid);
         assertThat(model.getLastUpdated()).isEqualTo(deletedLastUpdated);
-        assertThat(model.getActivities()).hasSize(1);
-        assertThat(model.getActivities().get(0).getActivityGuid()).isNull();
+        assertThat(model.getActivities()).isNotNull().isEmpty();
         assertThat(model.getProjectNumber()).isNull();
 
         assertThat(result.getSince()).isEqualTo(fixedDbClock);

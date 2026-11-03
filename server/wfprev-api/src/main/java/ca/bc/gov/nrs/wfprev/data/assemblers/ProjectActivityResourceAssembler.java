@@ -16,6 +16,10 @@ import java.util.UUID;
 public class ProjectActivityResourceAssembler {
 
     public ProjectActivityModel.Activity toActivityModel(ProjectActivityEntity entity) {
+        if (entity == null || entity.getActivityGuid() == null) {
+            return null;
+        }
+
         MultiPolygon geometry = entity.getGeometry();
         if (geometry != null && geometry.getSRID() == 0) {
             geometry.setSRID(4326);
@@ -65,10 +69,15 @@ public class ProjectActivityResourceAssembler {
                         .build();
             });
 
-            if (model.getActivities() == null) {
-                model.setActivities(new ArrayList<>());
+            if (entity.getActivityGuid() != null) {
+                if (model.getActivities() == null) {
+                    model.setActivities(new ArrayList<>());
+                }
+                ProjectActivityModel.Activity activity = toActivityModel(entity);
+                if (activity != null) {
+                    model.getActivities().add(activity);
+                }
             }
-            model.getActivities().add(toActivityModel(entity));
         }
 
         return new ArrayList<>(projectMap.values());
