@@ -64,6 +64,31 @@ services:
     networks:
       - wfprev-network
 
+  # Schema documentation (HTML + ER diagrams) written to ./schemaspy/schemaspy-output.
+  # Run with ./docker/schemaspy.sh once Liquibase has applied the schema.
+  # pgsql11, not pgsql: the legacy type queries catalog columns PostgreSQL 15+ no longer has.
+  schemaspy:
+    image: schemaspy/schemaspy:7.0.2
+    profiles:
+      - schemaspy
+    command:
+      [
+        "-t", "pgsql11",
+        "-host", "wfprev-postgres",
+        "-port", "5432",
+        "-db", "wfprev",
+        "-s", "wfprev",
+        "-u", "wfprev",
+        "-p", "${WFPREV_DATASOURCE_PASSWORD}"
+      ]
+    volumes:
+      - ./schemaspy/schemaspy-output:/output
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wfprev-network
+
   db:
     image: postgis/postgis:17-3.6
     volumes:

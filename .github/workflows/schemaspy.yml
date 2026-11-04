@@ -1,0 +1,111 @@
+name: SchemaSpy
+
+# Publishes SchemaSpy docs for the wfprev schema to GitHub Pages, from whichever branch is the
+# repo's default (the active release branch). The schema is built from the Liquibase changelogs
+# in a throwaway database, so no environment's database or credentials are involved.
+#
+# The `if` below only keeps other branches from publishing by accident. What stops a modified copy
+# of this workflow from publishing is the github-pages environment's deployment branch rule.
+#
+# Actions are pinned to commit SHAs and images to digests: the output is a public page, so
+# nothing that produces or deploys it may change underneath us.
+
+on:
+  push:
+    # Branches only: path filters don't apply to tag pushes, so tags would otherwise start runs.
+    branches:
+      - "**"
+    paths:
+      - "db/**"
+      - ".github/workflows/schemaspy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: schemaspy-pages
+  cancel-in-progress: false
+
+env:
+  # Throwaway credentials for the service container below; nothing else uses them.
+  DB_PASSWORD: schemaspy
+  APP_WF1_PREV_PASSWORD: schemaspy
+  WFPREV_DATABASE_NAME: wfprev
+
+jobs:
+  generate:
+    name: Generate docs
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
+        env:
+          POSTGRES_USER: wfprev
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: wfprev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wfprev -d wfprev"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Same image the deployments run
+      - name: Build Liquibase image
+        run: docker build -t wfprev-liquibase -f db/Dockerfile db
+
+      - name: Apply wfprev changelog
+        run: |
+          docker run --rm --network host -e WFPREV_DATABASE_NAME --entrypoint liquibase wfprev-liquibase \
+            update --url=jdbc:postgresql://127.0.0.1:5432/wfprev \
+            --username=wfprev --password="$DB_PASSWORD" --changelog-file=wfprev-changelog.json
+
+      # The first changelog creates app_wf1_prev with the password in its SQL; give it a throwaway one instead.
+      - name: Reset app_wf1_prev password
+        env:
+          PG_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$PG_CONTAINER" \
+            psql -U wfprev -d wfprev -v ON_ERROR_STOP=1 -c "ALTER ROLE app_wf1_prev PASSWORD '$APP_WF1_PREV_PASSWORD'"
+
+      - name: Apply app_wf1_prev changelog
+        run: |
+          docker run --rm --network host -e WFPREV_DATABASE_NAME --entrypoint liquibase wfprev-liquibase \
+            update --url=jdbc:postgresql://127.0.0.1:5432/wfprev \
+            --username=app_wf1_prev --password="$APP_WF1_PREV_PASSWORD" --changelog-file=app_wf1_prev-changelog.json
+
+      # pgsql11, not pgsql: the legacy type queries catalog columns PostgreSQL 15+ no longer has.
+      - name: Run SchemaSpy
+        run: |
+          mkdir -p "$RUNNER_TEMP/schemaspy"
+          chmod a+rwx "$RUNNER_TEMP/schemaspy"
+          docker run --rm --network host -v "$RUNNER_TEMP/schemaspy:/output" \
+            schemaspy/schemaspy:7.0.2@sha256:c8f98116a5cfe4b00b379eeb23b2022cdea4c9192cbccb843a75049e752479b7 \
+            -t pgsql11 -host 127.0.0.1 -port 5432 -db wfprev -s wfprev -u wfprev -p "$DB_PASSWORD"
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/schemaspy
+
+  deploy:
+    name: Deploy to Pages
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write # publish the Pages deployment
+      id-token: write # deploy-pages proves the deployment came from this workflow via an OIDC token
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

@@ -50,6 +50,11 @@ Manually triggers a data-only pg_restore from `./wfprev.dump/wfprev.dump` into a
 Rapidly rebuilds and restarts only the `client` (Angular UI) service. Useful for testing UI changes without restarting the database or API.
 - **Usage**: `./docker/update-local-client.sh`
 
+### [schemaspy.sh](./schemaspy.sh)
+Generates [SchemaSpy](https://schemaspy.org) documentation (tables, columns, constraints, ER diagrams) for the `wfprev` schema of the running local database.
+- **Usage**: `./docker/schemaspy.sh` (the stack must be up and Liquibase applied, e.g. after `./docker/start-local.sh -r`)
+- **Output**: `schemaspy/schemaspy-output/index.html` (gitignored, replaced on every run). Takes about a minute, most of it drawing diagrams.
+
 ---
 
 ## Running on Windows (WSL & Git Bash)
