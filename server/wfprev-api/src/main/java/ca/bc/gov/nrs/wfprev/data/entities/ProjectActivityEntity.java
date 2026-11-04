@@ -17,11 +17,12 @@ import org.locationtech.jts.geom.MultiPolygon;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "project_activity_svw", schema = "wfprev")
+@Table(name = "project_activity_change_svw", schema = "wfprev")
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -31,6 +32,10 @@ import java.util.UUID;
 @Immutable
 public class ProjectActivityEntity implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "row_id")
+    private UUID rowId;
 
     @Column(name = "project_guid")
     private UUID projectGuid;
@@ -68,7 +73,6 @@ public class ProjectActivityEntity implements Serializable {
     @Column(name = "project_fiscal_name")
     private String projectFiscalName;
 
-    @Id
     @Column(name = "activity_guid")
     private UUID activityGuid;
 
@@ -96,4 +100,7 @@ public class ProjectActivityEntity implements Serializable {
     @Column(name = "geometry", columnDefinition = "geometry(MultiPolygon, 4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private MultiPolygon geometry;
+
+    @Column(name = "last_updated")
+    private Instant lastUpdated;
 }

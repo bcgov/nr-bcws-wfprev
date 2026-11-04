@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,15 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 @RequestMapping("/spatial")
 public class SpatialController {
-    
+
     private final SpatialValidationService spatialValidationService;
-    
+
     public SpatialController(SpatialValidationService spatialValidationService) {
         this.spatialValidationService = spatialValidationService;
     }
-    
+
     @PostMapping("/validate")
     @Operation(
             summary = "Validate Spatial Geometry",

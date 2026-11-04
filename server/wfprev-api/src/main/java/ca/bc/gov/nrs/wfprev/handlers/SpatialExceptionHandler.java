@@ -4,11 +4,10 @@ import ca.bc.gov.nrs.wfprev.controllers.SpatialController;
 import ca.bc.gov.nrs.wfprev.data.models.ValidationResult;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.io.ParseException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import org.springframework.core.annotation.Order;
 
 @ControllerAdvice(assignableTypes = SpatialController.class)
 @Order(1)

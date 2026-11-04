@@ -4,6 +4,7 @@ import ca.bc.gov.nrs.wfprev.data.models.ValidationResult;
 import ca.bc.gov.nrs.wfprev.handlers.GlobalExceptionHandler;
 import ca.bc.gov.nrs.wfprev.handlers.SpatialExceptionHandler;
 import ca.bc.gov.nrs.wfprev.services.SpatialValidationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,13 +12,11 @@ import org.locationtech.jts.geom.Geometry;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.n52.jackson.datatype.jts.JtsModule;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.n52.jackson.datatype.jts.JtsModule;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
