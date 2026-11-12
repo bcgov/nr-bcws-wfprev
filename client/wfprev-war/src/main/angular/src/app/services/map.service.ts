@@ -362,6 +362,21 @@ export class MapService {
     if (WmsLeaflet.prototype["__authLegendPatched"]) return;
     WmsLeaflet.prototype["__authLegendPatched"] = true;
 
+    // Patch WmsLeaflet.create so any inline SLD on the layer config is automatically
+    // minified (inter-tag whitespace and newlines stripped) before Leaflet constructs the
+    // tile layer (GetMap). This avoids HTTP 414 Request-URI Too Long errors on WMS tiles.
+    const originalCreate = WmsLeaflet.create;
+    if (typeof originalCreate === 'function') {
+      WmsLeaflet.create = function (layers: any[], ...rest: any[]) {
+        for (const layer of layers || []) {
+          if (layer?.config?.sld && typeof layer.config.sld === 'string' && !layer.config.sld.startsWith('@')) {
+            layer.config.sld = layer.config.sld.replace(/>\s+</g, '><').trim();
+          }
+        }
+        return originalCreate.call(this, layers, ...rest);
+      };
+    }
+
     // Keep a reference to SMK’s original legend initializer
     const originalInitLegends = WmsLeaflet.prototype.initLegends;
 
@@ -369,83 +384,102 @@ export class MapService {
     WmsLeaflet.prototype.initLegends = function () {
       const J = (globalThis as any).jQuery || (globalThis as any).$;
 
-      // Build a base GetLegendGraphic request
-      const svc = this.config.serviceUrl || '';
-      const base = svc.includes('?') ? svc : (svc + '?');
+      const resolveSld = (): Promise<string | undefined> => {
+        if (!this.config.sld) return Promise.resolve(undefined);
+        if (typeof this.config.sld === 'string' && this.config.sld.startsWith('@')) {
+          return fetch(this.config.sld.slice(1))
+            .then((res) => (res.ok ? res.text() : undefined))
+            .catch(() => undefined);
+        }
+        return Promise.resolve(this.config.sld);
+      };
 
-      // If jQuery is available, use it to build the querystring
-      const query = J
-        ? J.param({
-          SERVICE: 'WMS',
-          VERSION: '1.1.1',
-          REQUEST: 'GetLegendGraphic',
-          FORMAT: 'image/png',
-          TRANSPARENT: 'true',
-          LAYER: this.config.layerName,
-          STYLE: this.config.styleName || undefined,
+      return resolveSld().then((sldBody) => {
+        // Build a base GetLegendGraphic request
+        const svc = this.config.serviceUrl || '';
+        const base = svc.includes('?') ? svc : (svc + '?');
+
+        const cleanSld = sldBody ? sldBody.replace(/>\s+</g, '><').trim() : undefined;
+        const useSld = !!cleanSld;
+
+        // If jQuery is available, use it to build the querystring
+        const query = J
+          ? J.param({
+            SERVICE: 'WMS',
+            VERSION: '1.1.1',
+            REQUEST: 'GetLegendGraphic',
+            FORMAT: 'image/png',
+            TRANSPARENT: 'true',
+            LAYER: this.config.layerName,
+            STYLE: useSld ? undefined : (this.config.styleName || undefined),
+            SLD_BODY: useSld ? cleanSld : undefined,
+            LEGEND_OPTIONS: useSld ? 'forceLabels:on' : undefined,
+          })
+          : [
+            'SERVICE=WMS',
+            'VERSION=1.1.1',
+            'REQUEST=GetLegendGraphic',
+            'FORMAT=image/png',
+            'TRANSPARENT=true',
+            `LAYER=${encodeURIComponent(this.config.layerName)}`,
+            useSld
+              ? `SLD_BODY=${encodeURIComponent(cleanSld!)}&LEGEND_OPTIONS=forceLabels:on`
+              : (this.config.styleName ? `STYLE=${encodeURIComponent(this.config.styleName)}` : ''),
+          ]
+            .filter(Boolean)
+            .join('&');
+
+        const url = base.endsWith('?') ? base + query : base + '&' + query;
+        const headers = this.config.header || {}; // includes API key / auth headers
+
+        // Fetch the legend graphic with headers
+        return fetch(url, {
+          method: 'GET',
+          headers,
+          mode: 'cors',
+          credentials: 'omit',
         })
-        : [
-          'SERVICE=WMS',
-          'VERSION=1.1.1',
-          'REQUEST=GetLegendGraphic',
-          'FORMAT=image/png',
-          'TRANSPARENT=true',
-          `LAYER=${encodeURIComponent(this.config.layerName)}`,
-          this.config.styleName ? `STYLE=${encodeURIComponent(this.config.styleName)}` : '',
-        ]
-          .filter(Boolean)
-          .join('&');
-
-      const url = base.endsWith('?') ? base + query : base + '&' + query;
-      const headers = this.config.header || {}; // includes API key / auth headers
-
-      // Fetch the legend graphic with headers
-      return fetch(url, {
-        method: 'GET',
-        headers,
-        mode: 'cors',
-        credentials: 'omit',
+          .then((res) => {
+            if (!res.ok) throw new Error(`Legend HTTP ${res.status}`);
+            return res.blob();
+          })
+          // Convert the blob into a data URL (so SMK can use it inline)
+          .then(
+            (blob) =>
+              new Promise<string>((resolve, reject) => {
+                try {
+                  const reader = new FileReader();
+                  reader.onload = () => resolve(reader.result as string);
+                  reader.onerror = () => reject(new Error('Failed to read legend blob'));
+                  reader.readAsDataURL(blob);
+                } catch (e: any) {
+                  reject(new Error(e?.message || 'Unknown error while reading blob'));
+                }
+              })
+          )
+          // Load into an <img> to measure width/height
+          .then(
+            (dataUrl: string) =>
+              new Promise<any[]>((resolve, reject) => {
+                try {
+                  const img = new Image();
+                  img.onload = () =>
+                    resolve([
+                      {
+                        url: dataUrl,
+                        width: img.width,
+                        height: img.height,
+                        ...this.config.legend,
+                      },
+                    ]);
+                  img.onerror = () => reject(new Error('Failed to load legend image'));
+                  img.src = dataUrl;
+                } catch (e: any) {
+                  reject(new Error(e?.message || 'Unknown error while loading image'));
+                }
+              })
+          );
       })
-        .then((res) => {
-          if (!res.ok) throw new Error(`Legend HTTP ${res.status}`);
-          return res.blob();
-        })
-        // Convert the blob into a data URL (so SMK can use it inline)
-        .then(
-          (blob) =>
-            new Promise<string>((resolve, reject) => {
-              try {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = () => reject(new Error('Failed to read legend blob'));
-                reader.readAsDataURL(blob);
-              } catch (e: any) {
-                reject(new Error(e?.message || 'Unknown error while reading blob'));
-              }
-            })
-        )
-        // Load into an <img> to measure width/height
-        .then(
-          (dataUrl: string) =>
-            new Promise<any[]>((resolve, reject) => {
-              try {
-                const img = new Image();
-                img.onload = () =>
-                  resolve([
-                    {
-                      url: dataUrl,
-                      width: img.width,
-                      height: img.height,
-                      ...this.config.legend,
-                    },
-                  ]);
-                img.onerror = () => reject(new Error('Failed to load legend image'));
-                img.src = dataUrl;
-              } catch (e: any) {
-                reject(new Error(e?.message || 'Unknown error while loading image'));
-              }
-            })
-        )
         .catch((err) => {
           console.warn('Authenticated legend fetch failed:', err);
 
