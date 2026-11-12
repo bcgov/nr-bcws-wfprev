@@ -362,6 +362,14 @@ export class MapService {
     if (WmsLeaflet.prototype["__authLegendPatched"]) return;
     WmsLeaflet.prototype["__authLegendPatched"] = true;
 
+    const minifySld = (sld: string): string =>
+      sld
+        .replace(/>\s+</g, '><')
+        .replace(/\s*[\r\n]+\s*/g, ' ')
+        .replace(/>\s+/g, '>')
+        .replace(/\s+</g, '<')
+        .trim();
+
     // Patch WmsLeaflet.create so any inline SLD on the layer config is automatically
     // minified (inter-tag whitespace and newlines stripped) before Leaflet constructs the
     // tile layer (GetMap). This avoids HTTP 414 Request-URI Too Long errors on WMS tiles.
@@ -370,7 +378,7 @@ export class MapService {
       WmsLeaflet.create = function (layers: any[], ...rest: any[]) {
         for (const layer of layers || []) {
           if (layer?.config?.sld && typeof layer.config.sld === 'string' && !layer.config.sld.startsWith('@')) {
-            layer.config.sld = layer.config.sld.replace(/>\s+</g, '><').trim();
+            layer.config.sld = minifySld(layer.config.sld);
           }
         }
         return originalCreate.call(this, layers, ...rest);
@@ -399,7 +407,7 @@ export class MapService {
         const svc = this.config.serviceUrl || '';
         const base = svc.includes('?') ? svc : (svc + '?');
 
-        const cleanSld = sldBody ? sldBody.replace(/>\s+</g, '><').trim() : undefined;
+        const cleanSld = sldBody ? minifySld(sldBody) : undefined;
         const useSld = !!cleanSld;
 
         // If jQuery is available, use it to build the querystring
