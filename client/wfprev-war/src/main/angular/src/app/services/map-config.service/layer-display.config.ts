@@ -48,7 +48,14 @@ export function LayerDisplayConfig() {
             title: 'Natural Features',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'fwa-streams',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 100000,
+                }
+            ]
         },
         {
             id: 'fire-perimeters',
