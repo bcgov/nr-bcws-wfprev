@@ -18,6 +18,12 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
+                    id: 'municipal-boundaries',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 500000,
+                },
+                {
                     id: 'regional-districts',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -111,12 +117,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 6000000,
-        },
-        {
-            id: 'municipal-boundaries',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 500000,
         },
         {
             id: 'recreation-polygons',

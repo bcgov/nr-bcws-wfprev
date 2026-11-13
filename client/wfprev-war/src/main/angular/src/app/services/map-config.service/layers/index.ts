@@ -10,7 +10,6 @@ import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-a
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { PSTAConfig } from "./psta.config";
-import { MunicipalBoundariesLayerConfig } from "./municipal-boundaries.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { ManagedLicenceWoodlotLayerConfig } from "./managed-licence-woodlot.config";
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
@@ -52,7 +51,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BCParksAndProtectedAreasLayerConfig(ls),
     PSTAConfig(ls),
     ConservancyAreaLayerConfig(ls),
-    MunicipalBoundariesLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
     ManagedLicenceWoodlotLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
