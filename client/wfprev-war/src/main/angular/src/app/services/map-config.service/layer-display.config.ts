@@ -60,6 +60,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 140000,
+                },
+                {
+                    id: 'fwa-wetlands',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
                 }
             ]
         },
