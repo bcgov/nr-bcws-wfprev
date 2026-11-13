@@ -33,6 +33,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 12000000,
+                },
+                {
+                    id: 'bcts-business-area',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
                 }
             ]
         },

@@ -4,6 +4,7 @@ import { MinistryOfForestsDistrictsLayerConfig } from "./administrative-boundari
 import { MunicipalBoundariesLayerConfig } from "./administrative-boundaries/municipal-boundaries.config";
 import { WildfireOrgUnitFireCentreLayerConfig } from "./administrative-boundaries/wildfire-org-unit-fire-centre";
 import { RegionalDistrictsLayerConfig } from "./administrative-boundaries/regional-districts.config";
+import { BctsBusinessAreaLayerConfig } from "./administrative-boundaries/bcts-business-area.config";
 
 export function AdministrativeBoundariesLayerConfig(ls: LayerSettings, authHeader?: Record<string, string>) {
   const items = [
@@ -12,6 +13,7 @@ export function AdministrativeBoundariesLayerConfig(ls: LayerSettings, authHeade
     MunicipalBoundariesLayerConfig(ls),
     WildfireOrgUnitFireCentreLayerConfig(ls, authHeader),
     RegionalDistrictsLayerConfig(ls),
+    BctsBusinessAreaLayerConfig(ls),
   ];
   return {
     id: "administrative-boundaries",
