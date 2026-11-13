@@ -13,17 +13,17 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
+                    id: 'ministry-of-forests-districts',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
                     id: 'regional-districts',
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 12000000,
                 }
             ]
-        },
-        {
-            id: 'ministry-of-forests-districts',
-            isVisible: false,
-            alwaysShowLegend: true,
         },
         {
             id: 'wildfire-org-unit-fire-centre',
