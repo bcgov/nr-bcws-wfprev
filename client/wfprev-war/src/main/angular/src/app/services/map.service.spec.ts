@@ -281,6 +281,16 @@ describe('MapService', () => {
       expect(smkServiceMock.load).toHaveBeenCalledTimes(2);
     });
 
+    it("should enlarge the deepest level an Esri cache holds instead of its grey 'not yet available' tiles", async () => {
+      const createTile = jasmine.createSpy('createTile');
+      mockL.esri = { TiledMapLayer: { prototype: { createTile, metadata: () => {} } } };
+
+      await service.patch();
+
+      expect(mockL.esri.TiledMapLayer.__tileFallbackPatched).toBeTrue();
+      expect(mockL.esri.TiledMapLayer.prototype.createTile).not.toBe(createTile);
+    });
+
     it('should not register any basemap of its own', async () => {
       await service.patch();
 

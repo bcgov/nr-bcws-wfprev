@@ -4,6 +4,7 @@ import '@maplibre/maplibre-gl-leaflet';
 import L from 'leaflet';
 import { StyleSpecification } from 'maplibre-gl';
 import { BC_BOUNDS, FiscalYearColors } from 'src/app/utils/constants';
+import { installEsriTileFallback } from 'src/app/utils/esri-tile-fallback';
 import { AppConfigService } from './app-config.service';
 import { baseMapsToolConfig } from './map-config.service/map.config';
 import { SmkService } from './smk.service';
@@ -212,6 +213,9 @@ export class MapService {
     this.installAuthenticatedLegendPatch(SMK);
     this.installCurrentFireYearPatch(SMK);
     this.installBasemapPanePatch((globalThis as any).L);
+    // Where Esri's imagery and hillshade caches stop short, enlarge their deepest level, not a grey
+    // "Map data not yet available" tile
+    installEsriTileFallback((globalThis as any).L);
 
     // SMK waits 200ms before showing or hiding layers, so that a run of visibility changes is handled at once. Every
     // map waited for it as it was created, and so did each layer turned on in the layers panel. Changes made together
