@@ -734,6 +734,41 @@ describe('MapService', () => {
 
       expect(legends).toEqual([{ url: 'orig.png' }]); // fallback path
     });
+
+    it('uses SLD_BODY in legend request when sld is configured and minifies whitespace', async () => {
+      patchFn((window as any).SMK);
+
+      const proto = (window as any).SMK.TYPE.Layer.wms.leaflet.prototype;
+      proto.config.sld = '<sld:StyledLayerDescriptor>\n  <sld:NamedLayer>\n    custom\n  </sld:NamedLayer>\n</sld:StyledLayerDescriptor>';
+      proto.config.styleName = 'default';
+
+      await proto.initLegends();
+
+      expect((window as any).fetch).toHaveBeenCalled();
+      const [url] = (window as any).fetch.calls.mostRecent().args;
+      expect(url).toContain('SLD_BODY=');
+      expect(url).toContain('LEGEND_OPTIONS=forceLabels');
+      expect(url).not.toContain('STYLE=');
+      // Verify inter-tag whitespace is stripped
+      expect(url).not.toContain('%0A');
+    });
+
+    it('minifies inline sld on layers in WmsLeaflet.create', () => {
+      const WmsLeaflet = (window as any).SMK.TYPE.Layer.wms.leaflet;
+      const originalCreate = jasmine.createSpy('originalCreate');
+      WmsLeaflet.create = originalCreate;
+
+      delete WmsLeaflet.prototype.__authLegendPatched;
+      patchFn((window as any).SMK);
+
+      const layers = [
+        { config: { sld: '<sld:StyledLayerDescriptor>\n  <sld:NamedLayer>test</sld:NamedLayer>\n</sld:StyledLayerDescriptor>' } }
+      ];
+      WmsLeaflet.create(layers);
+
+      expect(layers[0].config.sld).toBe('<sld:StyledLayerDescriptor><sld:NamedLayer>test</sld:NamedLayer></sld:StyledLayerDescriptor>');
+      expect(originalCreate).toHaveBeenCalledWith(layers);
+    });
   });
 
   describe('makeOnlyRegionsVisible', () => {
