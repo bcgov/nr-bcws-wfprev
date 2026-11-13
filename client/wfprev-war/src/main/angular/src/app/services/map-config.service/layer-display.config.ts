@@ -43,6 +43,33 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'natural-features',
+            type: 'folder',
+            title: 'Natural Features',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'fwa-streams',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 70000,
+                },
+                {
+                    id: 'fwa-lakes',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
+                },
+                {
+                    id: 'fwa-wetlands',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
+                }
+            ]
+        },
+        {
             id: 'fire-perimeters',
             isVisible: false,
             alwaysShowLegend: true,
