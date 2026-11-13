@@ -1,18 +1,19 @@
 import { LayerSettings } from "src/app/components/models";
+import { MinistryOfForestsRegionsLayerConfig } from "./administrative-boundaries/ministry-of-forests-regions.config";
 import { RegionalDistrictsLayerConfig } from "./administrative-boundaries/regional-districts.config";
 
-export function AdministrativeBoundariesLayerConfig(ls: LayerSettings) {
+export function AdministrativeBoundariesLayerConfig(ls: LayerSettings, authHeader?: Record<string, string>) {
   const items = [
+    MinistryOfForestsRegionsLayerConfig(ls, authHeader),
     RegionalDistrictsLayerConfig(ls),
   ];
   return {
     id: "administrative-boundaries",
     type: "folder",
     title: "Administrative Boundaries",
-    isVisible: false,
+    isVisible: true,
     isExpanded: true,
     items,
     layers: items,
   };
 }
-

@@ -4,9 +4,14 @@ export function LayerDisplayConfig() {
             id: 'administrative-boundaries',
             type: 'folder',
             title: 'Administrative Boundaries',
-            isVisible: false,
+            isVisible: true,
             isExpanded: true,
             items: [
+                {
+                    id: 'ministry-of-forests-regions',
+                    isVisible: true,
+                    alwaysShowLegend: true,
+                },
                 {
                     id: 'regional-districts',
                     isVisible: false,
@@ -18,11 +23,6 @@ export function LayerDisplayConfig() {
         {
             id: 'ministry-of-forests-districts',
             isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'ministry-of-forests-regions',
-            isVisible: true,
             alwaysShowLegend: true,
         },
         {

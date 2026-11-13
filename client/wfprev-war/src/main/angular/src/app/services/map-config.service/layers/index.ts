@@ -1,7 +1,6 @@
 import { OutOfControlWildfiresLayerConfig } from "./wildfires/out-of-control-wildfires.config";
 import { FirePerimetersLayerConfig } from "./fire-perimeters.config";
 import { MinistryOfForestsDistrictsLayerConfig } from "./ministry-of-forests-districts.config";
-import { MinistryOfForestsRegionsLayerConfig } from "./ministry-of-forests-regions.config";
 import { WildfireOrgUnitFireCentreLayerConfig } from "./wildfire-org-unit-fire-centre";
 import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.config";
 import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
@@ -42,8 +41,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
   }
 
   return [
-    AdministrativeBoundariesLayerConfig(ls),
-    MinistryOfForestsRegionsLayerConfig(ls, authHeader),
+    AdministrativeBoundariesLayerConfig(ls, authHeader),
     MinistryOfForestsDistrictsLayerConfig(ls, authHeader),
     WildfireOrgUnitFireCentreLayerConfig(ls, authHeader),
     FirePerimetersLayerConfig(ls, authHeader),
