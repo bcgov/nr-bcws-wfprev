@@ -53,7 +53,13 @@ export function LayerDisplayConfig() {
                     id: 'fwa-streams',
                     isVisible: false,
                     alwaysShowLegend: false,
-                    minScale: 100000,
+                    minScale: 70000,
+                },
+                {
+                    id: 'fwa-lakes',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
                 }
             ]
         },
