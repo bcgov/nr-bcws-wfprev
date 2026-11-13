@@ -20,6 +20,7 @@ import { FuelTypeLayerConfig } from "./fuel-type.config";
 import { OneKMWUILayerConfig } from "./1-km-wui.config";
 import { WuiRiskClassLayerConfig } from "./wui-risk-class.config";
 import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
+import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -41,6 +42,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
   }
 
   return [
+    AdministrativeBoundariesLayerConfig(ls),
     MinistryOfForestsRegionsLayerConfig(ls, authHeader),
     MinistryOfForestsDistrictsLayerConfig(ls, authHeader),
     WildfireOrgUnitFireCentreLayerConfig(ls, authHeader),
