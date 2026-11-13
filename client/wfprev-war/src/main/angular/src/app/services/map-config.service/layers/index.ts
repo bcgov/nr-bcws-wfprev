@@ -1,6 +1,5 @@
 import { OutOfControlWildfiresLayerConfig } from "./wildfires/out-of-control-wildfires.config";
 import { FirePerimetersLayerConfig } from "./fire-perimeters.config";
-import { WildfireOrgUnitFireCentreLayerConfig } from "./wildfire-org-unit-fire-centre";
 import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.config";
 import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
 import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
@@ -40,7 +39,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
 
   return [
     AdministrativeBoundariesLayerConfig(ls, authHeader),
-    WildfireOrgUnitFireCentreLayerConfig(ls, authHeader),
     FirePerimetersLayerConfig(ls, authHeader),
     OutOfControlWildfiresLayerConfig(ls),
     BeingHeldWildfiresLayerConfig(ls),

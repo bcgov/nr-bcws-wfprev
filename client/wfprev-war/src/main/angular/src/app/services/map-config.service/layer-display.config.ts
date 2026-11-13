@@ -24,17 +24,17 @@ export function LayerDisplayConfig() {
                     minScale: 500000,
                 },
                 {
+                    id: 'wildfire-org-unit-fire-centre',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
                     id: 'regional-districts',
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 12000000,
                 }
             ]
-        },
-        {
-            id: 'wildfire-org-unit-fire-centre',
-            isVisible: false,
-            alwaysShowLegend: true,
         },
         {
             id: 'fire-perimeters',
