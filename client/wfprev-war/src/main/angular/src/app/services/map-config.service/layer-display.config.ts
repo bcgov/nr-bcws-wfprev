@@ -43,6 +43,14 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'natural-features',
+            type: 'folder',
+            title: 'Natural Features',
+            isVisible: false,
+            isExpanded: true,
+            items: []
+        },
+        {
             id: 'fire-perimeters',
             isVisible: false,
             alwaysShowLegend: true,
