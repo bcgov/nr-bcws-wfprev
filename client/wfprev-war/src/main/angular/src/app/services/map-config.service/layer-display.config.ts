@@ -33,6 +33,39 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 12000000,
+                },
+                {
+                    id: 'bcts-business-area',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                }
+            ]
+        },
+        {
+            id: 'natural-features',
+            type: 'folder',
+            title: 'Natural Features',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'fwa-streams',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 70000,
+                },
+                {
+                    id: 'fwa-lakes',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
+                },
+                {
+                    id: 'fwa-wetlands',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
                 }
             ]
         },
