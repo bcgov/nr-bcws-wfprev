@@ -6,6 +6,7 @@ import { MapService } from 'src/app/services/map.service';
 import { LeafletLegendService, getBluePinIcon, getActivePinIcon } from 'src/app/utils/tools';
 import { SharedService } from 'src/app/services/shared-service';
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
 import '@maplibre/maplibre-gl-leaflet'; 
 import { ProjectPopupComponent } from 'src/app/components/project-popup/project-popup.component';
 import { Project, ProjectLocation } from 'src/app/components/models';
@@ -513,11 +514,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   createMarkerClusterGroup(options?: L.MarkerClusterGroupOptions): L.MarkerClusterGroup {
-  return (window as any).L.markerClusterGroup(options);
-}
+    const leaflet = (window as any).L ?? L;
+    return leaflet.markerClusterGroup(options);
+  }
 
   createMarker(latlng: L.LatLngExpression, options?: L.MarkerOptions): L.Marker {
-    return L.marker(latlng, options);
+    const leaflet = (window as any).L ?? L;
+    return leaflet.marker(latlng, options);
   }
   
 

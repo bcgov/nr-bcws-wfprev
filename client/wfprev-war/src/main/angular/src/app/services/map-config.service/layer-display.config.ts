@@ -1,19 +1,73 @@
 export function LayerDisplayConfig() {
     return [
         {
-            id: 'ministry-of-forests-districts',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'ministry-of-forests-regions',
+            id: 'administrative-boundaries',
+            type: 'folder',
+            title: 'Administrative Boundaries',
             isVisible: true,
-            alwaysShowLegend: true,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'ministry-of-forests-regions',
+                    isVisible: true,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'ministry-of-forests-districts',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'municipal-boundaries',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 500000,
+                },
+                {
+                    id: 'wildfire-org-unit-fire-centre',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'regional-districts',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 12000000,
+                },
+                {
+                    id: 'bcts-business-area',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                }
+            ]
         },
         {
-            id: 'wildfire-org-unit-fire-centre',
+            id: 'natural-features',
+            type: 'folder',
+            title: 'Natural Features',
             isVisible: false,
-            alwaysShowLegend: true,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'fwa-streams',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 70000,
+                },
+                {
+                    id: 'fwa-lakes',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
+                },
+                {
+                    id: 'fwa-wetlands',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 140000,
+                }
+            ]
         },
         {
             id: 'fire-perimeters',
@@ -96,12 +150,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 6000000,
-        },
-        {
-            id: 'municipal-boundaries',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 500000,
         },
         {
             id: 'recreation-polygons',
