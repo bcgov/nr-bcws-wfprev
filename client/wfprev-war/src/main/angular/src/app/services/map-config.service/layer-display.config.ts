@@ -70,6 +70,21 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'licenses-and-permits',
+            type: 'folder',
+            title: 'Licenses and Permits',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'managed-licence-woodlot',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 100000,
+                }
+            ]
+        },
+        {
             id: 'fire-perimeters',
             isVisible: false,
             alwaysShowLegend: true,
@@ -156,12 +171,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 250000,
-        },
-        {
-            id: 'managed-licence-woodlot',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 100000,
         },
         {
             id: 'parcel-fabric',
