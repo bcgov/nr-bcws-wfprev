@@ -3,6 +3,7 @@ import { MinistryOfForestsRegionsLayerConfig } from "./administrative-boundaries
 import { MinistryOfForestsDistrictsLayerConfig } from "./administrative-boundaries/ministry-of-forests-districts.config";
 import { MunicipalBoundariesLayerConfig } from "./administrative-boundaries/municipal-boundaries.config";
 import { WildfireOrgUnitFireCentreLayerConfig } from "./administrative-boundaries/wildfire-org-unit-fire-centre";
+import { BcWildfireZonesLayerConfig } from "./administrative-boundaries/bc-wildfire-zones.config";
 import { RegionalDistrictsLayerConfig } from "./administrative-boundaries/regional-districts.config";
 import { BctsBusinessAreaLayerConfig } from "./administrative-boundaries/bcts-business-area.config";
 
@@ -12,6 +13,7 @@ export function AdministrativeBoundariesLayerConfig(ls: LayerSettings, authHeade
     MinistryOfForestsDistrictsLayerConfig(ls, authHeader),
     MunicipalBoundariesLayerConfig(ls),
     WildfireOrgUnitFireCentreLayerConfig(ls, authHeader),
+    BcWildfireZonesLayerConfig(ls),
     RegionalDistrictsLayerConfig(ls),
     BctsBusinessAreaLayerConfig(ls),
   ];
