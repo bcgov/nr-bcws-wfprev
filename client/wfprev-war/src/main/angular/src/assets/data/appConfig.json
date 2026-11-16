@@ -22,6 +22,7 @@
       "wfprev":"#{WFPREV_BASE_URL}#",
       "wfdm":"#{WFDM_BASE_URL}#",
       "openmaps":"https://openmaps.gov.bc.ca",
+      "wildfiremaps":"#{WILDFIRE_GEOSERVER_URL}#",
       "trainingAndSupportLink": "#{TRAINING_AND_SUPPORT_LINK}#"
   },
 
