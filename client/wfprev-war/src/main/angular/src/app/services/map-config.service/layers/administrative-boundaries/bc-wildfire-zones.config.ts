@@ -69,8 +69,10 @@ export function BcWildfireZonesLayerConfig(ls: LayerSettings) {
     type: 'wms',
     title: "BC Wildfire Zones",
     serviceUrl: `${ls.wildfiremaps}/geoserver/wms`,
-    isQueryable: false,
+    isQueryable: true,
     layerName: "WILDFIRE_ORG_UNIT_FIRE_ZONE",
+    geometryAttribute: "GEOMETRY",
+    titleAttribute: "FIRE_ZONE_NAME",
     sld: BC_WILDFIRE_ZONES_SLD,
     minScale: 4500000
   }
