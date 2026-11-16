@@ -77,7 +77,7 @@ export function LayerDisplayConfig() {
             isExpanded: true,
             items: [
                 {
-                    id: 'managed-licence-woodlot',
+                    id: 'forest-tenure-managed-licence',
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 100000,

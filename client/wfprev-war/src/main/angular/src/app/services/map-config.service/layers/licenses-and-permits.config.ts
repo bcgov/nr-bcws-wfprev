@@ -1,9 +1,9 @@
 import { LayerSettings } from "src/app/components/models";
-import { ManagedLicenceWoodlotLayerConfig } from "./licenses-and-permits/managed-licence-woodlot.config";
+import { ForestTenureManagedLicenceLayerConfig } from "./licenses-and-permits/forest-tenure-managed-licence.config";
 
 export function LicensesAndPermitsLayerConfig(ls: LayerSettings) {
   const items = [
-    ManagedLicenceWoodlotLayerConfig(ls),
+    ForestTenureManagedLicenceLayerConfig(ls),
   ];
   return {
     id: "licenses-and-permits",
@@ -15,4 +15,3 @@ export function LicensesAndPermitsLayerConfig(ls: LayerSettings) {
     layers: items,
   };
 }
-
