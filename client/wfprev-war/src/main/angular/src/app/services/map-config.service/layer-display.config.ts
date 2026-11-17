@@ -173,6 +173,12 @@ export function LayerDisplayConfig() {
             isExpanded: true,
             items: [
                 {
+                    id: 'range-tenure-polygons',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 10000000,
+                },
+                {
                     id: 'forest-tenure-managed-licence',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -180,6 +186,12 @@ export function LayerDisplayConfig() {
                 },
                 {
                     id: 'bc-timber-sales-operating-areas',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
+                {
+                    id: 'tree-farm-license',
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 2500000,
