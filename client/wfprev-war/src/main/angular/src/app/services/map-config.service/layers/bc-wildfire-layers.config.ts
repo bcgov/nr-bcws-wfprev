@@ -6,6 +6,7 @@ import { UnderControlWildfiresLayerConfig } from "./bc-wildfire-layers/under-con
 import { OutWildfiresLayerConfig } from "./bc-wildfire-layers/out-wildfires.config";
 import { FuelTypeLayerConfig } from "./bc-wildfire-layers/fuel-type.config";
 import { PSTAConfig } from "./bc-wildfire-layers/psta.config";
+import { WuiRiskClassLayerConfig } from "./bc-wildfire-layers/wui-risk-class.config";
 
 export function BcWildfireLayersConfig(ls: LayerSettings, authHeader?: Record<string, string>) {
   const items = [
@@ -16,6 +17,7 @@ export function BcWildfireLayersConfig(ls: LayerSettings, authHeader?: Record<st
     OutWildfiresLayerConfig(ls),
     FuelTypeLayerConfig(ls),
     PSTAConfig(ls),
+    WuiRiskClassLayerConfig(ls),
   ];
   return {
     id: "bc-wildfire-layers",

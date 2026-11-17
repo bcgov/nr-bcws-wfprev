@@ -144,7 +144,13 @@ export function LayerDisplayConfig() {
                             minScale: 150000,
                         },
                     ]
-                }
+                },
+                {
+                    id: 'wui-risk-class',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
             ]
         },
         {
@@ -200,12 +206,6 @@ export function LayerDisplayConfig() {
         },
         {
             id: '1-km-wui',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 2500000,
-        },
-        {
-            id: 'wui-risk-class',
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 2500000,

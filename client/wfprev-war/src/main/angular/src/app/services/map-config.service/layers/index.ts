@@ -7,7 +7,6 @@ import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
 import { OneKMWUILayerConfig } from "./1-km-wui.config";
-import { WuiRiskClassLayerConfig } from "./wui-risk-class.config";
 import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
@@ -46,7 +45,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     RecreationPolygonsLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
     OneKMWUILayerConfig(ls),
-    WuiRiskClassLayerConfig(ls),
     MountainResortsBranchLayerConfig(ls)
   ];
 
