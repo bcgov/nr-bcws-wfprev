@@ -151,6 +151,12 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: false,
                     minScale: 2500000,
                 },
+                {
+                    id: 'human-interface-buffer',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
             ]
         },
         {
