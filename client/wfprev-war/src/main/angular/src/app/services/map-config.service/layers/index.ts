@@ -3,7 +3,6 @@ import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config
 import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
-import { PSTAConfig } from "./psta.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
@@ -43,7 +42,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls),
     BCParksAndProtectedAreasLayerConfig(ls),
-    PSTAConfig(ls),
     ConservancyAreaLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
