@@ -75,6 +75,97 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'bc-wildfire-layers',
+            type: 'folder',
+            title: 'BC Wildfire Layers',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'fire-perimeters',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-out-of-control',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-holding',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-under-control',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-out',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'fuel-type',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 50000,
+                },
+                {
+                    id: 'psta',
+                    type: 'folder',
+                    title: 'PSTA',
+                    isVisible: false,
+                    isExpanded: true,
+                    items: [
+                        {
+                            id: 'spotting-impact',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                        {
+                            id: 'headfire-intensity',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                        {
+                            id: 'fire-threat-rating',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 50000,
+                        },
+                        {
+                            id: 'fire-start-density-all',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                    ]
+                },
+                {
+                    id: 'wui-risk-class',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
+                {
+                    id: '1-km-wui',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
+                {
+                    id: 'human-interface-buffer',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
+            ]
+        },
+        {
             id: 'licenses-and-permits',
             type: 'folder',
             title: 'Licenses and Permits',
@@ -82,37 +173,30 @@ export function LayerDisplayConfig() {
             isExpanded: true,
             items: [
                 {
+                    id: 'range-tenure-polygons',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 10000000,
+                },
+                {
                     id: 'forest-tenure-managed-licence',
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 100000,
+                },
+                {
+                    id: 'bc-timber-sales-operating-areas',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
+                {
+                    id: 'tree-farm-license',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
                 }
             ]
-        },
-        {
-            id: 'fire-perimeters',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-out-of-control',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-holding',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-under-control',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-out',
-            isVisible: false,
-            alwaysShowLegend: true,
         },
         {
             id: 'legacy-fuel-treatments',
@@ -133,39 +217,6 @@ export function LayerDisplayConfig() {
             minScale: 6000000,
         },
         {
-            id: 'psta',
-            type: 'folder',
-            title: 'PSTA',
-            isVisible: false,
-            isExpanded: true,
-            items: [
-                {
-                    id: 'spotting-impact',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 150000,
-                },
-                {
-                    id: 'headfire-intensity',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 150000,
-                },
-                {
-                    id: 'fire-threat-rating',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 50000,
-                },
-                {
-                    id: 'fire-start-density-all',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 150000,
-                },
-            ]
-        },
-        {
             id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: false,
@@ -182,24 +233,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 40000,
-        },
-        {
-            id: 'fuel-type',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 50000,
-        },
-        {
-            id: '1-km-wui',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 2500000,
-        },
-        {
-            id: 'wui-risk-class',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 2500000,
         },
         {
             id: 'mountain-resorts-branch',

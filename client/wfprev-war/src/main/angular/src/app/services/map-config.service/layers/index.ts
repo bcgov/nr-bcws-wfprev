@@ -1,23 +1,15 @@
-import { OutOfControlWildfiresLayerConfig } from "./wildfires/out-of-control-wildfires.config";
-import { FirePerimetersLayerConfig } from "./fire-perimeters.config";
-import { BeingHeldWildfiresLayerConfig } from "./wildfires/being-held-wildfires.config";
-import { UnderControlWildfiresLayerConfig } from "./wildfires/under-control-wildfires.config";
-import { OutWildfiresLayerConfig } from "./wildfires/out-wildfires.config";
 import { MapServices } from "..";
 import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config";
 import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
-import { PSTAConfig } from "./psta.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
-import { FuelTypeLayerConfig } from "./fuel-type.config";
-import { OneKMWUILayerConfig } from "./1-km-wui.config";
-import { WuiRiskClassLayerConfig } from "./wui-risk-class.config";
 import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
+import { BcWildfireLayersConfig } from "./bc-wildfire-layers.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -43,22 +35,14 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
   return [
     AdministrativeBoundariesLayerConfig(ls, authHeader),
     NaturalFeaturesLayerConfig(ls),
+    BcWildfireLayersConfig(ls, authHeader),
     LicensesAndPermitsLayerConfig(ls),
-    FirePerimetersLayerConfig(ls, authHeader),
-    OutOfControlWildfiresLayerConfig(ls),
-    BeingHeldWildfiresLayerConfig(ls),
-    UnderControlWildfiresLayerConfig(ls),
-    OutWildfiresLayerConfig(ls),
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls),
     BCParksAndProtectedAreasLayerConfig(ls),
-    PSTAConfig(ls),
     ConservancyAreaLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
-    FuelTypeLayerConfig(ls),
-    OneKMWUILayerConfig(ls),
-    WuiRiskClassLayerConfig(ls),
     MountainResortsBranchLayerConfig(ls)
   ];
 
