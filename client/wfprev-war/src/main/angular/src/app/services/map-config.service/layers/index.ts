@@ -6,7 +6,6 @@ import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
-import { OneKMWUILayerConfig } from "./1-km-wui.config";
 import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
@@ -44,7 +43,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     ConservancyAreaLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
-    OneKMWUILayerConfig(ls),
     MountainResortsBranchLayerConfig(ls)
   ];
 
