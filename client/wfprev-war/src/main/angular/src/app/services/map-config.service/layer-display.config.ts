@@ -173,6 +173,12 @@ export function LayerDisplayConfig() {
             isExpanded: true,
             items: [
                 {
+                    id: 'range-tenure-polygons',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 10000000,
+                },
+                {
                     id: 'forest-tenure-managed-licence',
                     isVisible: false,
                     alwaysShowLegend: false,
