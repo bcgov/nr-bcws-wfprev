@@ -24,6 +24,7 @@ export interface LayerSettings {
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
   openmaps: string;
+  wildfiremaps: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
   const ls: LayerSettings = {
@@ -31,6 +32,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     wfnewsApiBaseUrl: mapServices['wfnewsApiBaseUrl'],
     wfnewsApiKey: mapServices['wfnewsApiKey'],
     openmaps: mapServices['openmaps'],
+    wildfiremaps: mapServices['wildfiremaps'],
   };
 
   const authHeader: Record<string, string> = {};

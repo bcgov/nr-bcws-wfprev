@@ -29,6 +29,11 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
+                    id: 'bc-wildfire-zones',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
                     id: 'regional-districts',
                     isVisible: false,
                     alwaysShowLegend: false,
