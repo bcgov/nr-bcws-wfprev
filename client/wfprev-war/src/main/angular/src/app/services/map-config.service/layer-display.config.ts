@@ -152,6 +152,12 @@ export function LayerDisplayConfig() {
                     minScale: 2500000,
                 },
                 {
+                    id: '1-km-wui',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
+                },
+                {
                     id: 'human-interface-buffer',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -209,12 +215,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 40000,
-        },
-        {
-            id: '1-km-wui',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 2500000,
         },
         {
             id: 'mountain-resorts-branch',
