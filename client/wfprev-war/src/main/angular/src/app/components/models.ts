@@ -364,6 +364,7 @@ export interface LayerSettings {
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
   openmaps: string;
+  wildfiremaps: string;
 }
 
 export type ReportType = 'PROJECT_CSV' | 'PROJECT_XLSX' | 'RESULTS_CSV' | 'RESULTS_XLSX' | 'RESULTS_SPATIAL';

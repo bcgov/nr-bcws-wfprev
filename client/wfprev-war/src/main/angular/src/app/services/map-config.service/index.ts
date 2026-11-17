@@ -32,7 +32,7 @@ export class MapConfigService {
   private async services(): Promise<{ services: MapServices; token: string }> {
     const cfg = await this.config();
     const token = await firstValueFrom(this.tokenService.authTokenEmitter);
-    return { services: { ...cfg.mapServices, openmaps: cfg.rest['openmaps'] }, token };
+    return { services: { ...cfg.mapServices, openmaps: cfg.rest['openmaps'], wildfiremaps: cfg.rest['wildfiremaps'] }, token };
   }
 
   // The app loads its config as it starts (app-initializer), so the map needn't fetch it again before it's built

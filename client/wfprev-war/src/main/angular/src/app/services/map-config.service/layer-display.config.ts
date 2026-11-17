@@ -29,6 +29,11 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
+                    id: 'bc-wildfire-zones',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
                     id: 'regional-districts',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -66,6 +71,21 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 140000,
+                }
+            ]
+        },
+        {
+            id: 'licenses-and-permits',
+            type: 'folder',
+            title: 'Licenses and Permits',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'forest-tenure-managed-licence',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 100000,
                 }
             ]
         },
@@ -156,12 +176,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 250000,
-        },
-        {
-            id: 'managed-licence-woodlot',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 100000,
         },
         {
             id: 'parcel-fabric',

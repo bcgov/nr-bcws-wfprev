@@ -10,7 +10,7 @@ import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-ar
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { PSTAConfig } from "./psta.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
-import { ManagedLicenceWoodlotLayerConfig } from "./managed-licence-woodlot.config";
+import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
 import { FuelTypeLayerConfig } from "./fuel-type.config";
 import { OneKMWUILayerConfig } from "./1-km-wui.config";
@@ -24,6 +24,7 @@ export interface LayerSettings {
   wfnewsApiBaseUrl: string;
   wfnewsApiKey: string;
   openmaps: string;
+  wildfiremaps: string;
 }
 export function LayerConfig(mapServices: MapServices, token?: string) {
   const ls: LayerSettings = {
@@ -31,6 +32,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     wfnewsApiBaseUrl: mapServices['wfnewsApiBaseUrl'],
     wfnewsApiKey: mapServices['wfnewsApiKey'],
     openmaps: mapServices['openmaps'],
+    wildfiremaps: mapServices['wildfiremaps'],
   };
 
   const authHeader: Record<string, string> = {};
@@ -41,6 +43,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
   return [
     AdministrativeBoundariesLayerConfig(ls, authHeader),
     NaturalFeaturesLayerConfig(ls),
+    LicensesAndPermitsLayerConfig(ls),
     FirePerimetersLayerConfig(ls, authHeader),
     OutOfControlWildfiresLayerConfig(ls),
     BeingHeldWildfiresLayerConfig(ls),
@@ -52,7 +55,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     PSTAConfig(ls),
     ConservancyAreaLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
-    ManagedLicenceWoodlotLayerConfig(ls),
     ParcelFabricLayerConfig(ls),
     FuelTypeLayerConfig(ls),
     OneKMWUILayerConfig(ls),
