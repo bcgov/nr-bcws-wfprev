@@ -177,6 +177,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 100000,
+                },
+                {
+                    id: 'bc-timber-sales-operating-areas',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
                 }
             ]
         },
