@@ -75,6 +75,46 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'bc-wildfire-layers',
+            type: 'folder',
+            title: 'BC Wildfire Layers',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'fire-perimeters',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-out-of-control',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-holding',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-under-control',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'active-wildfires-out',
+                    isVisible: false,
+                    alwaysShowLegend: true,
+                },
+                {
+                    id: 'fuel-type',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 50000,
+                },
+            ]
+        },
+        {
             id: 'licenses-and-permits',
             type: 'folder',
             title: 'Licenses and Permits',
@@ -88,31 +128,6 @@ export function LayerDisplayConfig() {
                     minScale: 100000,
                 }
             ]
-        },
-        {
-            id: 'fire-perimeters',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-out-of-control',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-holding',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-under-control',
-            isVisible: false,
-            alwaysShowLegend: true,
-        },
-        {
-            id: 'active-wildfires-out',
-            isVisible: false,
-            alwaysShowLegend: true,
         },
         {
             id: 'legacy-fuel-treatments',
@@ -182,12 +197,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 40000,
-        },
-        {
-            id: 'fuel-type',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 50000,
         },
         {
             id: '1-km-wui',
