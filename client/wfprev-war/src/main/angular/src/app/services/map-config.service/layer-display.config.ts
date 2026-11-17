@@ -189,6 +189,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 2500000,
+                },
+                {
+                    id: 'tree-farm-license',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2500000,
                 }
             ]
         },
