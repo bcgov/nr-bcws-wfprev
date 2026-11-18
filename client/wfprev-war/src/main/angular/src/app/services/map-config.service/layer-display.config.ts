@@ -183,6 +183,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 40000,
+                },
+                {
+                    id: 'conservancy-area',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 6000000,
                 }
             ]
         },
@@ -233,12 +239,6 @@ export function LayerDisplayConfig() {
         },
         {
             id: 'bc-parks-and-protected-areas',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 6000000,
-        },
-        {
-            id: 'conservancy-area',
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 6000000,
