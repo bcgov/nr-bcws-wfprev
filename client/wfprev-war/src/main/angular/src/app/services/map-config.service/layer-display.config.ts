@@ -243,6 +243,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 250000,
+                },
+                {
+                    id: 'bc-parks-and-protected-areas',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 6000000,
                 }
             ]
         },
@@ -257,12 +263,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 200000,
-        },
-        {
-            id: 'bc-parks-and-protected-areas',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 6000000,
         },
         {
             id: 'mountain-resorts-branch',
