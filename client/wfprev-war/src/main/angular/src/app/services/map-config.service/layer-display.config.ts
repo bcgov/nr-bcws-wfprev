@@ -308,6 +308,14 @@ export function LayerDisplayConfig() {
                     minScale: 2000000,
                 }
             ]
+        },
+        {
+            id: 'fuel-type',
+            type: 'folder',
+            title: 'Fuel Type',
+            isVisible: false,
+            isExpanded: true,
+            items: []
         }
     ];
 }
