@@ -231,7 +231,14 @@ export function LayerDisplayConfig() {
             title: 'Parks and Recreation Trails',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'bc-controlled-recreation-areas',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 1000000,
+                }
+            ]
         },
         {
             id: 'legacy-fuel-treatments',

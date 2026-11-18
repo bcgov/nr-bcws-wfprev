@@ -1,0 +1,17 @@
+import { LayerSettings } from "src/app/components/models";
+
+export function BcControlledRecreationAreasLayerConfig(ls: LayerSettings) {
+  return {
+    serviceUrl: `${ls.openmaps}/geo/pub/REG_LEGAL_AND_ADMIN_BOUNDARIES.REC_TENURE_ALPINE_SKI_AREAS_SP/ows`,
+    id: "bc-controlled-recreation-areas",
+    title: "BC Controlled Recreation Areas",
+    visible: true,
+    type: "wms",
+    isQueryable: true,
+    version: "1.1.1",
+    transparent: true,
+    layerName: "pub:REG_LEGAL_AND_ADMIN_BOUNDARIES.REC_TENURE_ALPINE_SKI_AREAS_SP",
+    geometryAttribute: "SHAPE",
+    minScale: 1000000
+  }
+}
