@@ -177,6 +177,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 40000,
+                },
+                {
+                    id: 'parcel-fabric',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 40000,
                 }
             ]
         },
@@ -242,12 +248,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 250000,
-        },
-        {
-            id: 'parcel-fabric',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 40000,
         },
         {
             id: 'mountain-resorts-branch',

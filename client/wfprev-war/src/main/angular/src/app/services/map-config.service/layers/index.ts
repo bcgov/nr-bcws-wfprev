@@ -5,7 +5,6 @@ import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-ar
 import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
 import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
-import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
 import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
@@ -44,7 +43,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BCParksAndProtectedAreasLayerConfig(ls),
     ConservancyAreaLayerConfig(ls),
     RecreationPolygonsLayerConfig(ls),
-    ParcelFabricLayerConfig(ls),
     MountainResortsBranchLayerConfig(ls)
   ];
 
