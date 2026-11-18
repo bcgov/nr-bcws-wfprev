@@ -166,6 +166,14 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'fuel-treatments',
+            type: 'folder',
+            title: 'Fuel Treatments',
+            isVisible: false,
+            isExpanded: true,
+            items: []
+        },
+        {
             id: 'land-ownership-and-status',
             type: 'folder',
             title: 'Land Ownership and Status',
