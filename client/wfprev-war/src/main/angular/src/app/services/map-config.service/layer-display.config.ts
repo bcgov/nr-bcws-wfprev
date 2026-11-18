@@ -237,6 +237,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 1000000,
+                },
+                {
+                    id: 'recreation-polygons',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 250000,
                 }
             ]
         },
@@ -257,12 +263,6 @@ export function LayerDisplayConfig() {
             isVisible: false,
             alwaysShowLegend: false,
             minScale: 6000000,
-        },
-        {
-            id: 'recreation-polygons',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 250000,
         },
         {
             id: 'mountain-resorts-branch',

@@ -2,7 +2,6 @@ import { MapServices } from "..";
 import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config";
 import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
-import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
@@ -42,7 +41,6 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls),
     BCParksAndProtectedAreasLayerConfig(ls),
-    RecreationPolygonsLayerConfig(ls),
     MountainResortsBranchLayerConfig(ls)
   ];
 
