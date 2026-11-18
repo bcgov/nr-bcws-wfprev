@@ -274,6 +274,14 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'physical-infrastructure',
+            type: 'folder',
+            title: 'Physical Infrastructure',
+            isVisible: false,
+            isExpanded: true,
+            items: []
+        },
+        {
             id: 'legacy-fuel-treatments',
             isVisible: false,
             alwaysShowLegend: false,

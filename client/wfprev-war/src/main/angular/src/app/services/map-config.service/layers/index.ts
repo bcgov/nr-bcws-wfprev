@@ -8,6 +8,7 @@ import { BcWildfireLayersConfig } from "./bc-wildfire-layers.config";
 import { LandOwnershipAndStatusLayerConfig } from "./land-ownership-and-status.config";
 import { ParksAndRecreationTrailsLayerConfig } from "./parks-and-recreation-trails.config";
 import { SocioEconomicLayerConfig } from "./socio-economic.config";
+import { PhysicalInfrastructureLayerConfig } from "./physical-infrastructure.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -38,6 +39,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     LicensesAndPermitsLayerConfig(ls),
     ParksAndRecreationTrailsLayerConfig(ls),
     SocioEconomicLayerConfig(ls),
+    PhysicalInfrastructureLayerConfig(ls),
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls)
   ];
