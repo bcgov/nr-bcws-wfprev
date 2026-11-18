@@ -1,9 +1,12 @@
 import { LayerSettings } from "src/app/components/models";
+import { FuelTypeLayerConfig as FuelTypeItemLayerConfig } from "./fuel-type/fuel-type.config";
 
 export function FuelTypeLayerConfig(ls: LayerSettings) {
-  const items: any[] = [];
+  const items = [
+    FuelTypeItemLayerConfig(ls),
+  ];
   return {
-    id: "fuel-type",
+    id: "fuel-types",
     type: "folder",
     title: "Fuel Type",
     isVisible: false,

@@ -107,12 +107,6 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
-                    id: 'fuel-type',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 50000,
-                },
-                {
                     id: 'psta',
                     type: 'folder',
                     title: 'PSTA',
@@ -310,12 +304,19 @@ export function LayerDisplayConfig() {
             ]
         },
         {
-            id: 'fuel-type',
+            id: 'fuel-types',
             type: 'folder',
             title: 'Fuel Type',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'fuel-type',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 50000,
+                }
+            ]
         }
     ];
 }
