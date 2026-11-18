@@ -279,7 +279,14 @@ export function LayerDisplayConfig() {
             title: 'Physical Infrastructure',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'transmission-lines',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2000000,
+                }
+            ]
         },
         {
             id: 'legacy-fuel-treatments',
