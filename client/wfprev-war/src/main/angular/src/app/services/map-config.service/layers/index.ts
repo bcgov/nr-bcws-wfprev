@@ -10,6 +10,7 @@ import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.conf
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
 import { BcWildfireLayersConfig } from "./bc-wildfire-layers.config";
+import { LandOwnershipAndStatusLayerConfig } from "./land-ownership-and-status.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -36,6 +37,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     AdministrativeBoundariesLayerConfig(ls, authHeader),
     NaturalFeaturesLayerConfig(ls),
     BcWildfireLayersConfig(ls, authHeader),
+    LandOwnershipAndStatusLayerConfig(ls),
     LicensesAndPermitsLayerConfig(ls),
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls),

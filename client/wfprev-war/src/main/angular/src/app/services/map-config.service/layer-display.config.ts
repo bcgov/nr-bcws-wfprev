@@ -166,6 +166,14 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'land-ownership-and-status',
+            type: 'folder',
+            title: 'Land Ownership and Status',
+            isVisible: false,
+            isExpanded: true,
+            items: []
+        },
+        {
             id: 'licenses-and-permits',
             type: 'folder',
             title: 'Licenses and Permits',
