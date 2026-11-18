@@ -9,6 +9,7 @@ import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
 import { BcWildfireLayersConfig } from "./bc-wildfire-layers.config";
 import { LandOwnershipAndStatusLayerConfig } from "./land-ownership-and-status.config";
+import { ParksAndRecreationTrailsLayerConfig } from "./parks-and-recreation-trails.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -37,6 +38,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BcWildfireLayersConfig(ls, authHeader),
     LandOwnershipAndStatusLayerConfig(ls),
     LicensesAndPermitsLayerConfig(ls),
+    ParksAndRecreationTrailsLayerConfig(ls),
     LegacyFuelTreatmentsLayerConfig(ls),
     ResultsActivityTreatmentLayerConfig(ls),
     BCParksAndProtectedAreasLayerConfig(ls),

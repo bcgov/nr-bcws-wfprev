@@ -226,6 +226,14 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'parks-and-recreation-trails',
+            type: 'folder',
+            title: 'Parks and Recreation Trails',
+            isVisible: false,
+            isExpanded: true,
+            items: []
+        },
+        {
             id: 'legacy-fuel-treatments',
             isVisible: false,
             alwaysShowLegend: false,
