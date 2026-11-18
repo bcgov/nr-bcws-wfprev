@@ -1,5 +1,4 @@
 import { MapServices } from "..";
-import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
@@ -40,8 +39,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     LicensesAndPermitsLayerConfig(ls),
     ParksAndRecreationTrailsLayerConfig(ls),
     SocioEconomicLayerConfig(ls),
-    PhysicalInfrastructureLayerConfig(ls),
-    ResultsActivityTreatmentLayerConfig(ls)
+    PhysicalInfrastructureLayerConfig(ls)
   ];
 
 }

@@ -177,6 +177,12 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 20000000,
+                },
+                {
+                    id: 'risk-reduction-projects-activities',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 200000,
                 }
             ]
         },
@@ -302,12 +308,6 @@ export function LayerDisplayConfig() {
                     minScale: 2000000,
                 }
             ]
-        },
-        {
-            id: 'risk-reduction-projects-activities',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 200000,
         }
     ];
 }
