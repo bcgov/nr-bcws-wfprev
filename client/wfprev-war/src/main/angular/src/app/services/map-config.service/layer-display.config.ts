@@ -259,6 +259,14 @@ export function LayerDisplayConfig() {
             ]
         },
         {
+            id: 'socio-economic',
+            type: 'folder',
+            title: 'Socio-Economic',
+            isVisible: false,
+            isExpanded: true,
+            items: []
+        },
+        {
             id: 'legacy-fuel-treatments',
             isVisible: false,
             alwaysShowLegend: false,
