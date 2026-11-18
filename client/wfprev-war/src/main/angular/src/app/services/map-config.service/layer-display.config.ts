@@ -171,7 +171,14 @@ export function LayerDisplayConfig() {
             title: 'Land Ownership and Status',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'parcel-fabric-ownership',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 40000,
+                }
+            ]
         },
         {
             id: 'licenses-and-permits',
