@@ -9,6 +9,7 @@ import { ParksAndRecreationTrailsLayerConfig } from "./parks-and-recreation-trai
 import { SocioEconomicLayerConfig } from "./socio-economic.config";
 import { PhysicalInfrastructureLayerConfig } from "./physical-infrastructure.config";
 import { FuelTypeLayerConfig } from "./fuel-type.config";
+import { ThreatAnalysisLayerConfig } from "./threat-analysis.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -41,7 +42,8 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     ParksAndRecreationTrailsLayerConfig(ls),
     SocioEconomicLayerConfig(ls),
     PhysicalInfrastructureLayerConfig(ls),
-    FuelTypeLayerConfig(ls)
+    FuelTypeLayerConfig(ls),
+    ThreatAnalysisLayerConfig(ls)
   ];
 
 }

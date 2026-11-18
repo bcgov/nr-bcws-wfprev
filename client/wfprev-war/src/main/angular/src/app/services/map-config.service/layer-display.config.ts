@@ -317,6 +317,14 @@ export function LayerDisplayConfig() {
                     minScale: 50000,
                 }
             ]
+        },
+        {
+            id: 'threat-analysis',
+            type: 'folder',
+            title: 'Threat Analysis',
+            isVisible: false,
+            isExpanded: true,
+            items: []
         }
     ];
 }
