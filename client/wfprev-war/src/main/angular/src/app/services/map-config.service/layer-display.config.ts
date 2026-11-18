@@ -171,7 +171,14 @@ export function LayerDisplayConfig() {
             title: 'Fuel Treatments',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'legacy-fuel-treatments',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 20000000,
+                }
+            ]
         },
         {
             id: 'land-ownership-and-status',
@@ -295,12 +302,6 @@ export function LayerDisplayConfig() {
                     minScale: 2000000,
                 }
             ]
-        },
-        {
-            id: 'legacy-fuel-treatments',
-            isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 20000000,
         },
         {
             id: 'risk-reduction-projects-activities',
