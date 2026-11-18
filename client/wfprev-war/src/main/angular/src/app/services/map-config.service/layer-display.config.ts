@@ -107,39 +107,6 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
-                    id: 'psta',
-                    type: 'folder',
-                    title: 'PSTA',
-                    isVisible: false,
-                    isExpanded: true,
-                    items: [
-                        {
-                            id: 'spotting-impact',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 150000,
-                        },
-                        {
-                            id: 'headfire-intensity',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 150000,
-                        },
-                        {
-                            id: 'fire-threat-rating',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 50000,
-                        },
-                        {
-                            id: 'fire-start-density-all',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 150000,
-                        },
-                    ]
-                },
-                {
                     id: 'wui-risk-class',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -324,7 +291,41 @@ export function LayerDisplayConfig() {
             title: 'Threat Analysis',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'psta',
+                    type: 'folder',
+                    title: 'PSTA',
+                    isVisible: false,
+                    isExpanded: true,
+                    items: [
+                        {
+                            id: 'spotting-impact',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                        {
+                            id: 'headfire-intensity',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                        {
+                            id: 'fire-threat-rating',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 50000,
+                        },
+                        {
+                            id: 'fire-start-density-all',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                    ]
+                }
+            ]
         }
     ];
 }

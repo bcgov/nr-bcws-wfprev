@@ -4,7 +4,6 @@ import { OutOfControlWildfiresLayerConfig } from "./bc-wildfire-layers/out-of-co
 import { BeingHeldWildfiresLayerConfig } from "./bc-wildfire-layers/being-held-wildfires.config";
 import { UnderControlWildfiresLayerConfig } from "./bc-wildfire-layers/under-control-wildfires.config";
 import { OutWildfiresLayerConfig } from "./bc-wildfire-layers/out-wildfires.config";
-import { PSTAConfig } from "./bc-wildfire-layers/psta.config";
 import { WuiRiskClassLayerConfig } from "./bc-wildfire-layers/wui-risk-class.config";
 import { OneKMWUILayerConfig } from "./bc-wildfire-layers/1-km-wui.config";
 import { HumanInterfaceBufferLayerConfig } from "./bc-wildfire-layers/human-interface-buffer.config";
@@ -16,7 +15,6 @@ export function BcWildfireLayersConfig(ls: LayerSettings, authHeader?: Record<st
     BeingHeldWildfiresLayerConfig(ls),
     UnderControlWildfiresLayerConfig(ls),
     OutWildfiresLayerConfig(ls),
-    PSTAConfig(ls),
     WuiRiskClassLayerConfig(ls),
     OneKMWUILayerConfig(ls),
     HumanInterfaceBufferLayerConfig(ls),
