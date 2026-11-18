@@ -264,7 +264,14 @@ export function LayerDisplayConfig() {
             title: 'Socio-Economic',
             isVisible: false,
             isExpanded: true,
-            items: []
+            items: [
+                {
+                    id: 'timber-processing-facilities',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 10000000,
+                }
+            ]
         },
         {
             id: 'legacy-fuel-treatments',
