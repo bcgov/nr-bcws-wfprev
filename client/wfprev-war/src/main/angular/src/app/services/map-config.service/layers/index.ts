@@ -1,15 +1,15 @@
 import { MapServices } from "..";
-import { LegacyFuelTreatmentsLayerConfig } from "./legacy-fuel-treatments.config";
-import { ResultsActivityTreatmentLayerConfig } from "./risk-reduction-projects-activities.config";
-import { BCParksAndProtectedAreasLayerConfig } from "./bc-parks-and-protected-areas.config";
-import { ConservancyAreaLayerConfig } from "./conservancy-area.config";
-import { RecreationPolygonsLayerConfig } from "./recreation-polygons.config";
 import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
-import { ParcelFabricLayerConfig } from "./parcel-fabric.config";
-import { MountainResortsBranchLayerConfig } from "./mountain-resorts-branch.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
 import { BcWildfireLayersConfig } from "./bc-wildfire-layers.config";
+import { FuelTreatmentsLayerConfig } from "./fuel-treatments.config";
+import { LandOwnershipAndStatusLayerConfig } from "./land-ownership-and-status.config";
+import { ParksAndRecreationTrailsLayerConfig } from "./parks-and-recreation-trails.config";
+import { SocioEconomicLayerConfig } from "./socio-economic.config";
+import { PhysicalInfrastructureLayerConfig } from "./physical-infrastructure.config";
+import { FuelTypeLayerConfig } from "./fuel-type.config";
+import { ThreatAnalysisLayerConfig } from "./threat-analysis.config";
 
 export interface LayerSettings {
   geoserverApiBaseUrl: string;
@@ -36,14 +36,14 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     AdministrativeBoundariesLayerConfig(ls, authHeader),
     NaturalFeaturesLayerConfig(ls),
     BcWildfireLayersConfig(ls, authHeader),
+    FuelTreatmentsLayerConfig(ls),
+    LandOwnershipAndStatusLayerConfig(ls),
     LicensesAndPermitsLayerConfig(ls),
-    LegacyFuelTreatmentsLayerConfig(ls),
-    ResultsActivityTreatmentLayerConfig(ls),
-    BCParksAndProtectedAreasLayerConfig(ls),
-    ConservancyAreaLayerConfig(ls),
-    RecreationPolygonsLayerConfig(ls),
-    ParcelFabricLayerConfig(ls),
-    MountainResortsBranchLayerConfig(ls)
+    ParksAndRecreationTrailsLayerConfig(ls),
+    SocioEconomicLayerConfig(ls),
+    PhysicalInfrastructureLayerConfig(ls),
+    FuelTypeLayerConfig(ls),
+    ThreatAnalysisLayerConfig(ls)
   ];
 
 }
