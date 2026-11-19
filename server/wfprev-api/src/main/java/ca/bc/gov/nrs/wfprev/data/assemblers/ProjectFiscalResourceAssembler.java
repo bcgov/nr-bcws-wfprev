@@ -324,11 +324,6 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getBcwsHQApproverUserUserid(), existingEntity.getBcwsHQApproverUserUserid()));
         existingEntity.setBcwsHQApprovedTimestamp(projectFiscalModel.getBcwsHQApprovedTimestamp());
         existingEntity.setBcwsHQApprovedComment(projectFiscalModel.getBcwsHQApprovedComment());
-        if (Boolean.FALSE.equals(existingEntity.getIsBcwsHQApprovedInd())) {
-            existingEntity.setBcwsHQApproverName(null);
-            existingEntity.setBcwsHQApprovedTimestamp(null);
-            existingEntity.setBcwsHQApprovedComment(null);
-        }
 
         return existingEntity;
     }
