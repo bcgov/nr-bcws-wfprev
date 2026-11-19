@@ -12,7 +12,10 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ProjectFiscalResourceAssemblerTest {
@@ -136,5 +139,47 @@ class ProjectFiscalResourceAssemblerTest {
 
         assertEquals("UPDATED_CODE", updatedEntity.getActivityCategoryCode());
         assertEquals(BigDecimal.valueOf(2022), updatedEntity.getFiscalYear());
+    }
+
+    @Test
+    void testUpdateEntity_ClearsBcwsHQApprovalFieldsWhenUnapproved() {
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        existingEntity.setIsBcwsHQApprovedInd(true);
+        existingEntity.setBcwsHQApproverName("HQ Approver");
+        existingEntity.setBcwsHQApprovedTimestamp(new Date());
+        existingEntity.setBcwsHQApprovedComment("Approved by HQ");
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setIsBcwsHQApprovedInd(false);
+        model.setBcwsHQApproverName(null);
+        model.setBcwsHQApprovedTimestamp(null);
+        model.setBcwsHQApprovedComment(null);
+
+        ProjectFiscalEntity updatedEntity = assembler.updateEntity(model, existingEntity);
+
+        assertFalse(updatedEntity.getIsBcwsHQApprovedInd());
+        assertNull(updatedEntity.getBcwsHQApproverName());
+        assertNull(updatedEntity.getBcwsHQApprovedTimestamp());
+        assertNull(updatedEntity.getBcwsHQApprovedComment());
+    }
+
+    @Test
+    void testUpdateEntity_PreservesBcwsHQApprovalFieldsWhenApproved() {
+        Date approvalDate = new Date();
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        existingEntity.setIsBcwsHQApprovedInd(false);
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setIsBcwsHQApprovedInd(true);
+        model.setBcwsHQApproverName("HQ Approver");
+        model.setBcwsHQApprovedTimestamp(approvalDate);
+        model.setBcwsHQApprovedComment("Approved by HQ");
+
+        ProjectFiscalEntity updatedEntity = assembler.updateEntity(model, existingEntity);
+
+        assertTrue(updatedEntity.getIsBcwsHQApprovedInd());
+        assertEquals("HQ Approver", updatedEntity.getBcwsHQApproverName());
+        assertEquals(approvalDate, updatedEntity.getBcwsHQApprovedTimestamp());
+        assertEquals("Approved by HQ", updatedEntity.getBcwsHQApprovedComment());
     }
 }

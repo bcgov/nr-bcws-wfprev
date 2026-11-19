@@ -553,7 +553,10 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       endorseApprUpdateUserid: isDraft ? undefined : original.endorseApprUpdateUserid,
       endorseApprUpdatedTimestamp: isDraft ? undefined : original.endorseApprUpdateUpdatedTimestamp,
       isApprovedInd: isDraft ? false : original.isApprovedInd,
-      isBcwsHQApprovedInd: isDraft ? false : original.isApprovedInd,
+      isBcwsHQApprovedInd: isDraft ? false : original.isBcwsHQApprovedInd,
+      bcwsHQApproverName: isDraft ? undefined : original.bcwsHQApproverName,
+      bcwsHQApprovedTimestamp: isDraft ? undefined : original.bcwsHQApprovedTimestamp,
+      bcwsHQApprovedComment: isDraft ? undefined : original.bcwsHQApprovedComment,
       ...this.buildSubmissionFields(),
     };
   }
