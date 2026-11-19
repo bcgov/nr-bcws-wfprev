@@ -291,10 +291,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         existingEntity.setIsApprovedInd(
                 nonNullOrDefault(projectFiscalModel.getIsApprovedInd(), existingEntity.getIsApprovedInd()));
         existingEntity.setApproverName(projectFiscalModel.getApproverName());
-        existingEntity.setApproverUserGuid(
-                nonNullOrDefault(projectFiscalModel.getApproverUserGuid(), existingEntity.getApproverUserGuid()));
-        existingEntity.setApproverUserUserid(
-                nonNullOrDefault(projectFiscalModel.getApproverUserUserid(), existingEntity.getApproverUserUserid()));
+        existingEntity.setApproverUserGuid(projectFiscalModel.getApproverUserGuid());
+        existingEntity.setApproverUserUserid(projectFiscalModel.getApproverUserUserid());
         existingEntity.setApprovedTimestamp(projectFiscalModel.getApprovedTimestamp());
         existingEntity.setApprovedComment(projectFiscalModel.getApprovedComment());
         existingEntity.setAccomplishmentsComment(

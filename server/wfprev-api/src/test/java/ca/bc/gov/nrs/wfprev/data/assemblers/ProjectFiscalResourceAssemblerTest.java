@@ -192,4 +192,56 @@ class ProjectFiscalResourceAssemblerTest {
         assertEquals(approvalDate, updatedEntity.getBcwsHQApprovedTimestamp());
         assertEquals("Approved by HQ", updatedEntity.getBcwsHQApprovedComment());
     }
+
+    @Test
+    void testUpdateEntity_ClearsApproverFieldsWhenUnapproved() {
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        existingEntity.setIsApprovedInd(true);
+        existingEntity.setApproverName("Approver Name");
+        existingEntity.setApproverUserGuid("appr-guid-123");
+        existingEntity.setApproverUserUserid("appr-idir-123");
+        existingEntity.setApprovedTimestamp(new Date());
+        existingEntity.setApprovedComment("Approved Comment");
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setIsApprovedInd(false);
+        model.setApproverName(null);
+        model.setApproverUserGuid(null);
+        model.setApproverUserUserid(null);
+        model.setApprovedTimestamp(null);
+        model.setApprovedComment(null);
+
+        ProjectFiscalEntity updatedEntity = assembler.updateEntity(model, existingEntity);
+
+        assertFalse(updatedEntity.getIsApprovedInd());
+        assertNull(updatedEntity.getApproverName());
+        assertNull(updatedEntity.getApproverUserGuid());
+        assertNull(updatedEntity.getApproverUserUserid());
+        assertNull(updatedEntity.getApprovedTimestamp());
+        assertNull(updatedEntity.getApprovedComment());
+    }
+
+    @Test
+    void testUpdateEntity_PreservesApproverFieldsWhenApproved() {
+        Date approvalDate = new Date();
+        ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
+        existingEntity.setIsApprovedInd(false);
+
+        ProjectFiscalModel model = new ProjectFiscalModel();
+        model.setIsApprovedInd(true);
+        model.setApproverName("Approver Name");
+        model.setApproverUserGuid("appr-guid-456");
+        model.setApproverUserUserid("appr-idir-456");
+        model.setApprovedTimestamp(approvalDate);
+        model.setApprovedComment("Approved Comment");
+
+        ProjectFiscalEntity updatedEntity = assembler.updateEntity(model, existingEntity);
+
+        assertTrue(updatedEntity.getIsApprovedInd());
+        assertEquals("Approver Name", updatedEntity.getApproverName());
+        assertEquals("appr-guid-456", updatedEntity.getApproverUserGuid());
+        assertEquals("appr-idir-456", updatedEntity.getApproverUserUserid());
+        assertEquals(approvalDate, updatedEntity.getApprovedTimestamp());
+        assertEquals("Approved Comment", updatedEntity.getApprovedComment());
+    }
 }
