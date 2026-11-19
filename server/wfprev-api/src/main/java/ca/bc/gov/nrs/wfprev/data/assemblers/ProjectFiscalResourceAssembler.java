@@ -226,10 +226,7 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         ));
         existingEntity.setProposalTypeCode(
                 nonNullOrDefault(projectFiscalModel.getProposalTypeCode(), existingEntity.getProposalTypeCode()));
-        existingEntity.setEndorsementCode(nonNullOrDefault(
-                toEndorsementCodeEntity(projectFiscalModel.getEndorsementCode()),
-                existingEntity.getEndorsementCode()
-        ));
+        existingEntity.setEndorsementCode(toEndorsementCodeEntity(projectFiscalModel.getEndorsementCode()));
         existingEntity.setProjectFiscalName(
                 nonNullOrDefault(projectFiscalModel.getProjectFiscalName(), existingEntity.getProjectFiscalName()));
         existingEntity.setProjectFiscalDescription(
@@ -281,12 +278,9 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
                 nonNullOrDefault(projectFiscalModel.getSubmissionTimestamp(), existingEntity.getSubmissionTimestamp()));
         existingEntity.setEndorsementEvalTimestamp(projectFiscalModel.getEndorsementEvalTimestamp());
         existingEntity.setEndorserName(projectFiscalModel.getEndorserName());
-        existingEntity.setEndorserUserGuid(
-                nonNullOrDefault(projectFiscalModel.getEndorserUserGuid(), existingEntity.getEndorserUserGuid()));
-        existingEntity.setEndorserUserUserid(
-                nonNullOrDefault(projectFiscalModel.getEndorserUserUserid(), existingEntity.getEndorserUserUserid()));
-        existingEntity.setEndorsementTimestamp(
-                nonNullOrDefault(projectFiscalModel.getEndorsementTimestamp(), existingEntity.getEndorsementTimestamp()));
+        existingEntity.setEndorserUserGuid(projectFiscalModel.getEndorserUserGuid());
+        existingEntity.setEndorserUserUserid(projectFiscalModel.getEndorserUserUserid());
+        existingEntity.setEndorsementTimestamp(projectFiscalModel.getEndorsementTimestamp());
         existingEntity.setEndorsementComment(projectFiscalModel.getEndorsementComment());
         existingEntity.setIsApprovedInd(
                 nonNullOrDefault(projectFiscalModel.getIsApprovedInd(), existingEntity.getIsApprovedInd()));
