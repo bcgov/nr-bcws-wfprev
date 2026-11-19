@@ -107,45 +107,6 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: true,
                 },
                 {
-                    id: 'fuel-type',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 50000,
-                },
-                {
-                    id: 'psta',
-                    type: 'folder',
-                    title: 'PSTA',
-                    isVisible: false,
-                    isExpanded: true,
-                    items: [
-                        {
-                            id: 'spotting-impact',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 150000,
-                        },
-                        {
-                            id: 'headfire-intensity',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 150000,
-                        },
-                        {
-                            id: 'fire-threat-rating',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 50000,
-                        },
-                        {
-                            id: 'fire-start-density-all',
-                            isVisible: false,
-                            alwaysShowLegend: false,
-                            minScale: 150000,
-                        },
-                    ]
-                },
-                {
                     id: 'wui-risk-class',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -163,6 +124,27 @@ export function LayerDisplayConfig() {
                     alwaysShowLegend: false,
                     minScale: 2500000,
                 },
+            ]
+        },
+        {
+            id: 'fuel-treatments',
+            type: 'folder',
+            title: 'Fuel Treatments',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'legacy-fuel-treatments',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 20000000,
+                },
+                {
+                    id: 'risk-reduction-projects-activities',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 200000,
+                }
             ]
         },
         {
@@ -274,16 +256,76 @@ export function LayerDisplayConfig() {
             ]
         },
         {
-            id: 'legacy-fuel-treatments',
+            id: 'physical-infrastructure',
+            type: 'folder',
+            title: 'Physical Infrastructure',
             isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 20000000,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'transmission-lines',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 2000000,
+                }
+            ]
         },
         {
-            id: 'risk-reduction-projects-activities',
+            id: 'fuel-types',
+            type: 'folder',
+            title: 'Fuel Type',
             isVisible: false,
-            alwaysShowLegend: false,
-            minScale: 200000,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'fuel-type',
+                    isVisible: false,
+                    alwaysShowLegend: false,
+                    minScale: 50000,
+                }
+            ]
+        },
+        {
+            id: 'threat-analysis',
+            type: 'folder',
+            title: 'Threat Analysis',
+            isVisible: false,
+            isExpanded: true,
+            items: [
+                {
+                    id: 'psta',
+                    type: 'folder',
+                    title: 'PSTA',
+                    isVisible: false,
+                    isExpanded: true,
+                    items: [
+                        {
+                            id: 'spotting-impact',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                        {
+                            id: 'headfire-intensity',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                        {
+                            id: 'fire-threat-rating',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 50000,
+                        },
+                        {
+                            id: 'fire-start-density-all',
+                            isVisible: false,
+                            alwaysShowLegend: false,
+                            minScale: 150000,
+                        },
+                    ]
+                }
+            ]
         }
     ];
 }
