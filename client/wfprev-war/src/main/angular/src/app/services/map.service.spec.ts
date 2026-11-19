@@ -763,6 +763,23 @@ describe('MapService', () => {
       expect(url).not.toContain('%0A');
     });
 
+    it('uses legendStyleName over styleName in legend request when configured', async () => {
+      patchFn((window as any).SMK);
+
+      const proto = (window as any).SMK.TYPE.Layer.wms.leaflet.prototype;
+      proto.config.legendStyleName = '699';
+      proto.config.styleName = 'default';
+
+      await proto.initLegends();
+
+      expect((window as any).fetch).toHaveBeenCalled();
+      const [url] = (window as any).fetch.calls.mostRecent().args;
+      expect(url).toContain('STYLE=699');
+      expect(url).not.toContain('STYLE=default');
+      expect(url).not.toContain('SLD_BODY=');
+      expect(url).not.toContain('LEGEND_OPTIONS=');
+    });
+
     it('minifies inline sld on layers in WmsLeaflet.create', () => {
       const WmsLeaflet = (window as any).SMK.TYPE.Layer.wms.leaflet;
       const originalCreate = jasmine.createSpy('originalCreate');
