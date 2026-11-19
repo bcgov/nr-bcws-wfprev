@@ -146,12 +146,16 @@ class ProjectFiscalResourceAssemblerTest {
         ProjectFiscalEntity existingEntity = new ProjectFiscalEntity();
         existingEntity.setIsBcwsHQApprovedInd(true);
         existingEntity.setBcwsHQApproverName("HQ Approver");
+        existingEntity.setBcwsHQApproverUserGuid("guid-123");
+        existingEntity.setBcwsHQApproverUserUserid("idir-123");
         existingEntity.setBcwsHQApprovedTimestamp(new Date());
         existingEntity.setBcwsHQApprovedComment("Approved by HQ");
 
         ProjectFiscalModel model = new ProjectFiscalModel();
         model.setIsBcwsHQApprovedInd(false);
         model.setBcwsHQApproverName(null);
+        model.setBcwsHQApproverUserGuid(null);
+        model.setBcwsHQApproverUserUserid(null);
         model.setBcwsHQApprovedTimestamp(null);
         model.setBcwsHQApprovedComment(null);
 
@@ -159,6 +163,8 @@ class ProjectFiscalResourceAssemblerTest {
 
         assertFalse(updatedEntity.getIsBcwsHQApprovedInd());
         assertNull(updatedEntity.getBcwsHQApproverName());
+        assertNull(updatedEntity.getBcwsHQApproverUserGuid());
+        assertNull(updatedEntity.getBcwsHQApproverUserUserid());
         assertNull(updatedEntity.getBcwsHQApprovedTimestamp());
         assertNull(updatedEntity.getBcwsHQApprovedComment());
     }
@@ -172,6 +178,8 @@ class ProjectFiscalResourceAssemblerTest {
         ProjectFiscalModel model = new ProjectFiscalModel();
         model.setIsBcwsHQApprovedInd(true);
         model.setBcwsHQApproverName("HQ Approver");
+        model.setBcwsHQApproverUserGuid("guid-456");
+        model.setBcwsHQApproverUserUserid("idir-456");
         model.setBcwsHQApprovedTimestamp(approvalDate);
         model.setBcwsHQApprovedComment("Approved by HQ");
 
@@ -179,6 +187,8 @@ class ProjectFiscalResourceAssemblerTest {
 
         assertTrue(updatedEntity.getIsBcwsHQApprovedInd());
         assertEquals("HQ Approver", updatedEntity.getBcwsHQApproverName());
+        assertEquals("guid-456", updatedEntity.getBcwsHQApproverUserGuid());
+        assertEquals("idir-456", updatedEntity.getBcwsHQApproverUserUserid());
         assertEquals(approvalDate, updatedEntity.getBcwsHQApprovedTimestamp());
         assertEquals("Approved by HQ", updatedEntity.getBcwsHQApprovedComment());
     }

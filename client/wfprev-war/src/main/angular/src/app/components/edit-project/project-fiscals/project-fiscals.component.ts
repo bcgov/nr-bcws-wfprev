@@ -555,6 +555,8 @@ export class ProjectFiscalsComponent implements OnInit, CanComponentDeactivate {
       isApprovedInd: isDraft ? false : original.isApprovedInd,
       isBcwsHQApprovedInd: isDraft ? false : original.isBcwsHQApprovedInd,
       bcwsHQApproverName: isDraft ? undefined : original.bcwsHQApproverName,
+      bcwsHQApproverUserGuid: isDraft ? undefined : original.bcwsHQApproverUserGuid,
+      bcwsHQApproverUserUserid: isDraft ? undefined : original.bcwsHQApproverUserUserid,
       bcwsHQApprovedTimestamp: isDraft ? undefined : original.bcwsHQApprovedTimestamp,
       bcwsHQApprovedComment: isDraft ? undefined : original.bcwsHQApprovedComment,
       ...this.buildSubmissionFields(),

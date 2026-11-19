@@ -1054,6 +1054,8 @@ describe('ProjectFiscalsComponent', () => {
       isApprovedInd: true,
       isBcwsHQApprovedInd: true,
       bcwsHQApproverName: 'HQ Approver',
+      bcwsHQApproverUserGuid: 'guid-hq-1',
+      bcwsHQApproverUserUserid: 'idir-hq-1',
       bcwsHQApprovedTimestamp: '2025-08-03T09:00:00Z',
       bcwsHQApprovedComment: 'HQ Comment',
       businessAreaComment: 'Original BAC',
@@ -1084,6 +1086,8 @@ describe('ProjectFiscalsComponent', () => {
     expect(payload.isApprovedInd).toBeFalse();
     expect(payload.isBcwsHQApprovedInd).toBeFalse();
     expect(payload.bcwsHQApproverName).toBeUndefined();
+    expect(payload.bcwsHQApproverUserGuid).toBeUndefined();
+    expect(payload.bcwsHQApproverUserUserid).toBeUndefined();
     expect(payload.bcwsHQApprovedTimestamp).toBeUndefined();
     expect(payload.bcwsHQApprovedComment).toBeUndefined();
     expect(payload.submissionTimestamp).toBe('2025-08-08T19:34:56.000Z');
@@ -1110,6 +1114,8 @@ describe('ProjectFiscalsComponent', () => {
       isApprovedInd: true,
       isBcwsHQApprovedInd: true,
       bcwsHQApproverName: 'HQ Approver',
+      bcwsHQApproverUserGuid: 'guid-hq-1',
+      bcwsHQApproverUserUserid: 'idir-hq-1',
       bcwsHQApprovedTimestamp: '2025-08-03T09:00:00Z',
       bcwsHQApprovedComment: 'HQ Comment',
       businessAreaComment: 'Original BAC',
@@ -1140,6 +1146,8 @@ describe('ProjectFiscalsComponent', () => {
     expect(payload.isApprovedInd).toBeTrue();
     expect(payload.isBcwsHQApprovedInd).toBeTrue();
     expect(payload.bcwsHQApproverName).toBe('HQ Approver');
+    expect(payload.bcwsHQApproverUserGuid).toBe('guid-hq-1');
+    expect(payload.bcwsHQApproverUserUserid).toBe('idir-hq-1');
     expect(payload.bcwsHQApprovedTimestamp).toBe('2025-08-03T09:00:00Z');
     expect(payload.bcwsHQApprovedComment).toBe('HQ Comment');
     expect(payload.submissionTimestamp).toBe('2025-08-08T19:34:56.000Z');

@@ -318,10 +318,8 @@ public class ProjectFiscalResourceAssembler extends RepresentationModelAssembler
         existingEntity.setIsBcwsHQApprovedInd(
                 nonNullOrDefault(projectFiscalModel.getIsBcwsHQApprovedInd(), existingEntity.getIsBcwsHQApprovedInd()));
         existingEntity.setBcwsHQApproverName(projectFiscalModel.getBcwsHQApproverName());
-        existingEntity.setBcwsHQApproverUserGuid(
-                nonNullOrDefault(projectFiscalModel.getBcwsHQApproverUserGuid(), existingEntity.getBcwsHQApproverUserGuid()));
-        existingEntity.setBcwsHQApproverUserUserid(
-                nonNullOrDefault(projectFiscalModel.getBcwsHQApproverUserUserid(), existingEntity.getBcwsHQApproverUserUserid()));
+        existingEntity.setBcwsHQApproverUserGuid(projectFiscalModel.getBcwsHQApproverUserGuid());
+        existingEntity.setBcwsHQApproverUserUserid(projectFiscalModel.getBcwsHQApproverUserUserid());
         existingEntity.setBcwsHQApprovedTimestamp(projectFiscalModel.getBcwsHQApprovedTimestamp());
         existingEntity.setBcwsHQApprovedComment(projectFiscalModel.getBcwsHQApprovedComment());
 
