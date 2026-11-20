@@ -413,32 +413,28 @@ export class MapService {
 
         const cleanSld = sldBody ? minifySld(sldBody) : undefined;
         const useSld = !!cleanSld;
+        const legendStyle = this.config.legendStyleName || this.config.styleName;
+
+        const params: Record<string, string> = {
+          SERVICE: 'WMS',
+          VERSION: '1.1.1',
+          REQUEST: 'GetLegendGraphic',
+          FORMAT: 'image/png',
+          TRANSPARENT: 'true',
+          LAYER: this.config.layerName,
+          LEGEND_OPTIONS: 'forceLabels:on',
+        };
+        if (useSld) {
+          params['SLD_BODY'] = cleanSld!;
+        } else if (legendStyle) {
+          params['STYLE'] = legendStyle;
+        }
 
         // If jQuery is available, use it to build the querystring
         const query = J
-          ? J.param({
-            SERVICE: 'WMS',
-            VERSION: '1.1.1',
-            REQUEST: 'GetLegendGraphic',
-            FORMAT: 'image/png',
-            TRANSPARENT: 'true',
-            LAYER: this.config.layerName,
-            STYLE: useSld ? undefined : (this.config.styleName || undefined),
-            SLD_BODY: useSld ? cleanSld : undefined,
-            LEGEND_OPTIONS: useSld ? 'forceLabels:on' : undefined,
-          })
-          : [
-            'SERVICE=WMS',
-            'VERSION=1.1.1',
-            'REQUEST=GetLegendGraphic',
-            'FORMAT=image/png',
-            'TRANSPARENT=true',
-            `LAYER=${encodeURIComponent(this.config.layerName)}`,
-            useSld
-              ? `SLD_BODY=${encodeURIComponent(cleanSld!)}&LEGEND_OPTIONS=forceLabels:on`
-              : (this.config.styleName ? `STYLE=${encodeURIComponent(this.config.styleName)}` : ''),
-          ]
-            .filter(Boolean)
+          ? J.param(params)
+          : Object.entries(params)
+            .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
             .join('&');
 
         const url = base.endsWith('?') ? base + query : base + '&' + query;

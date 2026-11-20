@@ -6,9 +6,11 @@ export const ONE_KM_WUI_SLD = `<?xml version="1.0" encoding="UTF-8"?>
     <sld:Name>pub:WHSE_LAND_AND_NATURAL_RESOURCE.PROT_WUI_ELIGIBLE_BUFFER_SP</sld:Name>
     <sld:UserStyle>
       <sld:Name>1_km_wui</sld:Name>
+      <sld:Title>1 km WUI</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Title/>
+          <sld:Name>1 km WUI</sld:Name>
+          <sld:Title>1 km WUI</sld:Title>
           <sld:MaxScaleDenominator>2500000.0</sld:MaxScaleDenominator>
           <sld:PolygonSymbolizer>
             <sld:Fill>
