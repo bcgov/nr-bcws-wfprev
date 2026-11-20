@@ -9,6 +9,8 @@ export const TREE_FARM_LICENSE_SLD = `<?xml version="1.0" encoding="UTF-8"?>
       <sld:Title>Tree Farm License</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Rule>
+          <sld:Name>Tree Farm License</sld:Name>
+          <sld:Title>Tree Farm License</sld:Title>
           <sld:MaxScaleDenominator>2500000.0</sld:MaxScaleDenominator>
           <sld:PolygonSymbolizer>
             <sld:Fill>
