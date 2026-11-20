@@ -10,7 +10,7 @@ export function ThreatAnalysisLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Threat Analysis",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

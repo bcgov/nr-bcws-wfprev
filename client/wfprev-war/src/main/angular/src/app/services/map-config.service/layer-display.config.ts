@@ -5,7 +5,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Administrative Boundaries',
             isVisible: true,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'ministry-of-forests-regions',
@@ -52,7 +52,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Natural Features',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'fwa-streams',
@@ -79,7 +79,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'BC Wildfire Layers',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'fire-perimeters',
@@ -131,7 +131,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Fuel Treatments',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'legacy-fuel-treatments',
@@ -152,7 +152,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Land Ownership and Status',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'parcel-fabric-ownership',
@@ -179,7 +179,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Licenses and Permits',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'range-tenure-polygons',
@@ -212,7 +212,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Parks and Recreation Trails',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'bc-controlled-recreation-areas',
@@ -245,7 +245,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Socio-Economic',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'timber-processing-facilities',
@@ -260,7 +260,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Physical Infrastructure',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'transmission-lines',
@@ -275,7 +275,7 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Fuel Type',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'fuel-type',
@@ -290,14 +290,14 @@ export function LayerDisplayConfig() {
             type: 'folder',
             title: 'Threat Analysis',
             isVisible: false,
-            isExpanded: true,
+            isExpanded: false,
             items: [
                 {
                     id: 'psta',
                     type: 'folder',
                     title: 'PSTA',
                     isVisible: false,
-                    isExpanded: true,
+                    isExpanded: false,
                     items: [
                         {
                             id: 'spotting-impact',
