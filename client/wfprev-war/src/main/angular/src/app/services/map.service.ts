@@ -422,10 +422,10 @@ export class MapService {
           FORMAT: 'image/png',
           TRANSPARENT: 'true',
           LAYER: this.config.layerName,
+          LEGEND_OPTIONS: 'forceLabels:on',
         };
         if (useSld) {
           params['SLD_BODY'] = cleanSld!;
-          params['LEGEND_OPTIONS'] = 'forceLabels:on';
         } else if (legendStyle) {
           params['STYLE'] = legendStyle;
         }

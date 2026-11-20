@@ -777,7 +777,7 @@ describe('MapService', () => {
       expect(url).toContain('STYLE=699');
       expect(url).not.toContain('STYLE=default');
       expect(url).not.toContain('SLD_BODY=');
-      expect(url).not.toContain('LEGEND_OPTIONS=');
+      expect(url).toContain('LEGEND_OPTIONS=forceLabels');
     });
 
     it('minifies inline sld on layers in WmsLeaflet.create', () => {
