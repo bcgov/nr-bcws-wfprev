@@ -185,7 +185,7 @@ export function LayerDisplayConfig() {
                     id: 'range-tenure-polygons',
                     isVisible: false,
                     alwaysShowLegend: false,
-                    minScale: 10000000,
+                    minScale: 1200000,
                 },
                 {
                     id: 'forest-tenure-managed-licence',
