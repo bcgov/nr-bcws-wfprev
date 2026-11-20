@@ -10,7 +10,7 @@ export function FuelTypeLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Fuel Type",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

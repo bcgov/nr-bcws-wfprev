@@ -24,7 +24,7 @@ export function BcWildfireLayersConfig(ls: LayerSettings, authHeader?: Record<st
     type: "folder",
     title: "BC Wildfire Layers",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

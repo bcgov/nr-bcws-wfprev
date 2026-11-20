@@ -14,7 +14,7 @@ export function LandOwnershipAndStatusLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Land Ownership and Status",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

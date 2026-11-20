@@ -12,7 +12,7 @@ export function FuelTreatmentsLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Fuel Treatments",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

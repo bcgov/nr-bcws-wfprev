@@ -22,7 +22,7 @@ export function AdministrativeBoundariesLayerConfig(ls: LayerSettings, authHeade
     type: "folder",
     title: "Administrative Boundaries",
     isVisible: true,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

@@ -16,7 +16,7 @@ export function LicensesAndPermitsLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Licenses and Permits",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

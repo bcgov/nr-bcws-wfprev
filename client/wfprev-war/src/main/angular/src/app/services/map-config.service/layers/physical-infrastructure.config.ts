@@ -10,7 +10,7 @@ export function PhysicalInfrastructureLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Physical Infrastructure",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };

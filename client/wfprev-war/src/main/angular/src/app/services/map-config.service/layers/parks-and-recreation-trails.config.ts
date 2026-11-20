@@ -16,7 +16,7 @@ export function ParksAndRecreationTrailsLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Parks and Recreation Trails",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };
