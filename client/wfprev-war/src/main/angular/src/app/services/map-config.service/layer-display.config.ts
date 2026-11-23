@@ -161,12 +161,6 @@ export function LayerDisplayConfig() {
                     minScale: 40000,
                 },
                 {
-                    id: 'parcel-fabric',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 40000,
-                },
-                {
                     id: 'conservancy-area',
                     isVisible: false,
                     alwaysShowLegend: false,
@@ -175,9 +169,9 @@ export function LayerDisplayConfig() {
             ]
         },
         {
-            id: 'licenses-and-permits',
+            id: 'licences-and-permits',
             type: 'folder',
-            title: 'Licenses and Permits',
+            title: 'Licences and Permits',
             isVisible: false,
             isExpanded: false,
             items: [
@@ -200,7 +194,7 @@ export function LayerDisplayConfig() {
                     minScale: 2500000,
                 },
                 {
-                    id: 'tree-farm-license',
+                    id: 'tree-farm-licence',
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 2500000,
@@ -231,12 +225,6 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 6000000,
-                },
-                {
-                    id: 'mountain-resorts-branch',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 1000000,
                 }
             ]
         },

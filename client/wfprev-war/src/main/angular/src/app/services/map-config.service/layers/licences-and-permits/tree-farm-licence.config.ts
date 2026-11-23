@@ -1,16 +1,16 @@
 import { LayerSettings } from "src/app/components/models";
 
-export const TREE_FARM_LICENSE_SLD = `<?xml version="1.0" encoding="UTF-8"?>
+export const TREE_FARM_LICENCE_SLD = `<?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>
     <sld:Name>pub:WHSE_ADMIN_BOUNDARIES.FADM_TFL_ALL_SP</sld:Name>
     <sld:UserStyle>
-      <sld:Name>tree_farm_license</sld:Name>
-      <sld:Title>Tree Farm License</sld:Title>
+      <sld:Name>tree_farm_licence</sld:Name>
+      <sld:Title>Tree Farm Licence</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Name>Tree Farm License</sld:Name>
-          <sld:Title>Tree Farm License</sld:Title>
+          <sld:Name>Tree Farm Licence</sld:Name>
+          <sld:Title>Tree Farm Licence</sld:Title>
           <sld:MaxScaleDenominator>2500000.0</sld:MaxScaleDenominator>
           <sld:PolygonSymbolizer>
             <sld:Fill>
@@ -64,18 +64,18 @@ export const TREE_FARM_LICENSE_SLD = `<?xml version="1.0" encoding="UTF-8"?>
   </sld:NamedLayer>
 </sld:StyledLayerDescriptor>`;
 
-export function TreeFarmLicenseLayerConfig(ls: LayerSettings) {
+export function TreeFarmLicenceLayerConfig(ls: LayerSettings) {
   return {
     serviceUrl: `${ls.openmaps}/geo/pub/WHSE_ADMIN_BOUNDARIES.FADM_TFL_ALL_SP/ows`,
-    id: "tree-farm-license",
-    title: "Tree Farm License",
+    id: "tree-farm-licence",
+    title: "Tree Farm Licence",
     visible: true,
     type: "wms",
     isQueryable: true,
     version: "1.1.1",
     transparent: true,
     layerName: "pub:WHSE_ADMIN_BOUNDARIES.FADM_TFL_ALL_SP",
-    sld: TREE_FARM_LICENSE_SLD,
+    sld: TREE_FARM_LICENCE_SLD,
     geometryAttribute: "SHAPE",
     minScale: 2500000
   }
