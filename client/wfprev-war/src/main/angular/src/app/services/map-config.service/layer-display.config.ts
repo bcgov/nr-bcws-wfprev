@@ -225,12 +225,6 @@ export function LayerDisplayConfig() {
                     isVisible: false,
                     alwaysShowLegend: false,
                     minScale: 6000000,
-                },
-                {
-                    id: 'mountain-resorts-branch',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 1000000,
                 }
             ]
         },
