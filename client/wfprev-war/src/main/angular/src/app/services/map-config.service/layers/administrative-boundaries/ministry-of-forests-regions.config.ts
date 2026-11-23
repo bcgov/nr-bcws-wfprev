@@ -10,6 +10,9 @@ export function MinistryOfForestsRegionsLayerConfig(ls: LayerSettings, authHeade
     isQueryable: false,
     combiningClass: "wfBoundary",
     layerName: "ADM_NR_REGIONS_SPG",
-    header: authHeader
+    header: authHeader,
+    legend: {
+      clipHeight: 20
+    }
   }
 }
