@@ -161,12 +161,6 @@ export function LayerDisplayConfig() {
                     minScale: 40000,
                 },
                 {
-                    id: 'parcel-fabric',
-                    isVisible: false,
-                    alwaysShowLegend: false,
-                    minScale: 40000,
-                },
-                {
                     id: 'conservancy-area',
                     isVisible: false,
                     alwaysShowLegend: false,
