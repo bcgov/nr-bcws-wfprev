@@ -10,7 +10,10 @@ export function WildfireOrgUnitFireCentreLayerConfig(ls: LayerSettings, authHead
     isQueryable: false,
     combiningClass: "wfBoundary",
     layerName: "WILDFIRE_ORG_UNIT_FIRE_CENTRE",
-    header: authHeader
+    header: authHeader,
+    legend: {
+      clipHeight: 20
+    }
   }
 
 }

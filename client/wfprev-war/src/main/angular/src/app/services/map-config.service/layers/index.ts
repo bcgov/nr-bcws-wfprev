@@ -1,5 +1,5 @@
 import { MapServices } from "..";
-import { LicensesAndPermitsLayerConfig } from "./licenses-and-permits.config";
+import { LicencesAndPermitsLayerConfig } from "./licences-and-permits.config";
 import { AdministrativeBoundariesLayerConfig } from "./administrative-boundaries.config";
 import { NaturalFeaturesLayerConfig } from "./natural-features.config";
 import { BcWildfireLayersConfig } from "./bc-wildfire-layers.config";
@@ -38,7 +38,7 @@ export function LayerConfig(mapServices: MapServices, token?: string) {
     BcWildfireLayersConfig(ls, authHeader),
     FuelTreatmentsLayerConfig(ls),
     LandOwnershipAndStatusLayerConfig(ls),
-    LicensesAndPermitsLayerConfig(ls),
+    LicencesAndPermitsLayerConfig(ls),
     ParksAndRecreationTrailsLayerConfig(ls),
     SocioEconomicLayerConfig(ls),
     PhysicalInfrastructureLayerConfig(ls),

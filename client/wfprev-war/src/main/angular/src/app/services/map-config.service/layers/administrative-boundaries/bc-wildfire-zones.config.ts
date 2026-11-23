@@ -74,6 +74,9 @@ export function BcWildfireZonesLayerConfig(ls: LayerSettings) {
     geometryAttribute: "GEOMETRY",
     titleAttribute: "FIRE_ZONE_NAME",
     sld: BC_WILDFIRE_ZONES_SLD,
-    minScale: 4500000
+    minScale: 4500000,
+    legend: {
+      clipHeight: 20
+    }
   }
 }

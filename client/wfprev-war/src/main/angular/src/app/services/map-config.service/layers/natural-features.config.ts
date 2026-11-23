@@ -14,7 +14,7 @@ export function NaturalFeaturesLayerConfig(ls: LayerSettings) {
     type: "folder",
     title: "Natural Features",
     isVisible: false,
-    isExpanded: true,
+    isExpanded: false,
     items,
     layers: items,
   };
