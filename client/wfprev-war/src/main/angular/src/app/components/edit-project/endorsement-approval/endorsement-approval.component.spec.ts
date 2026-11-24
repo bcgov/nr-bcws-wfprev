@@ -550,6 +550,32 @@ describe('EndorsementApprovalComponent', () => {
     expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
     // status wasn't reset by the removal logic — it stays as-is from fiscal
     expect(payload.isBcwsHQApprovedInd).toBeFalse();
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+  });
+
+  it('sets endorsementCode to NOT_ENDORS and clears endorser fields when endorsement removed while status is PROPOSED', async () => {
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: false,
+      approveFiscalActivity: false,
+      bcwsHQApproveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    expect(emitSpy).toHaveBeenCalled();
+    const payload = emitSpy.calls.mostRecent().args[0] as ProjectFiscal;
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+    expect(payload.endorserName).toBeUndefined();
+    expect(payload.endorsementTimestamp).toBeUndefined();
   });
   
   it('should emit bcwsHQ approval fields when bcwsHQApproveFiscalActivity is checked', async () => {

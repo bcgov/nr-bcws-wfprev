@@ -209,7 +209,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
         : undefined,
       endorsementCode: formValue.endorseFiscalActivity
         ? { endorsementCode: EndorsementCode.ENDORSED }
-        : undefined,
+        : { endorsementCode: EndorsementCode.NOT_ENDORS },
       endorsementComment: formValue.endorsementComment ?? undefined,
 
       // Approval logic
