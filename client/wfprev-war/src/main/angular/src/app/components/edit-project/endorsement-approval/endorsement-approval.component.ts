@@ -209,7 +209,7 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
         : undefined,
       endorsementCode: formValue.endorseFiscalActivity
         ? { endorsementCode: EndorsementCode.ENDORSED }
-        : undefined,
+        : { endorsementCode: EndorsementCode.NOT_ENDORS },
       endorsementComment: formValue.endorsementComment ?? undefined,
 
       // Approval logic
@@ -233,6 +233,22 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       endorseApprUpdatedTimestamp: currentUtc,
     };
 
+    if (endorsementRemoved) {
+      updatedFiscal.endorserUserGuid = undefined;
+      updatedFiscal.endorserUserUserid = undefined;
+      updatedFiscal.endorsementEvalTimestamp = undefined;
+    }
+
+    if (approvalRemoved) {
+      updatedFiscal.approverUserGuid = undefined;
+      updatedFiscal.approverUserUserid = undefined;
+    }
+
+    if (bcwsHQAprovalRemoved) {
+      updatedFiscal.bcwsHQApproverUserGuid = undefined;
+      updatedFiscal.bcwsHQApproverUserUserid = undefined;
+    }
+
     // Status logic: (return to PROPOSED if removed and not DRAFT/PROPOSED)
     // if reverting to proposed, clear out endorsement or approval fields depending on which has been unselected
     if (resetToProposedEndorsementRemoved) {
@@ -241,9 +257,6 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       updatedFiscal.endorsementTimestamp = undefined;
       updatedFiscal.endorsementCode = { endorsementCode: EndorsementCode.NOT_ENDORS };
       updatedFiscal.endorsementComment = undefined;
-      updatedFiscal.endorsementEvalTimestamp = undefined;
-      updatedFiscal.endorserUserGuid = undefined;
-      updatedFiscal.endorserUserUserid = undefined;
       updatedFiscal.endorseApprUpdateUserid = undefined;
       updatedFiscal.endorseApprUpdatedTimestamp = undefined;
     } 
@@ -253,8 +266,6 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       updatedFiscal.isApprovedInd = false;
       updatedFiscal.approvedTimestamp = undefined;
       updatedFiscal.approverName = undefined;
-      updatedFiscal.approverUserGuid = undefined;
-      updatedFiscal.approverUserUserid = undefined;
       updatedFiscal.businessAreaComment = undefined;
     }
 
@@ -263,8 +274,6 @@ export class EndorsementApprovalComponent implements OnChanges, OnInit {
       updatedFiscal.isBcwsHQApprovedInd = false;
       updatedFiscal.bcwsHQApprovedTimestamp = undefined;
       updatedFiscal.bcwsHQApproverName = undefined;
-      updatedFiscal.bcwsHQApproverUserGuid = undefined;
-      updatedFiscal.bcwsHQApproverUserUserid = undefined;
       updatedFiscal.bcwsHQApprovedComment = undefined;
     }
 

@@ -550,6 +550,88 @@ describe('EndorsementApprovalComponent', () => {
     expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
     // status wasn't reset by the removal logic — it stays as-is from fiscal
     expect(payload.isBcwsHQApprovedInd).toBeFalse();
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+  });
+
+  it('clears endorser, approver, and HQ approver guid/userid and sets NOT_ENDORS when unticked while status is PROPOSED', async () => {
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+      endorserUserGuid: 'endorse-guid-1',
+      endorserUserUserid: 'endorse-idir-1',
+      endorsementEvalTimestamp: '2023-10-09T00:00:00Z',
+      approverUserGuid: 'approver-guid-1',
+      approverUserUserid: 'approver-idir-1',
+      isBcwsHQApprovedInd: true,
+      bcwsHQApproverName: 'HQ Approver',
+      bcwsHQApproverUserGuid: 'hq-guid-1',
+      bcwsHQApproverUserUserid: 'hq-idir-1',
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: false,
+      approveFiscalActivity: false,
+      bcwsHQApproveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    expect(emitSpy).toHaveBeenCalled();
+    const payload = emitSpy.calls.mostRecent().args[0] as ProjectFiscal;
+    expect(payload.planFiscalStatusCode.planFiscalStatusCode).toBe(FiscalStatuses.PROPOSED);
+    expect(payload.endorsementCode).toEqual({ endorsementCode: EndorsementCode.NOT_ENDORS });
+    expect(payload.endorserName).toBeUndefined();
+    expect(payload.endorsementTimestamp).toBeUndefined();
+    expect(payload.endorserUserGuid).toBeUndefined();
+    expect(payload.endorserUserUserid).toBeUndefined();
+    expect(payload.endorsementEvalTimestamp).toBeUndefined();
+    expect(payload.approverUserGuid).toBeUndefined();
+    expect(payload.approverUserUserid).toBeUndefined();
+    expect(payload.isBcwsHQApprovedInd).toBeFalse();
+    expect(payload.bcwsHQApproverUserGuid).toBeUndefined();
+    expect(payload.bcwsHQApproverUserUserid).toBeUndefined();
+  });
+
+  it('preserves guid/userid for checked sections when another section is unticked in PROPOSED', async () => {
+    const emitSpy = spyOn(component.saveEndorsement, 'emit');
+
+    component.fiscal = {
+      ...mockFiscal,
+      planFiscalStatusCode: { planFiscalStatusCode: FiscalStatuses.PROPOSED },
+      endorsementCode: { endorsementCode: EndorsementCode.ENDORSED },
+      endorserUserGuid: 'endorse-guid-1',
+      endorserUserUserid: 'endorse-idir-1',
+      endorsementEvalTimestamp: '2023-10-09T00:00:00Z',
+      approverUserGuid: 'approver-guid-1',
+      approverUserUserid: 'approver-idir-1',
+      isBcwsHQApprovedInd: true,
+      bcwsHQApproverName: 'HQ Approver',
+      bcwsHQApproverUserGuid: 'hq-guid-1',
+      bcwsHQApproverUserUserid: 'hq-idir-1',
+    };
+
+    component.endorsementApprovalForm.patchValue({
+      endorseFiscalActivity: true,
+      endorsementDate: new Date('2024-04-01'),
+      approveFiscalActivity: true,
+      approvalDate: new Date('2024-04-15'),
+      bcwsHQApproveFiscalActivity: false,
+    });
+
+    await component.onSave();
+
+    expect(emitSpy).toHaveBeenCalled();
+    const payload = emitSpy.calls.mostRecent().args[0] as ProjectFiscal;
+    expect(payload.endorserUserGuid).toBe('endorse-guid-1');
+    expect(payload.endorserUserUserid).toBe('endorse-idir-1');
+    expect(payload.endorsementEvalTimestamp).toBe('2023-10-09T00:00:00Z');
+    expect(payload.approverUserGuid).toBe('approver-guid-1');
+    expect(payload.approverUserUserid).toBe('approver-idir-1');
+    expect(payload.bcwsHQApproverUserGuid).toBeUndefined();
+    expect(payload.bcwsHQApproverUserUserid).toBeUndefined();
   });
   
   it('should emit bcwsHQ approval fields when bcwsHQApproveFiscalActivity is checked', async () => {
