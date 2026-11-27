@@ -9,7 +9,7 @@ on:
       - closed
     branches:
       - 'main'
-      - 'feature/lza-migration'
+      - 'release/**'
     paths:
       - ".github/workflows/**"
       - "client/**"
@@ -20,7 +20,14 @@ on:
       - 'lambda/report-generator/**'
   workflow_dispatch:
 
-jobs: 
+# One INT build+deploy at a time: overlapping applies fail on the Terraform state lock,
+# and the UI must not land after a newer run's API.
+# PRs closed without merging get their own group so they never displace a queued deploy.
+concurrency:
+  group: ${{ (github.event_name == 'workflow_dispatch' || github.event.pull_request.merged) && 'wfint-deploy' || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
   node-build:
     # A closed but unmerged PR must not build or deploy
     if: ${{ github.event_name != 'pull_request_target' || github.event.pull_request.merged == true }}
@@ -59,7 +66,7 @@ jobs:
     needs: [node-build, wfprev-api, liquibase-build, report-generator-lambda]
     with:
       DEFAULT_APPLICATION_ENVIRONMENT: wfint
-      IMAGE_TAG: latest
+      IMAGE_TAG: ${{ github.sha }}
       RUN_LIQUIBASE: true
       COMMAND: apply
     secrets: inherit
